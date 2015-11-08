@@ -9,6 +9,7 @@ using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using AcadLib.Blocks;
+using Autodesk.AutoCAD.Geometry;
 
 [assembly: CommandClass(typeof (TestAcadlib.Commands))]
 
@@ -22,32 +23,9 @@ namespace TestAcadlib
          Document doc = AcAp.DocumentManager.MdiActiveDocument;
          Database db = doc.Database;
          Editor ed = doc.Editor;
-         TypedValue[] filter = { new TypedValue(0, "INSERT") };
-         PromptSelectionResult psr = ed.GetSelection(new SelectionFilter(filter));
-         if (psr.Status != PromptStatus.OK) return;
-         PromptPointResult ppr = ed.GetPoint("\nInsertion point: ");
-         if (ppr.Status != PromptStatus.OK) return;
-         using (Transaction tr = db.TransactionManager.StartTransaction())
-         {
-            System.Data.DataTable dataTable = psr.Value.GetObjectIds()
-                .Select(id => new BlockAttribute(id.GetObject<BlockReference>()))
-                .ToDataTable("Extraction");
-            Table tbl = dataTable.ToAcadTable(9.0, 40.0);
-            tbl.Position = ppr.Value.TransformBy(ed.CurrentUserCoordinateSystem);
-            BlockTableRecord btr = db.CurrentSpaceId.GetObject<BlockTableRecord>(OpenMode.ForWrite);
-            btr.AppendEntity(tbl);
-            tr.AddNewlyCreatedDBObject(tbl, true);
-            try
-            {
-               string filename = (string)AcAp.GetSystemVariable("dwgprefix") + "Extraction.xls";
-               dataTable.WriteXls(filename, null, true);
-            }
-            catch
-            {
-               AcAp.ShowAlertDialog("Failed to open Excel");
-            }
-            tr.Commit();
-         }
+
+         Extents3d ext = new Extents3d ();
+         var center = ext.Center();
       }
    }
 }

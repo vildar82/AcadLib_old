@@ -34,12 +34,12 @@ namespace AcadLib.Blocks
          SetProperties(br);
       }
 
-      public BlockAttribute(ObjectId id)
+      public BlockAttribute(ObjectId idBlRef)
       {
-         Document doc = AcAp.DocumentManager.MdiActiveDocument;
-         using (Transaction tr = doc.TransactionManager.StartTransaction())
+         Database db = idBlRef.Database;
+         using (Transaction tr = db.TransactionManager.StartTransaction())
          {
-            SetProperties(tr.GetObject(id, OpenMode.ForRead) as BlockReference);
+            SetProperties(tr.GetObject(idBlRef, OpenMode.ForRead) as BlockReference);
          }
       }
 

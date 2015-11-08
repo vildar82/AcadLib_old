@@ -41,10 +41,10 @@ namespace AcadLib
             Assembly curAssembly = Assembly.GetExecutingAssembly();
             string sAppName = curAssembly.GetName().Name;
 
-            using (RegistryKey regAcadProdKey = UserOrMachine ? Registry.CurrentUser.OpenSubKey(sProdKey) :
-                                                         Registry.LocalMachine.OpenSubKey(sProdKey))
+            using (Microsoft.Win32.RegistryKey regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
+                                                         Microsoft.Win32.Registry.LocalMachine.OpenSubKey(sProdKey))
             {
-               using (RegistryKey regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
+               using (Microsoft.Win32.RegistryKey regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
                {
                   // Check to see if the "MyApp" key exists
                   string[] subKeys = regAcadAppKey.GetSubKeyNames();
@@ -57,7 +57,7 @@ namespace AcadLib
                   }
 
                   // Register the application
-                  using (RegistryKey regAppAddInKey = regAcadAppKey.CreateSubKey(sAppName))
+                  using (Microsoft.Win32.RegistryKey regAppAddInKey = regAcadAppKey.CreateSubKey(sAppName))
                   {
                      string desc = curAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>().Description;
                      if (desc == "") desc = sAppName;
@@ -80,7 +80,7 @@ namespace AcadLib
          }
       }
 
-      private static void SetCommands(RegistryKey regAppAddInKey, Assembly curAssembly)
+      private static void SetCommands(Microsoft.Win32.RegistryKey regAppAddInKey, Assembly curAssembly)
       {
          // Создание раздела Commands в переданной ветке реестра и создание записей команд в этом разделе.
          // Команды определяются по атрибутам переданной сборки, в которой должен быть определен атрибут класса команд
@@ -119,10 +119,10 @@ namespace AcadLib
 
       private static void DeleteApp(string sProdKey, string sAppName, bool UserOrMachine)
       {
-         using (RegistryKey regAcadProdKey = UserOrMachine ? Registry.CurrentUser.OpenSubKey(sProdKey) :
-                                                   Registry.LocalMachine.OpenSubKey(sProdKey))
+         using (Microsoft.Win32.RegistryKey regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
+                                                   Microsoft.Win32.Registry.LocalMachine.OpenSubKey(sProdKey))
          {
-            using (RegistryKey regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
+            using (Microsoft.Win32.RegistryKey regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
             {
                // Delete the key for the application
                try

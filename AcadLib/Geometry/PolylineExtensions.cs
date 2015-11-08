@@ -244,5 +244,69 @@ namespace AcadLib.Geometry
         {
             return Math.Tan(Math.Atan(bulge) * factor);
         }
-    }
+
+      private struct Point
+      {
+         public double X, Y;
+      }
+
+      public static bool IsPointOnPolyline(this Polyline pl, Point3d pt)
+      {
+         bool isOn = false;
+         pl.Elevation = 0;
+         Point3d ptZeroZ = new Point3d(pt.X, pt.Y, 0);
+         for (int i = 0; i < pl.NumberOfVertices; i++)
+         {
+            Curve3d seg = null;
+
+            SegmentType segType = pl.GetSegmentType(i);
+            if (segType == SegmentType.Arc)
+               seg = pl.GetArcSegmentAt(i);
+            else if (segType == SegmentType.Line)
+               seg = pl.GetLineSegmentAt(i);
+
+            if (seg != null)
+            {
+               isOn = seg.IsOn(ptZeroZ);
+               if (isOn)
+                  break;
+            }
+         }
+         return isOn;
+      }
+
+      public static bool IsPointInsidePolygon(this Polyline polygon, Point3d pt)
+      {
+         int n = polygon.NumberOfVertices;
+         double angle = 0;
+         Point pt1, pt2;
+
+         for (int i = 0; i < n; i++)
+         {
+            pt1.X = polygon.GetPoint2dAt(i).X - pt.X;
+            pt1.Y = polygon.GetPoint2dAt(i).Y - pt.Y;
+            pt2.X = polygon.GetPoint2dAt((i + 1) % n).X - pt.X;
+            pt2.Y = polygon.GetPoint2dAt((i + 1) % n).Y - pt.Y;
+            angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
+         }
+
+         if (Math.Abs(angle) < Math.PI)
+            return false;
+         else
+            return true;
+      }
+      private static double Angle2D(double x1, double y1, double x2, double y2)
+      {
+         double dtheta, theta1, theta2;
+
+         theta1 = Math.Atan2(y1, x1);
+         theta2 = Math.Atan2(y2, x2);
+         dtheta = theta2 - theta1;
+         while (dtheta > Math.PI)
+            dtheta -= (Math.PI * 2);
+         while (dtheta < -Math.PI)
+            dtheta += (Math.PI * 2);
+         return (dtheta);
+      }
+   }
 }

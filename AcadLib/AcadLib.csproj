@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AcadLib</RootNamespace>
     <AssemblyName>AcadLib</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,19 +38,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
-      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\AutoCAD\ObjectARX2013\inc\AcCoreMgd.dll</HintPath>
+      <HintPath>..\..\ObjectARX\ObjectARX2015\inc\AcCoreMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd">
-      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\AutoCAD\ObjectARX2013\inc\AcDbMgd.dll</HintPath>
+      <HintPath>..\..\ObjectARX\ObjectARX2015\inc\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMgd">
-      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\AutoCAD\ObjectARX2013\inc\AcMgd.dll</HintPath>
+      <HintPath>..\..\ObjectARX\ObjectARX2015\inc\AcMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AutoCAD_PIK_Manager">
+      <HintPath>..\..\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\bin\Release\AutoCAD_PIK_Manager.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,13 +65,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Blocks\AttributeRefInfo.cs" />
+    <Compile Include="Blocks\BlockInsert.cs" />
+    <Compile Include="Blocks\Blocks.cs" />
+    <Compile Include="Blocks\Counter.cs" />
     <Compile Include="Blocks\Extensions.cs" />
     <Compile Include="Blocks\BlockAttribute.cs" />
     <Compile Include="Blocks\LateBinfing.cs" />
+    <Compile Include="Comparers\DoubleEqualityComparer.cs" />
+    <Compile Include="Comparers\StringsNumberComparer.cs" />
+    <Compile Include="Editors\UserPrompt.cs" />
+    <Compile Include="Editors\Zoom.cs" />
+    <Compile Include="Errors\Error.cs" />
+    <Compile Include="Errors\FormError.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Geometry\CircularArc2dExtensions.cs" />
     <Compile Include="Geometry\CircularArc3dExtensions.cs" />
     <Compile Include="Geometry\EditorExtensions.cs" />
     <Compile Include="Geometry\EllipseExtensions.cs" />
+    <Compile Include="Geometry\ExtentsExtension.cs" />
     <Compile Include="Geometry\GeomExt.cs" />
     <Compile Include="Geometry\Point2dCollectionExtensions.cs" />
     <Compile Include="Geometry\Point2dExtensions.cs" />
@@ -82,8 +102,26 @@
     <Compile Include="Geometry\Triangle3d.cs" />
     <Compile Include="Geometry\Vector3dExtensions.cs" />
     <Compile Include="Geometry\ViewportExtensions.cs" />
+    <Compile Include="Errors\Inspector.cs" />
+    <Compile Include="Jigs\BlockInsertJig.cs" />
+    <Compile Include="Jigs\TableJig.cs" />
+    <Compile Include="Plot\PlotToFileConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registry\Register.cs" />
+    <Compile Include="RTree\Node.cs" />
+    <Compile Include="RTree\Point.cs" />
+    <Compile Include="RTree\Rectangle.cs" />
+    <Compile Include="RTree\RTree.cs" />
+    <Compile Include="Strings\StringExt.cs" />
+    <Compile Include="Tables\TableExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Errors\FormError.resx">
+      <DependentUpon>FormError.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RTree\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
