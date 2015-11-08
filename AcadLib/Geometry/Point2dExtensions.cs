@@ -2,7 +2,7 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace AcadLib.Geometry
+namespace Autodesk.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Point2d type.

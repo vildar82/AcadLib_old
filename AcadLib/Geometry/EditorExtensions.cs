@@ -4,7 +4,7 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using AcRx = Autodesk.AutoCAD.Runtime;
 
-namespace AcadLib.Geometry
+namespace Autodesk.AutoCAD.EditorInput
 {
     /// <summary>
     /// Provides extension methods for the Editor type.

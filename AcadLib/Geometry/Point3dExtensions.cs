@@ -1,11 +1,12 @@
 ﻿using System;
+using AcadLib.Geometry;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using AcRx = Autodesk.AutoCAD.Runtime;
 
-namespace AcadLib.Geometry
+namespace Autodesk.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Point3d type.

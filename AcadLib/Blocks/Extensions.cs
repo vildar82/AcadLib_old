@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using AcadLib;
+using AcadLib.Blocks;
 using Autodesk.AutoCAD.DatabaseServices;
 using AcDataTable = Autodesk.AutoCAD.DatabaseServices.DataTable;
 
-namespace AcadLib.Blocks
+namespace Autodesk.AutoCAD.DatabaseServices
 {
-   public static class Extensions
+   public static class DatabaseExtensions
    {
       // Opens a DBObject in ForRead mode (kaefer @ TheSwamp)
       public static T GetObject<T>(this ObjectId id) where T : DBObject
       {
-         return id.GetObject<T>(OpenMode.ForRead);         
+         return id.GetObject<T>(OpenMode.ForRead);
       }
 
       // Opens a DBObject in the given mode (kaefer @ TheSwamp)
@@ -38,20 +40,6 @@ namespace AcadLib.Blocks
              .Where(res => res != null);
       }
 
-      // Applies the given Action to each element of the collection (mimics the F# Seq.iter function).
-      public static void Iterate<T>(this IEnumerable<T> collection, Action<T> action)
-      {
-         foreach (T item in collection) action(item);
-      }
-
-      // Applies the given Action to each element of the collection (mimics the F# Seq.iteri function).
-      // The integer passed to the Action indicates the index of element.
-      public static void Iterate<T>(this IEnumerable<T> collection, Action<T, int> action)
-      {
-         int i = 0;
-         foreach (T item in collection) action(item, i++);
-      }
-
       // Gets the block effective name (anonymous dynamic blocs).
       public static string GetEffectiveName(this BlockReference br)
       {
@@ -59,7 +47,24 @@ namespace AcadLib.Blocks
             return br.DynamicBlockTableRecord.GetObject<BlockTableRecord>().Name;
          return br.Name;
       }
-
+   }
+}
+namespace System.Collections.Generic
+{
+   public static class GenericExtensions
+   {
+      // Applies the given Action to each element of the collection (mimics the F# Seq.iter function).
+      public static void Iterate<T>(this IEnumerable<T> collection, Action<T> action)
+      {
+         foreach (T item in collection) action(item);
+      }
+      // Applies the given Action to each element of the collection (mimics the F# Seq.iteri function).
+      // The integer passed to the Action indicates the index of element.
+      public static void Iterate<T>(this IEnumerable<T> collection, Action<T, int> action)
+      {
+         int i = 0;
+         foreach (T item in collection) action(item, i++);
+      }
       // Creates a System.Data.DataTable from a BlockAttribute collection.
       public static System.Data.DataTable ToDataTable(this IEnumerable<BlockAttribute> blockAtts, string name)
       {
@@ -80,15 +85,20 @@ namespace AcadLib.Blocks
              });
          return dTable;
       }
-
+   }
+}
+namespace System.Data
+{
+   public static class DataExtensions
+   {
       // Gets the column names collection of the datatable
-      public static IEnumerable<string> GetColumnNames(this System.Data.DataTable dataTbl)
+      public static IEnumerable<string> GetColumnNames(this DataTable dataTbl)
       {
-         return dataTbl.Columns.Cast<System.Data.DataColumn>().Select(col => col.ColumnName);
+         return dataTbl.Columns.Cast<DataColumn>().Select(col => col.ColumnName);
       }
 
       // Writes an Excel file from the datatable (using late binding)
-      public static void WriteXls(this System.Data.DataTable dataTbl, string filename, string sheetName, bool visible)
+      public static void WriteXls(this DataTable dataTbl, string filename, string sheetName, bool visible)
       {
          object mis = Type.Missing;
          object xlApp = LateBinding.GetOrCreateInstance("Excel.Application");
@@ -147,7 +157,7 @@ namespace AcadLib.Blocks
       }
 
       // Writes a csv file from the datatable.
-      public static void WriteCsv(this System.Data.DataTable dataTbl, string filename)
+      public static void WriteCsv(this DataTable dataTbl, string filename)
       {
          using (StreamWriter writer = new StreamWriter(filename))
          {
@@ -160,7 +170,7 @@ namespace AcadLib.Blocks
       }
 
       // Creates an AutoCAD Table from the datatable.
-      public static Table ToAcadTable(this System.Data.DataTable dataTbl, double rowHeight, double columnWidth)
+      public static Table ToAcadTable(this DataTable dataTbl, double rowHeight, double columnWidth)
       {
          //return dataTbl.Rows.Cast<DataRow>().ToAcadTable(dataTbl.TableName, dataTbl.GetColumnNames(), rowHeight, columnWidth);
          Table tbl = new Table();

@@ -1,9 +1,11 @@
 ﻿using System;
+using AcadLib.Editors;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 
-namespace Autodesk.AutoCAD.DatabaseServices
+namespace AcadLib.Editors
 {
    public static class ViewTableRecordExtension
    {

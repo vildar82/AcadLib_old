@@ -1,7 +1,7 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace AcadLib.Geometry
+namespace Autodesk.AutoCAD.DatabaseServices
 {
     /// <summary>
     /// Provides extension methods for the Viewport type.

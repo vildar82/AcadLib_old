@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
 
-namespace AcadLib.Tables
+namespace Autodesk.AutoCAD.DatabaseServices
 {
    public static  class TableExtensions
    {
@@ -22,7 +22,7 @@ namespace AcadLib.Tables
             // Копирование стиля таблиц из шаблона
             try
             {
-               idStyle = CopyTableStyleFromTemplate(db);
+               idStyle = copyTableStyleFromTemplate(db);
             }
             catch
             { }
@@ -48,7 +48,7 @@ namespace AcadLib.Tables
       }
 
       // Копирование стиля таблиц ПИК из файла шаблона
-      public static ObjectId CopyTableStyleFromTemplate(Database db)
+      private static ObjectId copyTableStyleFromTemplate(Database db)
       {
          ObjectId idStyleDest = ObjectId.Null;
          // файл шаблона
