@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Blocks\AttributeRefInfo.cs" />
+    <Compile Include="Blocks\BlockExtents.cs" />
     <Compile Include="Blocks\BlockInsert.cs" />
     <Compile Include="Blocks\Block.cs" />
     <Compile Include="Blocks\Counter.cs" />
