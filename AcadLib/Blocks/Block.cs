@@ -14,9 +14,10 @@ namespace AcadLib.Blocks
       /// <param name="fileDrawing">Полный путь к чертежу из которого копируется блок</param>
       /// <param name="destDb">База чертежа в который копируетсяя блок</param>
       /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
-      public static void CopyBlockFromExternalDrawing(string blName, string fileDrawing, Database destDb,
+      public static ObjectId CopyBlockFromExternalDrawing(string blName, string fileDrawing, Database destDb,
                                                 DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
       {
+         ObjectId idCopyedBtr = ObjectId.Null;
          using (var extDb = new Database(false, true))
          {
             extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, "");
@@ -39,10 +40,12 @@ namespace AcadLib.Blocks
             if (ids.Count != 0)
             {
                // Получаем текущую базу чертежа
-               IdMapping iMap = new IdMapping();
-               destDb.WblockCloneObjects(ids, destDb.BlockTableId, iMap, mode, false);
+               IdMapping map = new IdMapping();
+               destDb.WblockCloneObjects(ids, destDb.BlockTableId, map, mode, false);
+               idCopyedBtr = map[ids[0]].Value;
             }
          }
+         return idCopyedBtr;
       }
 
       /// <summary>
