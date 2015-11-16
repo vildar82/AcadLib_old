@@ -10,9 +10,10 @@ namespace AcadLib.Blocks
 {
    public static class BlockInsert
    {
-      public static void Insert(string blName)
+      public static ObjectId Insert(string blName)
       {
-         Document doc = AcAp.DocumentManager.MdiActiveDocument;
+         ObjectId idBlRefInsert = ObjectId.Null;
+           Document doc = AcAp.DocumentManager.MdiActiveDocument;
          Database db = doc.Database;
          Editor ed = doc.Editor;
          using (var t = db.TransactionManager.StartTransaction())
@@ -33,14 +34,15 @@ namespace AcadLib.Blocks
             {
                var btrBl = t.GetObject(idBlBtr, OpenMode.ForRead) as BlockTableRecord;
                var blRef = (BlockReference)entJig.GetEntity();
-               var spaceBtr = (BlockTableRecord)t.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
-               spaceBtr.AppendEntity(blRef);
+               var spaceBtr = (BlockTableRecord)t.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
+               idBlRefInsert = spaceBtr.AppendEntity(blRef);
                t.AddNewlyCreatedDBObject(blRef, true);
                if (btrBl.HasAttributeDefinitions)
                   AddAttributes(blRef, btrBl, t);
             }
             t.Commit();
          }
+         return idBlRefInsert;
       }
 
       public static void AddAttributes(BlockReference blRef, BlockTableRecord btrBl, Transaction t)
