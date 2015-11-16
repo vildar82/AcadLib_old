@@ -14,7 +14,8 @@ namespace AcadLib.Blocks
       /// <param name="fileDrawing">Полный путь к чертежу из которого копируется блок</param>
       /// <param name="destDb">База чертежа в который копируетсяя блок</param>
       /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
-      public static void CopyBlockFromExternalDrawing(string blName, string fileDrawing, Database destDb)
+      public static void CopyBlockFromExternalDrawing(string blName, string fileDrawing, Database destDb,
+                                                DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
       {
          using (var extDb = new Database(false, true))
          {
@@ -39,7 +40,7 @@ namespace AcadLib.Blocks
             {
                // Получаем текущую базу чертежа
                IdMapping iMap = new IdMapping();
-               destDb.WblockCloneObjects(ids, destDb.BlockTableId, iMap, DuplicateRecordCloning.Ignore, false);
+               destDb.WblockCloneObjects(ids, destDb.BlockTableId, iMap, mode, false);
             }
          }
       }
