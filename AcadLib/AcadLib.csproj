@@ -76,6 +76,7 @@
     <Compile Include="Blocks\LateBinfing.cs" />
     <Compile Include="Comparers\DoubleEqualityComparer.cs" />
     <Compile Include="Comparers\StringsNumberComparer.cs" />
+    <Compile Include="Files\SerializerXml.cs" />
     <Compile Include="WorkingDatabaseSwitcher.cs" />
     <Compile Include="Editors\UserPrompt.cs" />
     <Compile Include="Editors\Zoom.cs" />
