@@ -177,6 +177,7 @@ namespace AcadLib.Errors
                worksheet.Cells[row, 1].Value = item.Message;
                row++;
             }
+            excelApp.Visible = true;
          }
          catch (Exception ex)
          {
