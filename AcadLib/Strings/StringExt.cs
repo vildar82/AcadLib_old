@@ -19,5 +19,18 @@ namespace System
          //return Regex.Replace(input, @"\r\n?|\n", "");
          return input.Trim().Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
       }
+
+      public static bool IsValidDbSymbolName(this string input)
+      {
+         try
+         {
+            Autodesk.AutoCAD.DatabaseServices.SymbolUtilityServices.ValidateSymbolName(input, false);
+            return true;
+         }
+         catch
+         {
+            return false;
+         }         
+      }
    }
 }
