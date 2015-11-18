@@ -112,13 +112,14 @@ namespace AcadLib.Blocks
       /// <returns>Валидная строка имени</returns>
       public static string GetValidNameForBlock(string name)
       {
-         string res = name;
-         //string testString = "<>/?\";:*|,='";
-         Regex pattern = new Regex("[<>/?\";:*|,=']");
-         res = pattern.Replace(name, ".");
-         res = res.Replace('\\', '.');
-         SymbolUtilityServices.ValidateSymbolName(res, false);
-         return res;
+         return name.GetValidDbSymbolName();
+         //string res = name;
+         ////string testString = "<>/?\";:*|,='";
+         //Regex pattern = new Regex("[<>/?\";:*|,=']");
+         //res = pattern.Replace(name, ".");
+         //res = res.Replace('\\', '.');
+         //SymbolUtilityServices.ValidateSymbolName(res, false);
+         //return res;
       }
 
       /// <summary>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Autodesk.AutoCAD.DatabaseServices;
 
 namespace System
 {
@@ -24,13 +25,24 @@ namespace System
       {
          try
          {
-            Autodesk.AutoCAD.DatabaseServices.SymbolUtilityServices.ValidateSymbolName(input, false);
+            SymbolUtilityServices.ValidateSymbolName(input, false);
             return true;
          }
          catch
          {
             return false;
          }         
+      }
+
+      public static string GetValidDbSymbolName(this string name)
+      {
+         string res = name.ClearString();
+         //string testString = "<>/?\";:*|,='";
+         Regex pattern = new Regex("[<>/?\";:*|,=']");
+         res = pattern.Replace(name, ".");
+         res = res.Replace('\\', '.');
+         SymbolUtilityServices.ValidateSymbolName(res, false);
+         return res;
       }
    }
 }
