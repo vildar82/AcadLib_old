@@ -91,7 +91,7 @@ namespace AcadLib.Errors
          // 
          this.textBoxErr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-         this.textBoxErr.Location = new System.Drawing.Point(12, 369);
+         this.textBoxErr.Location = new System.Drawing.Point(12, 375);
          this.textBoxErr.Multiline = true;
          this.textBoxErr.Name = "textBoxErr";
          this.textBoxErr.ReadOnly = true;
@@ -101,7 +101,7 @@ namespace AcadLib.Errors
          // buttonShow
          // 
          this.buttonShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-         this.buttonShow.Location = new System.Drawing.Point(12, 333);
+         this.buttonShow.Location = new System.Drawing.Point(12, 339);
          this.buttonShow.Name = "buttonShow";
          this.buttonShow.Size = new System.Drawing.Size(109, 30);
          this.buttonShow.TabIndex = 4;
@@ -126,7 +126,8 @@ namespace AcadLib.Errors
          // 
          // buttonExport
          // 
-         this.buttonExport.Location = new System.Drawing.Point(579, 337);
+         this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+         this.buttonExport.Location = new System.Drawing.Point(579, 343);
          this.buttonExport.Name = "buttonExport";
          this.buttonExport.Size = new System.Drawing.Size(75, 23);
          this.buttonExport.TabIndex = 6;
@@ -139,7 +140,7 @@ namespace AcadLib.Errors
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.ClientSize = new System.Drawing.Size(666, 509);
+         this.ClientSize = new System.Drawing.Size(666, 515);
          this.Controls.Add(this.buttonExport);
          this.Controls.Add(this.textBoxErr);
          this.Controls.Add(this.buttonShow);
