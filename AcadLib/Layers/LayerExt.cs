@@ -25,25 +25,39 @@ namespace AcadLib.Layers
             {
                return lt[layerInfo.Name];
             }
-            // Если слоя нет, то он создается.            
-            var newLayer = new LayerTableRecord();
-            newLayer.Name = layerInfo.Name;
-            newLayer.Color = layerInfo.Color;
-            newLayer.IsFrozen = layerInfo.IsFrozen;
-            newLayer.IsLocked = layerInfo.IsLocked;
-            newLayer.IsOff = layerInfo.IsOff;
-            newLayer.IsPlottable = layerInfo.IsPlotable;
-            if (!layerInfo.LinetypeObjectId.IsNull)
-               newLayer.LinetypeObjectId = layerInfo.LinetypeObjectId;
-            lt.UpgradeOpen();
-            lt.Add(newLayer);
-         }
-         return ObjectId.Null;
+            return CreateLayer(layerInfo, lt);
+         }         
+      }
+
+      /// <summary>
+      /// Создание слоя.
+      /// Слоя не должно быть в таблице слоев.      
+      /// </summary>
+      /// <param name="layerInfo">параметры слоя</param>
+      /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
+      public static ObjectId CreateLayer(LayerInfo layerInfo, LayerTable lt)
+      {
+         ObjectId idLayer = ObjectId.Null;
+         // Если слоя нет, то он создается.            
+         var newLayer = new LayerTableRecord();
+         newLayer.Name = layerInfo.Name;
+         newLayer.Color = layerInfo.Color;
+         newLayer.IsFrozen = layerInfo.IsFrozen;
+         newLayer.IsLocked = layerInfo.IsLocked;
+         newLayer.IsOff = layerInfo.IsOff;
+         newLayer.IsPlottable = layerInfo.IsPlotable;
+         if (!layerInfo.LinetypeObjectId.IsNull)
+            newLayer.LinetypeObjectId = layerInfo.LinetypeObjectId;
+         lt.UpgradeOpen();
+         idLayer = lt.Add(newLayer);
+         lt.DowngradeOpen();
+         return idLayer;
       }
 
       /// <summary>
       /// Проверка блокировки слоя IsOff IsLocked IsFrozen.
       /// Если заблокировано - то разблокируется.
+      /// Если слоя нет - то он создается с дефолтными параметрами.
       /// </summary>
       /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
       public static void CheckLayerState(string[] layers)
@@ -74,6 +88,10 @@ namespace AcadLib.Layers
                         }
                      }
                   }
+               }
+               else
+               {
+                  CreateLayer(new LayerInfo(layer), lt);
                }
             }
          }
