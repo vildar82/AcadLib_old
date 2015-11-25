@@ -13,33 +13,35 @@ namespace AcadLib.Layers
       /// Получение слоя.
       /// Если его нет в базе, то создается.      
       /// </summary>
-      /// <param name="layer"></param>
+      /// <param name="layerInfo">параметры слоя</param>
       /// <returns></returns>
       public static ObjectId GetLayerOrCreateNew(LayerInfo layerInfo)
       {
          Database db = HostApplicationServices.WorkingDatabase;
-         // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.         
-         using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
+         // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.                  
+         using (var t = db.TransactionManager.StartTransaction())
          {
+            var lt = db.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
             if (lt.Has(layerInfo.Name))
             {
                return lt[layerInfo.Name];
             }
-            return CreateLayer(layerInfo, lt);
-         }         
+            return CreateLayer(layerInfo, lt, t);
+            t.Commit();
+         }        
       }
 
       /// <summary>
       /// Создание слоя.
-      /// Слоя не должно быть в таблице слоев.      
+      /// Слоя не должно быть в таблице слоев.
       /// </summary>
       /// <param name="layerInfo">параметры слоя</param>
       /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
-      public static ObjectId CreateLayer(LayerInfo layerInfo, LayerTable lt)
+      public static ObjectId CreateLayer(LayerInfo layerInfo, LayerTable lt, Transaction t)
       {
          ObjectId idLayer = ObjectId.Null;
          // Если слоя нет, то он создается.            
-         var newLayer = new LayerTableRecord();
+         var newLayer = new LayerTableRecord();         
          newLayer.Name = layerInfo.Name;
          newLayer.Color = layerInfo.Color;
          newLayer.IsFrozen = layerInfo.IsFrozen;
@@ -50,6 +52,7 @@ namespace AcadLib.Layers
             newLayer.LinetypeObjectId = layerInfo.LinetypeObjectId;
          lt.UpgradeOpen();
          idLayer = lt.Add(newLayer);
+         t.AddNewlyCreatedDBObject(newLayer, true);
          lt.DowngradeOpen();
          return idLayer;
       }
@@ -63,37 +66,37 @@ namespace AcadLib.Layers
       public static void CheckLayerState(string[] layers)
       {
          Database db = HostApplicationServices.WorkingDatabase;
-         using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
+         using (var t = db.TransactionManager.StartTransaction())
          {
+            var lt = db.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
             foreach (var layer in layers)
             {
                if (lt.Has(layer))
                {
-                  using (var lay = lt[layer].Open(OpenMode.ForRead) as LayerTableRecord)
+                  var lay = lt[layer].GetObject(OpenMode.ForRead) as LayerTableRecord;
+                  if (lay.IsLocked && lay.IsOff && lay.IsFrozen)
                   {
-                     if (lay.IsLocked && lay.IsOff && lay.IsFrozen)
+                     lay.UpgradeOpen();
+                     if (lay.IsOff)
                      {
-                        lay.UpgradeOpen();
-                        if (lay.IsOff)
-                        {
-                           lay.IsOff = false;
-                        }
-                        if (lay.IsLocked)
-                        {
-                           lay.IsLocked = false;
-                        }
-                        if (lay.IsFrozen)
-                        {
-                           lay.IsFrozen = false;
-                        }
+                        lay.IsOff = false;
+                     }
+                     if (lay.IsLocked)
+                     {
+                        lay.IsLocked = false;
+                     }
+                     if (lay.IsFrozen)
+                     {
+                        lay.IsFrozen = false;
                      }
                   }
                }
                else
                {
-                  CreateLayer(new LayerInfo(layer), lt);
+                  CreateLayer(new LayerInfo(layer), lt, t);
                }
             }
+            t.Commit();
          }
       }
 
