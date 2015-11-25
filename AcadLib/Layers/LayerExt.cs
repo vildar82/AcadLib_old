@@ -17,6 +17,7 @@ namespace AcadLib.Layers
       /// <returns></returns>
       public static ObjectId GetLayerOrCreateNew(LayerInfo layerInfo)
       {
+         ObjectId idLayer = ObjectId.Null;
          Database db = HostApplicationServices.WorkingDatabase;
          // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.                  
          using (var t = db.TransactionManager.StartTransaction())
@@ -24,11 +25,12 @@ namespace AcadLib.Layers
             var lt = db.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
             if (lt.Has(layerInfo.Name))
             {
-               return lt[layerInfo.Name];
+               idLayer = lt[layerInfo.Name];
             }
-            return CreateLayer(layerInfo, lt, t);
+            idLayer = CreateLayer(layerInfo, lt, t);
             t.Commit();
-         }        
+         }
+         return idLayer;
       }
 
       /// <summary>
