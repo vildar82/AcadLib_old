@@ -5,6 +5,7 @@ namespace Extensions
 
    /// <summary>
    /// Extension methods to make working with Enum values easier
+   /// http://hugoware.net/blog/enumeration-extensions-2-0
    /// </summary>
    public static class EnumerationExtensions
    {
