@@ -79,6 +79,7 @@
     <Compile Include="Files\SerializerXml.cs" />
     <Compile Include="Layers\LayerExt.cs" />
     <Compile Include="Layers\LayerInfo.cs" />
+    <Compile Include="LibDBobjects\DBObjectExt.cs" />
     <Compile Include="NET\Extensions.cs" />
     <Compile Include="WorkingDatabaseSwitcher.cs" />
     <Compile Include="Editors\UserPrompt.cs" />
