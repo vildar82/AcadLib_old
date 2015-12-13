@@ -40,11 +40,20 @@ namespace Autodesk.AutoCAD.DatabaseServices
              .Where(res => res != null);
       }
 
-      // Gets the block effective name (anonymous dynamic blocs).
+      /// <summary>
+      /// Имя блока в том числе динамического.
+      /// Без условия открытой транзакции.
+      /// br.DynamicBlockTableRecord.Open(OpenMode.ForRead)
+      /// </summary>      
       public static string GetEffectiveName(this BlockReference br)
       {
          if (br.IsDynamicBlock)
-            return (br.DynamicBlockTableRecord.Open( OpenMode.ForRead) as BlockTableRecord).Name;
+         {
+            using (var btrDyn = br.DynamicBlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
+            {
+               return btrDyn.Name;
+            }
+         }
          return br.Name;
       }
    }
