@@ -35,6 +35,12 @@ namespace AcadLib.Errors
          var err = new Error(msg);
          _errors.Add(err);
       }
+      public static void AddError(string msg, params object[] args)
+      {
+         var err = new Error(string.Format(msg, args));
+         _errors.Add(err);
+      }
+
       public static void AddError(string msg, Entity ent)
       {
          var err = new Error(msg, ent);
