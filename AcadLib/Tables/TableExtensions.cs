@@ -75,7 +75,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             { }
             if (idStyle.IsNull)
             {
-               idStyle = db.Tablestyle;
+               idStyle = db.Textstyle;
             }
          }
          return idStyle;
