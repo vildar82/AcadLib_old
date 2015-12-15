@@ -22,7 +22,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             // Копирование стиля таблиц из шаблона
             try
             {
-               idStyle = copyTableStyleFromTemplate(db);
+               idStyle = copyObjectFromTemplate(db, getTableStylePik, db.TableStyleDictionaryId);
             }
             catch
             { }
@@ -47,8 +47,42 @@ namespace Autodesk.AutoCAD.DatabaseServices
          return idStyle;
       }
 
+      private static ObjectId getTextStylePik(Database db)
+      {
+         ObjectId idStyle = ObjectId.Null;
+         using (var textStyles = db.TextStyleTableId.Open(OpenMode.ForRead) as TextStyleTable)
+         {
+            if (textStyles.Has("PIK"))
+            {
+               idStyle = textStyles["PIK"];
+            }
+         }
+         return idStyle;
+      }
+
+      private static ObjectId GetTextStylePIK(this Database db)
+      {
+         ObjectId idStyle = getTextStylePik(db);         
+
+         if (idStyle.IsNull)
+         {
+            // Копирование стиля таблиц из шаблона
+            try
+            {
+               idStyle = copyObjectFromTemplate(db, getTextStylePik, db.TextStyleTableId);
+            }
+            catch
+            { }
+            if (idStyle.IsNull)
+            {
+               idStyle = db.Tablestyle;
+            }
+         }
+         return idStyle;
+      }
+
       // Копирование стиля таблиц ПИК из файла шаблона
-      private static ObjectId copyTableStyleFromTemplate(Database db)
+      private static ObjectId copyObjectFromTemplate(Database db, Func<Database, ObjectId> getObjectId, ObjectId ownerIdTable)
       {
          ObjectId idStyleDest = ObjectId.Null;
          // файл шаблона
@@ -58,12 +92,12 @@ namespace Autodesk.AutoCAD.DatabaseServices
             using (Database dbTemplate = new Database (false, true))
             {
                dbTemplate.ReadDwgFile(fileTemplate, FileOpenMode.OpenForReadAndAllShare, false, "");
-               var idStyleInTemplate = getTableStylePik(dbTemplate);
-               if(!idStyleInTemplate.IsNull)
+               ObjectId idStyleInTemplate = getObjectId(dbTemplate);               
+               if (!idStyleInTemplate.IsNull)
                {
                   IdMapping map = new IdMapping();
                   db.WblockCloneObjects(new ObjectIdCollection(new ObjectId[] { idStyleInTemplate }),
-                                db.TableStyleDictionaryId, map, DuplicateRecordCloning.Ignore, false);
+                                ownerIdTable, map, DuplicateRecordCloning.Ignore, false);
                   idStyleDest = map[idStyleInTemplate].Value;
                }
             }
