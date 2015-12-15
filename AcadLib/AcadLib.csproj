@@ -121,7 +121,7 @@
     <Compile Include="RTree\Rectangle.cs" />
     <Compile Include="RTree\RTree.cs" />
     <Compile Include="Strings\StringExt.cs" />
-    <Compile Include="Tables\TableExtensions.cs" />
+    <Compile Include="DB\DbExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Errors\FormError.resx">

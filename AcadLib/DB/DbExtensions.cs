@@ -9,7 +9,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
-   public static  class TableExtensions
+   public static class DbExtensions
    {
       /// <summary>
       /// Получение табличного стиля ПИК
@@ -29,6 +29,30 @@ namespace Autodesk.AutoCAD.DatabaseServices
             if (idStyle.IsNull)
             {
                idStyle = db.Tablestyle;
+            }
+         }
+         return idStyle;
+      }
+
+      /// <summary>
+      /// Получение табличного стиля ПИК
+      /// </summary>  
+      public static ObjectId GetTextStylePIK(this Database db)
+      {
+         ObjectId idStyle = getTextStylePik(db);
+
+         if (idStyle.IsNull)
+         {
+            // Копирование стиля таблиц из шаблона
+            try
+            {
+               idStyle = copyObjectFromTemplate(db, getTextStylePik, db.TextStyleTableId);
+            }
+            catch
+            { }
+            if (idStyle.IsNull)
+            {
+               idStyle = db.Textstyle;
             }
          }
          return idStyle;
@@ -58,28 +82,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             }
          }
          return idStyle;
-      }
-
-      private static ObjectId GetTextStylePIK(this Database db)
-      {
-         ObjectId idStyle = getTextStylePik(db);         
-
-         if (idStyle.IsNull)
-         {
-            // Копирование стиля таблиц из шаблона
-            try
-            {
-               idStyle = copyObjectFromTemplate(db, getTextStylePik, db.TextStyleTableId);
-            }
-            catch
-            { }
-            if (idStyle.IsNull)
-            {
-               idStyle = db.Textstyle;
-            }
-         }
-         return idStyle;
-      }
+      }      
 
       // Копирование стиля таблиц ПИК из файла шаблона
       private static ObjectId copyObjectFromTemplate(Database db, Func<Database, ObjectId> getObjectId, ObjectId ownerIdTable)
