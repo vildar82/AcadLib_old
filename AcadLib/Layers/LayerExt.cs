@@ -19,16 +19,14 @@ namespace AcadLib.Layers
       {
          ObjectId idLayer = ObjectId.Null;
          Database db = HostApplicationServices.WorkingDatabase;
-         // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.                  
-         using (var t = db.TransactionManager.StartTransaction())
+         // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.                           
+         using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
          {
-            var lt = db.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
             if (lt.Has(layerInfo.Name))
             {
                idLayer = lt[layerInfo.Name];
             }
-            idLayer = CreateLayer(layerInfo, lt, t);
-            t.Commit();
+            idLayer = CreateLayer(layerInfo, lt);            
          }
          return idLayer;
       }
@@ -39,23 +37,24 @@ namespace AcadLib.Layers
       /// </summary>
       /// <param name="layerInfo">параметры слоя</param>
       /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
-      public static ObjectId CreateLayer(LayerInfo layerInfo, LayerTable lt, Transaction t)
+      public static ObjectId CreateLayer(LayerInfo layerInfo, LayerTable lt)
       {
          ObjectId idLayer = ObjectId.Null;
          // Если слоя нет, то он создается.            
-         var newLayer = new LayerTableRecord();         
-         newLayer.Name = layerInfo.Name;
-         newLayer.Color = layerInfo.Color;
-         newLayer.IsFrozen = layerInfo.IsFrozen;
-         newLayer.IsLocked = layerInfo.IsLocked;
-         newLayer.IsOff = layerInfo.IsOff;
-         newLayer.IsPlottable = layerInfo.IsPlotable;
-         if (!layerInfo.LinetypeObjectId.IsNull)
-            newLayer.LinetypeObjectId = layerInfo.LinetypeObjectId;
-         lt.UpgradeOpen();
-         idLayer = lt.Add(newLayer);
-         t.AddNewlyCreatedDBObject(newLayer, true);
-         lt.DowngradeOpen();
+         using (var newLayer = new LayerTableRecord())
+         {
+            newLayer.Name = layerInfo.Name;
+            newLayer.Color = layerInfo.Color;
+            newLayer.IsFrozen = layerInfo.IsFrozen;
+            newLayer.IsLocked = layerInfo.IsLocked;
+            newLayer.IsOff = layerInfo.IsOff;
+            newLayer.IsPlottable = layerInfo.IsPlotable;
+            if (!layerInfo.LinetypeObjectId.IsNull)
+               newLayer.LinetypeObjectId = layerInfo.LinetypeObjectId;
+            lt.UpgradeOpen();
+            idLayer = lt.Add(newLayer);            
+            lt.DowngradeOpen();
+         }
          return idLayer;
       }
 
@@ -68,37 +67,37 @@ namespace AcadLib.Layers
       public static void CheckLayerState(string[] layers)
       {
          Database db = HostApplicationServices.WorkingDatabase;
-         using (var t = db.TransactionManager.StartTransaction())
-         {
-            var lt = db.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
+         using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
+         { 
             foreach (var layer in layers)
             {
                if (lt.Has(layer))
                {
-                  var lay = lt[layer].GetObject(OpenMode.ForRead) as LayerTableRecord;
-                  if (lay.IsLocked && lay.IsOff && lay.IsFrozen)
+                  using (var lay = lt[layer].Open(OpenMode.ForRead) as LayerTableRecord)
                   {
-                     lay.UpgradeOpen();
-                     if (lay.IsOff)
+                     if (lay.IsLocked && lay.IsOff && lay.IsFrozen)
                      {
-                        lay.IsOff = false;
-                     }
-                     if (lay.IsLocked)
-                     {
-                        lay.IsLocked = false;
-                     }
-                     if (lay.IsFrozen)
-                     {
-                        lay.IsFrozen = false;
+                        lay.UpgradeOpen();
+                        if (lay.IsOff)
+                        {
+                           lay.IsOff = false;
+                        }
+                        if (lay.IsLocked)
+                        {
+                           lay.IsLocked = false;
+                        }
+                        if (lay.IsFrozen)
+                        {
+                           lay.IsFrozen = false;
+                        }
                      }
                   }
                }
                else
                {
-                  CreateLayer(new LayerInfo(layer), lt, t);
+                  CreateLayer(new LayerInfo(layer), lt);
                }
-            }
-            t.Commit();
+            }            
          }
       }
 
