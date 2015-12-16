@@ -26,7 +26,10 @@ namespace AcadLib.Layers
             {
                idLayer = lt[layerInfo.Name];
             }
-            idLayer = CreateLayer(layerInfo, lt);            
+            else
+            {
+               idLayer = CreateLayer(layerInfo, lt);
+            }            
          }
          return idLayer;
       }
