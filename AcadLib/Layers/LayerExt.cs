@@ -52,8 +52,7 @@ namespace AcadLib.Layers
             if (!layerInfo.LinetypeObjectId.IsNull)
                newLayer.LinetypeObjectId = layerInfo.LinetypeObjectId;
             lt.UpgradeOpen();
-            idLayer = lt.Add(newLayer);            
-            lt.DowngradeOpen();
+            idLayer = lt.Add(newLayer);                        
          }
          return idLayer;
       }
