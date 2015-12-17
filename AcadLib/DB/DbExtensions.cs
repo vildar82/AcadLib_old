@@ -89,7 +89,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
       {
          ObjectId idStyleDest = ObjectId.Null;
          // файл шаблона
-         string fileTemplate = Path.Combine(PikSettings.LocalSettingsFolder, "Template", PikSettings.UserGroup, PikSettings.UserGroup + ".dwg");
+         string fileTemplate = Path.Combine(PikSettings.LocalSettingsFolder, "Template", PikSettings.UserGroup, PikSettings.UserGroup + ".dwt");
          if (File.Exists(fileTemplate))
          {
             using (Database dbTemplate = new Database (false, true))
