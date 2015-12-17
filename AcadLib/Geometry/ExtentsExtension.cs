@@ -22,6 +22,16 @@ namespace Autodesk.AutoCAD.DatabaseServices
       }
 
       /// <summary>
+      /// Длина диагонали границ (расстояние между точками MaxPoint и MinPoint)
+      /// </summary>
+      /// <param name="ext"></param>
+      /// <returns></returns>
+      public static double Diagonal (this Extents3d ext)
+      {
+         return (ext.MaxPoint - ext.MinPoint).Length;         
+      }
+
+      /// <summary>
       /// Попадает ли точка внутрь границы
       /// </summary>      
       /// <returns></returns>
