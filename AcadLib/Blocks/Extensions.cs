@@ -47,14 +47,10 @@ namespace Autodesk.AutoCAD.DatabaseServices
       /// </summary>      
       public static string GetEffectiveName(this BlockReference br)
       {
-         if (br.IsDynamicBlock)
+         using (var btrDyn = br.DynamicBlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
          {
-            using (var btrDyn = br.DynamicBlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
-            {
-               return btrDyn.Name;
-            }
+            return btrDyn.Name;
          }
-         return br.Name;
       }
    }
 }
