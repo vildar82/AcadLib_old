@@ -66,6 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Blocks\AttributeExt.cs" />
     <Compile Include="Blocks\AttributeRefInfo.cs" />
     <Compile Include="Blocks\BlockExtents.cs" />
     <Compile Include="Blocks\BlockInsert.cs" />
