@@ -44,5 +44,16 @@ namespace System
          SymbolUtilityServices.ValidateSymbolName(res, false);
          return res;
       }
+
+      /// <summary>
+      /// Формат строки с аргументами string.Format();
+      /// </summary>
+      /// <param name="format"></param>
+      /// <param name="args"></param>
+      /// <returns></returns>
+      public static string f (this string format, params object [] args)
+      {
+         return string.Format(format, args);
+      }
    }
 }
