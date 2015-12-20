@@ -96,5 +96,28 @@ namespace Autodesk.AutoCAD.EditorInput
             throw new Exception("\nОтменено пользователем");
          }
       }
+
+      /// <summary>
+      /// Pапрос выбора блоков
+      /// </summary>      
+      /// <param name="msg">Строка запроса</param>
+      /// <exception cref="Exception">Отменено пользователем.</exception>
+      /// <returns>Список выбранных блоков</returns>
+      public static List<ObjectId> SelectBlRefs(this Editor ed, string msg)
+      {         
+         var filList = new TypedValue[1] { new TypedValue((int)DxfCode.Start, "INSERT") };
+         SelectionFilter filter = new SelectionFilter(filList);
+         var selOpt = new PromptSelectionOptions();
+         selOpt.MessageForAdding = msg;         
+         var selRes = ed.GetSelection(selOpt, filter);
+         if (selRes.Status == PromptStatus.OK)
+         {            
+            return selRes.Value.GetObjectIds().ToList();
+         }
+         else
+         {
+            throw new Exception("\nОтменено пользователем");
+         }
+      }
    }
 }
