@@ -16,11 +16,12 @@ namespace AcadLib.Extensions
       {
          return string.Equals(attr.Tag, tag, StringComparison.CurrentCultureIgnoreCase);
       }
-
-      // Requires a transaction (not an OpenCloseTransaction) to be active when called:
-      // Returns an enumeration of all AttributeDefinitions whose Constant property is
-      // true, and all AttributeReferences attached to the block reference.
-
+      
+      /// <summary>
+      /// Requires a transaction (not an OpenCloseTransaction) to be active when called:
+      /// Returns an enumeration of all AttributeDefinitions whose Constant property is
+      /// true, and all AttributeReferences attached to the block reference.
+      /// </summary>      
       public static IEnumerable<DBText> GetAttributes(this BlockReference blockRef)
       {
          Transaction tr = blockRef.GetTransaction();
