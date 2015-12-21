@@ -57,9 +57,9 @@ namespace AcadLib.Errors
 
       private string getShortMsg(string msg)
       {
-         if (msg.Length > 100)
+         if (msg.Length > 200)
          {
-            return msg.Substring(0, 99);
+            return msg.Substring(0, 200);
          }
          else
          {
