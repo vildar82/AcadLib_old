@@ -12,14 +12,12 @@ namespace AcadLib.Jigs
    public class TableJig : EntityJig
    {
       Point3d _position;
-      Table _table;
-      int _scale;
+      Table _table;      
       string _msg;
 
-      public TableJig(Table table, int scale, string msg) : base(table)
+      public TableJig(Table table, double scale, string msg) : base(table)
       {
-         _msg = msg;
-         _scale = scale;
+         _msg = msg;         
          _table = table;
          _position = _table.Position;
          _table.TransformBy(Matrix3d.Scaling(scale, table.Position));
