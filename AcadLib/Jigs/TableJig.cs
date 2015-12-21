@@ -22,7 +22,8 @@ namespace AcadLib.Jigs
          _scale = scale;
          _table = table;
          _position = _table.Position;
-         _table.ScaleFactors = new Scale3d(scale);
+         _table.TransformBy(Matrix3d.Scaling(scale, table.Position));
+         //_table.ScaleFactors = new Scale3d(scale);
       }
 
       protected override SamplerStatus Sampler(JigPrompts prompts)
