@@ -14,7 +14,7 @@ namespace AcadLib.Extensions
    {
       public static bool Is (this AttributeReference attr, string tag)
       {
-         return string.Equals(attr.TextString, tag, StringComparison.CurrentCultureIgnoreCase);
+         return string.Equals(attr.Tag, tag, StringComparison.CurrentCultureIgnoreCase);
       }
    }
 }
