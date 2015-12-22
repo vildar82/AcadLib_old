@@ -11,6 +11,30 @@ namespace Autodesk.AutoCAD.DatabaseServices
 {
    public static class DbExtensions
    {
+      public static ObjectId GetLineTypeIdByName (this Database db, string name)
+      {
+         ObjectId resVal = ObjectId.Null;
+
+         using (var ltTable = db.LinetypeTableId.Open( OpenMode.ForRead) as LinetypeTable)
+         {
+            if (ltTable.Has(name))
+            {
+               resVal = ltTable[name];
+            }
+            else if (!string.Equals (name, SymbolUtilityServices.LinetypeContinuousName, StringComparison.OrdinalIgnoreCase))
+            {
+               resVal = db.GetLineTypeIdContinuous();
+            }
+         }
+         return resVal;
+      }
+
+      public static ObjectId GetLineTypeIdContinuous(this Database db)
+      {  
+         return db.GetLineTypeIdByName(SymbolUtilityServices.LinetypeContinuousName);
+      }
+
+
       /// <summary>
       /// Получение табличного стиля ПИК
       /// </summary>      

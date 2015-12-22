@@ -45,15 +45,24 @@ namespace AcadLib.Layers
          ObjectId idLayer = ObjectId.Null;
          // Если слоя нет, то он создается.            
          using (var newLayer = new LayerTableRecord())
-         {
+         {            
             newLayer.Name = layerInfo.Name;
             newLayer.Color = layerInfo.Color;
             newLayer.IsFrozen = layerInfo.IsFrozen;
             newLayer.IsLocked = layerInfo.IsLocked;
             newLayer.IsOff = layerInfo.IsOff;
             newLayer.IsPlottable = layerInfo.IsPlotable;
+            newLayer.LineWeight = layerInfo.LineWeight;
             if (!layerInfo.LinetypeObjectId.IsNull)
                newLayer.LinetypeObjectId = layerInfo.LinetypeObjectId;
+            else if (!string.IsNullOrEmpty(layerInfo.LineType))
+            {
+               newLayer.LinetypeObjectId = lt.Database.GetLineTypeIdByName(layerInfo.LineType);
+            }
+            else
+            {
+               newLayer.LinetypeObjectId = lt.Database.GetLineTypeIdContinuous();               
+            }                    
             lt.UpgradeOpen();
             idLayer = lt.Add(newLayer);
             lt.DowngradeOpen();

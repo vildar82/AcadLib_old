@@ -19,6 +19,7 @@ namespace AcadLib.Layers
       private Color _color;      
       private ObjectId _linetypeObjectId;
       private LineWeight _lineWeight;
+      private string _lineType;
 
       public string Name
       {
@@ -33,6 +34,7 @@ namespace AcadLib.Layers
       public Color Color { get { return _color; } set { _color = value; } }      
       public LineWeight LineWeight { get { return _lineWeight; } set { _lineWeight = value; } }
       public ObjectId LinetypeObjectId { get { return _linetypeObjectId; } set { _linetypeObjectId = value; } }
+      public string LineType { get { return _lineType; } set { _lineType = value; } }
 
       public LayerInfo (string name)
       {
