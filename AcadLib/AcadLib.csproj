@@ -81,6 +81,7 @@
     <Compile Include="Blocks\Extensions.cs" />
     <Compile Include="Blocks\BlockAttribute.cs" />
     <Compile Include="Blocks\LateBinfing.cs" />
+    <Compile Include="Comparers\AlphanumComparator.cs" />
     <Compile Include="Comparers\DoubleEqualityComparer.cs" />
     <Compile Include="Comparers\StringsNumberComparer.cs" />
     <Compile Include="Files\SerializerXml.cs" />
