@@ -55,7 +55,12 @@ namespace AcadLib.Errors
       {
          var err = new Error(msg, ext, idEnt);
          _errors.Add(err);
-      }     
+      }
+      public static void AddError(string msg, ObjectId idEnt)
+      {
+         var err = new Error(msg, idEnt);
+         _errors.Add(err);
+      }
 
       public static void Show()
       {

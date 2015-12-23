@@ -28,13 +28,8 @@ namespace AcadLib.Errors
          _hasEntity = false;         
       }     
 
-      public Error(string message, Entity ent)
-      {
-         _msg = message;
-         _shortMsg = getShortMsg(_msg);
-         _idEnt = ent.Id;
-         _extents = ent.GeometricExtents;
-         _hasEntity = true;         
+      public Error(string message, Entity ent) : this(message, ent.GeometricExtents, ent)
+      {         
       }
 
       public Error(string message, Extents3d ext, Entity ent)
@@ -53,6 +48,18 @@ namespace AcadLib.Errors
          _idEnt = idEnt;
          _extents = ext;
          _hasEntity = true;
+      }
+
+      public Error(string message,ObjectId idEnt)
+      {
+         using (var ent = idEnt.Open( OpenMode.ForRead) as Entity)
+         {
+            _msg = message;
+            _shortMsg = getShortMsg(_msg);
+            _idEnt = idEnt;
+            _extents = ent.GeometricExtents;
+            _hasEntity = true;
+         }             
       }
 
       private string getShortMsg(string msg)
