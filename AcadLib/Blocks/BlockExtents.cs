@@ -5,21 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.Runtime;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
    public static class BlockExtents
    {
+      public static RXClass DbTextRXClass = RXClass.GetClass(typeof(DBText));
+      public static RXClass MTextRXClass = RXClass.GetClass(typeof(MText));
+      public static RXClass MLeaderRXClass = RXClass.GetClass(typeof(MLeader));
+      public static RXClass DimensionRXClass = RXClass.GetClass(typeof(Dimension));
+
       /// <summary>
       /// Определение границы блока чистых (без динамики, без атрибутов)
       /// </summary>
       /// <param name="blRef"></param>
       /// <returns></returns>
       public static Extents3d GeometricExtentsСlean(this BlockReference blRef)
-      {
-         Extents3d blockExt = new Extents3d(Point3d.Origin, Point3d.Origin);
+      {         
          Matrix3d mat = Matrix3d.Identity;
-         BlockExtents.GetBlockExtents(blRef, ref blockExt, ref mat);
+         Extents3d blockExt = BlockExtents.GetBlockExtents(blRef, ref mat, new Extents3d ());
          return blockExt;
       }
 
@@ -29,26 +34,37 @@ namespace Autodesk.AutoCAD.DatabaseServices
       /// <param name="en">Имя примитива</param>
       /// <param name="ext">Габаритный контейнер</param>
       /// <param name="mat">Матрица преобразования из системы координат блока в МСК.</param>
-      private static void GetBlockExtents(Entity en, ref Extents3d ext, ref Matrix3d mat)
-      {
+      private static Extents3d GetBlockExtents(Entity en, ref Matrix3d mat, Extents3d ext)
+      {         
          if (en is BlockReference)
          {
-            BlockReference bref = en as BlockReference;
+            var bref = en as BlockReference;
             Matrix3d matIns = mat * bref.BlockTransform;
-            using (BlockTableRecord btr =
-              bref.BlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
+            using (var btr = bref.BlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
             {
                foreach (ObjectId id in btr)
                {
+                  // Пропускаем все тексты.
+                  if (id.ObjectClass.IsDerivedFrom(DbTextRXClass) ||
+                     id.ObjectClass.IsDerivedFrom(MTextRXClass) ||
+                     id.ObjectClass.IsDerivedFrom(MLeaderRXClass) ||
+                     id.ObjectClass.IsDerivedFrom(DimensionRXClass))
+                  {
+                     continue;
+                  }
                   using (DBObject obj = id.Open(OpenMode.ForRead) as DBObject)
                   {
                      Entity enCur = obj as Entity;
                      if (enCur == null || enCur.Visible != true)
-                        continue;
-                     // Пропускаем определения атрибутов                     
-                     if (enCur is AttributeDefinition)
-                        continue;
-                     GetBlockExtents(enCur, ref ext, ref matIns);
+                        continue;                     
+                     if (IsEmptyExt(ref ext))
+                     {
+                        ext.AddExtents(GetBlockExtents(enCur, ref matIns, ext));                        
+                     }
+                     else
+                     {
+                        ext = GetBlockExtents(enCur, ref matIns, ext);
+                     }                     
                   }
                }
             }
@@ -58,11 +74,12 @@ namespace Autodesk.AutoCAD.DatabaseServices
             if (mat.IsUniscaledOrtho())
             {
                using (Entity enTr = en.GetTransformedCopy(mat))
-               {
+               {                  
                   if (enTr is Dimension)
                      (enTr as Dimension).RecomputeDimensionBlock(true);
                   if (enTr is Table)
                      (enTr as Table).RecomputeTableBlock(true);
+
                   if (IsEmptyExt(ref ext))
                   {
                      try { ext = enTr.GeometricExtents; } catch { };
@@ -71,7 +88,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
                   {
                      try { ext.AddExtents(enTr.GeometricExtents); } catch { };
                   }
-                  return;
+                  return ext;
                }
             }
             else
@@ -86,10 +103,10 @@ namespace Autodesk.AutoCAD.DatabaseServices
                      ext.AddExtents(curExt);
                }
                catch { }
-               return;
+               return ext;
             }
          }
-         return;
+         return ext;
       }
 
       /// <summary>
