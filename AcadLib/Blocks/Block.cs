@@ -23,9 +23,9 @@ namespace AcadLib.Blocks
             extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, "");
 
             ObjectIdCollection ids = new ObjectIdCollection();
-            using (var t = extDb.TransactionManager.StartTransaction())
+
+            using (var bt = (BlockTable)extDb.BlockTableId.Open(OpenMode.ForRead))
             {
-               var bt = (BlockTable)t.GetObject(extDb.BlockTableId, OpenMode.ForRead);
                if (bt.Has(blName))
                {
                   ids.Add(bt[blName]);
@@ -34,8 +34,7 @@ namespace AcadLib.Blocks
                {
                   throw new Exception(string.Format("Не найдено определение блока {0} в файле {1}", blName, fileDrawing));
                }
-               t.Commit();
-            }
+            } 
             // Если нашли – добавим блок
             if (ids.Count != 0)
             {
