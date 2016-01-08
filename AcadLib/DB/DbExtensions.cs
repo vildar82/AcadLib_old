@@ -59,7 +59,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
       }
 
       /// <summary>
-      /// Получение табличного стиля ПИК
+      /// Получение текстового стиля ПИК
       /// </summary>  
       public static ObjectId GetTextStylePIK(this Database db)
       {
@@ -77,6 +77,45 @@ namespace Autodesk.AutoCAD.DatabaseServices
             if (idStyle.IsNull)
             {
                idStyle = db.Textstyle;
+            }
+         }
+         return idStyle;
+      }
+
+      /// <summary>
+      /// Получение размерного стиля ПИК
+      /// </summary>
+      /// <param name="db"></param>
+      /// <returns></returns>
+      public static ObjectId GetDimStylePIK(this Database db)
+      {
+         ObjectId idStyle = getDimStylePik(db);
+
+         if (idStyle.IsNull)
+         {
+            // Копирование размерного стиля из шаблона
+            try
+            {
+               idStyle = copyObjectFromTemplate(db, getDimStylePik, db.DimStyleTableId);
+            }
+            catch
+            { }
+            if (idStyle.IsNull)
+            {
+               idStyle = db.Dimstyle;
+            }
+         }
+         return idStyle;
+      }
+
+      private static ObjectId getDimStylePik(Database db)
+      {
+         ObjectId idStyle = ObjectId.Null;
+         using (var dimStylesTable = db.DimStyleTableId.Open(OpenMode.ForRead) as DimStyleTable)
+         {
+            if (dimStylesTable.Has("PIK"))
+            {
+               idStyle = dimStylesTable["PIK"];
             }
          }
          return idStyle;
