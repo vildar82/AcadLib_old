@@ -137,5 +137,21 @@ namespace AcadLib.Blocks
              blk1.Position.IsEqualTo(blk2.Position, tol) &&
              blk1.ScaleFactors.IsEqualTo(blk2.ScaleFactors, tol);
       }
+
+      /// <summary>
+      /// Удаление всех объектов из блока.
+      /// Блок должен быть открыт для записи
+      /// </summary>
+      /// <param name="btr"></param>
+      public static void ClearEntity(this BlockTableRecord btr)
+      {
+         foreach (ObjectId idEnt in btr)
+         {
+            using (var ent = idEnt.Open(OpenMode.ForWrite) as Entity)
+            {
+               ent.Erase();
+            }
+         }
+      }
    }
 }
