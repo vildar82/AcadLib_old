@@ -158,6 +158,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             using (Database dbTemplate = new Database (false, true))
             {
                dbTemplate.ReadDwgFile(fileTemplate, FileOpenMode.OpenForReadAndAllShare, false, "");
+               dbTemplate.CloseInput(true);
                ObjectId idStyleInTemplate = getObjectId(dbTemplate);               
                if (!idStyleInTemplate.IsNull)
                {

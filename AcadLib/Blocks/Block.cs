@@ -21,7 +21,7 @@ namespace AcadLib.Blocks
          using (var extDb = new Database(false, true))
          {
             extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, "");
-
+            extDb.CloseInput(true);
             ObjectIdCollection ids = new ObjectIdCollection();
 
             using (var bt = (BlockTable)extDb.BlockTableId.Open(OpenMode.ForRead))
