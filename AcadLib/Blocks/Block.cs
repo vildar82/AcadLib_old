@@ -102,7 +102,37 @@ namespace AcadLib.Blocks
          idLayoutCopy = lm.GetLayoutId(layerCopy);
          HostApplicationServices.WorkingDatabase = dbOrig;
          return idLayoutCopy;
-      }      
+      }
+
+      /// <summary>
+      /// Клонирование листа.
+      /// Должна быть открыта транзакция!!!
+      /// </summary>
+      /// <param name="db">База в которой это производится. Должна быть WorkingDatabase</param>
+      /// <param name="existLayoutName">Имя существующего листа, с которого будет клонироваться новый лист.
+      /// Должен существовать в чертеже.</param>
+      /// <param name="newLayoutName">Имя для нового листа.</param>
+      /// <returns>ObjectId нового листа</returns>
+      public static ObjectId CloneLayout(Database db, string existLayoutName, string newLayoutName)
+      {
+         LayoutManager lm = LayoutManager.Current;
+         ObjectId newLayoutId = lm.CreateLayout(newLayoutName);
+         ObjectId existLayoutId = lm.GetLayoutId(existLayoutName);
+         Layout newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout;
+         Layout curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
+         newLayout.CopyFrom(curLayout);
+         ObjectIdCollection objIdCol = new ObjectIdCollection();
+         using (var btrCurLayout = curLayout.BlockTableRecordId.Open(OpenMode.ForRead) as BlockTableRecord)
+         {
+            foreach (ObjectId objId in btrCurLayout)
+            {
+               objIdCol.Add(objId);
+            }
+         }
+         IdMapping idMap = new IdMapping();
+         db.DeepCloneObjects(objIdCol, newLayout.BlockTableRecordId, idMap, false);
+         return newLayoutId;
+      }
 
       /// <summary>
       /// Получение валидной строки для имени блока. С замоной всех ненужных символов на .
