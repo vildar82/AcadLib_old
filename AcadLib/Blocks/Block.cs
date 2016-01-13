@@ -115,9 +115,14 @@ namespace AcadLib.Blocks
       /// <returns>ObjectId нового листа</returns>
       public static ObjectId CloneLayout(Database db, string existLayoutName, string newLayoutName)
       {
-         LayoutManager lm = LayoutManager.Current;
-         ObjectId newLayoutId = lm.CreateLayout(newLayoutName);
-         ObjectId existLayoutId = lm.GetLayoutId(existLayoutName);
+         ObjectId newLayoutId;
+         ObjectId existLayoutId;
+         using (WorkingDatabaseSwitcher sw = new WorkingDatabaseSwitcher(db))
+         {
+            LayoutManager lm = LayoutManager.Current;
+            newLayoutId = lm.CreateLayout(newLayoutName);
+            existLayoutId = lm.GetLayoutId(existLayoutName);
+         }
          Layout newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout;
          Layout curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
          newLayout.CopyFrom(curLayout);

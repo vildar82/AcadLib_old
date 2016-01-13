@@ -90,6 +90,7 @@
     <Compile Include="Layers\LayerInfo.cs" />
     <Compile Include="LibDBobjects\DBObjectExt.cs" />
     <Compile Include="NET\Extensions.cs" />
+    <Compile Include="Plot\PlotDirToPdf.cs" />
     <Compile Include="WorkingDatabaseSwitcher.cs" />
     <Compile Include="Editors\UserPrompt.cs" />
     <Compile Include="Editors\Zoom.cs" />
