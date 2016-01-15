@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
@@ -17,34 +19,64 @@ namespace AcadLib.Blocks
       public static ObjectId CopyBlockFromExternalDrawing(string blName, string fileDrawing, Database destDb,
                                                 DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
       {
-         ObjectId idCopyedBtr = ObjectId.Null;
+         ObjectId idRes;
+         List<string> blNames = new List<string> { blName };
+         var resCopy = CopyBlockFromExternalDrawing(blNames, fileDrawing, destDb, mode);
+         if (!resCopy.TryGetValue(blName, out idRes))
+         {
+            throw new Autodesk.AutoCAD.Runtime.Exception(Autodesk.AutoCAD.Runtime.ErrorStatus.MissingBlockName, $"Не найден блок {blName}");
+         }
+         return idRes;
+      }
+
+      /// <summary>
+      /// Копирование определенич блока из внешнего чертежа
+      /// </summary>
+      /// <param name="blNames">Имена блоков</param>
+      /// <param name="fileDrawing">Полный путь к чертежу из которого копируется блок</param>
+      /// <param name="destDb">База чертежа в который копируетсяя блок</param>
+      /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
+      /// <returns>Список пар значений имени блока и idBtr</returns>
+      public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing(IList<string> blNames, string fileDrawing, Database destDb,
+                                                DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
+      {
+         var resVal = new Dictionary<string, ObjectId>();
+         var uniqBlNames = blNames.Distinct(StringComparer.OrdinalIgnoreCase);                 
+                 
          using (var extDb = new Database(false, true))
          {
             extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, "");
-            extDb.CloseInput(true);
-            ObjectIdCollection ids = new ObjectIdCollection();
+            extDb.CloseInput(true);            
+
+            var valToCopy = new Dictionary<ObjectId, string>();
 
             using (var bt = (BlockTable)extDb.BlockTableId.Open(OpenMode.ForRead))
             {
-               if (bt.Has(blName))
+               foreach (var blName in uniqBlNames)
                {
-                  ids.Add(bt[blName]);
+                  ObjectId id;     
+                  if (bt.Has(blName))
+                  {
+                     id =bt[blName];
+                     valToCopy.Add(id, blName);
+                  }                                 
                }
-               else
-               {
-                  throw new Exception(string.Format("Не найдено определение блока {0} в файле {1}", blName, fileDrawing));
-               }
-            } 
-            // Если нашли – добавим блок
-            if (ids.Count != 0)
+            }
+            // Копир
+            if (valToCopy.Count > 0)
             {
                // Получаем текущую базу чертежа
                IdMapping map = new IdMapping();
+               ObjectIdCollection ids = new ObjectIdCollection(valToCopy.Keys.ToArray());
                destDb.WblockCloneObjects(ids, destDb.BlockTableId, map, mode, false);
-               idCopyedBtr = map[ids[0]].Value;
+
+               foreach (var item in valToCopy)
+               {
+                  resVal.Add(item.Value, map[item.Key].Value);
+               }
             }
          }
-         return idCopyedBtr;
+         return resVal;
       }
 
       /// <summary>
