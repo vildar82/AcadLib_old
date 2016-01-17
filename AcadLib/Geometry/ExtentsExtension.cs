@@ -45,5 +45,20 @@ namespace Autodesk.AutoCAD.DatabaseServices
          }
          return res;
       }
+
+      /// <summary>
+      /// Попадает ли точка внутрь границы
+      /// </summary>      
+      /// <returns></returns>
+      public static bool IsPointInBounds(this Extents3d ext, Point3d pt, double tolerance)
+      {
+         bool res = false;
+         if ((pt.X-tolerance) > ext.MinPoint.X && (pt.Y-tolerance) > ext.MinPoint.Y &&
+            (pt.X+tolerance) < ext.MaxPoint.X && (pt.Y+tolerance) < ext.MaxPoint.Y)
+         {
+            res = true;
+         }
+         return res;
+      }
    }
 }
