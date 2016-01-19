@@ -18,6 +18,18 @@ namespace AcadLib.Plot
       private readonly string filePdfOutputName;
       private readonly string[] filesDwg;
 
+      /// <summary>
+      /// Сортировка листов
+      /// </summary>
+      public EnumLayoutsSort LayoutSort { get; set; }
+            
+      public enum EnumLayoutsSort
+      {
+         DatabaseOrder,
+         TabOrder,
+         LayoutNames
+      }
+
       public PlotDirToPdf(string dir, string filePdfOutputName = "")
       {
          this.dir = dir;
@@ -44,21 +56,37 @@ namespace AcadLib.Plot
                dbTemp.CloseInput(true);
                using (var t = dbTemp.TransactionManager.StartTransaction())
                {
+                  List<Tuple<Layout, DsdEntry>> layouts = new List<Tuple<Layout, DsdEntry>>();
                   DBDictionary layoutDict = (DBDictionary)dbTemp.LayoutDictionaryId.GetObject(OpenMode.ForRead);
                   foreach (DBDictionaryEntry entry in layoutDict)
                   {
                      if (entry.Key != "Model")
                      {
-                        var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;
-                        DsdEntry dsdEntry = new DsdEntry();
+                        var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;                        
+                        DsdEntry dsdEntry = new DsdEntry();                        
                         dsdEntry.Layout = layout.LayoutName;
                         dsdEntry.DwgName = fileDwg;
                         //dsdEntry.Nps = "Setup1";
                         dsdEntry.NpsSourceDwg = fileDwg;
                         dsdEntry.Title = layout.LayoutName;
-                        dsdCol.Add(dsdEntry);
+                        layouts.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
+                        //dsdCol.Add(dsdEntry);
                      }
                   }
+                  switch (LayoutSort)
+                  {
+                     case EnumLayoutsSort.DatabaseOrder:                        
+                        break;
+                     case EnumLayoutsSort.TabOrder:
+                        layouts.Sort((l1, l2) => l1.Item1.TabOrder.CompareTo(l2.Item1.TabOrder));
+                        break;
+                     case EnumLayoutsSort.LayoutNames:
+                        layouts.Sort((l1, l2) => l1.Item1.LayoutName.CompareTo(l2.Item1.LayoutName));
+                        break;
+                     default:
+                        break;
+                  }                  
+                  layouts.ForEach(l => dsdCol.Add(l.Item2));                  
                   t.Commit();
                }
             }
