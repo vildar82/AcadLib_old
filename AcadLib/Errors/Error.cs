@@ -7,7 +7,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Errors
 {
-   public class Error
+   public class Error : IComparable<Error>
    {
       private string _msg;
       private string _shortMsg;
@@ -72,6 +72,11 @@ namespace AcadLib.Errors
          {
             return msg;
          }
+      }
+
+      public int CompareTo(Error other)
+      {
+         return Message.CompareTo(other.Message);
       }
    }
 }
