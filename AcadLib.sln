@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcadLib", "AcadLib\AcadLib.csproj", "{2008AE5D-550A-4478-A9B5-297832058377}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAcadlib", "TestAcadlib\TestAcadlib.csproj", "{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApplication1", "WindowsFormsApplication1\WindowsFormsApplication1.csproj", "{79E7347E-B208-4A14-9C92-F222B4F5E462}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,7 +22,9 @@ Global
 		{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79E7347E-B208-4A14-9C92-F222B4F5E462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79E7347E-B208-4A14-9C92-F222B4F5E462}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79E7347E-B208-4A14-9C92-F222B4F5E462}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

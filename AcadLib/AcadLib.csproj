@@ -93,6 +93,9 @@
     <Compile Include="NET\MathExt.cs" />
     <Compile Include="NET\Result.cs" />
     <Compile Include="Plot\PlotDirToPdf.cs" />
+    <Compile Include="UI\FileFolderDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WorkingDatabaseSwitcher.cs" />
     <Compile Include="Editors\UserPrompt.cs" />
     <Compile Include="Editors\Zoom.cs" />
