@@ -42,7 +42,7 @@ namespace AcadLib.Plot
          dir = Path.GetDirectoryName(filesDwg.First());
          this.filesDwg = filesDwg;
          this.filePdfOutputName = filePdfOutputName;
-      }      
+      }   
 
       public void Plot()
       {
@@ -146,6 +146,21 @@ namespace AcadLib.Plot
          {
             System.Windows.Forms.MessageBox.Show(ex.Message);
          }
-      }      
+      }   
+      
+      public static string GetLayoutSortName(EnumLayoutsSort layoutSort)
+      {
+         switch (layoutSort)
+         {
+            case EnumLayoutsSort.DatabaseOrder:
+               return "Создание";
+            case EnumLayoutsSort.TabOrder:
+               return "Вкладки";
+            case EnumLayoutsSort.LayoutNames:
+               return "Имена";
+            default:
+               return "";
+         }
+      }
    }
 }
