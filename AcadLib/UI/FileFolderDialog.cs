@@ -24,17 +24,18 @@ namespace AcadLib.UI
       {
          if (IsFolderDialog)
          {            
-            Dialog.FileName = " ";
-            Dialog.Title += " Для выбора папки оставьте поле имени файла пустым и нажмите открыть.";
+            Dialog.FileName = "п";
+            Dialog.Title += " Для выбора текущей папки оставьте в поле имени файла 'п' и нажмите открыть.";
             Dialog.CheckFileExists = false;
-            Dialog.CheckPathExists = false;            
+            Dialog.CheckPathExists = false;
+            Dialog.ValidateNames = false;                        
          }
 
          if (owner == null)
             return Dialog.ShowDialog();
          else
             return Dialog.ShowDialog(owner);
-      }
+      }     
 
       /// <summary>
       // Helper property. Parses FilePath into either folder path (if Folder Selection. is set)
