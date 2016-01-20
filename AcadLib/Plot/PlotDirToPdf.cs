@@ -62,15 +62,18 @@ namespace AcadLib.Plot
                   {
                      if (entry.Key != "Model")
                      {
-                        var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;                        
-                        DsdEntry dsdEntry = new DsdEntry();                        
-                        dsdEntry.Layout = layout.LayoutName;
-                        dsdEntry.DwgName = fileDwg;
-                        //dsdEntry.Nps = "Setup1";
-                        dsdEntry.NpsSourceDwg = fileDwg;
-                        dsdEntry.Title = layout.LayoutName;
-                        layouts.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
-                        //dsdCol.Add(dsdEntry);
+                        if (!entry.Value.IsErased)
+                        {
+                           var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;
+                           DsdEntry dsdEntry = new DsdEntry();
+                           dsdEntry.Layout = layout.LayoutName;
+                           dsdEntry.DwgName = fileDwg;
+                           //dsdEntry.Nps = "Setup1";
+                           dsdEntry.NpsSourceDwg = fileDwg;
+                           dsdEntry.Title = layout.LayoutName;
+                           layouts.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
+                           //dsdCol.Add(dsdEntry);
+                        }
                      }
                   }
                   switch (LayoutSort)
