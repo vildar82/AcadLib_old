@@ -161,7 +161,7 @@ namespace AcadLib.Blocks
          {
             Layout curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
             newLayout.CopyFrom(curLayout);
-            idBtrNewLayout = curLayout.BlockTableRecordId;
+            idBtrNewLayout = newLayout.BlockTableRecordId;
             using (var btrCurLayout = curLayout.BlockTableRecordId.Open(OpenMode.ForRead) as BlockTableRecord)
             {
                foreach (ObjectId objId in btrCurLayout)
