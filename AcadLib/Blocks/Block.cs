@@ -155,19 +155,23 @@ namespace AcadLib.Blocks
             newLayoutId = lm.CreateLayout(newLayoutName);
             existLayoutId = lm.GetLayoutId(existLayoutName);
          }
-         Layout newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout;
-         Layout curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
-         newLayout.CopyFrom(curLayout);
          ObjectIdCollection objIdCol = new ObjectIdCollection();
-         using (var btrCurLayout = curLayout.BlockTableRecordId.Open(OpenMode.ForRead) as BlockTableRecord)
+         ObjectId idBtrNewLayout = ObjectId.Null;
+         using (Layout newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout)
          {
-            foreach (ObjectId objId in btrCurLayout)
+            Layout curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
+            newLayout.CopyFrom(curLayout);
+            idBtrNewLayout = curLayout.BlockTableRecordId;
+            using (var btrCurLayout = curLayout.BlockTableRecordId.Open(OpenMode.ForRead) as BlockTableRecord)
             {
-               objIdCol.Add(objId);
+               foreach (ObjectId objId in btrCurLayout)
+               {
+                  objIdCol.Add(objId);
+               }
             }
          }
          IdMapping idMap = new IdMapping();
-         db.DeepCloneObjects(objIdCol, newLayout.BlockTableRecordId, idMap, false);
+         db.DeepCloneObjects(objIdCol, idBtrNewLayout, idMap, false);
          return newLayoutId;
       }
 
