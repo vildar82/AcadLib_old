@@ -100,7 +100,8 @@ namespace AcadLib.Plot
       public void PublisherDSD(DsdEntryCollection collection)
       {
          try
-         {
+         {            
+            Application.SetSystemVariable("BACKGROUNDPLOT", 0);
             DsdData dsd = new DsdData();            
 
             dsd.SetDsdEntryCollection(collection);
