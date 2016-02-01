@@ -149,12 +149,12 @@ namespace AcadLib.Blocks
       {
          ObjectId newLayoutId;
          ObjectId existLayoutId;
-         //using (WorkingDatabaseSwitcher sw = new WorkingDatabaseSwitcher(db))
-         //{
+         using (WorkingDatabaseSwitcher sw = new WorkingDatabaseSwitcher(db))
+         {
             LayoutManager lm = LayoutManager.Current;
             newLayoutId = lm.CreateLayout(newLayoutName);
             existLayoutId = lm.GetLayoutId(existLayoutName);
-         //}
+         }
          ObjectIdCollection objIdCol = new ObjectIdCollection();
          ObjectId idBtrNewLayout = ObjectId.Null;
          using (Layout newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout)
