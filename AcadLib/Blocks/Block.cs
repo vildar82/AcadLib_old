@@ -138,7 +138,7 @@ namespace AcadLib.Blocks
 
       /// <summary>
       /// Клонирование листа.
-      /// Не должна быть открыта транзакция!!!
+      /// Должна быть открыта транзакция!!!
       /// </summary>
       /// <param name="db">База в которой это производится. Должна быть WorkingDatabase</param>
       /// <param name="existLayoutName">Имя существующего листа, с которого будет клонироваться новый лист.
@@ -157,9 +157,9 @@ namespace AcadLib.Blocks
          //}
          ObjectIdCollection objIdCol = new ObjectIdCollection();
          ObjectId idBtrNewLayout = ObjectId.Null;
-         using (Layout newLayout = newLayoutId.Open(OpenMode.ForWrite) as Layout)
+         using (Layout newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout)
          {
-            Layout curLayout = existLayoutId.Open(OpenMode.ForRead) as Layout;
+            Layout curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
             newLayout.CopyFrom(curLayout);
             idBtrNewLayout = newLayout.BlockTableRecordId;
             using (var btrCurLayout = curLayout.BlockTableRecordId.Open(OpenMode.ForRead) as BlockTableRecord)
