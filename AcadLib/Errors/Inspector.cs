@@ -68,5 +68,11 @@ namespace AcadLib.Errors
          Errors.Sort();
          Application.ShowModelessDialog(new FormError());
       }
+
+      public static void LogErrors()
+      {
+         Log.Error(string.Join("; ", Errors.Select(e => e.Message)));
+         Errors.Sort();         
+      }
    }
 }
