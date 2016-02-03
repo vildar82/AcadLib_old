@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoCAD_PIK_Manager;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -63,7 +64,7 @@ namespace AcadLib.Errors
 
       public static void Show()
       {
-         Log.Error(string.Join("; ", Errors));
+         Log.Error(string.Join("; ", Errors.Select(e=>e.Message)));
          Errors.Sort();
          Application.ShowModelessDialog(new FormError());
       }
