@@ -9,18 +9,19 @@ namespace AcadLib.Blocks
 {
    /// <summary>
    /// Описание AttributeReference для хранения
+   /// Так же подходит для AttributeDefinition
    /// </summary>
    public class AttributeRefInfo
    {
-      private string _tag;
-      private string _text;
-      private ObjectId _idAtrRef;      
+      public string Tag { get; set; }
+      public string Text { get; set; }
+      public ObjectId IdAtrRef { get; set; }
 
       public AttributeRefInfo(AttributeReference attr)
       {
-         _tag = attr.Tag;
-         _text = attr.TextString;
-         _idAtrRef = attr.Id;
+         Tag = attr.Tag;
+         Text = attr.TextString;
+         IdAtrRef = attr.Id;
       }
 
       /// <summary>
@@ -33,26 +34,46 @@ namespace AcadLib.Blocks
          AttributeDefinition attdef = attr as AttributeDefinition;
          if (attdef != null)
          {
-            _tag = attdef.Tag;
+            Tag = attdef.Tag;
          }
          else
          {
             AttributeReference attref = attr as AttributeReference;
             if (attref != null)
             {
-               _tag = attref.Tag;
+               Tag = attref.Tag;
             }
             else
             {
                throw new ArgumentException("requires an AttributeDefintion or AttributeReference");
             }
          }
-         _text = attr.TextString;
-         _idAtrRef = attr.Id;
+         Text = attr.TextString;
+         IdAtrRef = attr.Id;
       }
 
-      public string Tag { get { return _tag; } }
-      public string Text { get { return _text; } }
-      public ObjectId IdAtrRef { get { return _idAtrRef; } }      
+      public static List<AttributeRefInfo> GetAttrDefs(ObjectId idBtr)
+      {
+         List<AttributeRefInfo> resVal = new List<AttributeRefInfo>();
+
+         if (!idBtr.IsNull)
+         {
+            using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
+            {
+               foreach (var idEnt in btr)
+               {
+                  using (var attrDef = idEnt.Open(OpenMode.ForRead, false, true) as AttributeDefinition)
+                  {
+                     if (attrDef != null)
+                     {
+                        var attrDefInfo = new AttributeRefInfo((DBText)attrDef);
+                        resVal.Add(attrDefInfo);
+                     }
+                  }
+               }
+            }
+         }
+         return resVal;
+      }
    }
 }
