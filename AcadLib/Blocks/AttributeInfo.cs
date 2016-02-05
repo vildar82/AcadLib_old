@@ -8,37 +8,27 @@ using Autodesk.AutoCAD.DatabaseServices;
 namespace AcadLib.Blocks
 {
    /// <summary>
-   /// Описание AttributeReference для хранения
-   /// Так же подходит для AttributeDefinition
+   /// Описание атрибута
+   /// Для AttributeDefinition или AttributeReference
    /// </summary>
-   [Obsolete("Лучше используй AttributeInfo.")]
-   public class AttributeRefInfo
+   public class AttributeInfo
    {
       public string Tag { get; set; }
-      public string Text { get; set; }
-      /// <summary>
-      /// AttributeReference или AttributeDefinition
-      /// </summary>
-      public ObjectId IdAtrRef { get; set; }
-
-      //public AttributeRefInfo(AttributeReference attr)
-      //{
-      //   Tag = attr.Tag;
-      //   Text = attr.TextString;
-      //   IdAtrRef = attr.Id;
-      //}
-
+      public string Text { get; set; }      
+      public ObjectId IdAtr { get; set; }
+      public bool IsAtrDefinition { get; set; }
+            
       /// <summary>
       /// DBText - должен быть или AttributeDefinition или AttributeReference
       /// иначе исключение ArgumentException
-      /// </summary>
-      /// <param name="attr"></param>
-      public AttributeRefInfo(DBText attr)
+      /// </summary>      
+      public AttributeInfo(DBText attr)
       {
          AttributeDefinition attdef = attr as AttributeDefinition;
          if (attdef != null)
          {
             Tag = attdef.Tag;
+            IsAtrDefinition = true;
          }
          else
          {
@@ -53,12 +43,12 @@ namespace AcadLib.Blocks
             }
          }
          Text = attr.TextString;
-         IdAtrRef = attr.Id;
+         IdAtr = attr.Id;
       }
 
-      public static List<AttributeRefInfo> GetAttrDefs(ObjectId idBtr)
+      public static List<AttributeInfo> GetAttrDefs(ObjectId idBtr)
       {
-         List<AttributeRefInfo> resVal = new List<AttributeRefInfo>();
+         List<AttributeInfo> resVal = new List<AttributeInfo>();
 
          if (!idBtr.IsNull)
          {
@@ -70,7 +60,7 @@ namespace AcadLib.Blocks
                   {
                      if (attrDef != null)
                      {
-                        var attrDefInfo = new AttributeRefInfo((DBText)attrDef);
+                        var attrDefInfo = new AttributeInfo(attrDef);
                         resVal.Add(attrDefInfo);
                      }
                   }
@@ -80,16 +70,16 @@ namespace AcadLib.Blocks
          return resVal;
       }
 
-      public static List<AttributeRefInfo> GetAttrRefs (BlockReference blRef)
+      public static List<AttributeInfo> GetAttrRefs (BlockReference blRef)
       {
-         List<AttributeRefInfo> resVal = new List<AttributeRefInfo>();
+         List<AttributeInfo> resVal = new List<AttributeInfo>();
          if (blRef?.AttributeCollection != null)
          {
             foreach (ObjectId idAttrRef in blRef.AttributeCollection)
             {
                using (var atrRef = idAttrRef.Open( OpenMode.ForRead, false, true)as AttributeReference)
                {
-                  AttributeRefInfo ai = new AttributeRefInfo(atrRef);
+                  AttributeInfo ai = new AttributeInfo(atrRef);
                   resVal.Add(ai);
                }
             }

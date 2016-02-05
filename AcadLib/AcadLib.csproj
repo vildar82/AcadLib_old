@@ -101,6 +101,7 @@
   <ItemGroup>
     <Compile Include="AcadAddin.cs" />
     <Compile Include="Blocks\AttributeExt.cs" />
+    <Compile Include="Blocks\AttributeInfo.cs" />
     <Compile Include="Blocks\AttributeRefInfo.cs" />
     <Compile Include="Blocks\BlockExtents.cs" />
     <Compile Include="Blocks\BlockInsert.cs" />
