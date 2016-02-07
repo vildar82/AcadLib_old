@@ -114,6 +114,7 @@
     <Compile Include="Comparers\AlphanumComparator.cs" />
     <Compile Include="Comparers\DoubleEqualityComparer.cs" />
     <Compile Include="Comparers\StringsNumberComparer.cs" />
+    <Compile Include="DB\DictNODExt.cs" />
     <Compile Include="DB\EntityExt.cs" />
     <Compile Include="Files\SerializerXml.cs" />
     <Compile Include="Layers\LayerExt.cs" />
