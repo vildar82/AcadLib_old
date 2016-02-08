@@ -115,8 +115,7 @@ namespace AcadLib.Layers
 
       public static void CheckLayerState(string layer)
       {
-         string[] layers = new string[1];
-         layers[0] = layer;
+         string[] layers = { layer };         
          CheckLayerState(layers);
       }
    }
