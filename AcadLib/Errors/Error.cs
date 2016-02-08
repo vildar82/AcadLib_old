@@ -8,7 +8,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Errors
 {
-   public class Error : IComparable<Error>
+   public class Error : IComparable<Error>, IEquatable<Error>
    {
       private string _msg;
       private string _shortMsg;
@@ -83,6 +83,16 @@ namespace AcadLib.Errors
       public int CompareTo(Error other)
       {
          return Message.CompareTo(other.Message);
+      }
+
+      public bool Equals(Error other)
+      {
+         return Message.Equals(other.Message);
+      }
+
+      public override int GetHashCode()
+      {
+         return _msg.GetHashCode();
       }
    }
 }

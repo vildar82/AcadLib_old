@@ -23,16 +23,34 @@ namespace AcadLib.Errors
       private System.Windows.Forms.Button buttonExport;
       private System.Windows.Forms.ListBox listBoxError;
       private ToolTip toolTip1;
+      private System.Windows.Forms.Button buttonAllErrors;
+      private List<Error> collapsedErrors;
+      private bool isAllErrors;
 
       public FormError()
       {
          InitializeComponent();
+         collapsedErrors = Inspector.GetCollapsedErrors();
+         if (Inspector.Errors.Count == collapsedErrors.Count)
+         {
+            buttonAllErrors.Visible = false;
+         }
+         else
+         {
+            buttonAllErrors.Visible = true;
+            isAllErrors = false;
+         }
 
          _binding = new BindingSource();
-         _binding.DataSource = Inspector.Errors;
+         bindingErrors(collapsedErrors);
          listBoxError.DataSource = _binding;
-         listBoxError.DisplayMember = "ShortMsg";         
-         textBoxErr.DataBindings.Add("Text", _binding, "Message", false, DataSourceUpdateMode.OnPropertyChanged);
+         listBoxError.DisplayMember = "ShortMsg";
+         textBoxErr.DataBindings.Add("Text", _binding, "Message", false, DataSourceUpdateMode.OnPropertyChanged);         
+      }
+
+      private void bindingErrors(List<Error> errors)
+      {         
+         _binding.DataSource = errors;         
       }
 
       private void buttonShow_Click(object sender, EventArgs e)
@@ -85,23 +103,24 @@ namespace AcadLib.Errors
          this.buttonExport = new System.Windows.Forms.Button();
          this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
          this.listBoxError = new System.Windows.Forms.ListBox();
+         this.buttonAllErrors = new System.Windows.Forms.Button();
          this.SuspendLayout();
          // 
          // textBoxErr
          // 
          this.textBoxErr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-         this.textBoxErr.Location = new System.Drawing.Point(12, 375);
+         this.textBoxErr.Location = new System.Drawing.Point(12, 389);
          this.textBoxErr.Multiline = true;
          this.textBoxErr.Name = "textBoxErr";
          this.textBoxErr.ReadOnly = true;
-         this.textBoxErr.Size = new System.Drawing.Size(642, 128);
+         this.textBoxErr.Size = new System.Drawing.Size(690, 128);
          this.textBoxErr.TabIndex = 5;
          // 
          // buttonShow
          // 
          this.buttonShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-         this.buttonShow.Location = new System.Drawing.Point(12, 339);
+         this.buttonShow.Location = new System.Drawing.Point(12, 353);
          this.buttonShow.Name = "buttonShow";
          this.buttonShow.Size = new System.Drawing.Size(109, 30);
          this.buttonShow.TabIndex = 4;
@@ -112,7 +131,7 @@ namespace AcadLib.Errors
          // buttonExport
          // 
          this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-         this.buttonExport.Location = new System.Drawing.Point(579, 343);
+         this.buttonExport.Location = new System.Drawing.Point(627, 357);
          this.buttonExport.Name = "buttonExport";
          this.buttonExport.Size = new System.Drawing.Size(75, 23);
          this.buttonExport.TabIndex = 6;
@@ -132,18 +151,31 @@ namespace AcadLib.Errors
          this.listBoxError.ItemHeight = 18;
          this.listBoxError.Location = new System.Drawing.Point(12, 12);
          this.listBoxError.Name = "listBoxError";
-         this.listBoxError.Size = new System.Drawing.Size(642, 310);
+         this.listBoxError.Size = new System.Drawing.Size(690, 324);
          this.listBoxError.TabIndex = 3;
          this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
          this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
          this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
          this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
          // 
+         // buttonAllErrors
+         // 
+         this.buttonAllErrors.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+         this.buttonAllErrors.Location = new System.Drawing.Point(333, 342);
+         this.buttonAllErrors.Name = "buttonAllErrors";
+         this.buttonAllErrors.Size = new System.Drawing.Size(86, 23);
+         this.buttonAllErrors.TabIndex = 7;
+         this.buttonAllErrors.Text = "Все ошибки";
+         this.toolTip1.SetToolTip(this.buttonAllErrors, "Показаны только неповторяющиеся сообщения. Показать все?");
+         this.buttonAllErrors.UseVisualStyleBackColor = true;
+         this.buttonAllErrors.Click += new System.EventHandler(this.buttonAllErrors_Click);
+         // 
          // FormError
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.ClientSize = new System.Drawing.Size(666, 515);
+         this.ClientSize = new System.Drawing.Size(714, 529);
+         this.Controls.Add(this.buttonAllErrors);
          this.Controls.Add(this.buttonExport);
          this.Controls.Add(this.textBoxErr);
          this.Controls.Add(this.buttonShow);
@@ -176,7 +208,7 @@ namespace AcadLib.Errors
             // Название
             worksheet.Cells[row, 1].Value = "Список ошибок";
             row++;
-            foreach (var item in Inspector.Errors)
+            foreach (var item in collapsedErrors)
             {
                worksheet.Cells[row, 1].Value = item.Message;
                row++;
@@ -214,6 +246,25 @@ namespace AcadLib.Errors
       private void listBoxError_MeasureItem(object sender, MeasureItemEventArgs e)
       {
          e.ItemHeight = 24;
+      }
+
+      private void buttonAllErrors_Click(object sender, EventArgs e)
+      {
+         if (isAllErrors)
+         {
+            // Показать уникальные сообщения;         
+            bindingErrors(collapsedErrors);
+            buttonAllErrors.Text = "Все ошибки";
+            toolTip1.SetToolTip(buttonAllErrors, "Показать все ошибки.");
+         }
+         else
+         {
+            // Показать все ошибки;         
+            bindingErrors(Inspector.Errors);
+            buttonAllErrors.Text = "Без повторов";
+            toolTip1.SetToolTip(buttonAllErrors, "Показать только неповторяющиеся сообщения.");            
+         }
+         isAllErrors = !isAllErrors;
       }
    }
 }
