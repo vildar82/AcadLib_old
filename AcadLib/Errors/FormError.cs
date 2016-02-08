@@ -21,8 +21,8 @@ namespace AcadLib.Errors
       private System.Windows.Forms.TextBox textBoxErr;
       private System.Windows.Forms.Button buttonShow;
       private System.Windows.Forms.Button buttonExport;
-      private ToolTip toolTip1;
       private System.Windows.Forms.ListBox listBoxError;
+      private ToolTip toolTip1;
 
       public FormError()
       {
@@ -82,9 +82,9 @@ namespace AcadLib.Errors
          this.components = new System.ComponentModel.Container();
          this.textBoxErr = new System.Windows.Forms.TextBox();
          this.buttonShow = new System.Windows.Forms.Button();
-         this.listBoxError = new System.Windows.Forms.ListBox();
          this.buttonExport = new System.Windows.Forms.Button();
          this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+         this.listBoxError = new System.Windows.Forms.ListBox();
          this.SuspendLayout();
          // 
          // textBoxErr
@@ -109,21 +109,6 @@ namespace AcadLib.Errors
          this.buttonShow.UseVisualStyleBackColor = true;
          this.buttonShow.Click += new System.EventHandler(this.buttonShow_Click);
          // 
-         // listBoxError
-         // 
-         this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-         this.listBoxError.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-         this.listBoxError.FormattingEnabled = true;
-         this.listBoxError.ItemHeight = 18;
-         this.listBoxError.Location = new System.Drawing.Point(12, 12);
-         this.listBoxError.Name = "listBoxError";
-         this.listBoxError.Size = new System.Drawing.Size(642, 292);
-         this.listBoxError.TabIndex = 3;
-         this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
-         this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
-         // 
          // buttonExport
          // 
          this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -135,6 +120,24 @@ namespace AcadLib.Errors
          this.toolTip1.SetToolTip(this.buttonExport, "Сохранить список ошибок в Excel");
          this.buttonExport.UseVisualStyleBackColor = true;
          this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
+         // 
+         // listBoxError
+         // 
+         this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+         this.listBoxError.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+         this.listBoxError.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+         this.listBoxError.FormattingEnabled = true;
+         this.listBoxError.ItemHeight = 18;
+         this.listBoxError.Location = new System.Drawing.Point(12, 12);
+         this.listBoxError.Name = "listBoxError";
+         this.listBoxError.Size = new System.Drawing.Size(642, 310);
+         this.listBoxError.TabIndex = 3;
+         this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
+         this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
+         this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
+         this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
          // 
          // FormError
          // 
@@ -184,6 +187,33 @@ namespace AcadLib.Errors
          {
             Log.Error(ex, "Сохранение ошибок в Excel");
          }
+      }
+
+      private void listBoxError_DrawItem(object sender, DrawItemEventArgs e)
+      {
+         System.Windows.Forms.ListBox list = (System.Windows.Forms.ListBox)sender;
+         if (e.Index > -1)
+         {
+            e.DrawBackground();
+            e.DrawFocusRectangle();
+            Error error = list.Items[e.Index] as Error;
+            if (error != null)
+            {
+               if (error.Icon != null)
+               {
+                  System.Drawing.Image image = new Bitmap(error.Icon.ToBitmap(), 24, 24);
+                  e.Graphics.DrawImage(image, e.Bounds.X, e.Bounds.Y);
+               }
+               int xDelta = 24 + 5;
+               SizeF size = e.Graphics.MeasureString(error.Message, e.Font);
+               e.Graphics.DrawString(error.Message, e.Font, Brushes.Black, e.Bounds.Left + xDelta, e.Bounds.Top + (e.Bounds.Height / 2 - size.Height / 2));
+            }
+         }
+      }
+
+      private void listBoxError_MeasureItem(object sender, MeasureItemEventArgs e)
+      {
+         e.ItemHeight = 24;
       }
    }
 }
