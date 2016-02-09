@@ -31,9 +31,20 @@ namespace AcadLib.Errors
          Errors = new List<Error>();         
       }
 
+      public static void AddError(string v, object icon)
+      {
+         throw new NotImplementedException();
+      }
+
       public static List<Error> GetCollapsedErrors()
       {
-         return Errors.Distinct().ToList();
+         var errCounts = Errors.GroupBy(e => e.Message).Select(g=>
+         {
+            var e = g.First().GetCopy();
+            e.SetCount(g.Count());
+            return e;
+         });
+         return errCounts.ToList();
       }
 
       public static void AddError (string msg, Icon icon = null)

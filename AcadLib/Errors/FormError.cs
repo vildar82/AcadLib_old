@@ -30,6 +30,7 @@ namespace AcadLib.Errors
       public FormError()
       {
          InitializeComponent();
+
          collapsedErrors = Inspector.GetCollapsedErrors();
          if (Inspector.Errors.Count == collapsedErrors.Count)
          {
@@ -68,7 +69,7 @@ namespace AcadLib.Errors
       private void listBoxError_SelectedIndexChanged(object sender, EventArgs e)
       {
          Error err = (Error)listBoxError.SelectedItem;
-         buttonShow.Enabled = err.HasEntity;
+         buttonShow.Visible = err.HasEntity;
       }
 
       /// <summary>
@@ -99,11 +100,11 @@ namespace AcadLib.Errors
       {
          this.components = new System.ComponentModel.Container();
          this.textBoxErr = new System.Windows.Forms.TextBox();
-         this.buttonShow = new System.Windows.Forms.Button();
          this.buttonExport = new System.Windows.Forms.Button();
          this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
          this.listBoxError = new System.Windows.Forms.ListBox();
          this.buttonAllErrors = new System.Windows.Forms.Button();
+         this.buttonShow = new System.Windows.Forms.Button();
          this.SuspendLayout();
          // 
          // textBoxErr
@@ -117,26 +118,16 @@ namespace AcadLib.Errors
          this.textBoxErr.Size = new System.Drawing.Size(690, 128);
          this.textBoxErr.TabIndex = 5;
          // 
-         // buttonShow
-         // 
-         this.buttonShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-         this.buttonShow.Location = new System.Drawing.Point(12, 353);
-         this.buttonShow.Name = "buttonShow";
-         this.buttonShow.Size = new System.Drawing.Size(109, 30);
-         this.buttonShow.TabIndex = 4;
-         this.buttonShow.Text = "Показать";
-         this.buttonShow.UseVisualStyleBackColor = true;
-         this.buttonShow.Click += new System.EventHandler(this.buttonShow_Click);
-         // 
          // buttonExport
          // 
          this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-         this.buttonExport.Location = new System.Drawing.Point(627, 357);
+         this.buttonExport.BackgroundImage = global::AcadLib.Properties.Resources.excel;
+         this.buttonExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+         this.buttonExport.Location = new System.Drawing.Point(674, 359);
          this.buttonExport.Name = "buttonExport";
-         this.buttonExport.Size = new System.Drawing.Size(75, 23);
+         this.buttonExport.Size = new System.Drawing.Size(28, 26);
          this.buttonExport.TabIndex = 6;
-         this.buttonExport.Text = "Сохранить";
-         this.toolTip1.SetToolTip(this.buttonExport, "Сохранить список ошибок в Excel");
+         this.toolTip1.SetToolTip(this.buttonExport, "Открыть список ошибок в Excel");
          this.buttonExport.UseVisualStyleBackColor = true;
          this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
          // 
@@ -151,7 +142,7 @@ namespace AcadLib.Errors
          this.listBoxError.ItemHeight = 18;
          this.listBoxError.Location = new System.Drawing.Point(12, 12);
          this.listBoxError.Name = "listBoxError";
-         this.listBoxError.Size = new System.Drawing.Size(690, 324);
+         this.listBoxError.Size = new System.Drawing.Size(690, 342);
          this.listBoxError.TabIndex = 3;
          this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
          this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
@@ -161,14 +152,28 @@ namespace AcadLib.Errors
          // buttonAllErrors
          // 
          this.buttonAllErrors.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-         this.buttonAllErrors.Location = new System.Drawing.Point(333, 342);
+         this.buttonAllErrors.BackgroundImage = global::AcadLib.Properties.Resources.Expand;
+         this.buttonAllErrors.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+         this.buttonAllErrors.Location = new System.Drawing.Point(338, 359);
          this.buttonAllErrors.Name = "buttonAllErrors";
-         this.buttonAllErrors.Size = new System.Drawing.Size(86, 23);
+         this.buttonAllErrors.Size = new System.Drawing.Size(25, 25);
          this.buttonAllErrors.TabIndex = 7;
-         this.buttonAllErrors.Text = "Все ошибки";
          this.toolTip1.SetToolTip(this.buttonAllErrors, "Показаны только неповторяющиеся сообщения. Показать все?");
          this.buttonAllErrors.UseVisualStyleBackColor = true;
          this.buttonAllErrors.Click += new System.EventHandler(this.buttonAllErrors_Click);
+         // 
+         // buttonShow
+         // 
+         this.buttonShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+         this.buttonShow.BackgroundImage = global::AcadLib.Properties.Resources.Show;
+         this.buttonShow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+         this.buttonShow.Location = new System.Drawing.Point(12, 357);
+         this.buttonShow.Name = "buttonShow";
+         this.buttonShow.Size = new System.Drawing.Size(54, 30);
+         this.buttonShow.TabIndex = 4;
+         this.toolTip1.SetToolTip(this.buttonShow, "Показать объект на чертеже. Так же работает двойной клик на записи в таблице.");
+         this.buttonShow.UseVisualStyleBackColor = true;
+         this.buttonShow.Click += new System.EventHandler(this.buttonShow_Click);
          // 
          // FormError
          // 
@@ -234,18 +239,18 @@ namespace AcadLib.Errors
                if (error.Icon != null)
                {
                   System.Drawing.Image image = new Bitmap(error.Icon.ToBitmap(), 24, 24);
-                  e.Graphics.DrawImage(image, e.Bounds.X, e.Bounds.Y);
+                  e.Graphics.DrawImage(image, e.Bounds.X, e.Bounds.Y+1);
                }
                int xDelta = 24 + 5;
-               SizeF size = e.Graphics.MeasureString(error.Message, e.Font);
-               e.Graphics.DrawString(error.Message, e.Font, Brushes.Black, e.Bounds.Left + xDelta, e.Bounds.Top + (e.Bounds.Height / 2 - size.Height / 2));
+               SizeF size = e.Graphics.MeasureString(error.ShortMsg, e.Font);
+               e.Graphics.DrawString(error.ShortMsg, e.Font, Brushes.Black, e.Bounds.Left + xDelta, e.Bounds.Top + (e.Bounds.Height / 2 - size.Height / 2));
             }
          }
       }
 
       private void listBoxError_MeasureItem(object sender, MeasureItemEventArgs e)
-      {
-         e.ItemHeight = 24;
+      {         
+         e.ItemHeight = 26;
       }
 
       private void buttonAllErrors_Click(object sender, EventArgs e)
@@ -254,14 +259,16 @@ namespace AcadLib.Errors
          {
             // Показать уникальные сообщения;         
             bindingErrors(collapsedErrors);
-            buttonAllErrors.Text = "Все ошибки";
+            //buttonAllErrors.Text = "Все ошибки";
+            buttonAllErrors.BackgroundImage = Properties.Resources.Expand;
             toolTip1.SetToolTip(buttonAllErrors, "Показать все ошибки.");
          }
          else
          {
             // Показать все ошибки;         
             bindingErrors(Inspector.Errors);
-            buttonAllErrors.Text = "Без повторов";
+            //buttonAllErrors.Text = "Без повторов";
+            buttonAllErrors.BackgroundImage = Properties.Resources.Collapse;
             toolTip1.SetToolTip(buttonAllErrors, "Показать только неповторяющиеся сообщения.");            
          }
          isAllErrors = !isAllErrors;

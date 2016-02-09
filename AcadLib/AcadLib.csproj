@@ -124,6 +124,11 @@
     <Compile Include="NET\MathExt.cs" />
     <Compile Include="NET\Result.cs" />
     <Compile Include="Plot\PlotDirToPdf.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="UI\FileFolderDialog.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -173,8 +178,17 @@
     <EmbeddedResource Include="Errors\FormError.resx">
       <DependentUpon>FormError.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Collapse.ico" />
+    <None Include="Resources\Collapse.png" />
+    <None Include="Resources\Expand.png" />
+    <None Include="Resources\Show.png" />
+    <None Include="Resources\excel.png" />
     <Content Include="RTree\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>

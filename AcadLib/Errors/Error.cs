@@ -23,13 +23,28 @@ namespace AcadLib.Errors
       public bool HasEntity { get { return _hasEntity; } }      
       public Icon Icon { get; set; }
 
+      private Error (Error err)
+      {
+         this._msg = err._msg;
+         this._shortMsg = err._shortMsg;
+         this._idEnt = err._idEnt;
+         this._extents = err._extents;
+         this._hasEntity = err._hasEntity;
+         this.Icon = err.Icon;
+      }
+
       public Error(string message, Icon icon = null)
       {
          _msg = message;
          _shortMsg = getShortMsg(_msg);
          _hasEntity = false;
          Icon = icon;
-      }     
+      }
+
+      internal void SetCount(int v)
+      {
+         _shortMsg = $"{v}...{_shortMsg}";
+      }
 
       public Error(string message, Entity ent, Icon icon = null) : this(message, ent.GeometricExtents, ent, icon)
       {         
@@ -43,6 +58,12 @@ namespace AcadLib.Errors
          _extents = ext;         
          _hasEntity = true;
          Icon = icon;
+      }
+
+      internal Error GetCopy()
+      {
+         Error errCopy = new Error(this);
+         return errCopy;
       }
 
       public Error(string message, Extents3d ext, ObjectId idEnt, Icon icon = null)
@@ -70,14 +91,16 @@ namespace AcadLib.Errors
 
       private string getShortMsg(string msg)
       {
+         string resVal = string.Empty;
          if (msg.Length > 200)
          {
-            return msg.Substring(0, 200);
+            resVal = msg.Substring(0, 200);
          }
          else
          {
-            return msg;
+            resVal = msg;
          }
+         return resVal.Replace("\n", " ");
       }
 
       public int CompareTo(Error other)
