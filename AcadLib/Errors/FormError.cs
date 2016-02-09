@@ -57,7 +57,7 @@ namespace AcadLib.Errors
       private void buttonShow_Click(object sender, EventArgs e)
       {         
          Error err = (Error)listBoxError.SelectedItem;
-         if (err.HasEntity)
+         if (err !=null && err.HasEntity)
             ed.Zoom(err.Extents);
       }
 
@@ -102,9 +102,9 @@ namespace AcadLib.Errors
          this.textBoxErr = new System.Windows.Forms.TextBox();
          this.buttonExport = new System.Windows.Forms.Button();
          this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-         this.listBoxError = new System.Windows.Forms.ListBox();
          this.buttonAllErrors = new System.Windows.Forms.Button();
          this.buttonShow = new System.Windows.Forms.Button();
+         this.listBoxError = new System.Windows.Forms.ListBox();
          this.SuspendLayout();
          // 
          // textBoxErr
@@ -130,24 +130,6 @@ namespace AcadLib.Errors
          this.toolTip1.SetToolTip(this.buttonExport, "Открыть список ошибок в Excel");
          this.buttonExport.UseVisualStyleBackColor = true;
          this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
-         // 
-         // listBoxError
-         // 
-         this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-         this.listBoxError.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-         this.listBoxError.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-         this.listBoxError.FormattingEnabled = true;
-         this.listBoxError.ItemHeight = 18;
-         this.listBoxError.Location = new System.Drawing.Point(12, 12);
-         this.listBoxError.Name = "listBoxError";
-         this.listBoxError.Size = new System.Drawing.Size(690, 342);
-         this.listBoxError.TabIndex = 3;
-         this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
-         this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
-         this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
-         this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
          // 
          // buttonAllErrors
          // 
@@ -175,6 +157,24 @@ namespace AcadLib.Errors
          this.buttonShow.UseVisualStyleBackColor = true;
          this.buttonShow.Click += new System.EventHandler(this.buttonShow_Click);
          // 
+         // listBoxError
+         // 
+         this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+         this.listBoxError.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+         this.listBoxError.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+         this.listBoxError.FormattingEnabled = true;
+         this.listBoxError.ItemHeight = 18;
+         this.listBoxError.Location = new System.Drawing.Point(12, 12);
+         this.listBoxError.Name = "listBoxError";
+         this.listBoxError.Size = new System.Drawing.Size(690, 342);
+         this.listBoxError.TabIndex = 3;
+         this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
+         this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
+         this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
+         this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
+         // 
          // FormError
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -186,7 +186,7 @@ namespace AcadLib.Errors
          this.Controls.Add(this.buttonShow);
          this.Controls.Add(this.listBoxError);
          this.Name = "FormError";
-         this.Text = "FormError";
+         this.Text = "Инфо";
          this.ResumeLayout(false);
          this.PerformLayout();
 
