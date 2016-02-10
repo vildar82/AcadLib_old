@@ -29,13 +29,12 @@ namespace AcadLib.Errors
          _db = _doc.Database;
          _ed = _doc.Editor;
          Errors = new List<Error>();         
-      }
+      }      
 
-      public static void AddError(string v, object icon)
-      {
-         throw new NotImplementedException();
-      }
-
+      /// <summary>
+      /// Сгруппированные ошибки по одинаковым сообщениям.
+      /// </summary>
+      /// <returns></returns>
       public static List<Error> GetCollapsedErrors()
       {
          var errCounts = Errors.GroupBy(e => e.Message).Select(g=>

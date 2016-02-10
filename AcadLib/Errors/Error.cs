@@ -14,14 +14,42 @@ namespace AcadLib.Errors
       private string _shortMsg;
       private ObjectId _idEnt;
       private Extents3d _extents;
+      private bool _alreadyCalcExtents;
+      private bool _isNullExtents;
       private bool _hasEntity;      
 
       public string Message { get { return _msg; } }
       public string ShortMsg { get { return _shortMsg; } }
-      public ObjectId IdEnt { get { return _idEnt; } }
-      public Extents3d Extents { get { return _extents; } }
+      public ObjectId IdEnt { get { return _idEnt; } }      
       public bool HasEntity { get { return _hasEntity; } }      
       public Icon Icon { get; set; }
+      public Extents3d Extents {
+         get {
+            if (!_alreadyCalcExtents)
+            {
+               _alreadyCalcExtents = true;
+               using (var ent = _idEnt.Open( OpenMode.ForRead, false, true) as Entity)
+               {
+                  if (ent != null)
+                  {
+                     try
+                     {
+                        _extents = ent.GeometricExtents;
+                     }
+                     catch
+                     {
+                        _isNullExtents = true;
+                     }
+                  }
+               }               
+            }
+            if (_isNullExtents)
+            {
+               Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Границы объекта не определены.");
+            }
+            return _extents;
+         }
+      }
 
       private Error (Error err)
       {
@@ -46,8 +74,13 @@ namespace AcadLib.Errors
          _shortMsg = $"{v}...{_shortMsg}";
       }
 
-      public Error(string message, Entity ent, Icon icon = null) : this(message, ent.GeometricExtents, ent, icon)
-      {         
+      public Error(string message, Entity ent, Icon icon = null)
+      {
+         _msg = message;
+         _shortMsg = getShortMsg(_msg);
+         _idEnt = ent.Id;         
+         _hasEntity = true;
+         Icon = icon;
       }
 
       public Error(string message, Extents3d ext, Entity ent, Icon icon = null)
@@ -78,15 +111,15 @@ namespace AcadLib.Errors
 
       public Error(string message,ObjectId idEnt, Icon icon = null)
       {
-         using (var ent = idEnt.Open( OpenMode.ForRead) as Entity)
-         {
+         //using (var ent = idEnt.Open( OpenMode.ForRead) as Entity)
+         //{
             _msg = message;
             _shortMsg = getShortMsg(_msg);
             _idEnt = idEnt;
-            _extents = ent.GeometricExtents;
+            //_extents = ent.GeometricExtents;
             _hasEntity = true;
             Icon = icon;
-         }             
+         //}             
       }
 
       private string getShortMsg(string msg)
