@@ -56,6 +56,8 @@ namespace AcadLib.Errors
          this._msg = err._msg;
          this._shortMsg = err._shortMsg;
          this._idEnt = err._idEnt;
+         this._alreadyCalcExtents = err._alreadyCalcExtents;
+         this._isNullExtents = err._isNullExtents;
          this._extents = err._extents;
          this._hasEntity = err._hasEntity;
          this.Icon = err.Icon;
@@ -88,7 +90,8 @@ namespace AcadLib.Errors
          _msg = message;
          _shortMsg = getShortMsg(_msg);
          _idEnt = ent.Id;
-         _extents = ext;         
+         _extents = ext;
+         _alreadyCalcExtents = true;      
          _hasEntity = true;
          Icon = icon;
       }
@@ -105,6 +108,7 @@ namespace AcadLib.Errors
          _shortMsg = getShortMsg(_msg);
          _idEnt = idEnt;
          _extents = ext;
+         _alreadyCalcExtents = true;
          _hasEntity = true;
          Icon = icon;
       }
