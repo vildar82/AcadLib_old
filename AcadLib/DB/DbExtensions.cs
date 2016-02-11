@@ -162,10 +162,14 @@ namespace Autodesk.AutoCAD.DatabaseServices
                ObjectId idStyleInTemplate = getObjectId(dbTemplate);               
                if (!idStyleInTemplate.IsNull)
                {
-                  IdMapping map = new IdMapping();
-                  db.WblockCloneObjects(new ObjectIdCollection(new ObjectId[] { idStyleInTemplate }),
-                                ownerIdTable, map, DuplicateRecordCloning.Ignore, false);
-                  idStyleDest = map[idStyleInTemplate].Value;
+                  using (IdMapping map = new IdMapping())
+                  {
+                     using (var ids = (new ObjectIdCollection(new ObjectId[] { idStyleInTemplate })))
+                     {
+                        db.WblockCloneObjects(ids, ownerIdTable, map, DuplicateRecordCloning.Ignore, false);
+                        idStyleDest = map[idStyleInTemplate].Value;
+                     }
+                  }
                }
             }
          }

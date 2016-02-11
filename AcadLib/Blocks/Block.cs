@@ -66,13 +66,16 @@ namespace AcadLib.Blocks
             if (valToCopy.Count > 0)
             {
                // Получаем текущую базу чертежа
-               IdMapping map = new IdMapping();
-               ObjectIdCollection ids = new ObjectIdCollection(valToCopy.Keys.ToArray());
-               destDb.WblockCloneObjects(ids, destDb.BlockTableId, map, mode, false);
-
-               foreach (var item in valToCopy)
+               using (IdMapping map = new IdMapping())
                {
-                  resVal.Add(item.Value, map[item.Key].Value);
+                  using (var ids = new ObjectIdCollection(valToCopy.Keys.ToArray()))
+                  {
+                     destDb.WblockCloneObjects(ids, destDb.BlockTableId, map, mode, false);
+                     foreach (var item in valToCopy)
+                     {
+                        resVal.Add(item.Value, map[item.Key].Value);
+                     }
+                  }
                }
             }
          }
