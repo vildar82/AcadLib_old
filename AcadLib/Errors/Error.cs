@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Errors
 {
@@ -18,6 +19,7 @@ namespace AcadLib.Errors
       private bool _isNullExtents;
       private bool _hasEntity;      
 
+      public Matrix3d Trans { get; set; }
       public string Message { get { return _msg; } }
       public string ShortMsg { get { return _shortMsg; } }
       public ObjectId IdEnt { get { return _idEnt; } }      
@@ -35,6 +37,10 @@ namespace AcadLib.Errors
                      try
                      {
                         _extents = ent.GeometricExtents;
+                        if (Trans != Matrix3d.Identity)
+                        {
+                           _extents.TransformBy(Trans);
+                        }
                      }
                      catch
                      {
@@ -85,6 +91,16 @@ namespace AcadLib.Errors
          Icon = icon;
       }
 
+      public Error(string message, Entity ent, Matrix3d trans, Icon icon = null)
+      {
+         _msg = message;
+         _shortMsg = getShortMsg(_msg);
+         _idEnt = ent.Id;
+         _hasEntity = true;
+         Icon = icon;
+         Trans = trans;
+      }
+
       public Error(string message, Extents3d ext, Entity ent, Icon icon = null)
       {         
          _msg = message;
@@ -94,13 +110,7 @@ namespace AcadLib.Errors
          _alreadyCalcExtents = true;      
          _hasEntity = true;
          Icon = icon;
-      }
-
-      internal Error GetCopy()
-      {
-         Error errCopy = new Error(this);
-         return errCopy;
-      }
+      }      
 
       public Error(string message, Extents3d ext, ObjectId idEnt, Icon icon = null)
       {
@@ -113,17 +123,14 @@ namespace AcadLib.Errors
          Icon = icon;
       }
 
-      public Error(string message,ObjectId idEnt, Icon icon = null)
+      public Error(string message, ObjectId idEnt, Icon icon = null)
       {
-         //using (var ent = idEnt.Open( OpenMode.ForRead) as Entity)
-         //{
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);
-            _idEnt = idEnt;
-            //_extents = ent.GeometricExtents;
-            _hasEntity = true;
-            Icon = icon;
-         //}             
+         _msg = message;
+         _shortMsg = getShortMsg(_msg);
+         _idEnt = idEnt;
+         //_extents = ent.GeometricExtents;
+         _hasEntity = true;
+         Icon = icon;
       }
 
       private string getShortMsg(string msg)
@@ -153,6 +160,12 @@ namespace AcadLib.Errors
       public override int GetHashCode()
       {
          return _msg.GetHashCode();
+      }
+
+      internal Error GetCopy()
+      {
+         Error errCopy = new Error(this);
+         return errCopy;
       }
    }
 }
