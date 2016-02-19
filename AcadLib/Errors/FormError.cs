@@ -25,11 +25,16 @@ namespace AcadLib.Errors
       private ToolTip toolTip1;
       private System.Windows.Forms.Button buttonAllErrors;
       private List<Error> collapsedErrors;
+      private System.Windows.Forms.Button buttonCancel;
+      private System.Windows.Forms.Button buttonOk;
       private bool isAllErrors;
 
-      public FormError()
+      public FormError(bool modal)
       {
          InitializeComponent();
+
+         buttonCancel.Visible = modal;
+         buttonOk.Visible = modal;
 
          collapsedErrors = Inspector.GetCollapsedErrors();
          if (Inspector.Errors.Count == collapsedErrors.Count)
@@ -105,17 +110,19 @@ namespace AcadLib.Errors
          this.buttonAllErrors = new System.Windows.Forms.Button();
          this.buttonShow = new System.Windows.Forms.Button();
          this.listBoxError = new System.Windows.Forms.ListBox();
+         this.buttonCancel = new System.Windows.Forms.Button();
+         this.buttonOk = new System.Windows.Forms.Button();
          this.SuspendLayout();
          // 
          // textBoxErr
          // 
          this.textBoxErr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-         this.textBoxErr.Location = new System.Drawing.Point(12, 389);
+         this.textBoxErr.Location = new System.Drawing.Point(12, 388);
          this.textBoxErr.Multiline = true;
          this.textBoxErr.Name = "textBoxErr";
          this.textBoxErr.ReadOnly = true;
-         this.textBoxErr.Size = new System.Drawing.Size(690, 128);
+         this.textBoxErr.Size = new System.Drawing.Size(682, 128);
          this.textBoxErr.TabIndex = 5;
          // 
          // buttonExport
@@ -123,7 +130,7 @@ namespace AcadLib.Errors
          this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
          this.buttonExport.BackgroundImage = global::AcadLib.Properties.Resources.excel;
          this.buttonExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-         this.buttonExport.Location = new System.Drawing.Point(674, 359);
+         this.buttonExport.Location = new System.Drawing.Point(666, 358);
          this.buttonExport.Name = "buttonExport";
          this.buttonExport.Size = new System.Drawing.Size(28, 26);
          this.buttonExport.TabIndex = 6;
@@ -136,7 +143,7 @@ namespace AcadLib.Errors
          this.buttonAllErrors.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
          this.buttonAllErrors.BackgroundImage = global::AcadLib.Properties.Resources.Expand;
          this.buttonAllErrors.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-         this.buttonAllErrors.Location = new System.Drawing.Point(338, 359);
+         this.buttonAllErrors.Location = new System.Drawing.Point(334, 358);
          this.buttonAllErrors.Name = "buttonAllErrors";
          this.buttonAllErrors.Size = new System.Drawing.Size(25, 25);
          this.buttonAllErrors.TabIndex = 7;
@@ -149,7 +156,7 @@ namespace AcadLib.Errors
          this.buttonShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
          this.buttonShow.BackgroundImage = global::AcadLib.Properties.Resources.Show;
          this.buttonShow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-         this.buttonShow.Location = new System.Drawing.Point(12, 357);
+         this.buttonShow.Location = new System.Drawing.Point(12, 356);
          this.buttonShow.Name = "buttonShow";
          this.buttonShow.Size = new System.Drawing.Size(54, 30);
          this.buttonShow.TabIndex = 4;
@@ -168,18 +175,44 @@ namespace AcadLib.Errors
          this.listBoxError.ItemHeight = 18;
          this.listBoxError.Location = new System.Drawing.Point(12, 12);
          this.listBoxError.Name = "listBoxError";
-         this.listBoxError.Size = new System.Drawing.Size(690, 342);
+         this.listBoxError.Size = new System.Drawing.Size(682, 341);
          this.listBoxError.TabIndex = 3;
          this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
          this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
          this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
          this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
          // 
+         // buttonCancel
+         // 
+         this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+         this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+         this.buttonCancel.Location = new System.Drawing.Point(566, 360);
+         this.buttonCancel.Name = "buttonCancel";
+         this.buttonCancel.Size = new System.Drawing.Size(75, 23);
+         this.buttonCancel.TabIndex = 8;
+         this.buttonCancel.Text = "Отмена";
+         this.buttonCancel.UseVisualStyleBackColor = true;
+         // 
+         // buttonOk
+         // 
+         this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+         this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
+         this.buttonOk.Location = new System.Drawing.Point(479, 360);
+         this.buttonOk.Name = "buttonOk";
+         this.buttonOk.Size = new System.Drawing.Size(81, 23);
+         this.buttonOk.TabIndex = 8;
+         this.buttonOk.Text = "Продолжить";
+         this.buttonOk.UseVisualStyleBackColor = true;
+         // 
          // FormError
          // 
+         this.AcceptButton = this.buttonOk;
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.ClientSize = new System.Drawing.Size(714, 529);
+         this.CancelButton = this.buttonCancel;
+         this.ClientSize = new System.Drawing.Size(706, 528);
+         this.Controls.Add(this.buttonOk);
+         this.Controls.Add(this.buttonCancel);
          this.Controls.Add(this.buttonAllErrors);
          this.Controls.Add(this.buttonExport);
          this.Controls.Add(this.textBoxErr);

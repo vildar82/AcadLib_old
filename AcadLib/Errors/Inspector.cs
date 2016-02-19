@@ -116,9 +116,15 @@ namespace AcadLib.Errors
       public static void Show()
       {
          Log.Error(string.Join("\n", Errors.Select(e=>e.Message)));
-         Errors.Sort();
-         // Схлопнуть похожие ошибки         
-         Application.ShowModelessDialog(new FormError());
+         Errors.Sort();         
+         Application.ShowModelessDialog(new FormError(false));
+      }
+
+      public static System.Windows.Forms.DialogResult ShowDialog()
+      {
+         Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
+         Errors.Sort();         
+         return Application.ShowModalDialog(new FormError(true));
       }
 
       public static void LogErrors()
