@@ -167,5 +167,10 @@ namespace AcadLib.Errors
          Error errCopy = new Error(this);
          return errCopy;
       }
+
+      public void AdditionToMessage(string addMsg)
+      {
+         _msg += addMsg;
+      }
    }
 }
