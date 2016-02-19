@@ -6,6 +6,7 @@ using AutoCAD_PIK_Manager;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Errors
 {
@@ -75,6 +76,12 @@ namespace AcadLib.Errors
          var err = new Error(msg, ent);
          Errors.Add(err);
       }
+      public static void AddError(string msg, Entity ent,Matrix3d trans, Icon icon = null)
+      {
+         var err = new Error(msg, ent, trans, icon);
+         Errors.Add(err);
+      }
+
       public static void AddError(string msg, Entity ent, Extents3d ext, Icon icon = null)
       {
          var err = new Error(msg, ext, ent, icon);
