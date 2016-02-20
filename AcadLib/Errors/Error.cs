@@ -17,7 +17,8 @@ namespace AcadLib.Errors
       private Extents3d _extents;
       private bool _alreadyCalcExtents;
       private bool _isNullExtents;
-      private bool _hasEntity;      
+      private bool _hasEntity;
+      private bool _hasTrans;   
 
       public Matrix3d Trans { get; set; }
       public string Message { get { return _msg; } }
@@ -26,24 +27,25 @@ namespace AcadLib.Errors
       public bool HasEntity { get { return _hasEntity; } }      
       public Icon Icon { get; set; }
       public Extents3d Extents {
-         get {
+         get {            
             if (!_alreadyCalcExtents)
-            {
+            {               
                _alreadyCalcExtents = true;
                using (var ent = _idEnt.Open( OpenMode.ForRead, false, true) as Entity)
-               {
+               {                  
                   if (ent != null)
-                  {
+                  {                    
                      try
                      {
-                        _extents = ent.GeometricExtents;
-                        if (Trans != Matrix3d.Identity)
-                        {
-                           _extents.TransformBy(Trans);
+                        _extents = ent.GeometricExtents;                        
+                        if (_hasTrans)
+                        {                           
+                           _extents.TransformBy(Trans);                           
                         }
                      }
-                     catch
+                     catch(Exception ex)
                      {
+                        AutoCAD_PIK_Manager.Log.Error(ex, "AcadLib.Error.Extents ent.GeometricExtents;");
                         _isNullExtents = true;
                      }
                   }
@@ -99,6 +101,7 @@ namespace AcadLib.Errors
          _hasEntity = true;
          Icon = icon;
          Trans = trans;
+         _hasTrans = true;
       }
 
       public Error(string message, Extents3d ext, Entity ent, Icon icon = null)
