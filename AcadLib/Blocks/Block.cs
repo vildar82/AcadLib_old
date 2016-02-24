@@ -9,6 +9,8 @@ namespace AcadLib.Blocks
 {
    public static class Block
    {
+      public static Tolerance Tolerance01 = new Tolerance(0.01, 0.01);
+
       /// <summary>
       /// Копирование определенич блока из внешнего чертежа
       /// </summary>
@@ -226,6 +228,14 @@ namespace AcadLib.Blocks
                ent.Erase();
             }
          }
+      }
+
+      /// <summary>
+      /// Проверка натуральной трансформации блока - без масштабирования
+      /// </summary>      
+      public static bool CheckNaturalBlockTransform(this BlockReference blRef)
+      {           
+         return blRef.ScaleFactors.IsEqualTo(new Scale3d(1), Tolerance01);
       }
    }
 }
