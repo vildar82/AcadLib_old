@@ -18,7 +18,6 @@ namespace AcadLib.Errors
       private bool _alreadyCalcExtents;
       private bool _isNullExtents;
       private bool _hasEntity;
-      private bool _hasTrans;   
 
       public Matrix3d Trans { get; set; }
       public string Message { get { return _msg; } }
@@ -34,16 +33,13 @@ namespace AcadLib.Errors
                using (var ent = _idEnt.Open( OpenMode.ForRead, false, true) as Entity)
                {                  
                   if (ent != null)
-                  {                    
+                  {
                      try
-                     {
-                        _extents = ent.GeometricExtents;                        
-                        if (_hasTrans)
-                        {                           
-                           _extents.TransformBy(Trans);                           
-                        }
+                     {                      
+                        _extents = ent.GeometricExtents;                      
+                        _extents.TransformBy(Trans);
                      }
-                     catch(Exception ex)
+                     catch (Exception ex)
                      {
                         AutoCAD_PIK_Manager.Log.Error(ex, "AcadLib.Error.Extents ent.GeometricExtents;");
                         _isNullExtents = true;
@@ -69,6 +65,7 @@ namespace AcadLib.Errors
          this._extents = err._extents;
          this._hasEntity = err._hasEntity;
          this.Icon = err.Icon;
+         this.Trans = err.Trans;
       }
 
       public Error(string message, Icon icon = null)
@@ -77,6 +74,7 @@ namespace AcadLib.Errors
          _shortMsg = getShortMsg(_msg);
          _hasEntity = false;
          Icon = icon;
+         Trans = Matrix3d.Identity;
       }
 
       internal void SetCount(int v)
@@ -91,6 +89,7 @@ namespace AcadLib.Errors
          _idEnt = ent.Id;         
          _hasEntity = true;
          Icon = icon;
+         Trans = Matrix3d.Identity;
       }
 
       public Error(string message, Entity ent, Matrix3d trans, Icon icon = null)
@@ -100,8 +99,7 @@ namespace AcadLib.Errors
          _idEnt = ent.Id;
          _hasEntity = true;
          Icon = icon;
-         Trans = trans;
-         _hasTrans = true;
+         Trans = trans;         
       }
 
       public Error(string message, Extents3d ext, Entity ent, Icon icon = null)
@@ -113,6 +111,7 @@ namespace AcadLib.Errors
          _alreadyCalcExtents = true;      
          _hasEntity = true;
          Icon = icon;
+         Trans = Matrix3d.Identity;
       }      
 
       public Error(string message, Extents3d ext, ObjectId idEnt, Icon icon = null)
@@ -124,16 +123,27 @@ namespace AcadLib.Errors
          _alreadyCalcExtents = true;
          _hasEntity = true;
          Icon = icon;
+         Trans = Matrix3d.Identity;
       }
 
       public Error(string message, ObjectId idEnt, Icon icon = null)
       {
          _msg = message;
          _shortMsg = getShortMsg(_msg);
-         _idEnt = idEnt;
-         //_extents = ent.GeometricExtents;
+         _idEnt = idEnt;         
          _hasEntity = true;
          Icon = icon;
+         Trans = Matrix3d.Identity;
+      }
+
+      public Error(string message, ObjectId idEnt, Matrix3d trans, Icon icon = null)
+      {
+         _msg = message;
+         _shortMsg = getShortMsg(_msg);
+         _idEnt = idEnt;         
+         _hasEntity = true;
+         Icon = icon;
+         Trans = trans;         
       }
 
       private string getShortMsg(string msg)

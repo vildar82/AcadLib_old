@@ -112,6 +112,11 @@ namespace AcadLib.Errors
          var err = new Error(msg, idEnt);
          Errors.Add(err);
       }
+      public static void AddError(string msg, ObjectId idEnt, Matrix3d trans, Icon icon = null)
+      {
+         var err = new Error(msg, idEnt, trans, icon);
+         Errors.Add(err);
+      }
 
       public static void Show()
       {
