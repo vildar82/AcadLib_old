@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Blocks
 {
@@ -13,6 +14,9 @@ namespace AcadLib.Blocks
    /// </summary>
    public class CheckDublicateBlocks
    {
+      public static int DEPTH = 3;
+      private int curDepth = 0;
+
       public CheckDublicateBlocks()
       {
 
@@ -21,34 +25,48 @@ namespace AcadLib.Blocks
       public void Check()
       {
          Database db = HostApplicationServices.WorkingDatabase;
-         using (var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).Open( OpenMode.ForRead) as BlockTableRecord)
+         Inspector.Clear();
+         List<BlockRefInfo> blrefInfos = new List<BlockRefInfo>();
+
+         GetDublicateBlocks(SymbolUtilityServices.GetBlockModelSpaceId(db), ref blrefInfos, Matrix3d.Identity);
+
+         // Выбор будликатов
+         var dublicBlRefInfos = blrefInfos.GroupBy(g => g).Where(b => b.Count() > 1);//.SelectMany(s=>s);
+
+         foreach (var dublBlRefInfo in dublicBlRefInfos)
          {
-            Inspector.Clear();
-            List<BlockRefInfo> blrefInfos = new List<BlockRefInfo>();
-            // Получение всех блоков
-            foreach (var idEnt in ms)
+            Inspector.AddError($"Дублирование блоков '{dublBlRefInfo.Key.Name}' - {dublBlRefInfo.Count()} шт. в точке {dublBlRefInfo.Key.Position.ToString()}",
+               dublBlRefInfo.Key.IdBlRef, dublBlRefInfo.Key.TransformToModel, System.Drawing.SystemIcons.Error);
+         }
+
+         if (Inspector.HasErrors)
+         {
+            if (Inspector.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
-               using (var blRef = idEnt.Open( OpenMode.ForRead, false, true)as BlockReference)
+               throw new Exception("Отменено пользователем.");
+            }
+         }
+      }
+
+      private void GetDublicateBlocks(ObjectId idBtr, ref List<BlockRefInfo> blrefInfos, Matrix3d transToModel)
+      {
+         using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
+         {
+            // Получение всех блоков
+            foreach (var idEnt in btr)
+            {
+               using (var blRef = idEnt.Open(OpenMode.ForRead, false, true) as BlockReference)
                {
                   if (blRef == null) continue;
-                  BlockRefInfo blRefInfo = new BlockRefInfo(blRef);
+                  BlockRefInfo blRefInfo = new BlockRefInfo(blRef, transToModel);
                   blrefInfos.Add(blRefInfo);
-               }
-            }
-            // Выбор будликатов
-            var dublicBlRefInfos = blrefInfos.GroupBy(g => g).Where(b => b.Count() > 1);//.SelectMany(s=>s);
 
-            foreach (var dublBlRefInfo in dublicBlRefInfos)
-            {
-               Inspector.AddError($"Дублирование блоков '{dublBlRefInfo.Key.Name}' - {dublBlRefInfo.Count()} шт. в точке {dublBlRefInfo.Key.Position.ToString()}",
-                  dublBlRefInfo.Key.IdBlRef, System.Drawing.SystemIcons.Error);
-            }
-
-            if (Inspector.HasErrors)
-            {
-               if (Inspector.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-               {
-                  throw new Exception("Отменено пользователем.");
+                  // Ныряем, но не глубже чем на DEPTH (количество погружений блока в блок)
+                  if (curDepth < DEPTH)
+                  {
+                     curDepth++;
+                     GetDublicateBlocks(blRef.BlockTableRecord, ref blrefInfos, transToModel * blRef.BlockTransform);
+                  }
                }
             }
          }

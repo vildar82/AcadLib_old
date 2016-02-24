@@ -19,24 +19,27 @@ namespace AcadLib.Blocks
       public ObjectId IdBlRef { get; set; }
       public Point3d Position { get; set; }
       public double Rotation { get; set; }
+      public Matrix3d TransformToModel { get; set; }
 
-      public BlockRefInfo(BlockReference blRef, string blName = null)
+      public BlockRefInfo(BlockReference blRef, Matrix3d transToModel, string blName = null)
       {
          IdBlRef = blRef.Id;
-         Position = blRef.Position;
+         Position = blRef.Position.TransformBy(transToModel);
          if (string.IsNullOrEmpty(blName))
          {
             blName = blRef.GetEffectiveName();
          }
          Name = blName;
-         Rotation = blRef.Rotation;        
+         Rotation = blRef.Rotation;
+         TransformToModel = transToModel;
       }
 
       public bool Equals(BlockRefInfo other)
       {
          return Name.Equals(other.Name) &&
                 Position.IsEqualTo(other.Position, Tolerance) &&
-                Math.Abs(Rotation - other.Rotation) < Tolerance.EqualPoint;
+                Math.Abs(Rotation - other.Rotation) < Tolerance.EqualPoint &&
+                TransformToModel.Equals (other.TransformToModel);
       }
 
       public override bool Equals(object obj)
