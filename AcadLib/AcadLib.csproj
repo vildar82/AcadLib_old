@@ -110,6 +110,7 @@
     <Compile Include="Blocks\Counter.cs" />
     <Compile Include="Blocks\Dublicate\BlockRefDublicateInfo.cs" />
     <Compile Include="Blocks\Dublicate\CheckDublicateBlocks.cs" />
+    <Compile Include="Blocks\Dublicate\Tree\PointTree.cs" />
     <Compile Include="Blocks\Extensions.cs" />
     <Compile Include="Blocks\BlockAttribute.cs" />
     <Compile Include="Blocks\LateBinfing.cs" />

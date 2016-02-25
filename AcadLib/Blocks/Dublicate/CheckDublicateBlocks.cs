@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AcadLib.Blocks.Dublicate.Tree;
 using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
@@ -60,7 +61,7 @@ namespace AcadLib.Blocks.Dublicate
          {
             // такой блок еще не проверялся. Перебор его объетов
             List<Tuple<ObjectId, Matrix3d>> idsBtrNext = new List<Tuple<ObjectId, Matrix3d>>();
-            List<BlockRefDublicateInfo> blrefInfos = new List<BlockRefDublicateInfo>();
+            Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>> dictBlRefInfos = new Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>>();
             using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
             {
                // Получение всех вхождений блоков               
@@ -70,16 +71,32 @@ namespace AcadLib.Blocks.Dublicate
                   {
                      if (blRef == null) continue;
                      BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef);
-                     blrefInfos.Add(blRefInfo);
+
+                     Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
+                     PointTree ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
+
+                     if (!dictBlRefInfos.TryGetValue(blRef.Name, out dictPointsBlInfos))
+                     {
+                        dictPointsBlInfos = new Dictionary<PointTree, List<BlockRefDublicateInfo>>();
+                        dictBlRefInfos.Add(blRef.Name, dictPointsBlInfos);
+                        
+                     }
+                     List<BlockRefDublicateInfo> listBiAtPoint;
+                     if (!dictPointsBlInfos.TryGetValue(ptTree, out listBiAtPoint))
+                     {
+                        listBiAtPoint = new List<BlockRefDublicateInfo>();
+                        dictPointsBlInfos.Add(ptTree, listBiAtPoint);
+                     }
+                     listBiAtPoint.Add(blRefInfo);                     
 
                      idsBtrNext.Add(new Tuple<ObjectId, Matrix3d>(item1: blRef.BlockTableRecord, item2: transToModel * blRef.BlockTransform));
                   }
                }
             }
             // дублирующиеся блоки
-            var dublicBlRefInfos = blrefInfos.GroupBy(g => g).Where(b => b.Count() > 1)
+            var dublicBlRefInfos = dictBlRefInfos.SelectMany(s=>s.Value.Values).Where(w=>w.Count>1)
                                        .Select(s =>
-                                       {
+                                       {                                          
                                           var bi = s.First();
                                           bi.CountDublic = s.Count();
                                           return bi;
