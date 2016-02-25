@@ -108,7 +108,7 @@
     <Compile Include="Blocks\BlockInsert.cs" />
     <Compile Include="Blocks\Block.cs" />
     <Compile Include="Blocks\Counter.cs" />
-    <Compile Include="Blocks\Dublicate\BlockRefInfo.cs" />
+    <Compile Include="Blocks\Dublicate\BlockRefDublicateInfo.cs" />
     <Compile Include="Blocks\Dublicate\CheckDublicateBlocks.cs" />
     <Compile Include="Blocks\Extensions.cs" />
     <Compile Include="Blocks\BlockAttribute.cs" />
