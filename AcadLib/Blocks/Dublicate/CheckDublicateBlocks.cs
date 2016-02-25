@@ -7,69 +7,104 @@ using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace AcadLib.Blocks
+namespace AcadLib.Blocks.Dublicate
 {
    /// <summary>
    /// Проверка наложения блоков в пространстве модели
    /// </summary>
-   public class CheckDublicateBlocks
+   public static class CheckDublicateBlocks
    {
-      public static int DEPTH = 3;
-      private int curDepth = 0;
+      public static Tolerance Tolerance { get; set; } = new Tolerance(0.02, 10);
+      public static int DEPTH = 5;
+      private static int curDepth;
+      private static HashSet<ObjectId> attemptedblocks;
+      private static List<BlockRefDublicateInfo> AllDublicBlRefInfos;
 
-      public CheckDublicateBlocks()
+      public static void Check()
       {
-
-      }
-
-      public void Check()
-      {
+         curDepth = 0;
          Database db = HostApplicationServices.WorkingDatabase;
          Inspector.Clear();
-         List<BlockRefInfo> blrefInfos = new List<BlockRefInfo>();
-
-         GetDublicateBlocks(SymbolUtilityServices.GetBlockModelSpaceId(db), ref blrefInfos, Matrix3d.Identity);
-
-         // Выбор будликатов
-         var dublicBlRefInfos = blrefInfos.GroupBy(g => g).Where(b => b.Count() > 1);//.SelectMany(s=>s);
-
-         foreach (var dublBlRefInfo in dublicBlRefInfos)
+         attemptedblocks = new HashSet<ObjectId>();
+         AllDublicBlRefInfos = new List<BlockRefDublicateInfo>();
+         try
          {
-            Inspector.AddError($"Дублирование блоков '{dublBlRefInfo.Key.Name}' - {dublBlRefInfo.Count()} шт. в точке {dublBlRefInfo.Key.Position.ToString()}",
-               dublBlRefInfo.Key.IdBlRef, dublBlRefInfo.Key.TransformToModel, System.Drawing.SystemIcons.Error);
+            GetDublicateBlocks(SymbolUtilityServices.GetBlockModelSpaceId(db), Matrix3d.Identity);
+         }
+         catch (Exception ex)
+         {
+            AutoCAD_PIK_Manager.Log.Error(ex, $"CheckDublicateBlocks - {db.Filename}");
+            return;
+         }
+         
+         foreach (var dublBlRefInfo in AllDublicBlRefInfos)
+         {
+            Inspector.AddError($"Дублирование блоков '{dublBlRefInfo.Name}' - {dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
+               dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error);
          }
 
          if (Inspector.HasErrors)
          {
             if (Inspector.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
+               Inspector.Show();
                throw new Exception("Отменено пользователем.");
             }
          }
       }
 
-      private void GetDublicateBlocks(ObjectId idBtr, ref List<BlockRefInfo> blrefInfos, Matrix3d transToModel)
-      {
-         using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
+      private static void GetDublicateBlocks(ObjectId idBtr, Matrix3d transToModel)
+      {         
+         // Проверялся ли уже такое определение блока
+         if (attemptedblocks.Add(idBtr))
          {
-            // Получение всех блоков
-            foreach (var idEnt in btr)
+            // такой блок еще не проверялся. Перебор его объетов
+            List<Tuple<ObjectId, Matrix3d>> idsBtrNext = new List<Tuple<ObjectId, Matrix3d>>();
+            List<BlockRefDublicateInfo> blrefInfos = new List<BlockRefDublicateInfo>();
+            using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
             {
-               using (var blRef = idEnt.Open(OpenMode.ForRead, false, true) as BlockReference)
+               // Получение всех вхождений блоков               
+               foreach (var idEnt in btr)
                {
-                  if (blRef == null) continue;
-                  BlockRefInfo blRefInfo = new BlockRefInfo(blRef, transToModel);
-                  blrefInfos.Add(blRefInfo);
-
-                  // Ныряем, но не глубже чем на DEPTH (количество погружений блока в блок)
-                  if (curDepth < DEPTH)
+                  using (var blRef = idEnt.Open(OpenMode.ForRead, false, true) as BlockReference)
                   {
-                     curDepth++;
-                     GetDublicateBlocks(blRef.BlockTableRecord, ref blrefInfos, transToModel * blRef.BlockTransform);
+                     if (blRef == null) continue;
+                     BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef);
+                     blrefInfos.Add(blRefInfo);
+
+                     idsBtrNext.Add(new Tuple<ObjectId, Matrix3d>(item1: blRef.BlockTableRecord, item2: transToModel * blRef.BlockTransform));
                   }
                }
             }
+            // дублирующиеся блоки
+            var dublicBlRefInfos = blrefInfos.GroupBy(g => g).Where(b => b.Count() > 1)
+                                       .Select(s =>
+                                       {
+                                          var bi = s.First();
+                                          bi.CountDublic = s.Count();
+                                          return bi;
+                                       }).ToList();            
+
+            // Добавление дубликатов в результирующий список
+            AddTransformedToModelDublic(transToModel, dublicBlRefInfos);
+
+            // Нырок глубже
+            if (curDepth < DEPTH)
+            {
+               curDepth++;
+               foreach (var btrNext in idsBtrNext)
+               {
+                  GetDublicateBlocks(btrNext.Item1, btrNext.Item2);
+               }               
+            }
          }
+      }
+
+      private static void AddTransformedToModelDublic(Matrix3d transToModel, List<BlockRefDublicateInfo> dublicBlRefInfos)
+      {
+         // Трансформированные копии инфоблоков и добавление в результирующий список дубликатов
+         var trancDublicBlRefInfos = dublicBlRefInfos.Select(b => b.TransCopy(transToModel)).ToList();
+         AllDublicBlRefInfos.AddRange(trancDublicBlRefInfos);
       }
    }   
 }

@@ -6,47 +6,43 @@ using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace AcadLib.Blocks
+namespace AcadLib.Blocks.Dublicate
 {
    /// <summary>
    /// Данные о вхождении блока 
    /// </summary>
-   public class BlockRefInfo : IEqualityComparer<BlockRefInfo>, IEquatable<BlockRefInfo>
+   public class BlockRefDublicateInfo : IEqualityComparer<BlockRefDublicateInfo>, IEquatable<BlockRefDublicateInfo>
    {
-      public static Tolerance Tolerance { get; set; } = new Tolerance(0.02, 10);
-
       public string Name { get; set; }
       public ObjectId IdBlRef { get; set; }
       public Point3d Position { get; set; }
       public double Rotation { get; set; }
       public Matrix3d TransformToModel { get; set; }
+      public Matrix3d Transform { get; set; }
+      public int CountDublic { get; set; }
 
-      public BlockRefInfo(BlockReference blRef, Matrix3d transToModel, string blName = null)
+      public BlockRefDublicateInfo(BlockReference blRef)
       {
          IdBlRef = blRef.Id;
-         Position = blRef.Position.TransformBy(transToModel);
-         if (string.IsNullOrEmpty(blName))
-         {
-            blName = blRef.GetEffectiveName();
-         }
-         Name = blName;
+         Position = blRef.Position;
+         Name = blRef.Name;
          Rotation = blRef.Rotation;
-         TransformToModel = transToModel;
+         Transform = blRef.BlockTransform;         
       }
 
-      public bool Equals(BlockRefInfo other)
+      public bool Equals(BlockRefDublicateInfo other)
       {
          return Name.Equals(other.Name) &&
-                Position.IsEqualTo(other.Position, Tolerance) &&
-                Math.Abs(Rotation - other.Rotation) < Tolerance.EqualPoint &&
+                Position.IsEqualTo(other.Position, CheckDublicateBlocks.Tolerance) &&
+                Math.Abs(Rotation - other.Rotation) < CheckDublicateBlocks.Tolerance.EqualPoint &&
                 TransformToModel.Equals (other.TransformToModel);
       }
 
       public override bool Equals(object obj)
       {
-         if (obj is BlockRefInfo)
+         if (obj is BlockRefDublicateInfo)
          {
-            return Equals((BlockRefInfo)obj);
+            return Equals((BlockRefDublicateInfo)obj);
          }
          else
          {
@@ -54,12 +50,12 @@ namespace AcadLib.Blocks
          }
       }      
 
-      public bool Equals(BlockRefInfo x, BlockRefInfo y)
+      public bool Equals(BlockRefDublicateInfo x, BlockRefDublicateInfo y)
       {
          return x.Equals(y);
       }
 
-      public int GetHashCode(BlockRefInfo obj)
+      public int GetHashCode(BlockRefDublicateInfo obj)
       {
          return obj.GetHashCode();
       }
@@ -68,6 +64,19 @@ namespace AcadLib.Blocks
       {
          int hCode = Name.GetHashCode();// ^ Position.GetHashCode() ^ Rotation.GetHashCode();
          return hCode.GetHashCode();
+      }
+
+      public BlockRefDublicateInfo TransCopy(Matrix3d transtoModel)
+      {
+         BlockRefDublicateInfo resVal = (BlockRefDublicateInfo)this.MemberwiseClone();
+         resVal.TransformToModel = transtoModel;
+         resVal.TransformByModel();
+         return resVal;
+      }
+
+      private void TransformByModel()
+      {
+         Position = Position.TransformBy(TransformToModel);
       }
    }
 }

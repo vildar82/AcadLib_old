@@ -13,6 +13,7 @@ using Autodesk.AutoCAD.Geometry;
 using AcadLib.Extensions;
 using AcadLib.Errors;
 using System.Drawing;
+using AcadLib.Blocks.Dublicate;
 
 [assembly: CommandClass(typeof (TestAcadlib.Commands))]
 
@@ -27,16 +28,14 @@ namespace TestAcadlib
          Database db = doc.Database;
          Editor ed = doc.Editor;
 
-         Inspector.AddError("dfgdgdgsdf sdfg dsg ", icon: SystemIcons.Error);
-         Inspector.AddError("dfgdgdgsdf sdfg dsg ", icon: SystemIcons.Error);
-         Inspector.AddError("dfgdgdgsdf sdfg dsg ", icon: SystemIcons.Error);
-         Inspector.AddError("dfgdgdgsdf sdfg dsg ", icon: SystemIcons.Error);
-         Inspector.AddError("dfgdgdgsdf sdfg dsg ", icon: SystemIcons.Error);
-         Inspector.AddError("dfgdgdgsdf sdfg dsg ", icon: SystemIcons.Error);
-         Inspector.AddError("dfgdgdgsdf sdfg dsg ", icon: SystemIcons.Error);
-         Inspector.AddError("dfgdgdgsdf sdfg dsg ", icon: SystemIcons.Error);
-
-         Inspector.Show();
+         try
+         {
+            CheckDublicateBlocks.Check();
+         }
+         catch (System.Exception ex)
+         {
+            ed.WriteMessage(ex.Message);
+         }         
       }
    }
 }

@@ -190,7 +190,7 @@ namespace AcadLib.Errors
          this.buttonCancel.Name = "buttonCancel";
          this.buttonCancel.Size = new System.Drawing.Size(75, 23);
          this.buttonCancel.TabIndex = 8;
-         this.buttonCancel.Text = "Отмена";
+         this.buttonCancel.Text = "Прервать";
          this.buttonCancel.UseVisualStyleBackColor = true;
          // 
          // buttonOk
