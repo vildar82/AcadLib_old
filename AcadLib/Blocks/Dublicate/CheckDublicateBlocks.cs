@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AcadLib.Blocks.Dublicate.Tree;
 using AcadLib.Errors;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -37,18 +38,30 @@ namespace AcadLib.Blocks.Dublicate
             AutoCAD_PIK_Manager.Log.Error(ex, $"CheckDublicateBlocks - {db.Filename}");
             return;
          }
-         
-         foreach (var dublBlRefInfo in AllDublicBlRefInfos)
+
+         if (AllDublicBlRefInfos.Count==0)
          {
-            Inspector.AddError($"Дублирование блоков '{dublBlRefInfo.Name}' - {dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
-               dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error);
+            Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\nДубликаты блоков не найдены.");
          }
+         else
+         {
+            foreach (var dublBlRefInfo in AllDublicBlRefInfos)
+            {
+               Error err = new Error($"Дублирование блоков '{dublBlRefInfo.Name}' - {dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
+                  dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error);
+               err.Tag = dublBlRefInfo;
+               Inspector.Errors.Add(err);
+            }
+         }         
 
          if (Inspector.HasErrors)
          {
-            if (Inspector.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            var formDublicates = new FormError(true);
+            formDublicates.EnableDublicateButtons();
+            if (formDublicates.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
-               Inspector.Show();
+               formDublicates.EnableDialog(false);
+               formDublicates.Show();
                throw new Exception("Отменено пользователем.");
             }
          }
@@ -99,6 +112,7 @@ namespace AcadLib.Blocks.Dublicate
                                        {                                          
                                           var bi = s.First();
                                           bi.CountDublic = s.Count();
+                                          bi.Dublicates = s.Skip(1).ToList();
                                           return bi;
                                        }).ToList();            
 
@@ -122,6 +136,30 @@ namespace AcadLib.Blocks.Dublicate
          // Трансформированные копии инфоблоков и добавление в результирующий список дубликатов
          var trancDublicBlRefInfos = dublicBlRefInfos.Select(b => b.TransCopy(transToModel)).ToList();
          AllDublicBlRefInfos.AddRange(trancDublicBlRefInfos);
+      }
+
+      public static void DeleteDublicates(List<Error> errors)
+      {
+         if (errors == null || errors.Count == 0)
+         {
+            return;
+         }
+
+         var blDublicatesToDel = errors.Where(e=>e.Tag!=null && e.Tag is BlockRefDublicateInfo).SelectMany(e => ((BlockRefDublicateInfo)e.Tag).Dublicates);
+         var doc = Application.DocumentManager.MdiActiveDocument;
+         using (doc.LockDocument())
+         {
+            using (var t = blDublicatesToDel.FirstOrDefault()?.IdBlRef.Database.TransactionManager.StartTransaction())
+            {
+               foreach (var dublBl in blDublicatesToDel)
+               {
+                  var blTodel = dublBl.IdBlRef.GetObject(OpenMode.ForWrite, false, true) as BlockReference;
+                  blTodel.Erase();
+               }
+               t.Commit();
+            }
+         }
+         errors.ForEach(e => Inspector.Errors.Remove(e));
       }
    }   
 }

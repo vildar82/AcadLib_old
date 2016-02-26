@@ -19,6 +19,7 @@ namespace AcadLib.Errors
       private bool _isNullExtents;
       private bool _hasEntity;
 
+      public object Tag { get; set; }
       public Matrix3d Trans { get; set; }
       public string Message { get { return _msg; } }
       public string ShortMsg { get { return _shortMsg; } }
@@ -66,6 +67,7 @@ namespace AcadLib.Errors
          this._hasEntity = err._hasEntity;
          this.Icon = err.Icon;
          this.Trans = err.Trans;
+         this.Tag = err.Tag;
       }
 
       public Error(string message, Icon icon = null)
@@ -170,12 +172,12 @@ namespace AcadLib.Errors
          return Message.Equals(other.Message);
       }
 
-      public override int GetHashCode()
-      {
-         return _msg.GetHashCode();
-      }
+      //public override int GetHashCode()
+      //{
+      //   return _msg.GetHashCode();
+      //}
 
-      internal Error GetCopy()
+      public Error GetCopy()
       {
          Error errCopy = new Error(this);
          return errCopy;

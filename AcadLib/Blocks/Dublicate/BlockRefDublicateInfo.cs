@@ -20,6 +20,7 @@ namespace AcadLib.Blocks.Dublicate
       public Matrix3d TransformToModel { get; set; }
       public Matrix3d Transform { get; set; }
       public int CountDublic { get; set; }
+      public List<BlockRefDublicateInfo> Dublicates { get; set; }
 
       public BlockRefDublicateInfo(BlockReference blRef)
       {

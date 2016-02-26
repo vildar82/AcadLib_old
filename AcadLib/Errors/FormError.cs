@@ -27,36 +27,34 @@ namespace AcadLib.Errors
       private List<Error> collapsedErrors;
       private System.Windows.Forms.Button buttonCancel;
       private System.Windows.Forms.Button buttonOk;
+      private System.Windows.Forms.Button buttonDel;
+      private System.Windows.Forms.Button buttonDelAll;
       private bool isAllErrors;
 
       public FormError(bool modal)
       {
          InitializeComponent();
+         EnableDialog (modal);
 
-         buttonCancel.Visible = modal;
-         buttonOk.Visible = modal;
-
-         collapsedErrors = Inspector.GetCollapsedErrors();
-         if (Inspector.Errors.Count == collapsedErrors.Count)
-         {
-            buttonAllErrors.Visible = false;
-         }
-         else
-         {
-            buttonAllErrors.Visible = true;
-            isAllErrors = false;
-         }
+         UpdateCollapsedErrors();
 
          _binding = new BindingSource();
          bindingErrors(collapsedErrors);
          listBoxError.DataSource = _binding;
          listBoxError.DisplayMember = "ShortMsg";
-         textBoxErr.DataBindings.Add("Text", _binding, "Message", false, DataSourceUpdateMode.OnPropertyChanged);         
+         textBoxErr.DataBindings.Add("Text", _binding, "Message", false, DataSourceUpdateMode.OnPropertyChanged);
+      }
+
+      public void EnableDialog(bool modal)
+      {
+         buttonCancel.Visible = modal;
+         buttonOk.Visible = modal;
       }
 
       private void bindingErrors(List<Error> errors)
       {         
-         _binding.DataSource = errors;         
+         _binding.DataSource = errors;
+         _binding.ResetBindings(false);                
       }
 
       private void buttonShow_Click(object sender, EventArgs e)
@@ -105,64 +103,27 @@ namespace AcadLib.Errors
       {
          this.components = new System.ComponentModel.Container();
          this.textBoxErr = new System.Windows.Forms.TextBox();
-         this.buttonExport = new System.Windows.Forms.Button();
          this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-         this.buttonAllErrors = new System.Windows.Forms.Button();
-         this.buttonShow = new System.Windows.Forms.Button();
          this.listBoxError = new System.Windows.Forms.ListBox();
          this.buttonCancel = new System.Windows.Forms.Button();
          this.buttonOk = new System.Windows.Forms.Button();
+         this.buttonDel = new System.Windows.Forms.Button();
+         this.buttonAllErrors = new System.Windows.Forms.Button();
+         this.buttonExport = new System.Windows.Forms.Button();
+         this.buttonShow = new System.Windows.Forms.Button();
+         this.buttonDelAll = new System.Windows.Forms.Button();
          this.SuspendLayout();
          // 
          // textBoxErr
          // 
          this.textBoxErr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-         this.textBoxErr.Location = new System.Drawing.Point(12, 388);
+         this.textBoxErr.Location = new System.Drawing.Point(12, 391);
          this.textBoxErr.Multiline = true;
          this.textBoxErr.Name = "textBoxErr";
          this.textBoxErr.ReadOnly = true;
-         this.textBoxErr.Size = new System.Drawing.Size(682, 128);
+         this.textBoxErr.Size = new System.Drawing.Size(688, 128);
          this.textBoxErr.TabIndex = 5;
-         // 
-         // buttonExport
-         // 
-         this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-         this.buttonExport.BackgroundImage = global::AcadLib.Properties.Resources.excel;
-         this.buttonExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-         this.buttonExport.Location = new System.Drawing.Point(666, 358);
-         this.buttonExport.Name = "buttonExport";
-         this.buttonExport.Size = new System.Drawing.Size(28, 26);
-         this.buttonExport.TabIndex = 6;
-         this.toolTip1.SetToolTip(this.buttonExport, "Открыть список ошибок в Excel");
-         this.buttonExport.UseVisualStyleBackColor = true;
-         this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
-         // 
-         // buttonAllErrors
-         // 
-         this.buttonAllErrors.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-         this.buttonAllErrors.BackgroundImage = global::AcadLib.Properties.Resources.Expand;
-         this.buttonAllErrors.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-         this.buttonAllErrors.Location = new System.Drawing.Point(334, 358);
-         this.buttonAllErrors.Name = "buttonAllErrors";
-         this.buttonAllErrors.Size = new System.Drawing.Size(25, 25);
-         this.buttonAllErrors.TabIndex = 7;
-         this.toolTip1.SetToolTip(this.buttonAllErrors, "Показаны только неповторяющиеся сообщения. Показать все?");
-         this.buttonAllErrors.UseVisualStyleBackColor = true;
-         this.buttonAllErrors.Click += new System.EventHandler(this.buttonAllErrors_Click);
-         // 
-         // buttonShow
-         // 
-         this.buttonShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-         this.buttonShow.BackgroundImage = global::AcadLib.Properties.Resources.Show;
-         this.buttonShow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-         this.buttonShow.Location = new System.Drawing.Point(12, 356);
-         this.buttonShow.Name = "buttonShow";
-         this.buttonShow.Size = new System.Drawing.Size(54, 30);
-         this.buttonShow.TabIndex = 4;
-         this.toolTip1.SetToolTip(this.buttonShow, "Показать объект на чертеже. Так же работает двойной клик на записи в таблице.");
-         this.buttonShow.UseVisualStyleBackColor = true;
-         this.buttonShow.Click += new System.EventHandler(this.buttonShow_Click);
          // 
          // listBoxError
          // 
@@ -175,7 +136,8 @@ namespace AcadLib.Errors
          this.listBoxError.ItemHeight = 18;
          this.listBoxError.Location = new System.Drawing.Point(12, 12);
          this.listBoxError.Name = "listBoxError";
-         this.listBoxError.Size = new System.Drawing.Size(682, 341);
+         this.listBoxError.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+         this.listBoxError.Size = new System.Drawing.Size(688, 344);
          this.listBoxError.TabIndex = 3;
          this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
          this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
@@ -186,7 +148,7 @@ namespace AcadLib.Errors
          // 
          this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
          this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-         this.buttonCancel.Location = new System.Drawing.Point(566, 360);
+         this.buttonCancel.Location = new System.Drawing.Point(572, 363);
          this.buttonCancel.Name = "buttonCancel";
          this.buttonCancel.Size = new System.Drawing.Size(75, 23);
          this.buttonCancel.TabIndex = 8;
@@ -197,12 +159,79 @@ namespace AcadLib.Errors
          // 
          this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
          this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-         this.buttonOk.Location = new System.Drawing.Point(479, 360);
+         this.buttonOk.Location = new System.Drawing.Point(485, 363);
          this.buttonOk.Name = "buttonOk";
          this.buttonOk.Size = new System.Drawing.Size(81, 23);
          this.buttonOk.TabIndex = 8;
          this.buttonOk.Text = "Продолжить";
          this.buttonOk.UseVisualStyleBackColor = true;
+         // 
+         // buttonDel
+         // 
+         this.buttonDel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+         this.buttonDel.BackgroundImage = global::AcadLib.Properties.Resources.Delete;
+         this.buttonDel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+         this.buttonDel.Location = new System.Drawing.Point(153, 357);
+         this.buttonDel.Name = "buttonDel";
+         this.buttonDel.Size = new System.Drawing.Size(33, 33);
+         this.buttonDel.TabIndex = 9;
+         this.toolTip1.SetToolTip(this.buttonDel, "Удалить выбранные дубликаты");
+         this.buttonDel.UseVisualStyleBackColor = true;
+         this.buttonDel.Visible = false;
+         this.buttonDel.Click += new System.EventHandler(this.buttonDel_Click);
+         // 
+         // buttonAllErrors
+         // 
+         this.buttonAllErrors.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+         this.buttonAllErrors.BackgroundImage = global::AcadLib.Properties.Resources.Expand;
+         this.buttonAllErrors.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+         this.buttonAllErrors.Location = new System.Drawing.Point(337, 361);
+         this.buttonAllErrors.Name = "buttonAllErrors";
+         this.buttonAllErrors.Size = new System.Drawing.Size(25, 25);
+         this.buttonAllErrors.TabIndex = 7;
+         this.toolTip1.SetToolTip(this.buttonAllErrors, "Показаны только неповторяющиеся сообщения. Показать все?");
+         this.buttonAllErrors.UseVisualStyleBackColor = true;
+         this.buttonAllErrors.Click += new System.EventHandler(this.buttonAllErrors_Click);
+         // 
+         // buttonExport
+         // 
+         this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+         this.buttonExport.BackgroundImage = global::AcadLib.Properties.Resources.excel;
+         this.buttonExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+         this.buttonExport.Location = new System.Drawing.Point(672, 361);
+         this.buttonExport.Name = "buttonExport";
+         this.buttonExport.Size = new System.Drawing.Size(28, 26);
+         this.buttonExport.TabIndex = 6;
+         this.toolTip1.SetToolTip(this.buttonExport, "Открыть список ошибок в Excel");
+         this.buttonExport.UseVisualStyleBackColor = true;
+         this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
+         // 
+         // buttonShow
+         // 
+         this.buttonShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+         this.buttonShow.BackgroundImage = global::AcadLib.Properties.Resources.Show;
+         this.buttonShow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+         this.buttonShow.Location = new System.Drawing.Point(12, 359);
+         this.buttonShow.Name = "buttonShow";
+         this.buttonShow.Size = new System.Drawing.Size(54, 30);
+         this.buttonShow.TabIndex = 4;
+         this.toolTip1.SetToolTip(this.buttonShow, "Показать объект на чертеже. Так же работает двойной клик на записи в таблице.");
+         this.buttonShow.UseVisualStyleBackColor = true;
+         this.buttonShow.Click += new System.EventHandler(this.buttonShow_Click);
+         // 
+         // buttonDelAll
+         // 
+         this.buttonDelAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+         this.buttonDelAll.BackgroundImage = global::AcadLib.Properties.Resources.DeleteAll;
+         this.buttonDelAll.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+         this.buttonDelAll.Location = new System.Drawing.Point(192, 357);
+         this.buttonDelAll.Name = "buttonDelAll";
+         this.buttonDelAll.Size = new System.Drawing.Size(33, 33);
+         this.buttonDelAll.TabIndex = 9;
+         this.toolTip1.SetToolTip(this.buttonDelAll, "Удалить все дубликаты.");
+         this.buttonDelAll.UseVisualStyleBackColor = true;
+         this.buttonDelAll.Visible = false;
+         this.buttonDelAll.Click += new System.EventHandler(this.buttonDelAll_Click);
          // 
          // FormError
          // 
@@ -210,7 +239,9 @@ namespace AcadLib.Errors
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
          this.CancelButton = this.buttonCancel;
-         this.ClientSize = new System.Drawing.Size(706, 528);
+         this.ClientSize = new System.Drawing.Size(712, 531);
+         this.Controls.Add(this.buttonDelAll);
+         this.Controls.Add(this.buttonDel);
          this.Controls.Add(this.buttonOk);
          this.Controls.Add(this.buttonCancel);
          this.Controls.Add(this.buttonAllErrors);
@@ -246,9 +277,14 @@ namespace AcadLib.Errors
             // Название
             worksheet.Cells[row, 1].Value = "Список ошибок";
             row++;
-            foreach (var item in collapsedErrors)
+            foreach (var item in listBoxError.Items)
             {
-               worksheet.Cells[row, 1].Value = item.Message;
+               var error = item as Error;
+               if (error == null)
+               {
+                  continue;
+               }
+               worksheet.Cells[row, 1].Value = error.Message;
                row++;
             }
             excelApp.Visible = true;
@@ -288,9 +324,16 @@ namespace AcadLib.Errors
 
       private void buttonAllErrors_Click(object sender, EventArgs e)
       {
+         UpdateBinding ();
+         isAllErrors = !isAllErrors;
+      }
+
+      private void UpdateBinding()
+      {
          if (isAllErrors)
          {
-            // Показать уникальные сообщения;         
+            // Показать уникальные сообщения;      
+            UpdateCollapsedErrors();
             bindingErrors(collapsedErrors);
             //buttonAllErrors.Text = "Все ошибки";
             buttonAllErrors.BackgroundImage = Properties.Resources.Expand;
@@ -302,9 +345,59 @@ namespace AcadLib.Errors
             bindingErrors(Inspector.Errors);
             //buttonAllErrors.Text = "Без повторов";
             buttonAllErrors.BackgroundImage = Properties.Resources.Collapse;
-            toolTip1.SetToolTip(buttonAllErrors, "Показать только неповторяющиеся сообщения.");            
+            toolTip1.SetToolTip(buttonAllErrors, "Показать только неповторяющиеся сообщения.");
          }
-         isAllErrors = !isAllErrors;
+      }
+
+      private void UpdateCollapsedErrors()
+      {
+         collapsedErrors = Inspector.GetCollapsedErrors();
+         if (Inspector.Errors.Count == collapsedErrors.Count)
+         {
+            buttonAllErrors.Visible = false;
+         }
+         else
+         {
+            buttonAllErrors.Visible = true;
+            isAllErrors = false;
+         }
+      }
+
+      public void EnableDublicateButtons()
+      {
+         buttonDel.Visible = true;
+         buttonDelAll.Visible = true;
+      }
+
+      private void buttonDel_Click(object sender, EventArgs e)
+      {         
+         var errors = listBoxError.SelectedItems.Cast<Error>().ToList();
+         DeleteDublicates(errors);
+      }
+
+      private void buttonDelAll_Click(object sender, EventArgs e)
+      {
+         var errors = listBoxError.Items.Cast<Error>().ToList();
+         DeleteDublicates(errors);
+      }
+
+      private void DeleteDublicates(List<Error> errors)
+      {
+         if (errors == null || errors.Count==0)
+         {
+            return;
+         }   
+             
+         try
+         {
+            Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
+            UpdateBinding();
+         }
+         catch (Exception ex)
+         {
+            MessageBox.Show($"Ошибка удаления дубликатов - {ex.Message}");
+            Log.Error(ex, "FormError DeleteDublicates");
+         }
       }
    }
 }

@@ -193,6 +193,8 @@
     <None Include="Resources\Expand.png" />
     <None Include="Resources\Show.png" />
     <None Include="Resources\excel.png" />
+    <None Include="Resources\Delete.png" />
+    <None Include="Resources\DeleteAll.png" />
     <Content Include="RTree\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
