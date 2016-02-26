@@ -26,7 +26,7 @@ namespace AcadLib.Blocks.Dublicate
       {
          IdBlRef = blRef.Id;
          Position = blRef.Position;
-         Name = blRef.Name;
+         Name = blRef.GetEffectiveName();
          Rotation = blRef.Rotation;
          Transform = blRef.BlockTransform;         
       }
@@ -35,8 +35,8 @@ namespace AcadLib.Blocks.Dublicate
       {
          return Name.Equals(other.Name) &&
                 Position.IsEqualTo(other.Position, CheckDublicateBlocks.Tolerance) &&
-                Math.Abs(Rotation - other.Rotation) < CheckDublicateBlocks.Tolerance.EqualPoint &&
-                TransformToModel.Equals (other.TransformToModel);
+                Math.Abs(Rotation - other.Rotation) < CheckDublicateBlocks.Tolerance.EqualVector;
+                //TransformToModel.Equals (other.TransformToModel);
       }
 
       public override bool Equals(object obj)

@@ -95,6 +95,8 @@ namespace AcadLib.Plot
             }
          }
          PublisherDSD(dsdCol);
+         // открыть проводник с файлом
+         System.Diagnostics.Process.Start("explorer", dir);
       }
 
       public void PublisherDSD(DsdEntryCollection collection)
