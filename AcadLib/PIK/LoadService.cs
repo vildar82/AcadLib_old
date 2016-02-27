@@ -12,16 +12,37 @@ namespace AcadLib
       /// Загрузка сборки SpecBlocks.dll - для создания спецификация блоков, в соответствии с настройками.
       /// </summary>
       public static void LoadSpecBlocks()
+      {  
+         LoadPackages("SpecBlocks.dll");         
+      }
+
+      /// <summary>
+      /// Morelinq
+      /// </summary>
+      public static void LoadMorelinq()
       {         
-         // Загрузка сборки SpecBlocks
-         var dllSpecBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\packages\SpecBlocks.dll");
-         if (File.Exists(dllSpecBlocks))
+         LoadPackages("MoreLinq.dll");
+      }
+
+      /// <summary>
+      /// EntityFramework
+      /// </summary>
+      public static void LoadEntityFramework()
+      {  
+         LoadPackages("EntityFramework.dll");         
+         LoadPackages("EntityFramework.SqlServer.dll");
+      }
+
+      private static void LoadPackages(string name)
+      {
+         var dll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\packages\" + name);
+         if (File.Exists(dll))
          {
-            Assembly.LoadFrom(dllSpecBlocks);
+            Assembly.LoadFrom(dll);
          }
          else
          {
-            throw new Exception($"Не найден файл {dllSpecBlocks}.");
+            throw new Exception($"Не найден файл {dll}.");
          }
       }
    }
