@@ -127,6 +127,7 @@
     <Compile Include="NET\Extensions.cs" />
     <Compile Include="NET\MathExt.cs" />
     <Compile Include="NET\Result.cs" />
+    <Compile Include="PIK\LoadService.cs" />
     <Compile Include="Plot\PlotDirToPdf.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
