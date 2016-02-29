@@ -13,6 +13,7 @@ namespace AcadLib.Blocks.Dublicate
    /// </summary>
    public class BlockRefDublicateInfo : IEqualityComparer<BlockRefDublicateInfo>, IEquatable<BlockRefDublicateInfo>
    {
+      public const double pi2 = 2* Math.PI;
       public string Name { get; set; }
       public ObjectId IdBlRef { get; set; }
       public Point3d Position { get; set; }
@@ -22,18 +23,29 @@ namespace AcadLib.Blocks.Dublicate
       public int CountDublic { get; set; }
       public List<BlockRefDublicateInfo> Dublicates { get; set; }
 
-      public BlockRefDublicateInfo(BlockReference blRef)
+      public BlockRefDublicateInfo(BlockReference blRef, Matrix3d transToModel, double rotateToModel)
       {
          IdBlRef = blRef.Id;
-         Position = blRef.Position;
+         Transform = blRef.BlockTransform;
+         TransformToModel = transToModel;
+         Position = blRef.Position.TransformBy(TransformToModel);
          Name = blRef.GetEffectiveName();
-         Rotation = blRef.Rotation;
-         Transform = blRef.BlockTransform;         
+         Rotation = getRotateToModel(blRef.Rotation, rotateToModel);
+      }
+
+      private double getRotateToModel(double rotation, double rotateToModel)
+      {
+         double res = rotation + rotateToModel;
+         if (res > pi2)
+         {
+            res -= pi2;
+         }
+         return res;
       }
 
       public bool Equals(BlockRefDublicateInfo other)
       {
-         return Name.Equals(other.Name) &&
+         return //Name.Equals(other.Name) &&
                 Position.IsEqualTo(other.Position, CheckDublicateBlocks.Tolerance) &&
                 Math.Abs(Rotation - other.Rotation) < CheckDublicateBlocks.Tolerance.EqualVector;
                 //TransformToModel.Equals (other.TransformToModel);
@@ -62,22 +74,15 @@ namespace AcadLib.Blocks.Dublicate
       }
 
       public override int GetHashCode()
-      {
-         int hCode = Name.GetHashCode();// ^ Position.GetHashCode() ^ Rotation.GetHashCode();
-         return hCode.GetHashCode();
+      {         
+         return Name.GetHashCode();
       }
 
-      public BlockRefDublicateInfo TransCopy(Matrix3d transtoModel)
-      {
-         BlockRefDublicateInfo resVal = (BlockRefDublicateInfo)this.MemberwiseClone();
-         resVal.TransformToModel = transtoModel;
-         resVal.TransformByModel();
-         return resVal;
-      }
-
-      private void TransformByModel()
-      {
-         Position = Position.TransformBy(TransformToModel);
-      }
+      //public BlockRefDublicateInfo TransCopy()
+      //{
+      //   BlockRefDublicateInfo resVal = (BlockRefDublicateInfo)this.MemberwiseClone();
+      //   Position = Position.TransformBy(TransformToModel);
+      //   return resVal;
+      //}      
    }
 }

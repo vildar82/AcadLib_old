@@ -21,6 +21,7 @@ namespace AcadLib.Blocks.Dublicate
       private static int curDepth;
       private static HashSet<ObjectId> attemptedblocks;
       private static List<BlockRefDublicateInfo> AllDublicBlRefInfos;
+      private static Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>> dictBlRefInfos;
 
       public static void Check()
       {
@@ -29,9 +30,24 @@ namespace AcadLib.Blocks.Dublicate
          Inspector.Clear();
          attemptedblocks = new HashSet<ObjectId>();
          AllDublicBlRefInfos = new List<BlockRefDublicateInfo>();
+         dictBlRefInfos = new Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>>();
          try
          {
-            GetDublicateBlocks(SymbolUtilityServices.GetBlockModelSpaceId(db), Matrix3d.Identity);
+            GetDublicateBlocks(SymbolUtilityServices.GetBlockModelSpaceId(db), Matrix3d.Identity, 0);
+
+            // дублирующиеся блоки
+            AllDublicBlRefInfos = dictBlRefInfos.SelectMany(s => s.Value.Values).Where(w => w.Count > 1)                                    
+                                    .SelectMany(s=>s.GroupBy(g=>g).Where(w=>w.Count()>1))
+                                    .Select(s =>
+                                       {
+                                          var bi = s.First();
+                                          bi.CountDublic = s.Count();
+                                          bi.Dublicates = s.Skip(1).ToList();
+                                          return bi;
+                                       }).ToList();
+
+            // Добавление дубликатов в результирующий список
+            //AddTransformedToModelDublic(dublicBlRefInfos);
          }
          catch (Exception ex)
          {
@@ -68,14 +84,13 @@ namespace AcadLib.Blocks.Dublicate
          }
       }
 
-      private static void GetDublicateBlocks(ObjectId idBtr, Matrix3d transToModel)
+      private static void GetDublicateBlocks(ObjectId idBtr, Matrix3d transToModel, double rotate)
       {         
          // Проверялся ли уже такое определение блока
          if (attemptedblocks.Add(idBtr))
          {
             // такой блок еще не проверялся. Перебор его объетов
-            List<Tuple<ObjectId, Matrix3d>> idsBtrNext = new List<Tuple<ObjectId, Matrix3d>>();
-            Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>> dictBlRefInfos = new Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>>();
+            List<Tuple<ObjectId, Matrix3d, double>> idsBtrNext = new List<Tuple<ObjectId, Matrix3d, double>>();            
             using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
             {
                // Получение всех вхождений блоков               
@@ -84,7 +99,7 @@ namespace AcadLib.Blocks.Dublicate
                   using (var blRef = idEnt.Open(OpenMode.ForRead, false, true) as BlockReference)
                   {
                      if (blRef == null) continue;
-                     BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef);
+                     BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);                     
 
                      Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
                      PointTree ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
@@ -103,22 +118,10 @@ namespace AcadLib.Blocks.Dublicate
                      }
                      listBiAtPoint.Add(blRefInfo);                     
 
-                     idsBtrNext.Add(new Tuple<ObjectId, Matrix3d>(item1: blRef.BlockTableRecord, item2: transToModel * blRef.BlockTransform));
+                     idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(item1: blRef.BlockTableRecord, item2: blRef.BlockTransform, item3: blRef.Rotation+rotate));
                   }
                }
-            }
-            // дублирующиеся блоки
-            var dublicBlRefInfos = dictBlRefInfos.SelectMany(s=>s.Value.Values).Where(w=>w.Count>1)
-                                       .Select(s =>
-                                       {                                          
-                                          var bi = s.First();
-                                          bi.CountDublic = s.Count();
-                                          bi.Dublicates = s.Skip(1).ToList();
-                                          return bi;
-                                       }).ToList();            
-
-            // Добавление дубликатов в результирующий список
-            AddTransformedToModelDublic(transToModel, dublicBlRefInfos);
+            }           
 
             // Нырок глубже
             if (curDepth < DEPTH)
@@ -126,18 +129,18 @@ namespace AcadLib.Blocks.Dublicate
                curDepth++;
                foreach (var btrNext in idsBtrNext)
                {
-                  GetDublicateBlocks(btrNext.Item1, btrNext.Item2);
+                  GetDublicateBlocks(btrNext.Item1, btrNext.Item2, btrNext.Item3);
                }               
             }
          }
       }
 
-      private static void AddTransformedToModelDublic(Matrix3d transToModel, List<BlockRefDublicateInfo> dublicBlRefInfos)
-      {
-         // Трансформированные копии инфоблоков и добавление в результирующий список дубликатов
-         var trancDublicBlRefInfos = dublicBlRefInfos.Select(b => b.TransCopy(transToModel)).ToList();
-         AllDublicBlRefInfos.AddRange(trancDublicBlRefInfos);
-      }
+      //private static void AddTransformedToModelDublic(List<BlockRefDublicateInfo> dublicBlRefInfos)
+      //{
+      //   // Трансформированные копии инфоблоков и добавление в результирующий список дубликатов
+      //   var trancDublicBlRefInfos = dublicBlRefInfos.Select(b => b.TransCopy()).ToList();
+      //   AllDublicBlRefInfos.AddRange(trancDublicBlRefInfos);
+      //}
 
       public static void DeleteDublicates(List<Error> errors)
       {
