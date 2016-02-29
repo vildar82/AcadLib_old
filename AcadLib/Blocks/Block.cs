@@ -232,6 +232,7 @@ namespace AcadLib.Blocks
 
       /// <summary>
       /// Проверка натуральной трансформации блока - без масштабирования
+      /// blRef.ScaleFactors.IsEqualTo(new Scale3d(1), Tolerance01)
       /// </summary>      
       public static bool CheckNaturalBlockTransform(this BlockReference blRef)
       {           

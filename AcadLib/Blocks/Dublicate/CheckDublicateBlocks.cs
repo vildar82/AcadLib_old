@@ -37,7 +37,7 @@ namespace AcadLib.Blocks.Dublicate
 
             // дублирующиеся блоки
             AllDublicBlRefInfos = dictBlRefInfos.SelectMany(s => s.Value.Values).Where(w => w.Count > 1)                                    
-                                    .SelectMany(s=>s.GroupBy(g=>g).Where(w=>w.Count()>1))
+                                    .SelectMany(s=>s.GroupBy(g=>g).Where(w=>w.Skip(1).Any()))
                                     .Select(s =>
                                        {
                                           var bi = s.First();
