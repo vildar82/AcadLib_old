@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AutoCAD_PIK_Manager;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Microsoft.Office.Interop.Excel;
@@ -29,6 +30,7 @@ namespace AcadLib.Errors
       private System.Windows.Forms.Button buttonOk;
       private System.Windows.Forms.Button buttonDel;
       private System.Windows.Forms.Button buttonDelAll;
+      private ErrorProvider errorProvider1;
       private bool isAllErrors;
 
       public FormError(bool modal)
@@ -58,10 +60,21 @@ namespace AcadLib.Errors
       }
 
       private void buttonShow_Click(object sender, EventArgs e)
-      {         
+      {
+         errorProvider1.Clear();
          Error err = (Error)listBoxError.SelectedItem;
-         if (err !=null && err.HasEntity)
-            ed.Zoom(err.Extents);
+         if (err != null && err.HasEntity && ed.Document != null)
+         {
+            Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            if (ed.Document != curDoc)
+            {
+               errorProvider1.SetError(buttonShow, $"Должен быть активен документ {ed.Document.Name}");
+            }
+            else
+            {
+               ed.Zoom(err.Extents);
+            }
+         }
       }
 
       private void listBoxError_DoubleClick(object sender, EventArgs e)
@@ -104,14 +117,16 @@ namespace AcadLib.Errors
          this.components = new System.ComponentModel.Container();
          this.textBoxErr = new System.Windows.Forms.TextBox();
          this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-         this.listBoxError = new System.Windows.Forms.ListBox();
-         this.buttonCancel = new System.Windows.Forms.Button();
-         this.buttonOk = new System.Windows.Forms.Button();
          this.buttonDel = new System.Windows.Forms.Button();
          this.buttonAllErrors = new System.Windows.Forms.Button();
          this.buttonExport = new System.Windows.Forms.Button();
          this.buttonShow = new System.Windows.Forms.Button();
          this.buttonDelAll = new System.Windows.Forms.Button();
+         this.listBoxError = new System.Windows.Forms.ListBox();
+         this.buttonCancel = new System.Windows.Forms.Button();
+         this.buttonOk = new System.Windows.Forms.Button();
+         this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+         ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
          this.SuspendLayout();
          // 
          // textBoxErr
@@ -124,47 +139,6 @@ namespace AcadLib.Errors
          this.textBoxErr.ReadOnly = true;
          this.textBoxErr.Size = new System.Drawing.Size(688, 128);
          this.textBoxErr.TabIndex = 5;
-         // 
-         // listBoxError
-         // 
-         this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-         this.listBoxError.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-         this.listBoxError.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-         this.listBoxError.FormattingEnabled = true;
-         this.listBoxError.ItemHeight = 18;
-         this.listBoxError.Location = new System.Drawing.Point(12, 12);
-         this.listBoxError.Name = "listBoxError";
-         this.listBoxError.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-         this.listBoxError.Size = new System.Drawing.Size(688, 344);
-         this.listBoxError.TabIndex = 3;
-         this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
-         this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
-         this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
-         this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
-         // 
-         // buttonCancel
-         // 
-         this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-         this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-         this.buttonCancel.Location = new System.Drawing.Point(572, 363);
-         this.buttonCancel.Name = "buttonCancel";
-         this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-         this.buttonCancel.TabIndex = 8;
-         this.buttonCancel.Text = "Прервать";
-         this.buttonCancel.UseVisualStyleBackColor = true;
-         // 
-         // buttonOk
-         // 
-         this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-         this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-         this.buttonOk.Location = new System.Drawing.Point(485, 363);
-         this.buttonOk.Name = "buttonOk";
-         this.buttonOk.Size = new System.Drawing.Size(81, 23);
-         this.buttonOk.TabIndex = 8;
-         this.buttonOk.Text = "Продолжить";
-         this.buttonOk.UseVisualStyleBackColor = true;
          // 
          // buttonDel
          // 
@@ -233,6 +207,51 @@ namespace AcadLib.Errors
          this.buttonDelAll.Visible = false;
          this.buttonDelAll.Click += new System.EventHandler(this.buttonDelAll_Click);
          // 
+         // listBoxError
+         // 
+         this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+         this.listBoxError.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+         this.listBoxError.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+         this.listBoxError.FormattingEnabled = true;
+         this.listBoxError.ItemHeight = 18;
+         this.listBoxError.Location = new System.Drawing.Point(12, 12);
+         this.listBoxError.Name = "listBoxError";
+         this.listBoxError.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+         this.listBoxError.Size = new System.Drawing.Size(688, 344);
+         this.listBoxError.TabIndex = 3;
+         this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
+         this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
+         this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
+         this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
+         // 
+         // buttonCancel
+         // 
+         this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+         this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+         this.buttonCancel.Location = new System.Drawing.Point(572, 363);
+         this.buttonCancel.Name = "buttonCancel";
+         this.buttonCancel.Size = new System.Drawing.Size(75, 23);
+         this.buttonCancel.TabIndex = 8;
+         this.buttonCancel.Text = "Прервать";
+         this.buttonCancel.UseVisualStyleBackColor = true;
+         // 
+         // buttonOk
+         // 
+         this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+         this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
+         this.buttonOk.Location = new System.Drawing.Point(485, 363);
+         this.buttonOk.Name = "buttonOk";
+         this.buttonOk.Size = new System.Drawing.Size(81, 23);
+         this.buttonOk.TabIndex = 8;
+         this.buttonOk.Text = "Продолжить";
+         this.buttonOk.UseVisualStyleBackColor = true;
+         // 
+         // errorProvider1
+         // 
+         this.errorProvider1.ContainerControl = this;
+         // 
          // FormError
          // 
          this.AcceptButton = this.buttonOk;
@@ -251,6 +270,7 @@ namespace AcadLib.Errors
          this.Controls.Add(this.listBoxError);
          this.Name = "FormError";
          this.Text = "Инфо";
+         ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
          this.ResumeLayout(false);
          this.PerformLayout();
 

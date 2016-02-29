@@ -51,7 +51,7 @@ namespace AcadLib.Blocks.Dublicate
          }
          catch (Exception ex)
          {
-            AutoCAD_PIK_Manager.Log.Error(ex, $"CheckDublicateBlocks - {db.Filename}");
+            AutoCAD_PIK_Manager.Log.Error(ex, $"CheckDublicateBlocks - {db.Filename}. {ex.StackTrace}");
             return;
          }
 
