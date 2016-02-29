@@ -14,6 +14,7 @@ namespace AcadLib.Blocks.Dublicate
    public class BlockRefDublicateInfo : IEqualityComparer<BlockRefDublicateInfo>, IEquatable<BlockRefDublicateInfo>
    {
       public const double pi2 = 2* Math.PI;
+      public static double toleranceRotateNear360 = pi2 - CheckDublicateBlocks.Tolerance.EqualVector;
       public string Name { get; set; }
       public ObjectId IdBlRef { get; set; }
       public Point3d Position { get; set; }
@@ -45,10 +46,14 @@ namespace AcadLib.Blocks.Dublicate
 
       public bool Equals(BlockRefDublicateInfo other)
       {
+         double rotDiff = Math.Abs(Rotation - other.Rotation);
          return //Name.Equals(other.Name) &&
                 Position.IsEqualTo(other.Position, CheckDublicateBlocks.Tolerance) &&
-                Math.Abs(Rotation - other.Rotation) < CheckDublicateBlocks.Tolerance.EqualVector;
-                //TransformToModel.Equals (other.TransformToModel);
+                (
+                  rotDiff < CheckDublicateBlocks.Tolerance.EqualVector ||
+                  rotDiff > toleranceRotateNear360
+                );
+         //TransformToModel.Equals (other.TransformToModel);
       }
 
       public override bool Equals(object obj)
