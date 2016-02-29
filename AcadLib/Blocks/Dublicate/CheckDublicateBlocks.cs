@@ -75,10 +75,10 @@ namespace AcadLib.Blocks.Dublicate
             var formDublicates = new FormError(true);
             formDublicates.Text = "Дублирование блоков";
             formDublicates.EnableDublicateButtons();
-            if (formDublicates.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            if (Application.ShowModalDialog(formDublicates) != System.Windows.Forms.DialogResult.OK)
             {
                formDublicates.EnableDialog(false);
-               formDublicates.Show();
+               Application.ShowModelessDialog(formDublicates);
                throw new Exception("Отменено пользователем.");
             }
          }

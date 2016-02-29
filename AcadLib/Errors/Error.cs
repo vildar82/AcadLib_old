@@ -81,7 +81,10 @@ namespace AcadLib.Errors
 
       internal void SetCount(int v)
       {
-         _shortMsg = $"{v}...{_shortMsg}";
+         if (v>1)
+         {
+            _shortMsg = $"{v}...{_shortMsg}";
+         }               
       }
 
       public Error(string message, Entity ent, Icon icon = null)

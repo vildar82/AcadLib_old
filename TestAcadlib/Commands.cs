@@ -21,8 +21,8 @@ namespace TestAcadlib
 {
     public class Commands
     {
-      [CommandMethod("Test")]
-      public void Test()
+      [CommandMethod("TestDublic")]
+      public void TestDublic()
       {
          Document doc = AcAp.DocumentManager.MdiActiveDocument;
          Database db = doc.Database;
@@ -36,6 +36,22 @@ namespace TestAcadlib
          {
             ed.WriteMessage(ex.Message);
          }         
+      }
+
+      [CommandMethod("Test")]
+      public void Test()
+      {
+         Document doc = AcAp.DocumentManager.MdiActiveDocument;
+         Database db = doc.Database;
+         Editor ed = doc.Editor;
+
+         Inspector.AddError("1");
+         Inspector.AddError("2");
+         Inspector.AddError("3");
+         Inspector.AddError("5");
+         Inspector.AddError("26");
+
+         Inspector.ShowDialog();
       }
    }
 }

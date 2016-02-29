@@ -125,12 +125,23 @@ namespace AcadLib.Errors
          Application.ShowModelessDialog(new FormError(false));
       }
 
+      /// <summary>
+      /// При прерывании вызывает исключение "Отменено пользователем.".
+      /// Т.е. можно не обрабатывает DialogResult.
+      /// </summary>      
       public static System.Windows.Forms.DialogResult ShowDialog()
       {
          Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
-         Errors.Sort();         
-         return Application.ShowModalDialog(new FormError(true));
-      }
+         Errors.Sort();
+         var formErr = new FormError(true);
+         var res = Application.ShowModalDialog(formErr);
+         if (res != System.Windows.Forms.DialogResult.OK)
+         {
+            Application.ShowModelessDialog(formErr);
+            throw new Exception("Отменено пользователем.");
+         }
+         return res;         
+      }      
 
       public static void LogErrors()
       {

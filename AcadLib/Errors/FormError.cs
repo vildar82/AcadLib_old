@@ -418,6 +418,6 @@ namespace AcadLib.Errors
             MessageBox.Show($"Ошибка удаления дубликатов - {ex.Message}");
             Log.Error(ex, "FormError DeleteDublicates");
          }
-      }
+      }      
    }
 }
