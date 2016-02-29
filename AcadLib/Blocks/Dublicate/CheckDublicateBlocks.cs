@@ -98,7 +98,7 @@ namespace AcadLib.Blocks.Dublicate
                {
                   using (var blRef = idEnt.Open(OpenMode.ForRead, false, true) as BlockReference)
                   {
-                     if (blRef == null) continue;
+                     if (blRef == null && !blRef.Visible) continue;
                      BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);                     
 
                      Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
