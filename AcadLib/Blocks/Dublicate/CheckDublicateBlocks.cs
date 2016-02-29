@@ -104,10 +104,10 @@ namespace AcadLib.Blocks.Dublicate
                      Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
                      PointTree ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
 
-                     if (!dictBlRefInfos.TryGetValue(blRef.Name, out dictPointsBlInfos))
+                     if (!dictBlRefInfos.TryGetValue(blRefInfo.Name, out dictPointsBlInfos))
                      {
                         dictPointsBlInfos = new Dictionary<PointTree, List<BlockRefDublicateInfo>>();
-                        dictBlRefInfos.Add(blRef.Name, dictPointsBlInfos);
+                        dictBlRefInfos.Add(blRefInfo.Name, dictPointsBlInfos);
                         
                      }
                      List<BlockRefDublicateInfo> listBiAtPoint;
