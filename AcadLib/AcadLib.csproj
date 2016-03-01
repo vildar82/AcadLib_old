@@ -100,87 +100,86 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AcadAddin.cs" />
-    <Compile Include="Blocks\AttributeExt.cs" />
-    <Compile Include="Blocks\AttributeInfo.cs" />
-    <Compile Include="Blocks\AttributeRefInfo.cs" />
-    <Compile Include="Blocks\BlockExtents.cs" />
-    <Compile Include="Blocks\BlockInsert.cs" />
-    <Compile Include="Blocks\Block.cs" />
-    <Compile Include="Blocks\Counter.cs" />
-    <Compile Include="Blocks\Dublicate\BlockRefDublicateInfo.cs" />
-    <Compile Include="Blocks\Dublicate\CheckDublicateBlocks.cs" />
-    <Compile Include="Blocks\Dublicate\Tree\PointTree.cs" />
-    <Compile Include="Blocks\Extensions.cs" />
-    <Compile Include="Blocks\BlockAttribute.cs" />
-    <Compile Include="Blocks\LateBinfing.cs" />
+    <Compile Include="Model\Blocks\AttributeExt.cs" />
+    <Compile Include="Model\Blocks\AttributeInfo.cs" />
+    <Compile Include="Model\Blocks\AttributeRefInfo.cs" />
+    <Compile Include="Model\Blocks\BlockExtents.cs" />
+    <Compile Include="Model\Blocks\BlockInsert.cs" />
+    <Compile Include="Model\Blocks\Block.cs" />
+    <Compile Include="Model\Blocks\Counter.cs" />
+    <Compile Include="Model\Blocks\Dublicate\BlockRefDublicateInfo.cs" />
+    <Compile Include="Model\Blocks\Dublicate\CheckDublicateBlocks.cs" />
+    <Compile Include="Model\Blocks\Dublicate\Tree\PointTree.cs" />
+    <Compile Include="Model\Blocks\Extensions.cs" />
+    <Compile Include="Model\Blocks\BlockAttribute.cs" />
+    <Compile Include="Model\Blocks\LateBinfing.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="Comparers\AlphanumComparator.cs" />
-    <Compile Include="Comparers\DoubleEqualityComparer.cs" />
-    <Compile Include="Comparers\StringsNumberComparer.cs" />
-    <Compile Include="DB\DictNODExt.cs" />
-    <Compile Include="DB\EntityExt.cs" />
-    <Compile Include="Files\SerializerXml.cs" />
-    <Compile Include="Layers\LayerExt.cs" />
-    <Compile Include="Layers\LayerInfo.cs" />
-    <Compile Include="LibDBobjects\DBObjectExt.cs" />
-    <Compile Include="NET\Extensions.cs" />
-    <Compile Include="NET\MathExt.cs" />
-    <Compile Include="NET\Result.cs" />
-    <Compile Include="PIK\LoadService.cs" />
-    <Compile Include="Plot\PlotDirToPdf.cs" />
+    <Compile Include="Model\Comparers\AlphanumComparator.cs" />
+    <Compile Include="Model\Comparers\DoubleEqualityComparer.cs" />
+    <Compile Include="Model\Comparers\StringsNumberComparer.cs" />
+    <Compile Include="Model\DB\DictNODExt.cs" />
+    <Compile Include="Model\DB\EntityExt.cs" />
+    <Compile Include="Model\Files\SerializerXml.cs" />
+    <Compile Include="Model\Layers\LayerExt.cs" />
+    <Compile Include="Model\Layers\LayerInfo.cs" />
+    <Compile Include="Model\LibDBobjects\DBObjectExt.cs" />
+    <Compile Include="Model\NET\Extensions.cs" />
+    <Compile Include="Model\NET\MathExt.cs" />
+    <Compile Include="Model\NET\Result.cs" />
+    <Compile Include="Model\PIK\LoadService.cs" />
+    <Compile Include="Model\Plot\PlotDirToPdf.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UI\FileFolderDialog.cs">
+    <Compile Include="Model\UI\FileFolderDialog.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="WorkingDatabaseSwitcher.cs" />
-    <Compile Include="Editors\UserPrompt.cs" />
-    <Compile Include="Editors\Zoom.cs" />
-    <Compile Include="Errors\Error.cs" />
-    <Compile Include="Errors\FormError.cs">
+    <Compile Include="Model\DB\WorkingDatabaseSwitcher.cs" />
+    <Compile Include="Model\Editors\UserPrompt.cs" />
+    <Compile Include="Model\Editors\Zoom.cs" />
+    <Compile Include="Model\Errors\Error.cs" />
+    <Compile Include="Model\Errors\FormError.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Geometry\CircularArc2dExtensions.cs" />
-    <Compile Include="Geometry\CircularArc3dExtensions.cs" />
-    <Compile Include="Geometry\EditorExtensions.cs" />
-    <Compile Include="Geometry\EllipseExtensions.cs" />
-    <Compile Include="Geometry\ExtentsExtension.cs" />
-    <Compile Include="Geometry\GeomExt.cs" />
-    <Compile Include="Geometry\Point2dCollectionExtensions.cs" />
-    <Compile Include="Geometry\Point2dExtensions.cs" />
-    <Compile Include="Geometry\Point3dCollectionExtensions.cs" />
-    <Compile Include="Geometry\Point3dExtensions.cs" />
-    <Compile Include="Geometry\Polyline2dExtensions.cs" />
-    <Compile Include="Geometry\Polyline3dExtensions.cs" />
-    <Compile Include="Geometry\PolylineExtensions.cs" />
-    <Compile Include="Geometry\PolylineSegment.cs" />
-    <Compile Include="Geometry\PolylineSegmentCollection.cs" />
-    <Compile Include="Geometry\RegionExtensions.cs" />
-    <Compile Include="Geometry\SplineExtensions.cs" />
-    <Compile Include="Geometry\Triangle.cs" />
-    <Compile Include="Geometry\Triangle2d.cs" />
-    <Compile Include="Geometry\Triangle3d.cs" />
-    <Compile Include="Geometry\Vector3dExtensions.cs" />
-    <Compile Include="Geometry\ViewportExtensions.cs" />
-    <Compile Include="Errors\Inspector.cs" />
-    <Compile Include="Jigs\BlockInsertJig.cs" />
-    <Compile Include="Jigs\TableJig.cs" />
-    <Compile Include="Plot\PlotToFileConfig.cs" />
+    <Compile Include="Model\Geometry\CircularArc2dExtensions.cs" />
+    <Compile Include="Model\Geometry\CircularArc3dExtensions.cs" />
+    <Compile Include="Model\Geometry\EditorExtensions.cs" />
+    <Compile Include="Model\Geometry\EllipseExtensions.cs" />
+    <Compile Include="Model\Geometry\ExtentsExtension.cs" />
+    <Compile Include="Model\Geometry\GeomExt.cs" />
+    <Compile Include="Model\Geometry\Point2dCollectionExtensions.cs" />
+    <Compile Include="Model\Geometry\Point2dExtensions.cs" />
+    <Compile Include="Model\Geometry\Point3dCollectionExtensions.cs" />
+    <Compile Include="Model\Geometry\Point3dExtensions.cs" />
+    <Compile Include="Model\Geometry\Polyline2dExtensions.cs" />
+    <Compile Include="Model\Geometry\Polyline3dExtensions.cs" />
+    <Compile Include="Model\Geometry\PolylineExtensions.cs" />
+    <Compile Include="Model\Geometry\PolylineSegment.cs" />
+    <Compile Include="Model\Geometry\PolylineSegmentCollection.cs" />
+    <Compile Include="Model\Geometry\RegionExtensions.cs" />
+    <Compile Include="Model\Geometry\SplineExtensions.cs" />
+    <Compile Include="Model\Geometry\Triangle.cs" />
+    <Compile Include="Model\Geometry\Triangle2d.cs" />
+    <Compile Include="Model\Geometry\Triangle3d.cs" />
+    <Compile Include="Model\Geometry\Vector3dExtensions.cs" />
+    <Compile Include="Model\Geometry\ViewportExtensions.cs" />
+    <Compile Include="Model\Errors\Inspector.cs" />
+    <Compile Include="Model\Jigs\BlockInsertJig.cs" />
+    <Compile Include="Model\Jigs\TableJig.cs" />
+    <Compile Include="Model\Plot\PlotToFileConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Registry\Register.cs" />
-    <Compile Include="RTree\Node.cs" />
-    <Compile Include="RTree\Point.cs" />
-    <Compile Include="RTree\Rectangle.cs" />
-    <Compile Include="RTree\RTree.cs" />
-    <Compile Include="Strings\StringExt.cs" />
-    <Compile Include="DB\DbExtensions.cs" />
+    <Compile Include="Model\Registry\Register.cs" />
+    <Compile Include="Model\RTree\Node.cs" />
+    <Compile Include="Model\RTree\Point.cs" />
+    <Compile Include="Model\RTree\Rectangle.cs" />
+    <Compile Include="Model\RTree\RTree.cs" />
+    <Compile Include="Model\Strings\StringExt.cs" />
+    <Compile Include="Model\DB\DbExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Errors\FormError.resx">
+    <EmbeddedResource Include="Model\Errors\FormError.resx">
       <DependentUpon>FormError.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -189,14 +188,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Collapse.ico" />
-    <None Include="Resources\Collapse.png" />
-    <None Include="Resources\Expand.png" />
-    <None Include="Resources\Show.png" />
-    <None Include="Resources\excel.png" />
-    <None Include="Resources\Delete.png" />
-    <None Include="Resources\DeleteAll.png" />
-    <Content Include="RTree\LICENSE.txt" />
+    <None Include="Model\Resources\Collapse.ico" />
+    <None Include="Model\Resources\Collapse.png" />
+    <None Include="Model\Resources\Expand.png" />
+    <None Include="Model\Resources\Show.png" />
+    <None Include="Model\Resources\excel.png" />
+    <None Include="Model\Resources\Delete.png" />
+    <None Include="Model\Resources\DeleteAll.png" />
+    <Content Include="Model\RTree\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
