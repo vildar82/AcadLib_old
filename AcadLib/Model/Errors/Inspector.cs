@@ -120,9 +120,12 @@ namespace AcadLib.Errors
 
       public static void Show()
       {
-         Log.Error(string.Join("\n", Errors.Select(e=>e.Message)));
-         Errors.Sort();         
-         Application.ShowModelessDialog(new FormError(false));
+         if (HasErrors)
+         {
+            Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
+            Errors.Sort();
+            Application.ShowModelessDialog(new FormError(false));
+         }         
       }
 
       /// <summary>
@@ -131,17 +134,24 @@ namespace AcadLib.Errors
       /// </summary>      
       public static System.Windows.Forms.DialogResult ShowDialog()
       {
-         Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
-         Errors.Sort();
-         var formErr = new FormError(true);
-         var res = Application.ShowModalDialog(formErr);
-         if (res != System.Windows.Forms.DialogResult.OK)
+         if (HasErrors)
          {
-            formErr.EnableDialog(false);
-            Application.ShowModelessDialog(formErr);
-            throw new Exception("Отменено пользователем.");
+            Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
+            Errors.Sort();
+            var formErr = new FormError(true);
+            var res = Application.ShowModalDialog(formErr);
+            if (res != System.Windows.Forms.DialogResult.OK)
+            {
+               formErr.EnableDialog(false);
+               Application.ShowModelessDialog(formErr);
+               throw new Exception("Отменено пользователем.");
+            }
+            return res;
          }
-         return res;         
+         else
+         {
+            return System.Windows.Forms.DialogResult.OK;
+         }
       }      
 
       public static void LogErrors()

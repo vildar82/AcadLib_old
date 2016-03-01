@@ -188,13 +188,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Model\Resources\Collapse.ico" />
-    <None Include="Model\Resources\Collapse.png" />
-    <None Include="Model\Resources\Expand.png" />
-    <None Include="Model\Resources\Show.png" />
-    <None Include="Model\Resources\excel.png" />
-    <None Include="Model\Resources\Delete.png" />
-    <None Include="Model\Resources\DeleteAll.png" />
+    <None Include="Resources\Collapse.ico" />
+    <None Include="Resources\Collapse.png" />
+    <None Include="Resources\Expand.png" />
+    <None Include="Resources\Show.png" />
+    <None Include="Resources\excel.png" />
+    <None Include="Resources\Delete.png" />
+    <None Include="Resources\DeleteAll.png" />
     <Content Include="Model\RTree\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
