@@ -106,6 +106,7 @@
     <Compile Include="Model\Blocks\BlockExtents.cs" />
     <Compile Include="Model\Blocks\BlockInsert.cs" />
     <Compile Include="Model\Blocks\Block.cs" />
+    <Compile Include="Model\Blocks\BlockList.cs" />
     <Compile Include="Model\Blocks\Counter.cs" />
     <Compile Include="Model\Blocks\Dublicate\BlockRefDublicateInfo.cs" />
     <Compile Include="Model\Blocks\Dublicate\CheckDublicateBlocks.cs" />
