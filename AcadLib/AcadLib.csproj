@@ -88,16 +88,20 @@
       <HintPath>..\..\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\bin\Release\AutoCAD_PIK_Manager.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Blocks\AttributeExt.cs" />
@@ -115,6 +119,14 @@
     <Compile Include="Model\Blocks\BlockAttribute.cs" />
     <Compile Include="Model\Blocks\LateBinfing.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="Model\Blocks\Visual\BlockPreviewHelper.cs" />
+    <Compile Include="Model\Blocks\Visual\IVisualBlock.cs" />
+    <Compile Include="Model\Blocks\Visual\VisualBlock.cs" />
+    <Compile Include="Model\Blocks\Visual\VisualInsertBlock.cs" />
+    <Compile Include="Model\Blocks\Visual\VisualModel.cs" />
+    <Compile Include="Model\Blocks\Visual\WindowVisualBlocks.xaml.cs">
+      <DependentUpon>WindowVisualBlocks.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\Comparers\AlphanumComparator.cs" />
     <Compile Include="Model\Comparers\DoubleEqualityComparer.cs" />
     <Compile Include="Model\Comparers\StringsNumberComparer.cs" />
@@ -229,6 +241,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Model\Blocks\Visual\WindowVisualBlocks.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
