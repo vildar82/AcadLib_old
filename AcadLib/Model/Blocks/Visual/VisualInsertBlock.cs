@@ -11,9 +11,9 @@ namespace AcadLib.Blocks.Visual
 {
     public static class VisualInsertBlock
     {
-        private static Dictionary<string, List<VisualBlock>> dictFiles = new Dictionary<string, List<VisualBlock>>();
+        private static Dictionary<string, List<VisualBlock>> dictFiles = new Dictionary<string, List<VisualBlock>>();        
 
-        public static void InsertBlock(string fileBlocks, Predicate<string> filter)
+        public static void InsertBlock(string fileBlocks, Predicate<string> filter, Layers.LayerInfo layer = null)
         {
             List<VisualBlock> visuals;
             if (!dictFiles.TryGetValue(fileBlocks, out visuals))
@@ -25,8 +25,8 @@ namespace AcadLib.Blocks.Visual
             WindowVisualBlocks winVisual = new WindowVisualBlocks(visuals);
             var dlgRes = Application.ShowModalWindow(winVisual);
             if (dlgRes.HasValue && dlgRes.Value)
-            {
-                insert(winVisual.Selected, fileBlocks);
+            {                
+                insert(winVisual.Selected, fileBlocks, layer);
             }
         }        
 
@@ -55,13 +55,13 @@ namespace AcadLib.Blocks.Visual
             return visualBlocks;
         }
 
-        private static void insert(VisualBlock selected, string fileBlocks)
+        private static void insert(VisualBlock selected, string fileBlocks, Layers.LayerInfo layer)
         {
             if (selected == null) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
             var idBtr = getInsertBtr(selected.Name, fileBlocks, db);
-            AcadLib.Blocks.BlockInsert.Insert(selected.Name);
+            AcadLib.Blocks.BlockInsert.Insert(selected.Name, layer);
         }
 
         private static ObjectId getInsertBtr(string name, string fileBlocks, Database dbdest)

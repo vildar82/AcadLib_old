@@ -9,47 +9,25 @@ using Autodesk.AutoCAD.GraphicsInterface;
 
 namespace AcadLib.Layers
 {
-   public class LayerInfo
-   {
-      private string _name;
-      private bool _isOff;
-      private bool _isFrozen;
-      private bool _isPlotable;
-      private bool _isLocked;
-      private Color _color;      
-      private ObjectId _linetypeObjectId;
-      private LineWeight _lineWeight;
-      private string _lineType;
+    public class LayerInfo
+    {
+        public string Name { get; set; }
 
-      public string Name
-      {
-         get { return _name; }
-         set { setName(value); }
-      }
+        public bool IsOff { get; set; }
+        public bool IsFrozen { get; set; }
+        public bool IsPlotable { get; set; }
+        public bool IsLocked { get; set; }
+        public Color Color { get; set; }
+        public LineWeight LineWeight { get; set; }
+        public ObjectId LinetypeObjectId { get; set; }
+        public string LineType { get; set; }
 
-      public bool IsOff { get { return _isOff; } set { _isOff = value; } }
-      public bool IsFrozen { get { return _isFrozen; } set { _isFrozen = value; } }
-      public bool IsPlotable { get { return _isPlotable; } set { _isPlotable = value; } }
-      public bool IsLocked { get { return _isLocked; } set { _isLocked = value; } }
-      public Color Color { get { return _color; } set { _color = value; } }      
-      public LineWeight LineWeight { get { return _lineWeight; } set { _lineWeight = value; } }
-      public ObjectId LinetypeObjectId { get { return _linetypeObjectId; } set { _linetypeObjectId = value; } }
-      public string LineType { get { return _lineType; } set { _lineType = value; } }
-
-      public LayerInfo (string name)
-      {
-         setName(name);
-         _color = Autodesk.AutoCAD.Colors.Color.FromColorIndex(ColorMethod.ByAci, 7);
-         _lineWeight = LineWeight.ByLineWeightDefault;
-         _isPlotable = true;
-      }
-
-      private void setName(string name)
-      {
-         if (name.IsValidDbSymbolName())         
-            _name = name;         
-         else         
-            throw new Exception(string.Format("Недопустимое имя слоя - {0}", name));         
-      }      
-   }
+        public LayerInfo(string name)
+        {
+            Name = name;
+            Color = Autodesk.AutoCAD.Colors.Color.FromColorIndex(ColorMethod.ByAci, 7);
+            LineWeight = LineWeight.ByLineWeightDefault;
+            IsPlotable = true;
+        }
+    }
 }
