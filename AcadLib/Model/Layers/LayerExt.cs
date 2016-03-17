@@ -133,6 +133,7 @@ namespace AcadLib.Layers
             foreach (var item in layers)
             {
                 LayerInfo li = new LayerInfo(item);
+                layersInfo.Add(li);
             }
             CheckLayerState(layersInfo);
         }
