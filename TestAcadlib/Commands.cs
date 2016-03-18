@@ -46,8 +46,9 @@ namespace TestAcadlib
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            string fileTemp = @"c:\work\!Acad_РГ\АР\АКР\Окна\Отдельные блоки окон. 14.03.2016.dwg";
-            VisualInsertBlock.InsertBlock(fileTemp, n => n.StartsWith("АКР_Окно"));
+            Extents3d extWal = new Extents3d(new Point3d(1810, 5745, 0), new Point3d(1890, 7199, 0));
+            Point3d ptDoor = new Point3d(1889, 5745,0);
+            var res = extWal.IsPointInBounds(ptDoor, 100);
         }
     }
 }

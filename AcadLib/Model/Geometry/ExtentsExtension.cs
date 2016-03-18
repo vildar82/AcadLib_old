@@ -53,8 +53,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
       public static bool IsPointInBounds(this Extents3d ext, Point3d pt, double tolerance)
       {
          bool res = false;
-         if ((pt.X-tolerance) > ext.MinPoint.X && (pt.Y-tolerance) > ext.MinPoint.Y &&
-            (pt.X+tolerance) < ext.MaxPoint.X && (pt.Y+tolerance) < ext.MaxPoint.Y)
+         if (pt.X > (ext.MinPoint.X-tolerance) && pt.Y > (ext.MinPoint.Y-tolerance) &&
+            pt.X < (ext.MaxPoint.X+tolerance) && pt.Y < (ext.MaxPoint.Y+tolerance))
          {
             res = true;
          }
