@@ -354,7 +354,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="p">Point of origin</param>
         /// <param name="furthestDistance">maximum distance</param>
         /// <returns>List of items</returns>
-        public List<T> Nearest(Point p, float furthestDistance)
+        public List<T> Nearest(Point p, double furthestDistance)
         {
             List<T> retval = new List<T>();
             nearest(p, delegate(int id)
@@ -365,7 +365,7 @@ namespace AcadLib.RTree.SpatialIndex
         }
 
 
-        private void nearest(Point p, intproc v, float furthestDistance)
+        private void nearest(Point p, intproc v, double furthestDistance)
         {
             Node<T> rootNode = getNode(rootNodeId);
 
@@ -564,7 +564,7 @@ namespace AcadLib.RTree.SpatialIndex
             // each to a group.
 
             // debug code
-            float initialArea = 0;
+            double initialArea = 0;
             //if (log.IsDebugEnabled)
             //{
             //    Rectangle union = n.mbr.union(newRect);
@@ -661,7 +661,7 @@ namespace AcadLib.RTree.SpatialIndex
             // Find extreme rectangles along all dimension. Along each dimension,
             // find the entry whose rectangle has the highest low side, and the one 
             // with the lowest high side. Record the separation.
-            float maxNormalizedSeparation = 0;
+            double maxNormalizedSeparation = 0;
             int highestLowIndex = 0;
             int lowestHighIndex = 0;
 
@@ -676,15 +676,15 @@ namespace AcadLib.RTree.SpatialIndex
 
             for (int d = 0; d < Rectangle.DIMENSIONS; d++)
             {
-                float tempHighestLow = newRect.min[d];
+                double tempHighestLow = newRect.min[d];
                 int tempHighestLowIndex = -1; // -1 indicates the new rectangle is the seed
 
-                float tempLowestHigh = newRect.max[d];
+                double tempLowestHigh = newRect.max[d];
                 int tempLowestHighIndex = -1;
 
                 for (int i = 0; i < n.entryCount; i++)
                 {
-                    float tempLow = n.entries[i].min[d];
+                    double tempLow = n.entries[i].min[d];
                     if (tempLow >= tempHighestLow)
                     {
                         tempHighestLow = tempLow;
@@ -692,7 +692,7 @@ namespace AcadLib.RTree.SpatialIndex
                     }
                     else
                     {  // ensure that the same index cannot be both lowestHigh and highestLow
-                        float tempHigh = n.entries[i].max[d];
+                        double tempHigh = n.entries[i].max[d];
                         if (tempHigh <= tempLowestHigh)
                         {
                             tempLowestHigh = tempHigh;
@@ -703,7 +703,7 @@ namespace AcadLib.RTree.SpatialIndex
                     // PS2 [Adjust for shape of the rectangle cluster] Normalize the separations
                     // by dividing by the widths of the entire set along the corresponding
                     // dimension
-                    float normalizedSeparation = (tempHighestLow - tempLowestHigh) / (n.mbr.max[d] - n.mbr.min[d]);
+                    double normalizedSeparation = (tempHighestLow - tempLowestHigh) / (n.mbr.max[d] - n.mbr.min[d]);
 
                     //if (normalizedSeparation > 1 || normalizedSeparation < -1)
                     //{
@@ -768,11 +768,11 @@ namespace AcadLib.RTree.SpatialIndex
         /// <returns></returns>
         private int pickNext(Node<T> n, Node<T> newNode)
         {
-            float maxDifference = float.NegativeInfinity;
+            double maxDifference = double.NegativeInfinity;
             int next = 0;
             int nextGroup = 0;
 
-            maxDifference = float.NegativeInfinity;
+            maxDifference = double.NegativeInfinity;
 
             //if (log.IsDebugEnabled)
             //{
@@ -789,9 +789,9 @@ namespace AcadLib.RTree.SpatialIndex
                     //    log.Error("Error: Node<T> " + n.nodeId + ", entry " + i + " is null");
                     //}
 
-                    float nIncrease = n.mbr.enlargement(n.entries[i]);
-                    float newNodeIncrease = newNode.mbr.enlargement(n.entries[i]);
-                    float difference = Math.Abs(nIncrease - newNodeIncrease);
+                    double nIncrease = n.mbr.enlargement(n.entries[i]);
+                    double newNodeIncrease = newNode.mbr.enlargement(n.entries[i]);
+                    double difference = Math.Abs(nIncrease - newNodeIncrease);
 
                     if (difference > maxDifference)
                     {
@@ -862,11 +862,11 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="n"></param>
         /// <param name="nearestDistance"></param>
         /// <returns></returns>
-        private float nearest(Point p, Node<T> n, float nearestDistance)
+        private double nearest(Point p, Node<T> n, double nearestDistance)
         {
             for (int i = 0; i < n.entryCount; i++)
             {
-                float tempDistance = n.entries[i].distance(p);
+                double tempDistance = n.entries[i].distance(p);
                 if (n.isLeaf())
                 { // for leaves, the distance is an actual nearest distance 
                     if (tempDistance < nearestDistance)
@@ -1015,12 +1015,12 @@ namespace AcadLib.RTree.SpatialIndex
                 // CL3 [Choose subtree] If N is not at the desired level, let F be the entry in N 
                 // whose rectangle FI needs least enlargement to include EI. Resolve
                 // ties by choosing the entry with the rectangle of smaller area.
-                float leastEnlargement = n.getEntry(0).enlargement(r);
+                double leastEnlargement = n.getEntry(0).enlargement(r);
                 int index = 0; // index of rectangle in subtree
                 for (int i = 1; i < n.entryCount; i++)
                 {
                     Rectangle tempRectangle = n.getEntry(i);
-                    float tempEnlargement = tempRectangle.enlargement(r);
+                    double tempEnlargement = tempRectangle.enlargement(r);
                     if ((tempEnlargement < leastEnlargement) ||
                         ((tempEnlargement == leastEnlargement) &&
                          (tempRectangle.area() < n.getEntry(index).area())))
