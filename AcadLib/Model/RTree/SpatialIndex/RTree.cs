@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 
 
-namespace Acadlib.Rtree.SpatialIndex
+namespace AcadLib.RTree.SpatialIndex
 {
 
     /// <summary>

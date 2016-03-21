@@ -21,7 +21,7 @@
 using System;
 using System.Text;
 
-namespace Acadlib.Rtree.SpatialIndex
+namespace AcadLib.RTree.SpatialIndex
 {
 
     /**
