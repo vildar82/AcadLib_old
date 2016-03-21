@@ -15,107 +15,110 @@ using Microsoft.Office.Interop.Excel;
 
 namespace AcadLib.Errors
 {
-   public class FormError : Form
-   {
-      private Editor ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
-      private BindingSource _binding;
-      private System.Windows.Forms.TextBox textBoxErr;
-      private System.Windows.Forms.Button buttonShow;
-      private System.Windows.Forms.Button buttonExport;
-      private System.Windows.Forms.ListBox listBoxError;
-      private ToolTip toolTip1;
-      private System.Windows.Forms.Button buttonAllErrors;
-      private List<Error> collapsedErrors;
-      private System.Windows.Forms.Button buttonCancel;
-      private System.Windows.Forms.Button buttonOk;
-      private System.Windows.Forms.Button buttonDel;
-      private System.Windows.Forms.Button buttonDelAll;
-      private ErrorProvider errorProvider1;
+    public class FormError : Form
+    {
+        private Editor ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
+        private BindingSource _binding;
+        private System.Windows.Forms.TextBox textBoxErr;
+        private System.Windows.Forms.Button buttonShow;
+        private System.Windows.Forms.Button buttonExport;
+        private System.Windows.Forms.ListBox listBoxError;
+        private ToolTip toolTip1;
+        private System.Windows.Forms.Button buttonAllErrors;
+        private List<Error> collapsedErrors;
+        private System.Windows.Forms.Button buttonCancel;
+        private System.Windows.Forms.Button buttonOk;
+        private System.Windows.Forms.Button buttonDel;
+        private System.Windows.Forms.Button buttonDelAll;
+        private ErrorProvider errorProvider1;
         private ContextMenuStrip contextMenuError;
         private ToolStripMenuItem toolStripMenuItemRemove;
         private bool isAllErrors;
 
-      public FormError(bool modal)
-      {
-         InitializeComponent();
-         EnableDialog (modal);
+        public FormError(bool modal)
+        {
+            InitializeComponent();
+            EnableDialog(modal);
 
-         UpdateCollapsedErrors();
+            UpdateCollapsedErrors();
 
-         _binding = new BindingSource();
-         bindingErrors(collapsedErrors);
-         listBoxError.DataSource = _binding;
-         listBoxError.DisplayMember = "ShortMsg";
-         textBoxErr.DataBindings.Add("Text", _binding, "Message", false, DataSourceUpdateMode.OnPropertyChanged);
-      }
+            _binding = new BindingSource();
+            bindingErrors(collapsedErrors);
+            listBoxError.DataSource = _binding;
+            listBoxError.DisplayMember = "ShortMsg";
+            textBoxErr.DataBindings.Add("Text", _binding, "Message", false, DataSourceUpdateMode.OnPropertyChanged);
+        }
 
-      public void EnableDialog(bool modal)
-      {
-         buttonCancel.Visible = modal;
-         buttonOk.Visible = modal;
-      }
+        public void EnableDialog(bool modal)
+        {
+            buttonCancel.Visible = modal;
+            buttonOk.Visible = modal;
+        }
 
-      private void bindingErrors(List<Error> errors)
-      {         
-         _binding.DataSource = errors;
-         _binding.ResetBindings(false);                
-      }
+        private void bindingErrors(List<Error> errors)
+        {
+            _binding.DataSource = errors;
+            _binding.ResetBindings(false);
+        }
 
-      private void buttonShow_Click(object sender, EventArgs e)
-      {
-         errorProvider1.Clear();
-         Error err = (Error)listBoxError.SelectedItem;
-         if (err != null && err.HasEntity && ed.Document != null)
-         {
-            Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            if (ed.Document != curDoc)
+        private void buttonShow_Click(object sender, EventArgs e)
+        {
+            errorProvider1.Clear();
+            Error err = (Error)listBoxError.SelectedItem;
+            if (err != null && err.HasEntity && ed.Document != null)
             {
-               errorProvider1.SetError(buttonShow, $"Должен быть активен документ {ed.Document.Name}");
+                Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                if (ed.Document != curDoc)
+                {
+                    errorProvider1.SetError(buttonShow, $"Должен быть активен документ {ed.Document.Name}");
+                }
+                else
+                {
+                    if (err.Extents.Diagonal()>1)
+                    {
+                        ed.Zoom(err.Extents);
+                    }                    
+                }
             }
-            else
+        }
+
+        private void listBoxError_DoubleClick(object sender, EventArgs e)
+        {
+            buttonShow_Click(null, null);
+        }
+
+        private void listBoxError_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Error err = (Error)listBoxError.SelectedItem;
+            buttonShow.Visible = err.HasEntity;
+        }
+
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
             {
-               ed.Zoom(err.Extents);
+                components.Dispose();
             }
-         }
-      }
+            base.Dispose(disposing);
+        }
 
-      private void listBoxError_DoubleClick(object sender, EventArgs e)
-      {
-         buttonShow_Click(null, null);
-      }
+        #region Windows Form Designer generated code
 
-      private void listBoxError_SelectedIndexChanged(object sender, EventArgs e)
-      {
-         Error err = (Error)listBoxError.SelectedItem;
-         buttonShow.Visible = err.HasEntity;
-      }
-
-      /// <summary>
-      /// Required designer variable.
-      /// </summary>
-      private System.ComponentModel.IContainer components = null;
-
-      /// <summary>
-      /// Clean up any resources being used.
-      /// </summary>
-      /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-      protected override void Dispose(bool disposing)
-      {
-         if (disposing && (components != null))
-         {
-            components.Dispose();
-         }
-         base.Dispose(disposing);
-      }
-
-      #region Windows Form Designer generated code
-
-      /// <summary>
-      /// Required method for Designer support - do not modify
-      /// the contents of this method with the code editor.
-      /// </summary>
-      private void InitializeComponent()
-      {
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.components = new System.ComponentModel.Container();
             this.textBoxErr = new System.Windows.Forms.TextBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -136,7 +139,7 @@ namespace AcadLib.Errors
             // 
             // textBoxErr
             // 
-            this.textBoxErr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxErr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxErr.Location = new System.Drawing.Point(12, 391);
             this.textBoxErr.Multiline = true;
@@ -214,8 +217,8 @@ namespace AcadLib.Errors
             // 
             // listBoxError
             // 
-            this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listBoxError.ContextMenuStrip = this.contextMenuError;
             this.listBoxError.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
@@ -296,151 +299,151 @@ namespace AcadLib.Errors
             this.ResumeLayout(false);
             this.PerformLayout();
 
-      }
+        }
 
-      #endregion
+        #endregion
 
-      private void buttonExport_Click(object sender, EventArgs e)
-      {
-         try
-         {
-            var excelApp = new Microsoft.Office.Interop.Excel.Application { DisplayAlerts = false };
-            if (excelApp == null)
-               return;
-
-            // Открываем книгу
-            Workbook workBook = excelApp.Workbooks.Add();
-
-            // Получаем активную таблицу
-            Worksheet worksheet = workBook.ActiveSheet as Worksheet;
-            worksheet.Name = "Ошибки";
-
-            int row = 1;
-            // Название
-            worksheet.Cells[row, 1].Value = "Список ошибок";
-            row++;
-            foreach (var item in listBoxError.Items)
+        private void buttonExport_Click(object sender, EventArgs e)
+        {
+            try
             {
-               var error = item as Error;
-               if (error == null)
-               {
-                  continue;
-               }
-               worksheet.Cells[row, 1].Value = error.Message;
-               row++;
-            }
-            excelApp.Visible = true;
-         }
-         catch (Exception ex)
-         {
-            Log.Error(ex, "Сохранение ошибок в Excel");
-         }
-      }
+                var excelApp = new Microsoft.Office.Interop.Excel.Application { DisplayAlerts = false };
+                if (excelApp == null)
+                    return;
 
-      private void listBoxError_DrawItem(object sender, DrawItemEventArgs e)
-      {
-         System.Windows.Forms.ListBox list = (System.Windows.Forms.ListBox)sender;
-         if (e.Index > -1)
-         {
-            e.DrawBackground();
-            e.DrawFocusRectangle();
-            Error error = list.Items[e.Index] as Error;
-            if (error != null)
+                // Открываем книгу
+                Workbook workBook = excelApp.Workbooks.Add();
+
+                // Получаем активную таблицу
+                Worksheet worksheet = workBook.ActiveSheet as Worksheet;
+                worksheet.Name = "Ошибки";
+
+                int row = 1;
+                // Название
+                worksheet.Cells[row, 1].Value = "Список ошибок";
+                row++;
+                foreach (var item in listBoxError.Items)
+                {
+                    var error = item as Error;
+                    if (error == null)
+                    {
+                        continue;
+                    }
+                    worksheet.Cells[row, 1].Value = error.Message;
+                    row++;
+                }
+                excelApp.Visible = true;
+            }
+            catch (Exception ex)
             {
-               if (error.Icon != null)
-               {
-                  System.Drawing.Image image = new Bitmap(error.Icon.ToBitmap(), 24, 24);
-                  e.Graphics.DrawImage(image, e.Bounds.X, e.Bounds.Y+1);
-               }
-               int xDelta = 24 + 5;
-               SizeF size = e.Graphics.MeasureString(error.ShortMsg, e.Font);
-               e.Graphics.DrawString(error.ShortMsg, e.Font, Brushes.Black, e.Bounds.Left + xDelta, e.Bounds.Top + (e.Bounds.Height / 2 - size.Height / 2));
+                Log.Error(ex, "Сохранение ошибок в Excel");
             }
-         }
-      }
+        }
 
-      private void listBoxError_MeasureItem(object sender, MeasureItemEventArgs e)
-      {         
-         e.ItemHeight = 26;
-      }
+        private void listBoxError_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            System.Windows.Forms.ListBox list = (System.Windows.Forms.ListBox)sender;
+            if (e.Index > -1)
+            {
+                e.DrawBackground();
+                e.DrawFocusRectangle();
+                Error error = list.Items[e.Index] as Error;
+                if (error != null)
+                {
+                    if (error.Icon != null)
+                    {
+                        System.Drawing.Image image = new Bitmap(error.Icon.ToBitmap(), 24, 24);
+                        e.Graphics.DrawImage(image, e.Bounds.X, e.Bounds.Y + 1);
+                    }
+                    int xDelta = 24 + 5;
+                    SizeF size = e.Graphics.MeasureString(error.ShortMsg, e.Font);
+                    e.Graphics.DrawString(error.ShortMsg, e.Font, Brushes.Black, e.Bounds.Left + xDelta, e.Bounds.Top + (e.Bounds.Height / 2 - size.Height / 2));
+                }
+            }
+        }
 
-      private void buttonAllErrors_Click(object sender, EventArgs e)
-      {
-         UpdateBinding ();
-         isAllErrors = !isAllErrors;
-      }
+        private void listBoxError_MeasureItem(object sender, MeasureItemEventArgs e)
+        {
+            e.ItemHeight = 26;
+        }
 
-      private void UpdateBinding()
-      {
-         if (isAllErrors)
-         {
-            // Показать уникальные сообщения;      
-            UpdateCollapsedErrors();
-            bindingErrors(collapsedErrors);
-            //buttonAllErrors.Text = "Все ошибки";
-            buttonAllErrors.BackgroundImage = Properties.Resources.Expand;
-            toolTip1.SetToolTip(buttonAllErrors, "Показать все ошибки.");
-         }
-         else
-         {
-            // Показать все ошибки;         
-            bindingErrors(Inspector.Errors);
-            //buttonAllErrors.Text = "Без повторов";
-            buttonAllErrors.BackgroundImage = Properties.Resources.Collapse;
-            toolTip1.SetToolTip(buttonAllErrors, "Показать только неповторяющиеся сообщения.");
-         }
-      }
-
-      private void UpdateCollapsedErrors()
-      {
-         collapsedErrors = Inspector.GetCollapsedErrors();
-         if (Inspector.Errors.Count == collapsedErrors.Count)
-         {
-            buttonAllErrors.Visible = false;
-         }
-         else
-         {
-            buttonAllErrors.Visible = true;
-            isAllErrors = false;
-         }
-      }
-
-      public void EnableDublicateButtons()
-      {
-         buttonDel.Visible = true;
-         buttonDelAll.Visible = true;
-      }
-
-      private void buttonDel_Click(object sender, EventArgs e)
-      {         
-         var errors = listBoxError.SelectedItems.Cast<Error>().ToList();
-         DeleteDublicates(errors);
-      }
-
-      private void buttonDelAll_Click(object sender, EventArgs e)
-      {
-         var errors = listBoxError.Items.Cast<Error>().ToList();
-         DeleteDublicates(errors);
-      }
-
-      private void DeleteDublicates(List<Error> errors)
-      {
-         if (errors == null || errors.Count==0)
-         {
-            return;
-         }   
-             
-         try
-         {
-            Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
+        private void buttonAllErrors_Click(object sender, EventArgs e)
+        {
             UpdateBinding();
-         }
-         catch (Exception ex)
-         {
-            MessageBox.Show($"Ошибка удаления дубликатов - {ex.Message}");
-            Log.Error(ex, "FormError DeleteDublicates");
-         }
-      }
+            isAllErrors = !isAllErrors;
+        }
+
+        private void UpdateBinding()
+        {
+            if (isAllErrors)
+            {
+                // Показать уникальные сообщения;      
+                UpdateCollapsedErrors();
+                bindingErrors(collapsedErrors);
+                //buttonAllErrors.Text = "Все ошибки";
+                buttonAllErrors.BackgroundImage = Properties.Resources.Expand;
+                toolTip1.SetToolTip(buttonAllErrors, "Показать все ошибки.");
+            }
+            else
+            {
+                // Показать все ошибки;         
+                bindingErrors(Inspector.Errors);
+                //buttonAllErrors.Text = "Без повторов";
+                buttonAllErrors.BackgroundImage = Properties.Resources.Collapse;
+                toolTip1.SetToolTip(buttonAllErrors, "Показать только неповторяющиеся сообщения.");
+            }
+        }
+
+        private void UpdateCollapsedErrors()
+        {
+            collapsedErrors = Inspector.GetCollapsedErrors();
+            if (Inspector.Errors.Count == collapsedErrors.Count)
+            {
+                buttonAllErrors.Visible = false;
+            }
+            else
+            {
+                buttonAllErrors.Visible = true;
+                isAllErrors = false;
+            }
+        }
+
+        public void EnableDublicateButtons()
+        {
+            buttonDel.Visible = true;
+            buttonDelAll.Visible = true;
+        }
+
+        private void buttonDel_Click(object sender, EventArgs e)
+        {
+            var errors = listBoxError.SelectedItems.Cast<Error>().ToList();
+            DeleteDublicates(errors);
+        }
+
+        private void buttonDelAll_Click(object sender, EventArgs e)
+        {
+            var errors = listBoxError.Items.Cast<Error>().ToList();
+            DeleteDublicates(errors);
+        }
+
+        private void DeleteDublicates(List<Error> errors)
+        {
+            if (errors == null || errors.Count == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
+                UpdateBinding();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка удаления дубликатов - {ex.Message}");
+                Log.Error(ex, "FormError DeleteDublicates");
+            }
+        }
 
         private void listBoxError_KeyUp(object sender, KeyEventArgs e)
         {
