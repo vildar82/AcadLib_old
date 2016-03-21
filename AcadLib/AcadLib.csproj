@@ -142,6 +142,10 @@
     <Compile Include="Model\NET\Result.cs" />
     <Compile Include="Model\PIK\LoadService.cs" />
     <Compile Include="Model\Plot\PlotDirToPdf.cs" />
+    <Compile Include="Model\RTree\SpatialIndex\Node.cs" />
+    <Compile Include="Model\RTree\SpatialIndex\Point.cs" />
+    <Compile Include="Model\RTree\SpatialIndex\Rectangle.cs" />
+    <Compile Include="Model\RTree\SpatialIndex\RTree.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
