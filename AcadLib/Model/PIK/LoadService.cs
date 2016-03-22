@@ -40,6 +40,7 @@ namespace AcadLib
         {
             LoadPackages("NetTopologySuite.dll");
             LoadPackages("GeoAPI.dll");
+            LoadPackages("PowerCollections.dll");            
         }
 
         private static void LoadPackages(string name)
