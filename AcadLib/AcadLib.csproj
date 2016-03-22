@@ -146,6 +146,12 @@
     <Compile Include="Model\RTree\SpatialIndex\Point.cs" />
     <Compile Include="Model\RTree\SpatialIndex\Rectangle.cs" />
     <Compile Include="Model\RTree\SpatialIndex\RTree.cs" />
+    <Compile Include="Model\UI\Properties\FormProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model\UI\Properties\FormProperties.Designer.cs">
+      <DependentUpon>FormProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -199,6 +205,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Model\Errors\FormError.resx">
       <DependentUpon>FormError.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Model\UI\Properties\FormProperties.resx">
+      <DependentUpon>FormProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
