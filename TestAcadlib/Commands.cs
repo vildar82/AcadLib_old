@@ -15,6 +15,7 @@ using AcadLib.Errors;
 using System.Drawing;
 using AcadLib.Blocks.Dublicate;
 using AcadLib.Blocks.Visual;
+using AcadLib;
 
 [assembly: CommandClass(typeof (TestAcadlib.Commands))]
 
@@ -46,9 +47,8 @@ namespace TestAcadlib
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            Extents3d extWal = new Extents3d(new Point3d(1810, 5745, 0), new Point3d(1890, 7199, 0));
-            Point3d ptDoor = new Point3d(1889, 5745,0);
-            var res = extWal.IsPointInBounds(ptDoor, 100);
+            int[] paleNumbersInt = new[] { 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109 };
+            var nums = MathExt.IntsToStringSequence(paleNumbersInt);
         }
     }
 }
