@@ -12,6 +12,8 @@ namespace AcadLib.Comparers
     /// </summary>
     public class AlphanumComparator : IComparer<string>
     {
+        public static AlphanumComparator New { get { return new AlphanumComparator(); } }
+
         public int Compare(string s1, string s2)
         {
             var null1 = string.IsNullOrEmpty(s1);
