@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,11 @@ namespace AcadLib.Blocks.Dublicate
 
         public static void Check()
         {
+            Check(null);
+        }
+
+        public static void Check(IEnumerable idsBlRefs)
+        {
             curDepth = 0;
             Database db = HostApplicationServices.WorkingDatabase;
             Inspector.Clear();
@@ -35,9 +41,14 @@ namespace AcadLib.Blocks.Dublicate
             {
                 using (var t = db.TransactionManager.StartTransaction())
                 {
-                    GetDublicateBlocks(SymbolUtilityServices.GetBlockModelSpaceId(db), Matrix3d.Identity, 0);
+                    if (idsBlRefs == null)
+                    {
+                        var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead) as BlockTableRecord;
+                        idsBlRefs = ms;
+                    }
+                    GetDublicateBlocks(idsBlRefs, Matrix3d.Identity, 0);
                     t.Commit();
-                }                
+                }
 
                 // дублирующиеся блоки
                 AllDublicBlRefInfos = dictBlRefInfos.SelectMany(s => s.Value.Values).Where(w => w.Count > 1)
@@ -88,49 +99,59 @@ namespace AcadLib.Blocks.Dublicate
             }
         }
 
-        private static void GetDublicateBlocks(ObjectId idBtr, Matrix3d transToModel, double rotate)
-        {
-            // Проверялся ли уже такое определение блока
-            if (attemptedblocks.Add(idBtr))
+        private static void GetDublicateBlocks(IEnumerable ids, Matrix3d transToModel, double rotate)
+        {            
+            List<Tuple<ObjectId, Matrix3d, double>> idsBtrNext = new List<Tuple<ObjectId, Matrix3d, double>>();
+
+            bool isFirstDbo = true;
+                  
+            foreach (var item in ids)
             {
-                // такой блок еще не проверялся. Перебор его объетов
-                List<Tuple<ObjectId, Matrix3d, double>> idsBtrNext = new List<Tuple<ObjectId, Matrix3d, double>>();
-                var btr = idBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                if (!(item is ObjectId)) continue;
+                ObjectId idEnt = (ObjectId)item;
 
-                // Получение всех вхождений блоков               
-                foreach (var idEnt in btr)
+                var dbo = idEnt.GetObject(OpenMode.ForRead, false, true);
+                // Проверялся ли уже такое определение блока                            
+                if (isFirstDbo)
                 {
-                    var blRef = idEnt.GetObject(OpenMode.ForRead, false, true) as BlockReference;
-                    if (blRef == null || !blRef.Visible) continue;
-                    BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);
-
-                    Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
-                    PointTree ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
-
-                    if (!dictBlRefInfos.TryGetValue(blRefInfo.Name, out dictPointsBlInfos))
+                    isFirstDbo = false;
+                    if (!attemptedblocks.Add(dbo.OwnerId))
                     {
-                        dictPointsBlInfos = new Dictionary<PointTree, List<BlockRefDublicateInfo>>();
-                        dictBlRefInfos.Add(blRefInfo.Name, dictPointsBlInfos);
+                        return;
                     }
-                    List<BlockRefDublicateInfo> listBiAtPoint;
-                    if (!dictPointsBlInfos.TryGetValue(ptTree, out listBiAtPoint))
-                    {
-                        listBiAtPoint = new List<BlockRefDublicateInfo>();
-                        dictPointsBlInfos.Add(ptTree, listBiAtPoint);
-                    }
-                    listBiAtPoint.Add(blRefInfo);
-
-                    idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(item1: blRef.BlockTableRecord, item2: blRef.BlockTransform, item3: blRef.Rotation + rotate));
                 }
 
-                // Нырок глубже
-                if (curDepth < DEPTH)
+                var blRef = dbo as BlockReference;
+                if (blRef == null || !blRef.Visible) continue;
+                BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);
+
+                Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
+                PointTree ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
+
+                if (!dictBlRefInfos.TryGetValue(blRefInfo.Name, out dictPointsBlInfos))
                 {
-                    curDepth++;
-                    foreach (var btrNext in idsBtrNext)
-                    {
-                        GetDublicateBlocks(btrNext.Item1, btrNext.Item2, btrNext.Item3);
-                    }
+                    dictPointsBlInfos = new Dictionary<PointTree, List<BlockRefDublicateInfo>>();
+                    dictBlRefInfos.Add(blRefInfo.Name, dictPointsBlInfos);
+                }
+                List<BlockRefDublicateInfo> listBiAtPoint;
+                if (!dictPointsBlInfos.TryGetValue(ptTree, out listBiAtPoint))
+                {
+                    listBiAtPoint = new List<BlockRefDublicateInfo>();
+                    dictPointsBlInfos.Add(ptTree, listBiAtPoint);
+                }
+                listBiAtPoint.Add(blRefInfo);
+
+                idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(item1: blRef.BlockTableRecord, item2: blRef.BlockTransform, item3: blRef.Rotation + rotate));
+            }
+
+            // Нырок глубже
+            if (curDepth < DEPTH)
+            {
+                curDepth++;
+                foreach (var btrNext in idsBtrNext)
+                {
+                    var btr = btrNext.Item1.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                    GetDublicateBlocks(btr, btrNext.Item2, btrNext.Item3);
                 }
             }
         }
