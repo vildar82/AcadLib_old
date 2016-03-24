@@ -132,6 +132,7 @@
     <Compile Include="Model\Comparers\StringsNumberComparer.cs" />
     <Compile Include="Model\DB\DictNODExt.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />
+    <Compile Include="Model\DB\ObjectIdExt.cs" />
     <Compile Include="Model\Files\SerializerXml.cs" />
     <Compile Include="General.cs" />
     <Compile Include="Model\Layers\LayerExt.cs" />

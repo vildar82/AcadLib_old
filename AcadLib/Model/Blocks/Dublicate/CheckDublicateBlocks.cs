@@ -14,6 +14,7 @@ namespace AcadLib.Blocks.Dublicate
 {
     /// <summary>
     /// Проверка наложения блоков в пространстве модели
+    /// Inspector очищается до и после!
     /// </summary>
     public static class CheckDublicateBlocks
     {
@@ -96,6 +97,7 @@ namespace AcadLib.Blocks.Dublicate
                     Application.ShowModelessDialog(formDublicates);
                     throw new Exception("Отменено пользователем.");
                 }
+                Inspector.Clear();
             }
         }
 

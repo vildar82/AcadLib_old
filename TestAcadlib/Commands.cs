@@ -47,8 +47,14 @@ namespace TestAcadlib
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            int[] paleNumbersInt = new[] { 1, 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109 };
-            var nums = MathExt.IntsToStringSequence(paleNumbersInt);
+            Inspector.Clear();
+            var selBls = ed.SelectBlRefs("Выбор блоков для проверки подсветки");
+            int i = 0;
+            foreach (var item in selBls)
+            {
+                Inspector.AddError(i++.ToString(), item);
+            }
+            Inspector.Show();
         }
     }
 }

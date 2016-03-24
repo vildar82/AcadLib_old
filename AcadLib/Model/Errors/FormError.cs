@@ -77,6 +77,10 @@ namespace AcadLib.Errors
                     if (err.Extents.Diagonal()>1)
                     {
                         ed.Zoom(err.Extents);
+                        if (err.HasEntity)
+                        {
+                            err.IdEnt.FlickObjectHighlight(2, 100,100);
+                        }
                     }                    
                 }
             }
