@@ -32,20 +32,20 @@ namespace AcadLib.Errors
          Errors = new List<Error>();         
       }      
 
-      /// <summary>
-      /// Сгруппированные ошибки по одинаковым сообщениям.
-      /// </summary>
-      /// <returns></returns>
-      public static List<Error> GetCollapsedErrors()
-      {
-         var errCounts = Errors.GroupBy(e => e.Message).Select(g=>
-         {
-            var e = g.First().GetCopy();
-            e.SetCount(g.Count());
-            return e;
-         });
-         return errCounts.ToList();
-      }
+      ///// <summary>
+      ///// Сгруппированные ошибки по одинаковым сообщениям.
+      ///// </summary>
+      ///// <returns></returns>
+      //public static List<Error> GetCollapsedErrors()
+      //{
+      //   var errCounts = Errors.GroupBy(e => e.Message).Select(g=>
+      //   {
+      //      var e = g.First().GetCopy();
+      //      e.SetCount(g.Count());
+      //      return e;
+      //   });
+      //   return errCounts.ToList();
+      //}
 
       public static void AddError (string msg, Icon icon = null)
       {

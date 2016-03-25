@@ -26,6 +26,7 @@ namespace AcadLib.Errors
         private ToolTip toolTip1;
         private System.Windows.Forms.Button buttonAllErrors;
         private List<Error> collapsedErrors;
+        private List<Error> errors;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonDel;
@@ -35,8 +36,13 @@ namespace AcadLib.Errors
         private ToolStripMenuItem toolStripMenuItemRemove;
         private bool isAllErrors;
 
-        public FormError(bool modal)
+        public FormError(bool modal) : this(Inspector.Errors, modal)
+        {            
+        }
+
+        public FormError(List<Error> errors, bool modal)
         {
+            this.errors = errors;
             InitializeComponent();
             EnableDialog(modal);
 
@@ -391,7 +397,7 @@ namespace AcadLib.Errors
             else
             {
                 // Показать все ошибки;         
-                bindingErrors(Inspector.Errors);
+                bindingErrors(errors);
                 //buttonAllErrors.Text = "Без повторов";
                 buttonAllErrors.BackgroundImage = Properties.Resources.Collapse;
                 toolTip1.SetToolTip(buttonAllErrors, "Показать только неповторяющиеся сообщения.");
@@ -400,8 +406,8 @@ namespace AcadLib.Errors
 
         private void UpdateCollapsedErrors()
         {
-            collapsedErrors = Inspector.GetCollapsedErrors();
-            if (Inspector.Errors.Count == collapsedErrors.Count)
+            collapsedErrors = Error.GetCollapsedErrors(errors);
+            if (errors.Count == collapsedErrors.Count)
             {
                 buttonAllErrors.Visible = false;
             }
@@ -464,7 +470,7 @@ namespace AcadLib.Errors
             {
                 foreach (var item in listBoxError.SelectedItems)
                 {
-                    Inspector.Errors.Remove((Error)item);
+                    errors.Remove((Error)item);
                 }
                 UpdateBinding();
             }
