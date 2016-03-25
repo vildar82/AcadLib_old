@@ -43,7 +43,7 @@ namespace AcadLib
         /// </summary>
         /// <param name="ints"></param>
         /// <returns></returns>
-        public static string IntsToStringSequence(int[] ints)
+        public static string IntsToStringSequenceAnton(int[] ints)
         {
             // int[] paleNumbersInt = new[] { 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109 };
             // res = 1-8,10,15,16,100-107,109
@@ -72,7 +72,7 @@ namespace AcadLib
                 }
                 if (ints[i + 1] - ints[i] == 1)
                 {
-                    if (mark[mark.Length - 1] != '-') mark += "-";
+                    if (mark[mark.Length - 1] != '-') mark += "-";// "," + ints[i] + "-";
                     isWas = true;
                     continue;
                 }
@@ -91,6 +91,93 @@ namespace AcadLib
             }
             mark = mark.Replace(",,", ",");
             return mark;
-        }        
+        }
+        
+        /// <summary>
+        /// Список чисел в строку, с групперовкой последовательных номеров
+        /// ints = 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109
+        /// res = "1-8,10,15,16,100-107,109"
+        /// </summary>        
+        public static string IntsToStringSequence(int[] ints)
+        {
+            string res = string.Empty;
+            IntSequence seq = new IntSequence(ints.First());
+            foreach (var n in ints.Skip(1))
+            {
+                if (!seq.AddInt(n))
+                {
+                    SetSeq(ref res, ref seq);
+                    seq = new IntSequence(n);
+                }
+            }
+            if (!seq.IsNull())
+            {
+                SetSeq(ref res, ref seq);
+            }            
+            return res;
+        }
+
+        private static void SetSeq(ref string res, ref IntSequence seq)
+        {
+            if (res == string.Empty)
+            {
+                res = seq.GetSeq();
+            }
+            else
+            {
+                res += "," + seq.GetSeq();
+            }            
+        }
+
+        struct IntSequence
+        {
+            int start;
+            int end;
+            bool has;
+
+            public IntSequence(int start)
+            {
+                this.start = start;
+                this.end = start;
+                has = true;
+            }
+
+            public bool IsNull()
+            {
+                return !has;
+            }
+
+            public bool AddInt (int next)
+            {
+                if (next-end ==1)
+                {
+                    end = next;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public string GetSeq()
+            {
+                string res = string.Empty;
+                has = false;
+                if (end == start)
+                {
+                    res = start.ToString();
+                }
+                else if (end-start==1)
+                {
+                    res = start + "," + end;
+                }
+                else
+                {
+                    res = start + "-" + end;
+                }                
+                return res;                
+            }
+        }
     }
 }

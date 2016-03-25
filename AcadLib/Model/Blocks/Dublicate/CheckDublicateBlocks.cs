@@ -24,6 +24,7 @@ namespace AcadLib.Blocks.Dublicate
         private static HashSet<ObjectId> attemptedblocks;
         private static List<BlockRefDublicateInfo> AllDublicBlRefInfos;
         private static Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>> dictBlRefInfos;
+        private static List<Error> _errors;
 
         public static void Check()
         {
@@ -34,7 +35,7 @@ namespace AcadLib.Blocks.Dublicate
         {
             curDepth = 0;
             Database db = HostApplicationServices.WorkingDatabase;
-            Inspector.Clear();
+            _errors = new List<Error>();
             attemptedblocks = new HashSet<ObjectId>();
             AllDublicBlRefInfos = new List<BlockRefDublicateInfo>();
             dictBlRefInfos = new Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>>();
@@ -82,13 +83,13 @@ namespace AcadLib.Blocks.Dublicate
                     Error err = new Error($"Дублирование блоков '{dublBlRefInfo.Name}' - {dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
                        dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error);
                     err.Tag = dublBlRefInfo;
-                    Inspector.Errors.Add(err);
+                    _errors.Add(err);
                 }
             }
 
-            if (Inspector.HasErrors)
+            if (_errors.Count>0)
             {
-                var formDublicates = new FormError(true);
+                var formDublicates = new FormError(_errors, true);
                 formDublicates.Text = "Дублирование блоков";
                 formDublicates.EnableDublicateButtons();
                 if (Application.ShowModalDialog(formDublicates) != System.Windows.Forms.DialogResult.OK)
@@ -96,8 +97,7 @@ namespace AcadLib.Blocks.Dublicate
                     formDublicates.EnableDialog(false);
                     Application.ShowModelessDialog(formDublicates);
                     throw new Exception("Отменено пользователем.");
-                }
-                Inspector.Clear();
+                }                
             }
         }
 
@@ -186,7 +186,7 @@ namespace AcadLib.Blocks.Dublicate
                     t.Commit();
                 }
             }
-            errors.ForEach(e => Inspector.Errors.Remove(e));
+            errors.ForEach(e => errors.Remove(e));
         }
     }
 }
