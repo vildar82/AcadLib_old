@@ -47,9 +47,14 @@ namespace TestAcadlib
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            var ints =new [] { 1, 15, 215, 318, 600, 601};
-            //var ints = new[] { 1, 15, 215, 318, 600, 601 };
-            var res = AcadLib.MathExt.IntsToStringSequence(ints);
+            var sel = ed.GetEntity("Выбери блок");
+            using (var blRef = sel.ObjectId.Open( OpenMode.ForRead)as BlockReference)
+            {
+                using (var btr = blRef.BlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
+                {
+                    var image = AcadLib.Blocks.Visual.BlockPreviewHelper.GetPreviewImage(btr);
+                }
+            }
         }
     }
 }

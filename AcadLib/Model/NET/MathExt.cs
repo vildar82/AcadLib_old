@@ -100,9 +100,10 @@ namespace AcadLib
         /// </summary>        
         public static string IntsToStringSequence(int[] ints)
         {
+            var uniqints = ints.Distinct();
             string res = string.Empty;
-            IntSequence seq = new IntSequence(ints.First());
-            foreach (var n in ints.Skip(1))
+            IntSequence seq = new IntSequence(uniqints.First());
+            foreach (var n in uniqints.Skip(1))
             {
                 if (!seq.AddInt(n))
                 {

@@ -16,20 +16,34 @@ namespace AcadLib.Blocks.Visual
     {
         public static ImageSource GetPreview(BlockTableRecord btr)
         {
+            return CMLContentSearchPreviews.GetBlockTRThumbnail(btr);            
+        }
+
+        public static System.Drawing.Image GetPreviewImage(BlockTableRecord btr)
+        {
+            var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);            
+            return ImageSourceToGDI((BitmapSource)imgsrc);            
+        }
+
+        public static Icon GetPreviewIcon(BlockTableRecord btr)
+        {
             var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
-            //System.Drawing.Image res = ImageSourceToGDI(imgsrc as BitmapSource);
-            return imgsrc;
+            var bitmap = ImageSourceToGDI((BitmapSource)imgsrc) as Bitmap;
+            var iconPtr = bitmap.GetHicon();
+            return Icon.FromHandle(iconPtr);
         }
 
         private static System.Drawing.Image ImageSourceToGDI(BitmapSource src)
         {
-            var ms = new MemoryStream();
-            var encoder = new BmpBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(src));
-            encoder.Save(ms);
-            ms.Flush();
-            return System.Drawing.Image.FromStream(ms);
-        }
+            using (var ms = new MemoryStream())
+            {
+                var encoder = new BmpBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(src));
+                encoder.Save(ms);
+                ms.Flush();
+                return System.Drawing.Image.FromStream(ms);
+            }
+        }        
     }
 }
 
