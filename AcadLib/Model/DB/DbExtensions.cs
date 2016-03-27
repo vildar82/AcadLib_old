@@ -229,7 +229,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
                         {
                             using (var ids = (new ObjectIdCollection(new ObjectId[] { idStyleInTemplate })))
                             {
-                                db.WblockCloneObjects(ids, ownerIdTable, map, DuplicateRecordCloning.Ignore, false);
+                                db.WblockCloneObjects(ids, ownerIdTable, map, DuplicateRecordCloning.Replace, false);
                                 idStyleDest = map[idStyleInTemplate].Value;
                             }
                         }
