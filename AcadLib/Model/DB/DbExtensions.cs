@@ -59,7 +59,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
         }
 
         /// <summary>
-        /// Получение табличного стиля ПИК
+        /// Получение табличного стиля ПИК с обновлением (DuplicateRecordCloning.Replace)
+        /// Не обновляется существующий стиль ПИК!!!
         /// </summary>      
         public static ObjectId GetTableStylePIK(this Database db, bool update)
         {
