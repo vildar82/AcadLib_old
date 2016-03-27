@@ -61,6 +61,33 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <summary>
         /// Получение табличного стиля ПИК
         /// </summary>      
+        public static ObjectId GetTableStylePIK(this Database db, bool update)
+        {
+            ObjectId idStyle = ObjectId.Null;
+            if (!update)
+            {
+                idStyle = getTableStylePik(db);
+            }
+            if (update || idStyle.IsNull)
+            {
+                // Копирование стиля таблиц из шаблона
+                try
+                {
+                    idStyle = copyObjectFromTemplate(db, getTableStylePik, db.TableStyleDictionaryId);
+                }
+                catch
+                { }
+                if (idStyle.IsNull)
+                {
+                    idStyle = db.Tablestyle;
+                }
+            }
+            return idStyle;
+        }
+
+        /// <summary>
+        /// Получение табличного стиля ПИК
+        /// </summary>      
         public static ObjectId GetTableStylePIK(this Database db, string styleName)
         {
             ObjectId idStyle = getTableStylePik(db, styleName);
