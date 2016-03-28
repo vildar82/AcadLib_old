@@ -57,5 +57,50 @@ namespace AcadLib
                 Thread.Sleep(delay2);
             }
         }
+
+        /// <summary>
+        /// Функция производит "мигание" подобъектом при помощи Highlight/Unhighlight
+        /// </summary>
+        /// <param name="idsPath">Цепочка вложенности объектов. BlockReference->Subentity</param>
+        /// <param name="num">Количество "миганий"</param>
+        /// <param name="delay1">Длительность "подсвеченного" состояния</param>
+        /// <param name="delay2">Длительность "неподсвеченного" состояния</param>
+        static public void FlickSubentityHighlight(ObjectId[] idsPath, int num, int delay1, int delay2)
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            for (int i = 0; i < num; i++)
+            {
+                // Highlight entity
+                using (DocumentLock doclock = doc.LockDocument())
+                {
+                    using (Transaction tr = doc.TransactionManager.StartTransaction())
+                    {
+                        SubentityId subId = new SubentityId(SubentityType.Null, 0);
+                        FullSubentityPath path = new FullSubentityPath(idsPath, subId);
+                        var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
+                        ent.Highlight(path, true);
+                        tr.Commit();
+                    }
+                }
+                doc.Editor.UpdateScreen();
+                // Wait for delay1 msecs
+                Thread.Sleep(delay1);
+                // Unhighlight entity
+                using (DocumentLock doclock = doc.LockDocument())
+                {
+                    using (Transaction tr = doc.TransactionManager.StartTransaction())
+                    {
+                        SubentityId subId = new SubentityId(SubentityType.Null, 0);
+                        FullSubentityPath path = new FullSubentityPath(idsPath, subId);
+                        var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
+                        ent.Unhighlight(path, true);
+                        tr.Commit();
+                    }
+                }
+                doc.Editor.UpdateScreen();
+                // Wait for delay2 msecs
+                Thread.Sleep(delay2);
+            }
+        }
     }
 }
