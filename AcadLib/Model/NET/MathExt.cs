@@ -96,7 +96,7 @@ namespace AcadLib
         /// <summary>
         /// Список чисел в строку, с групперовкой последовательных номеров
         /// ints = 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109
-        /// res = "1-8,10,15,16,100-107,109"
+        /// res = "1-8, 10, 15, 16, 100-107, 109"
         /// </summary>        
         public static string IntsToStringSequence(int[] ints)
         {
@@ -126,7 +126,7 @@ namespace AcadLib
             }
             else
             {
-                res += "," + seq.GetSeq();
+                res += ", " + seq.GetSeq();
             }            
         }
 
@@ -171,7 +171,7 @@ namespace AcadLib
                 }
                 else if (end-start==1)
                 {
-                    res = start + "," + end;
+                    res = start + ", " + end;
                 }
                 else
                 {
