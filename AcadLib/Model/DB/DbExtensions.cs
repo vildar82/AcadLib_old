@@ -110,6 +110,33 @@ namespace Autodesk.AutoCAD.DatabaseServices
         }
 
         /// <summary>
+        /// Получение табличного стиля ПИК
+        /// </summary>      
+        public static ObjectId GetTableStylePIK(this Database db, string styleName, bool update)
+        {
+            ObjectId idStyle = ObjectId.Null;
+            if (!update)
+            {
+                idStyle = getTableStylePik(db);
+            }
+            if (update || idStyle.IsNull)
+            {
+                // Копирование стиля таблиц из шаблона
+                try
+                {
+                    idStyle = copyObjectFromTemplate(db, getTableStylePik, styleName, db.TableStyleDictionaryId);
+                }
+                catch
+                { }
+                if (idStyle.IsNull)
+                {
+                    idStyle = db.Tablestyle;
+                }
+            }
+            return idStyle;
+        }
+
+        /// <summary>
         /// Получение текстового стиля ПИК
         /// </summary>  
         public static ObjectId GetTextStylePIK(this Database db)
@@ -259,7 +286,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
                         {
                             using (var ids = (new ObjectIdCollection(new ObjectId[] { idStyleInTemplate })))
                             {
-                                db.WblockCloneObjects(ids, ownerIdTable, map, DuplicateRecordCloning.Ignore, false);
+                                db.WblockCloneObjects(ids, ownerIdTable, map, DuplicateRecordCloning.Replace, false);
                                 idStyleDest = map[idStyleInTemplate].Value;
                             }
                         }

@@ -19,21 +19,33 @@ namespace AcadLib.Blocks.Dublicate
     public static class CheckDublicateBlocks
     {
         public static Tolerance Tolerance { get; set; } = new Tolerance(0.02, 10);
-        public static int DEPTH = 5;
+        public static int DEPTH = 5;        
         private static int curDepth;
         private static HashSet<ObjectId> attemptedblocks;
+        private static HashSet<string> _ignoreBlocks;
         private static List<BlockRefDublicateInfo> AllDublicBlRefInfos;
         private static Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>> dictBlRefInfos;
         private static List<Error> _errors;
 
         public static void Check()
         {
-            Check(null);
+            Check(null, null);            
+        }
+
+        public static void Check(HashSet<string> ignoreBlocks)
+        {
+            Check(null, ignoreBlocks);
         }
 
         public static void Check(IEnumerable idsBlRefs)
         {
+            Check(idsBlRefs, null);
+        }        
+
+        public static void Check(IEnumerable idsBlRefs, HashSet<string> ignoreBlocks)
+        {
             curDepth = 0;
+            _ignoreBlocks = ignoreBlocks;
             Database db = HostApplicationServices.WorkingDatabase;
             _errors = new List<Error>();
             attemptedblocks = new HashSet<ObjectId>();
@@ -126,6 +138,11 @@ namespace AcadLib.Blocks.Dublicate
                 var blRef = dbo as BlockReference;
                 if (blRef == null || !blRef.Visible) continue;
                 BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);
+
+                if (_ignoreBlocks!=null && _ignoreBlocks.Contains(blRefInfo.Name, StringComparer.OrdinalIgnoreCase))
+                {
+                    return;
+                }
 
                 Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
                 PointTree ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
