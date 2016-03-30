@@ -32,7 +32,8 @@ namespace TestAcadlib
 
             try
             {
-                CheckDublicateBlocks.Check();
+                CheckDublicateBlocks.Tolerance = new Tolerance(0.02, 15);
+                CheckDublicateBlocks.Check(new HashSet<string>() { "RV_EL_BS_Базовая стена" });                
             }
             catch (System.Exception ex)
             {

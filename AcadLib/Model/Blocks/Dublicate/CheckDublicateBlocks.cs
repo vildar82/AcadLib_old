@@ -131,7 +131,7 @@ namespace AcadLib.Blocks.Dublicate
                     isFirstDbo = false;
                     if (!attemptedblocks.Add(dbo.OwnerId))
                     {
-                        return;
+                        continue;
                     }
                 }
 
@@ -141,7 +141,7 @@ namespace AcadLib.Blocks.Dublicate
 
                 if (_ignoreBlocks!=null && _ignoreBlocks.Contains(blRefInfo.Name, StringComparer.OrdinalIgnoreCase))
                 {
-                    return;
+                    continue;
                 }
 
                 Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
@@ -160,7 +160,7 @@ namespace AcadLib.Blocks.Dublicate
                 }
                 listBiAtPoint.Add(blRefInfo);
 
-                idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(item1: blRef.BlockTableRecord, item2: blRef.BlockTransform, item3: blRef.Rotation + rotate));
+                idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(item1: blRef.BlockTableRecord, item2: blRef.BlockTransform* transToModel, item3: blRef.Rotation + rotate));
             }
 
             // Нырок глубже
