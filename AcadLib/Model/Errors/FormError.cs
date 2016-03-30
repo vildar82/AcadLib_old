@@ -26,7 +26,7 @@ namespace AcadLib.Errors
         private ToolTip toolTip1;
         private System.Windows.Forms.Button buttonAllErrors;
         private List<Error> collapsedErrors;
-        private List<Error> errors;
+        private List<Error> _errors;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonDel;
@@ -42,7 +42,7 @@ namespace AcadLib.Errors
 
         public FormError(List<Error> errors, bool modal)
         {
-            this.errors = errors;
+            this._errors = errors;
             InitializeComponent();
             EnableDialog(modal);
 
@@ -397,7 +397,7 @@ namespace AcadLib.Errors
             else
             {
                 // Показать все ошибки;         
-                bindingErrors(errors);
+                bindingErrors(_errors);                
                 //buttonAllErrors.Text = "Без повторов";
                 buttonAllErrors.BackgroundImage = Properties.Resources.Collapse;
                 toolTip1.SetToolTip(buttonAllErrors, "Показать только неповторяющиеся сообщения.");
@@ -406,8 +406,8 @@ namespace AcadLib.Errors
 
         private void UpdateCollapsedErrors()
         {
-            collapsedErrors = Error.GetCollapsedErrors(errors);
-            if (errors.Count == collapsedErrors.Count)
+            collapsedErrors = Error.GetCollapsedErrors(_errors);
+            if (_errors.Count == collapsedErrors.Count)
             {
                 buttonAllErrors.Visible = false;
             }
@@ -445,7 +445,8 @@ namespace AcadLib.Errors
 
             try
             {
-                Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
+                Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);                
+                errors.ForEach(e => _errors.Remove(e));
                 UpdateBinding();
             }
             catch (Exception ex)
@@ -470,7 +471,7 @@ namespace AcadLib.Errors
             {
                 foreach (var item in listBoxError.SelectedItems)
                 {
-                    errors.Remove((Error)item);
+                    _errors.Remove((Error)item);
                 }
                 UpdateBinding();
             }

@@ -185,8 +185,7 @@ namespace AcadLib.Blocks.Dublicate
                     }
                     t.Commit();
                 }
-            }
-            errors.ForEach(e => errors.Remove(e));
+            }            
         }
     }
 }
