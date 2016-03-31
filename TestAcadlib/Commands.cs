@@ -49,6 +49,7 @@ namespace TestAcadlib
             Editor ed = doc.Editor;
 
             Table table = new Table();
+            table.SetDatabaseDefaults();
             table.SetSize(5, 5);
             table.SetBorders(LineWeight.LineWeight050);
 
@@ -61,18 +62,20 @@ namespace TestAcadlib
             }
             count = 1;
             for (int i = 2; i < table.Rows.Count; i++)
-            {
-                var rowData = table.Rows[i];
-                //foreach (var item in collection)
-                //{
-
-                //}
+            {                
                 table.Cells[i, 0].TextString = "Дата " + i + count++;
+                table.Cells[i, 1].TextString = "Дата " + i + count++;
+                table.Cells[i, 2].TextString = "Дата " + i + count++;
+                table.Cells[i, 3].TextString = "Дата " + i + count++;
+                table.Cells[i, 4].TextString = "Дата " + i + count++;
             }
 
             using (var t = db.TransactionManager.StartTransaction())
             {
-
+                var ms = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+                ms.AppendEntity(table);
+                t.AddNewlyCreatedDBObject(table, true);
+                t.Commit();
             }
         }
 

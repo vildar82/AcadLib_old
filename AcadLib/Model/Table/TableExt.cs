@@ -13,31 +13,28 @@ namespace AcadLib
 
         public static void SetBorders(this Table table, LineWeight lw)
         {
-            foreach (var row in table.Rows.Skip(1))
+            if (table.Rows.Count < 2) return;
+
+            var rowTitle = table.Rows[0];
+            setRowTitle(rowTitle);
+
+            var rowHead = table.Rows[1];
+            setRowHeader(rowHead, lw);
+
+            foreach (var row in table.Rows.Skip(2))
             {
-                switch (row.Style)
-                {
-                    case "_TITLE":
-                        setRowTitle(row, LineWeight.LineWeight000);
-                        break;
-                    case "_HEADER":
-                        setRowHeader(row, lw);
-                        break;
-                    default:
-                        setRowData(row, lw);
-                        break;
-                }
+                setRowData(row, lw);
             }
         }
 
-        private static void setRowTitle(Row row, LineWeight lw)
+        private static void setRowTitle(Row row)
         {
-            setCell(row.Borders.Bottom, lw, false);
-            setCell(row.Borders.Horizontal, lw, false);
-            setCell(row.Borders.Left, lw, false);
-            setCell(row.Borders.Right, lw, false);
-            setCell(row.Borders.Top, lw, false);
-            setCell(row.Borders.Vertical, lw, false);
+            setCell(row.Borders.Bottom,  LineWeight.LineWeight000, false);
+            setCell(row.Borders.Horizontal, LineWeight.LineWeight000, false);
+            setCell(row.Borders.Left, LineWeight.LineWeight000, false);
+            setCell(row.Borders.Right, LineWeight.LineWeight000, false);
+            setCell(row.Borders.Top, LineWeight.LineWeight000, false);
+            setCell(row.Borders.Vertical, LineWeight.LineWeight000, false);
         }
 
         private static void setRowHeader(Row row, LineWeight lw)
@@ -62,8 +59,9 @@ namespace AcadLib
 
         private static void setCell(CellBorder cell, LineWeight lw, bool visible)
         {
+            //cell.Overrides = GridProperties.Visibility | GridProperties.LineWeight;
             cell.LineWeight = lw;
-            cell.IsVisible = visible;
+            cell.IsVisible = visible;            
         }
     }
 }
