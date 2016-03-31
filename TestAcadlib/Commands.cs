@@ -48,13 +48,47 @@ namespace TestAcadlib
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            var sel = ed.GetEntity("Выбери блок");
-            using (var blRef = sel.ObjectId.Open( OpenMode.ForRead)as BlockReference)
+            Table table = new Table();
+            table.SetSize(5, 5);
+            table.SetBorders(LineWeight.LineWeight050);
+
+            table.Cells[0, 0].TextString = "Название";
+            var rowHead = table.Rows[1];
+            int count = 1;
+            foreach (var item in rowHead)
             {
-                using (var btr = blRef.BlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
-                {
-                    var image = AcadLib.Blocks.Visual.BlockPreviewHelper.GetPreviewImage(btr);
-                }
+                table.Cells[item.Row, item.Column].TextString = "Заголовок-" + count++;
+            }
+            count = 1;
+            for (int i = 2; i < table.Rows.Count; i++)
+            {
+                var rowData = table.Rows[i];
+                //foreach (var item in collection)
+                //{
+
+                //}
+                table.Cells[i, 0].TextString = "Дата " + i + count++;
+            }
+
+            using (var t = db.TransactionManager.StartTransaction())
+            {
+
+            }
+        }
+
+        [CommandMethod("CleanZombieBlocks", CommandFlags.Modal)]
+        public void CleanZombieBlocks()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            Database db = doc.Database;
+            try
+            {
+                db.CleanZombieBlock();
+            }
+            catch (System.Exception ex)
+            {
+                doc.Editor.WriteMessage($"\nОшибка - {ex.Message}");
             }
         }
     }

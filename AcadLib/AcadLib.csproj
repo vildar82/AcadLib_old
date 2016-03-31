@@ -127,6 +127,7 @@
     <Compile Include="Model\Blocks\Visual\WindowVisualBlocks.xaml.cs">
       <DependentUpon>WindowVisualBlocks.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\Clean\CleanExt.cs" />
     <Compile Include="Model\Comparers\AlphanumComparator.cs" />
     <Compile Include="Model\Comparers\DoubleEqualityComparer.cs" />
     <Compile Include="Model\Comparers\StringsNumberComparer.cs" />
@@ -137,7 +138,7 @@
     <Compile Include="General.cs" />
     <Compile Include="Model\Layers\LayerExt.cs" />
     <Compile Include="Model\Layers\LayerInfo.cs" />
-    <Compile Include="Model\LibDBobjects\DBObjectExt.cs" />
+    <Compile Include="Model\DB\DBObjectExt.cs" />
     <Compile Include="Model\NET\Extensions.cs" />
     <Compile Include="Model\NET\MathExt.cs" />
     <Compile Include="Model\NET\Result.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Model\RTree\SpatialIndex\Point.cs" />
     <Compile Include="Model\RTree\SpatialIndex\Rectangle.cs" />
     <Compile Include="Model\RTree\SpatialIndex\RTree.cs" />
+    <Compile Include="Model\Table\TableExt.cs" />
     <Compile Include="Model\UI\Properties\FormProperties.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -76,5 +76,22 @@ namespace AcadLib
                 doc.Editor.WriteMessage($"\nОшибка - {ex.Message}");
             }            
         }
+
+        [CommandMethod("PIK", "PIK-CleanZombieBlocks", CommandFlags.Modal)]
+        public void CleanZombieBlocks()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            Database db = doc.Database;
+            try
+            {
+                var countZombie = db.CleanZombieBlock();
+                doc.Editor.WriteMessage($"\nУдалено {countZombie} зомби!☻");
+            }
+            catch (System.Exception ex)
+            {
+                doc.Editor.WriteMessage($"\nОшибка - {ex.Message}");
+            }
+        }
     }
 }
