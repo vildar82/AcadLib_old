@@ -131,7 +131,7 @@
     <Compile Include="Model\Comparers\AlphanumComparator.cs" />
     <Compile Include="Model\Comparers\DoubleEqualityComparer.cs" />
     <Compile Include="Model\Comparers\StringsNumberComparer.cs" />
-    <Compile Include="Model\DB\DictNODExt.cs" />
+    <Compile Include="Model\XData\DictNODExt.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />
     <Compile Include="Model\DB\ObjectIdExt.cs" />
     <Compile Include="Model\Files\SerializerXml.cs" />
@@ -155,6 +155,7 @@
     <Compile Include="Model\UI\Properties\FormProperties.Designer.cs">
       <DependentUpon>FormProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\XData\XDataExt.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
