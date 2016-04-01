@@ -53,7 +53,7 @@ namespace AcadLib
             {
                 foreach (var item in rb)
                 {
-                    if (item.TypeCode == (short)DxfCode.Int32)
+                    if (item.TypeCode == (short)DxfCode.ExtendedDataInteger32)
                     {
                         return (int)item.Value;
                     }
