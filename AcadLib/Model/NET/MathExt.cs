@@ -11,11 +11,21 @@ namespace AcadLib
         /// <summary>
         /// Преобразование градусов в радианы (Math.PI / 180.0)*angleDegrees
         /// </summary>
-        /// <param name="angleDegrees">Угол в градусах</param>
+        /// <param name="degrees">Угол в градусах</param>
         /// <returns>Угол в радианах</returns>
-        public static double ToRadians(this double angleDegrees)
+        public static double ToRadians(this double degrees)
         {
-            return angleDegrees * (Math.PI / 180.0);
+            return degrees * (Math.PI / 180.0);
+        }
+
+        /// <summary>
+        /// Преобразование радиан в градусы (180.0*angleDegrees/Math.PI)
+        /// </summary>
+        /// <param name="angleRadian">Угол в радианах</param>
+        /// <returns>Угол в градусах</returns>
+        public static double ToDegrees(this double radian)
+        {
+            return radian * 180.0 / Math.PI;
         }
 
         public static int RoundTo10(int i)
