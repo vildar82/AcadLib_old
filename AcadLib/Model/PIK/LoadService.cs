@@ -43,6 +43,15 @@ namespace AcadLib
             LoadPackages("PowerCollections.dll");            
         }
 
+        /// <summary>
+        /// Загрузка сборки ГП PIK_GP_Acad.dll
+        /// </summary>
+        public static void LoadGP()
+        {
+            string gpdll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\ГП\PIK_GP_Acad.dll");
+            Assembly.LoadFrom(gpdll);
+        }
+
         private static void LoadPackages(string name)
         {
             var dll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\packages\" + name);
