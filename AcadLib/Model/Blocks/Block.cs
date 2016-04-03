@@ -22,6 +22,16 @@ namespace AcadLib.Blocks
                                                   DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
             ObjectId idRes;
+            if (mode == DuplicateRecordCloning.Ignore)
+            {
+                using (var bt = destDb.BlockTableId.Open( OpenMode.ForRead) as BlockTable)
+                {
+                    if (bt.Has(blName))
+                    {
+                        return bt[blName];
+                    }
+                }
+            }
             List<string> blNames = new List<string> { blName };
             var resCopy = CopyBlockFromExternalDrawing(blNames, fileDrawing, destDb, mode);
             if (!resCopy.TryGetValue(blName, out idRes))
