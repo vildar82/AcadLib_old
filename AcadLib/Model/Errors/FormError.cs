@@ -44,14 +44,13 @@ namespace AcadLib.Errors
         {
             this._errors = errors;
             InitializeComponent();
-            EnableDialog(modal);
-
-            isAllErrors = true;
-            //UpdateCollapsedErrors();
+            EnableDialog(modal);                        
 
             _binding = new BindingSource();
 
+            isAllErrors = true;
             UpdateBinding();
+            isAllErrors = false;
 
             //bindingErrors(collapsedErrors);
             listBoxError.DataSource = _binding;
