@@ -46,10 +46,14 @@ namespace AcadLib.Errors
             InitializeComponent();
             EnableDialog(modal);
 
-            UpdateCollapsedErrors();
+            isAllErrors = true;
+            //UpdateCollapsedErrors();
 
             _binding = new BindingSource();
-            bindingErrors(collapsedErrors);
+
+            UpdateBinding();
+
+            //bindingErrors(collapsedErrors);
             listBoxError.DataSource = _binding;
             listBoxError.DisplayMember = "ShortMsg";
             textBoxErr.DataBindings.Add("Text", _binding, "Message", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -414,7 +418,7 @@ namespace AcadLib.Errors
             else
             {
                 buttonAllErrors.Visible = true;
-                isAllErrors = false;
+                //isAllErrors = false;
             }
         }
 
