@@ -10,6 +10,16 @@ namespace Autodesk.AutoCAD.DatabaseServices
 {
    public static class ExtentsExtension
    {
+        public static Polyline GetPolyline(this Extents3d ext)
+        {
+            var pl = new Polyline();
+            pl.AddVertexAt(0, ext.MinPoint.Convert2d(), 0, 0, 0);
+            pl.AddVertexAt(1, new Point2d (ext.MinPoint.X, ext.MaxPoint.Y) , 0, 0, 0);
+            pl.AddVertexAt(2, ext.MaxPoint.Convert2d(), 0, 0, 0);
+            pl.AddVertexAt(3, new Point2d(ext.MaxPoint.X, ext.MinPoint.Y), 0, 0, 0);
+            return pl;
+        }
+
       /// <summary>
       /// Определение точки центра границы Extents3d
       /// </summary>
