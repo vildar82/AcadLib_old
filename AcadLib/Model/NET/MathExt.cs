@@ -3,11 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AcadLib.Comparers;
 
 namespace AcadLib
 {
     public static class MathExt
     {
+        public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
+
+        /// <summary>
+        /// Проверка - это ортогональный угол - 0,90,180,270,360 градусов.
+        /// Допуск по умолчанию 1 градус - AngleComparer
+        /// </summary>
+        /// <param name="angleDeg">Угол в градусах</param>
+        /// <returns>True если угол ортогональный, False - если нет.</returns>
+        public static bool IsOrthoAngle(this double angleDeg)
+        {
+            return AngleComparer.Equals(angleDeg, 0) ||
+                   AngleComparer.Equals(angleDeg, 90) ||
+                   AngleComparer.Equals(angleDeg, 180) ||
+                   AngleComparer.Equals(angleDeg, 270) ||
+                   AngleComparer.Equals(angleDeg, 360);
+        }
+
         /// <summary>
         /// Преобразование градусов в радианы (Math.PI / 180.0)*angleDegrees
         /// </summary>
