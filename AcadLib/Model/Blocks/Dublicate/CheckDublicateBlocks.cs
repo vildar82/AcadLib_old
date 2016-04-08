@@ -54,7 +54,8 @@ namespace AcadLib.Blocks.Dublicate
             try
             {
                 using (var t = db.TransactionManager.StartTransaction())
-                {
+                {                    
+
                     if (idsBlRefs == null)
                     {
                         var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead) as BlockTableRecord;
