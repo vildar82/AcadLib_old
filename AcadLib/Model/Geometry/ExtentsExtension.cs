@@ -17,6 +17,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             pl.AddVertexAt(1, new Point2d (ext.MinPoint.X, ext.MaxPoint.Y) , 0, 0, 0);
             pl.AddVertexAt(2, ext.MaxPoint.Convert2d(), 0, 0, 0);
             pl.AddVertexAt(3, new Point2d(ext.MaxPoint.X, ext.MinPoint.Y), 0, 0, 0);
+            pl.Closed = true;
             return pl;
         }
 
