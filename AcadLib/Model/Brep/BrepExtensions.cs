@@ -45,6 +45,7 @@ namespace AcadLib
         private static Polyline3d GetRegionContour(Region reg)
         {
             Polyline3d resVal = null;
+            double maxArea = 0;
             Brep brep = new Brep(reg);
             foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
             {
@@ -52,17 +53,24 @@ namespace AcadLib
                 {
                     if (loop.LoopType == LoopType.LoopExterior)
                     {
-                        HashSet<Point3d> ptsHash = new HashSet<Point3d>();                        
+                        HashSet<Point3d> ptsHash = new HashSet<Point3d>();                                                
                         foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)
                         {
-                            ptsHash.Add(vert.Point);
+                            if (!ptsHash.Any(p => p.IsEqualTo(vert.Point, Tolerance.Global)))
+                            {
+                                ptsHash.Add(vert.Point);
+                            }                            
                         }
                         Point3dCollection pts = new Point3dCollection(ptsHash.ToArray());
-                        return new Polyline3d(Poly3dType.SimplePoly, pts, true);
+                        var pl = new Polyline3d(Poly3dType.SimplePoly, pts, true);
+                        if (pl.Area>maxArea)
+                        {
+                            resVal = pl;
+                        }
                     }
                 }
             }
             return resVal;
         }
-    }
+    }    
 }
