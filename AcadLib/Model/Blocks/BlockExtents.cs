@@ -25,7 +25,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             var idsBlRef = btr.GetBlockReferenceIds(true, false);
             foreach (ObjectId idBlRefApart in idsBlRef)
             {
-                var blRefApartItem = idBlRefApart.GetObject(OpenMode.ForRead, false, true) as BlockReference;
+                var blRefApartItem = idBlRefApart.GetObject(OpenMode.ForWrite, false, true) as BlockReference;
                 blRefApartItem.RecordGraphicsModified(true);
             }
         }
