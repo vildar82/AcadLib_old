@@ -52,11 +52,12 @@ namespace AcadLib
                 {
                     if (loop.LoopType == LoopType.LoopExterior)
                     {
-                        Point3dCollection pts = new Point3dCollection();
+                        HashSet<Point3d> ptsHash = new HashSet<Point3d>();                        
                         foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)
                         {
-                            pts.Add(vert.Point);
+                            ptsHash.Add(vert.Point);
                         }
+                        Point3dCollection pts = new Point3dCollection(ptsHash.ToArray());
                         return new Polyline3d(Poly3dType.SimplePoly, pts, true);
                     }
                 }
