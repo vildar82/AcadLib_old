@@ -133,6 +133,7 @@
     <Compile Include="Model\Clean\CleanExt.cs" />
     <Compile Include="Model\Comparers\AlphanumComparator.cs" />
     <Compile Include="Model\Comparers\DoubleEqualityComparer.cs" />
+    <Compile Include="Model\Comparers\Point3dComparer.cs" />
     <Compile Include="Model\Comparers\StringsNumberComparer.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandsControl.xaml.cs">
       <DependentUpon>CommandsControl.xaml</DependentUpon>

@@ -11,12 +11,20 @@ namespace AcadLib.PaletteCommands
     public class PaletteSetCommands :PaletteSet
     {
         public PaletteSetCommands(string name) : base(name)
-        {            
+        {                        
         }
 
-        public static PaletteSetCommands Create(string name, List<IPaletteCommand> comms)
+        public PaletteSetCommands(string name, Guid guid) : base(name, guid)
         {
-            var palette = new PaletteSetCommands(name);
+        }
+
+        public PaletteSetCommands(string name, string cmd, Guid guid) : base(name, cmd, guid)
+        {
+        }
+
+        public static PaletteSetCommands Create(string name, List<IPaletteCommand> comms, Guid guid)
+        {
+            var palette = new PaletteSetCommands(name, guid);
             PaletteModel model = new PaletteModel();
             model.LoadData(comms);
             CommandsControl commControl = new CommandsControl();
