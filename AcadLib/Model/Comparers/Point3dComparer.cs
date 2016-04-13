@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.Geometry;
 
-namespace AcadLib.Model.Comparers
+namespace AcadLib.Comparers
 {
     /// <summary>
     /// Сравнение точек с заданным допуском
