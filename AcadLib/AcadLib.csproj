@@ -90,6 +90,9 @@
       <HintPath>..\..\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\bin\Release\AutoCAD_PIK_Manager.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="EPPlus">
+      <HintPath>..\..\Package\Excel\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -131,6 +134,16 @@
     </Compile>
     <Compile Include="Model\Brep\BrepExtensions.cs" />
     <Compile Include="Model\Clean\CleanExt.cs" />
+    <Compile Include="Model\Colors\ColorBooks\ColorBook.cs" />
+    <Compile Include="Model\Colors\ColorBooks\ColorBookHelper.cs" />
+    <Compile Include="Model\Colors\ColorBooks\ColorItem.cs" />
+    <Compile Include="Model\Colors\ColorBooks\FormOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model\Colors\ColorBooks\FormOptions.designer.cs">
+      <DependentUpon>FormOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Colors\ColorBooks\Options.cs" />
     <Compile Include="Model\Comparers\AlphanumComparator.cs" />
     <Compile Include="Model\Comparers\DoubleEqualityComparer.cs" />
     <Compile Include="Model\Comparers\Point3dComparer.cs" />
@@ -218,6 +231,9 @@
     <Compile Include="Model\DB\DbExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Model\Colors\ColorBooks\FormOptions.resx">
+      <DependentUpon>FormOptions.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Model\Errors\FormError.resx">
       <DependentUpon>FormError.cs</DependentUpon>
     </EmbeddedResource>
@@ -230,6 +246,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="AutoCADNetLoad.scr" />
     <None Include="Resources\Collapse.ico" />
     <None Include="Resources\Collapse.png" />
     <None Include="Resources\Expand.png" />

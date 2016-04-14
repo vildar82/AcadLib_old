@@ -93,5 +93,21 @@ namespace AcadLib
                 doc.Editor.WriteMessage($"\nОшибка - {ex.Message}");
             }
         }
+
+        [CommandMethod("PIK", "PIK-ColorBookNCS", CommandFlags.Modal | CommandFlags.Session)]
+        public void ColorBookNCS()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            Database db = doc.Database;
+            try
+            {
+                Colors.ColorBookHelper.GenerateNCS();
+            }
+            catch (System.Exception ex)
+            {
+                doc.Editor.WriteMessage($"\nОшибка - {ex.Message}");
+            }
+        }
     }
 }
