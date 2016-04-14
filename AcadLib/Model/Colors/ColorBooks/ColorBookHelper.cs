@@ -41,7 +41,7 @@ namespace AcadLib.Colors
                     ColorBook colorBookNcs = ColorBook.ReadFromFile(Options.Instance.NCSFile);
 
                     // Запрос точки начала генерации палитр цветов
-                    var ptStart = getStartPoint();
+                    var ptStart = ed.GetPointWCS("Точка вставки");
 
                     // Расположение цветов в модели
                     var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
@@ -51,16 +51,6 @@ namespace AcadLib.Colors
                 }
             }
         }       
-
-        private static Point3d getStartPoint()
-        {
-            var res = ed.GetPoint("Точка вставки");
-            if (res.Status != PromptStatus.OK)
-            {
-                throw new System.Exception(AcadLib.General.CanceledByUser);
-            }
-            return res.Value;
-        }
 
         private static void placementColors(BlockTableRecord cs, ColorBook colorBookNcs, Point3d ptStart)
         {
