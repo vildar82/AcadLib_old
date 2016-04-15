@@ -133,6 +133,17 @@ namespace AcadLib.Errors
             Trans = Matrix3d.Identity;
         }
 
+        public Error(string message, Extents3d ext, Matrix3d trans, Icon icon = null)
+        {
+            _msg = message;
+            _shortMsg = getShortMsg(_msg);            
+            _extents = ext;
+            _alreadyCalcExtents = true;
+            _hasEntity = true;
+            Icon = icon;
+            Trans = trans;
+        }
+
         public Error(string message, ObjectId idEnt, Icon icon = null)
         {
             _msg = message;
