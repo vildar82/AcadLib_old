@@ -77,6 +77,7 @@ namespace AcadLib.Blocks
             {
                 foreach (ObjectId idAttrRef in blRef.AttributeCollection)
                 {
+                    if (idAttrRef.IsErased) continue;
                     using (var atrRef = idAttrRef.Open(OpenMode.ForRead, false, true) as AttributeReference)
                     {
                         if (atrRef.Visible)
