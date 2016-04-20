@@ -29,35 +29,35 @@ namespace AcadLib.Editors
 
 namespace Autodesk.AutoCAD.EditorInput
 {
-   public static class EditorExtension
-   {
-      public static void Zoom(this Editor ed, Extents3d ext)
-      {
-         if (ed == null)
-            throw new ArgumentNullException("ed");
+    public static class EditorExtension
+    {
+        public static void Zoom(this Editor ed, Extents3d ext)
+        {
+            if (ed == null)
+                return;
 
-         using (ViewTableRecord view = ed.GetCurrentView())
-         {
-            ext.TransformBy(view.WorldToEye());
-            view.Width = ext.MaxPoint.X - ext.MinPoint.X;
-            view.Height = ext.MaxPoint.Y - ext.MinPoint.Y;
-            view.CenterPoint = new Point2d(
-                (ext.MaxPoint.X + ext.MinPoint.X) / 2.0,
-                (ext.MaxPoint.Y + ext.MinPoint.Y) / 2.0);
-            ed.SetCurrentView(view);
-         }
-      }
+            using (ViewTableRecord view = ed.GetCurrentView())
+            {
+                ext.TransformBy(view.WorldToEye());
+                view.Width = ext.MaxPoint.X - ext.MinPoint.X;
+                view.Height = ext.MaxPoint.Y - ext.MinPoint.Y;
+                view.CenterPoint = new Point2d(
+                    (ext.MaxPoint.X + ext.MinPoint.X) / 2.0,
+                    (ext.MaxPoint.Y + ext.MinPoint.Y) / 2.0);
+                ed.SetCurrentView(view);
+            }
+        }
 
-      public static void ZoomExtents(this Editor ed)
-      {
-         if (ed == null)
-            throw new ArgumentNullException("ed");
+        public static void ZoomExtents(this Editor ed)
+        {
+            if (ed == null)
+                return;
 
-         Database db = ed.Document.Database;
-         Extents3d ext = (short)Application.GetSystemVariable("cvport") == 1 ?
-             new Extents3d(db.Pextmin, db.Pextmax) :
-             new Extents3d(db.Extmin, db.Extmax);
-         ed.Zoom(ext);
-      }
-   }
+            Database db = ed.Document.Database;
+            Extents3d ext = (short)Application.GetSystemVariable("cvport") == 1 ?
+                new Extents3d(db.Pextmin, db.Pextmax) :
+                new Extents3d(db.Extmin, db.Extmax);
+            ed.Zoom(ext);
+        }        
+    }
 }
