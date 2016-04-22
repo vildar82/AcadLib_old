@@ -30,7 +30,7 @@ namespace AcadLib.Jigs
 
         protected override SamplerStatus Sampler(JigPrompts prompts)
         {
-            var res = prompts.AcquirePoint("\nТочка вставки разверток:");
+            var res = prompts.AcquirePoint("\nТочка вставки:");
             if (res.Status != PromptStatus.OK)            
                 throw new Exception(General.CanceledByUser);
 
