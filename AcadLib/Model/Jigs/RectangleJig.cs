@@ -9,9 +9,13 @@ using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Jigs
 {
+    /// <summary>
+    /// Запрос точки вставки с висящим на курсоре прямоугольником.
+    /// Точка вставки - нижний левый угол
+    /// </summary>
     public class RectangleJig : EntityJig
     {
-        public Point3d Position { get; set; }
+        public Point3d Position { get; set; }        
 
         public RectangleJig(double length, double height) : base(new Polyline())
         {
