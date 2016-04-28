@@ -14,15 +14,17 @@ namespace AcadLib.Plot
     // http://adndevblog.typepad.com/autocad/2012/05/how-to-use-the-autodeskautocadpublishingpublisherpublishdsd-api-in-net.html
     public class PlotDirToPdf
     {
+        private static Comparers.AlphanumComparator alphaComparer = Comparers.AlphanumComparator.New;
         private string dir;
         private string filePdfOutputName;
-        private string[] filesDwg;        
+        private string[] filesDwg;                
 
         public PlotOptions Options { get; set; }
 
         public PlotDirToPdf(string dir, string filePdfOutputName = "")
         {
-            this.filesDwg = Directory.GetFiles(dir, "*.dwg", SearchOption.TopDirectoryOnly);
+            filesDwg = Directory.GetFiles(dir, "*.dwg", SearchOption.TopDirectoryOnly);
+            filesDwg = filesDwg.OrderBy(f => f, alphaComparer).ToArray();
             this.dir = dir;
             this.filePdfOutputName = filePdfOutputName == "" ? Path.GetFileName(dir) : filePdfOutputName;
         }
@@ -71,8 +73,10 @@ namespace AcadLib.Plot
         {            
             DsdEntryCollection dsdCol = new DsdEntryCollection();
 
+            int indexfile = 0;
             foreach (var fileDwg in filesDwg)
             {
+                indexfile++;
                 using (var dbTemp = new Database(false, true))
                 {
                     dbTemp.ReadDwgFile(fileDwg, FileOpenMode.OpenForReadAndAllShare, false, "");
@@ -86,14 +90,14 @@ namespace AcadLib.Plot
                             if (entry.Key != "Model")
                             {
                                 if (!entry.Value.IsErased)
-                                {
+                                {                                    
                                     var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;
                                     DsdEntry dsdEntry = new DsdEntry();
-                                    dsdEntry.Layout = layout.LayoutName;
+                                    dsdEntry.Layout =layout.LayoutName;
                                     dsdEntry.DwgName = fileDwg;
                                     //dsdEntry.Nps = "Setup1";
                                     dsdEntry.NpsSourceDwg = fileDwg;
-                                    dsdEntry.Title = layout.LayoutName;
+                                    dsdEntry.Title =indexfile + "-" + layout.LayoutName;
                                     layouts.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
                                     //dsdCol.Add(dsdEntry);
                                 }
