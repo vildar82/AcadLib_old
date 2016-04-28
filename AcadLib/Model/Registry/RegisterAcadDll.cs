@@ -10,7 +10,7 @@ using Microsoft.Win32;
 
 namespace AcadLib
 {
-   public static class Register
+   public static class RegisterAcadDll
    {
       /// <summary>
       /// Controls how and when the .NET assembly is loaded.

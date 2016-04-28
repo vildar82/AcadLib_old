@@ -20,7 +20,7 @@ namespace AcadLib.UI
 
         private void buttonReset_Click(object sender, EventArgs e)
         {
-            propertyGrid1.ResetSelectedProperty();
+            propertyGrid1.ResetSelectedProperty();            
         }
     }
 }

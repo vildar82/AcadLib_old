@@ -149,6 +149,8 @@
     <Compile Include="Model\Comparers\Point3dComparer.cs" />
     <Compile Include="Model\Comparers\StringsNumberComparer.cs" />
     <Compile Include="Model\Jigs\RectangleJig.cs" />
+    <Compile Include="Model\Plot\PlotOptions.cs" />
+    <Compile Include="Model\Registry\RegExt.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandsControl.xaml.cs">
       <DependentUpon>CommandsControl.xaml</DependentUpon>
     </Compile>
@@ -223,7 +225,7 @@
     <Compile Include="Model\Jigs\TableJig.cs" />
     <Compile Include="Model\Plot\PlotToFileConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\Registry\Register.cs" />
+    <Compile Include="Model\Registry\RegisterAcadDll.cs" />
     <Compile Include="Model\RTree\Node.cs" />
     <Compile Include="Model\RTree\Point.cs" />
     <Compile Include="Model\RTree\Rectangle.cs" />

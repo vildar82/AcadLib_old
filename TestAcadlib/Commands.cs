@@ -23,22 +23,15 @@ namespace TestAcadlib
 {
     public class Commands
     {
-        [CommandMethod("TestErrors")]
-        public void TestErrors()
+        [CommandMethod("Test")]
+        public void Test()
         {
             Document doc = AcAp.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            Inspector.AddError("err1");
-            Inspector.AddError("err1");
-            Inspector.AddError("err1");
-            Inspector.AddError("err2");
-            Inspector.AddError("err2");
-            Inspector.AddError("err2");
-            Inspector.AddError("err2");
-
-            Inspector.Show();
+            AcadLib.Plot.PlotOptions plotOpt = new AcadLib.Plot.PlotOptions();
+            plotOpt.Show();
         }       
     }
 }
