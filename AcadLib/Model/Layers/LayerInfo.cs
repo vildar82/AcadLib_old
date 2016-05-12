@@ -25,9 +25,20 @@ namespace AcadLib.Layers
         public LayerInfo(string name)
         {
             Name = name;
-            Color = Autodesk.AutoCAD.Colors.Color.FromColorIndex(ColorMethod.ByAci, 7);
+            Color = Color.FromColorIndex(ColorMethod.ByAci, 7);
             LineWeight = LineWeight.ByLineWeightDefault;
             IsPlotable = true;
+        }
+
+        public LayerInfo(ObjectId idLayer)
+        {
+            using (var layer = idLayer.Open( OpenMode.ForRead)as LayerTableRecord)
+            {
+                Name = layer.Name;
+                Color = layer.Color;
+                LineWeight = layer.LineWeight;
+                IsPlotable = true;
+            }
         }
     }
 }

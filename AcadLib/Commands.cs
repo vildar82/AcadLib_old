@@ -1,113 +1,133 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AcadLib.PaletteCommands;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
+using Autodesk.AutoCAD.Windows;
 
 [assembly: CommandClass(typeof(AcadLib.Commands))]
+[assembly: ExtensionApplication(typeof(AcadLib.Commands))]
 
 namespace AcadLib
 {
-    public class Commands
+    public class Commands : IExtensionApplication
     {
-        [CommandMethod("PIK", "PIK-Acadlib-About", CommandFlags.Modal)]
+        public const string Group = AutoCAD_PIK_Manager.Commands.Group;
+        public const string CommandAbout = "PIK_Acadlib_About";
+        public const string CommandDbJbjectsCountInfo = "PIK_DbObjectsCountInfo";
+        public const string CommandBlockList = "PIK_BlockList";
+        public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
+        public const string CommandColorBookNCS = "PIK_ColorBookNCS";
+        public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";
+
+        [CommandMethod(Group, "PIK_Start", CommandFlags.Modal)]
+        public void PaletteStart()
+        {
+            PaletteSetCommands.Start();
+        }
+
+        [CommandMethod(Group, CommandInsertBlockPikLogo, CommandFlags.Modal)]
+        [PaletteCommand("Блок логотипа", "Вставка блока логотипа ПИК")]
+        public void InsertBlockPikLogo()
+        {
+            CommandStart.Start(CommandInsertBlockPikLogo, doc =>
+            {
+                Blocks.BlockInsert.InsertCommonBlock("PIK_Logo", doc.Database);
+            });
+        }
+
+        [CommandMethod(Group, CommandAbout, CommandFlags.Modal)]
         public void About()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null)
+            CommandStart.Start(CommandAbout, doc =>
             {
-                return;
-            }
-            Editor ed = doc.Editor;
-            var acadLibVer = Assembly.GetExecutingAssembly().GetName().Version;
-            ed.WriteMessage($"\nБиблиотека AcadLib версии {acadLibVer}");
-        }
+                Editor ed = doc.Editor;
+                var acadLibVer = Assembly.GetExecutingAssembly().GetName().Version;
+                ed.WriteMessage($"\nБиблиотека AcadLib версии {acadLibVer}");
+            });
+        }        
 
-        [CommandMethod("PIK", "DbObjectsCountInfo", CommandFlags.Modal)]
+        [CommandMethod(Group, CommandDbJbjectsCountInfo, CommandFlags.Modal)]
         public void DbObjectsCountInfo()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
-
-            Dictionary<string, int> allTypes = new Dictionary<string, int>();
-
-            for (long i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
+            CommandStart.Start(CommandDbJbjectsCountInfo, doc =>
             {
-                ObjectId id;
-                if (db.TryGetObjectId(new Handle(i), out id))
+                Database db = doc.Database;
+                Editor ed = doc.Editor;
+                Dictionary<string, int> allTypes = new Dictionary<string, int>();
+                for (long i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
                 {
-                    if (allTypes.ContainsKey(id.ObjectClass.Name))
+                    ObjectId id;
+                    if (db.TryGetObjectId(new Handle(i), out id))
                     {
-                        allTypes[id.ObjectClass.Name]++;
-                    }
-                    else
-                    {
-                        allTypes.Add(id.ObjectClass.Name, 1);
+                        if (allTypes.ContainsKey(id.ObjectClass.Name))                        
+                            allTypes[id.ObjectClass.Name]++;                        
+                        else                        
+                            allTypes.Add(id.ObjectClass.Name, 1);                        
                     }
                 }
-            }
-
-            var sortedByCount = allTypes.OrderBy(i => i.Value);
-
-            foreach (var item in sortedByCount)
-            {
-                ed.WriteMessage($"\n{item.Key} - {item.Value}");
-            }
+                var sortedByCount = allTypes.OrderBy(i => i.Value);
+                foreach (var item in sortedByCount)                
+                    ed.WriteMessage($"\n{item.Key} - {item.Value}");                
+            });            
         }
 
-        [CommandMethod("PIK", "PIK-BlockList", CommandFlags.Modal)]
+        [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
         public void BlockListCommand()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
-            try
+            CommandStart.Start(CommandBlockList, doc =>
             {
                 BlockList.List(doc.Database);
-            }
-            catch (System.Exception ex)
-            {
-                doc.Editor.WriteMessage($"\nОшибка - {ex.Message}");
-            }            
+            });       
         }
 
-        [CommandMethod("PIK", "PIK-CleanZombieBlocks", CommandFlags.Modal)]
+        [CommandMethod(Group, CommandCleanZombieBlocks, CommandFlags.Modal)]
         public void CleanZombieBlocks()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
-            Database db = doc.Database;
-            try
+            CommandStart.Start(CommandCleanZombieBlocks, doc =>
             {
+                Database db = doc.Database;
                 var countZombie = db.CleanZombieBlock();
                 doc.Editor.WriteMessage($"\nУдалено {countZombie} зомби!☻");
-            }
-            catch (System.Exception ex)
+            });            
+        }
+
+        [CommandMethod(Group, CommandColorBookNCS, CommandFlags.Modal | CommandFlags.Session)]
+        public void ColorBookNCS()
+        {
+            CommandStart.Start(CommandColorBookNCS, doc =>
             {
-                doc.Editor.WriteMessage($"\nОшибка - {ex.Message}");
+                Colors.ColorBookHelper.GenerateNCS();
+            });            
+        }        
+
+        public void Initialize()
+        {
+            // Загрузка сбороки для данного раздела
+            var group = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
+            // пока только для ГП
+            if (group == "ГП") 
+            {
+                var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+                                "Script\\NET\\ГП\\", "PIK_" + "GP" + "_Acad.dll");
+                // Загрузка сбороки ГП                                                        
+                var assGroup = Assembly.LoadFrom(fileGroup);
+                PaletteSetCommands.SetTrayIcon(assGroup);
+                // Обработать ошибку загрузки ???
             }
         }
 
-        [CommandMethod("PIK", "PIK-ColorBookNCS", CommandFlags.Modal | CommandFlags.Session)]
-        public void ColorBookNCS()
+        public void Terminate()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
-            Database db = doc.Database;
-            try
-            {
-                Colors.ColorBookHelper.GenerateNCS();
-            }
-            catch (System.Exception ex)
-            {
-                doc.Editor.WriteMessage($"\nОшибка - {ex.Message}");
-            }
+            if (CommandCounter.Counter == null) return;
+            CommandCounter.Counter.Save();            
         }
     }
 }

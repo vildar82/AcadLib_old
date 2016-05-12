@@ -10,9 +10,11 @@ namespace AcadLib.PaletteCommands
 {
     public interface IPaletteCommand
     {
+        string HelpMedia { get; }
         ImageSource Image { get; }
         string Name { get; }
         string Description { get; }
+        string Group { get; }
         void Execute();
     }
 }

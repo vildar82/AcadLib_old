@@ -10,6 +10,20 @@ namespace AcadLib.Blocks
 {
     public static class BlockInsert
     {
+        // Файл шаблонов блоков
+        static string fileBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
+
+        /// <summary>
+        /// Вставка общего блока из файла Блоки-Оформления.
+        /// Визуальная вставка с помошью Jig
+        /// </summary>        
+        public static ObjectId InsertCommonBlock(string blName, Database db)
+        {
+            // Выбор и вставка блока                 
+            Block.CopyBlockFromExternalDrawing(blName, fileBlocks, db, DuplicateRecordCloning.Ignore);
+            return Insert(blName);
+        }
+
         public static ObjectId Insert(string blName, Layers.LayerInfo layer)
         {
             ObjectId idBlRefInsert = ObjectId.Null;

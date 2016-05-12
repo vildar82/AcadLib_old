@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib.PaletteCommands
@@ -12,20 +14,37 @@ namespace AcadLib.PaletteCommands
     public class PaletteCommand : IPaletteCommand
     {
         public string Description { get; set; }
-        public ImageSource Image { get; set; }        
+        public ImageSource Image { get; set; }
+        /// <summary>
+        /// Короткое название кнопки
+        /// </summary>
         public string Name { get; set; }
-        public Action Command { get; set; } 
+        /// <summary>
+        /// Имя команды AutoCAD
+        /// </summary>
+        public string Command { get; set; }
+        /// <summary>
+        /// Группа команд - для объекдинения в палитры
+        /// </summary>
+        public string Group { get; set; }
+        /// <summary>
+        /// Индекс кнопки на палитре
+        /// </summary>
+        public int Index { get; set; }
 
+        public string HelpMedia { get; set; }
 
         public PaletteCommand() { }
 
-        public PaletteCommand(string name, ImageSource image, Action command, string description)
+        public PaletteCommand(string name, Bitmap image, string command, string description, string group = "")
         {
-            this.Image = image;
+            this.Image = GetSource(image);
             this.Name = name;
             this.Command = command;
-            this.Description = description;            
-        }       
+            this.Description = description;
+            this.Group = group;
+                   
+        }
 
         public void Execute()
         {
@@ -33,8 +52,17 @@ namespace AcadLib.PaletteCommands
             if (doc == null) return;
             using (doc.LockDocument())
             {
-                Command();
-            }            
+                doc.SendStringToExecute(Command + " ", true, false, true);
+            }
+        }
+
+        public ImageSource GetSource(Bitmap image)
+        {
+            return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                    image.GetHbitmap(),
+                    IntPtr.Zero,
+                    System.Windows.Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
         }
     }
 }

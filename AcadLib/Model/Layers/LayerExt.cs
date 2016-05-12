@@ -7,7 +7,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Layers
 {
-    public class LayerExt
+    public static class LayerExt
     {
         /// <summary>
         /// Получение слоя.
@@ -15,7 +15,7 @@ namespace AcadLib.Layers
         /// </summary>
         /// <param name="layerInfo">параметры слоя</param>
         /// <returns></returns>
-        public static ObjectId GetLayerOrCreateNew(LayerInfo layerInfo)
+        public static ObjectId GetLayerOrCreateNew(this LayerInfo layerInfo)
         {
             ObjectId idLayer = ObjectId.Null;
             Database db = HostApplicationServices.WorkingDatabase;
@@ -40,7 +40,7 @@ namespace AcadLib.Layers
         /// </summary>
         /// <param name="layerInfo">параметры слоя</param>
         /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
-        public static ObjectId CreateLayer(LayerInfo layerInfo, LayerTable lt)
+        public static ObjectId CreateLayer(this LayerInfo layerInfo, LayerTable lt)
         {
             ObjectId idLayer = ObjectId.Null;
             // Если слоя нет, то он создается.            
@@ -73,11 +73,12 @@ namespace AcadLib.Layers
         /// <summary>
         /// Проверка блокировки слоя IsOff IsLocked IsFrozen.
         /// Если заблокировано - то разблокируется.
-        /// Если слоя нет - то он создается с дефолтными параметрами.
+        /// Если слоя нет - то он создается.
         /// </summary>
         /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
-        public static void CheckLayerState(List<LayerInfo> layers)
-        {            
+        public static Dictionary<string, ObjectId> CheckLayerState(this List<LayerInfo> layers)
+        {
+            Dictionary<string, ObjectId> resVal = new Dictionary<string, ObjectId>();
             Database db = HostApplicationServices.WorkingDatabase;
             using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
             {
@@ -103,31 +104,40 @@ namespace AcadLib.Layers
                                     lay.IsFrozen = false;
                                 }
                             }
+                            resVal.Add(layer.Name, lay.Id);
                         }
                     }
                     else
                     {
-                        CreateLayer(layer, lt);
+                        var layId = CreateLayer(layer, lt);
+                        resVal.Add(layer.Name, layId);
                     }
                 }
-            }            
+            }
+            return resVal;
         }
 
-        public static void CheckLayerState(LayerInfo layer)
+        public static ObjectId CheckLayerState(this LayerInfo layer)
         {
             List<LayerInfo> layers = new List<LayerInfo>() { layer };
-            CheckLayerState(layers);
+            var dictLays = CheckLayerState(layers);
+            ObjectId res;
+            dictLays.TryGetValue(layer.Name, out res);
+            return res;
         }
 
-        public static void CheckLayerState(string layer)
+        public static ObjectId CheckLayerState(string layer)
         {            
             LayerInfo li = new LayerInfo(layer);
             List<LayerInfo> layersInfo = new List<LayerInfo>();
             layersInfo.Add(li);
-            CheckLayerState(layersInfo);
+            var dictLays = CheckLayerState(layersInfo);
+            ObjectId res;
+            dictLays.TryGetValue(layer, out res);
+            return res;
         }
 
-        public static void CheckLayerState(string[] layers)
+        public static Dictionary<string, ObjectId> CheckLayerState(string[] layers)
         {
             List<LayerInfo> layersInfo = new List<LayerInfo>();
             foreach (var item in layers)
@@ -135,7 +145,7 @@ namespace AcadLib.Layers
                 LayerInfo li = new LayerInfo(item);
                 layersInfo.Add(li);
             }
-            CheckLayerState(layersInfo);
+            return CheckLayerState(layersInfo);
         }
     }
 }

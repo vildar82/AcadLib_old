@@ -23,14 +23,26 @@ namespace AcadLib.PaletteCommands
         public CommandsControl()
         {
             InitializeComponent();
-            ListBoxCommands.MouseLeftButtonUp += ListBoxCommands_MouseLeftButtonUp;            
+            this.Dispatcher.UnhandledException += Dispatcher_UnhandledException;                        
         }
 
-        private void ListBoxCommands_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {            
+            e.Handled = true;
+        }
+
+        //private void ListBoxCommands_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        //{
+        //    var selComm = ListBoxCommands.SelectedItem as PaletteCommand;
+        //    if (selComm == null) return;
+        //    selComm.Execute();            
+        //}
+
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var selComm = ListBoxCommands.SelectedItem as PaletteCommand;
+            var selComm = ((FrameworkElement)sender).DataContext as PaletteCommand;
             if (selComm == null) return;
-            selComm.Execute();                               
-        }    
+            selComm.Execute();
+        }
     }
 }

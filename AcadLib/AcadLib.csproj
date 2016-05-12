@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\Autodesk\AutoCAD\Pik\Settings_debug\Dll\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -109,6 +109,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\DB\LineTypeExt.cs" />
+    <Compile Include="Model\Draw\DrawParameters.cs" />
+    <Compile Include="Model\Draw\Draw.cs" />
+    <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\Blocks\AttributeExt.cs" />
     <Compile Include="Model\Blocks\AttributeInfo.cs" />
     <Compile Include="Model\Blocks\AttributeRefInfo.cs" />
@@ -148,28 +152,33 @@
     <Compile Include="Model\Comparers\DoubleEqualityComparer.cs" />
     <Compile Include="Model\Comparers\Point3dComparer.cs" />
     <Compile Include="Model\Comparers\StringsNumberComparer.cs" />
+    <Compile Include="Model\DB\EntityInfo.cs" />
     <Compile Include="Model\Jigs\RectangleJig.cs" />
     <Compile Include="Model\Plot\PlotOptions.cs" />
     <Compile Include="Model\Registry\RegExt.cs" />
+    <Compile Include="Model\UI\PaletteCommand\CommandCounter.cs" />
+    <Compile Include="Model\UI\PaletteCommand\CommandInfo.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandsControl.xaml.cs">
       <DependentUpon>CommandsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\UI\PaletteCommand\CommandStarter.cs" />
     <Compile Include="Model\UI\PaletteCommand\IPaletteCommand.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteCommand.cs" />
+    <Compile Include="Model\UI\PaletteCommand\PaletteCommandAttribute.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteModel.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteSetCommands.cs" />
     <Compile Include="Model\XData\DictNODExt.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />
     <Compile Include="Model\DB\ObjectIdExt.cs" />
     <Compile Include="Model\Files\SerializerXml.cs" />
-    <Compile Include="General.cs" />
+    <Compile Include="Model\General.cs" />
     <Compile Include="Model\Layers\LayerExt.cs" />
     <Compile Include="Model\Layers\LayerInfo.cs" />
     <Compile Include="Model\DB\DBObjectExt.cs" />
     <Compile Include="Model\NET\Extensions.cs" />
     <Compile Include="Model\NET\MathExt.cs" />
     <Compile Include="Model\NET\Result.cs" />
-    <Compile Include="Model\PIK\LoadService.cs" />
+    <Compile Include="Model\LoadService.cs" />
     <Compile Include="Model\Plot\PlotDirToPdf.cs" />
     <Compile Include="Model\RTree\SpatialIndex\Node.cs" />
     <Compile Include="Model\RTree\SpatialIndex\Point.cs" />
@@ -249,6 +258,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\PIK_InsertBlockLogo.png" />
+    <None Include="Resources\unknown.png" />
+    <None Include="Resources\pik_logo.ico" />
     <None Include="AutoCADNetLoad.scr" />
     <None Include="Resources\Collapse.ico" />
     <None Include="Resources\Collapse.png" />
