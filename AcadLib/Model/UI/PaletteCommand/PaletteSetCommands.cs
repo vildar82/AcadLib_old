@@ -19,16 +19,22 @@ namespace AcadLib.PaletteCommands
     {
         private static PaletteSetCommands _paletteSet;
         private static readonly Guid PaletteGuid = new Guid("623e4502-7407-4566-9d71-3ecbda06b088");
-        private static Assembly _assCommands;
 
-        public List<PaletteModel> Models { get; set; }
+        /// <summary>
+        /// Данные для палитры
+        /// </summary>
+        private List<PaletteModel> models { get; set; }        
+
+        /// <summary>
+        /// Команды переданные из сборки данного раздела
+        /// </summary>
+        public static List<IPaletteCommand> CommandsAddin { get; set; } 
 
         public PaletteSetCommands() : base(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, PaletteGuid)
         {
             Icon = Properties.Resources.pik_logo;
-
             loadPalettes();           
-            
+            // Установка фона контрола на палитре - в зависимости от цветовой темы автокада.            
             CheckTheme();
             Application.SystemVariableChanged += (s, e) =>
             {
@@ -37,10 +43,33 @@ namespace AcadLib.PaletteCommands
             };
         }
 
+        /// <summary>
+        /// Подготовка для определения палитры ПИК.
+        /// Добавление значка ПИК в трей для запуска палитры.
+        /// </summary>
+        /// <param name="commands"></param>
+        public static void InitPalette(List<IPaletteCommand> commands)
+        {
+            CommandsAddin = commands;
+            SetTrayIcon();
+        }
+
+        /// <summary>
+        /// Создание палитры и показ
+        /// </summary>
+        public static void Start()
+        {
+            if (_paletteSet == null)
+            {
+                _paletteSet = Create();
+            }
+            _paletteSet.Visible = true;
+        }
+
         private void loadPalettes()
         {
-            Models = new List<PaletteModel>();
-            var commands = GetAllCommands(_assCommands, AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup);
+            models = new List<PaletteModel>();
+            var commands = CommandsAddin;
             // Группировка команд
             var groupCommands = commands.GroupBy(c => c.Group).OrderBy(g=>g.Key);
             foreach (var group in groupCommands)
@@ -51,24 +80,15 @@ namespace AcadLib.PaletteCommands
                 string name = group.Key;
                 if (string.IsNullOrEmpty(name)) name = "Главная";
                 AddVisual(name, commControl);
-                Models.Add(model);
+                models.Add(model);
             }
             // Общие команды для всех отделов определенные в этой сборке
-            commands = GetAllCommands(Assembly.GetExecutingAssembly(), string.Empty);
+            commands = Commands.CommandsPalette;
             var modelCommon = new PaletteModel(commands);
             var controlCommon = new CommandsControl();
             controlCommon.DataContext = modelCommon;
             AddVisual("Общие", controlCommon);
-            Models.Add(modelCommon);
-        }
-
-        public static void Start()
-        {
-            if (_paletteSet == null)
-            {   
-                _paletteSet = Create();
-            }
-            _paletteSet.Visible = true;
+            models.Add(modelCommon);
         }                    
 
         private static PaletteSetCommands Create()
@@ -85,13 +105,12 @@ namespace AcadLib.PaletteCommands
                 colorBkg = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 92, 92, 92));
             else
                 colorBkg = System.Windows.Media.Brushes.White;
-            Models.ForEach(m => m.Background = colorBkg);
+            models.ForEach(m => m.Background = colorBkg);
         }
 
-        public static void SetTrayIcon(Assembly assm)
+        private static void SetTrayIcon()
         {
-            // Добавление иконки в трей                        
-            _assCommands = assm;
+            // Добавление иконки в трей                                    
             Pane pane = new Pane();
             pane.ToolTipText = "Палитра ПИК";
             pane.Icon = Properties.Resources.pik_logo;
@@ -102,48 +121,6 @@ namespace AcadLib.PaletteCommands
         private static void PikTray_MouseDown(object sender, StatusBarMouseDownEventArgs e)
         {
             Start();
-        }
-
-        public List<IPaletteCommand> GetAllCommands(Assembly asm, string groupPik)
-        {
-            List<IPaletteCommand> commands = new List<IPaletteCommand>();
-            if (asm == null) return commands;
-            if (!asm.IsDefined(typeof(CommandClassAttribute), false))
-            {
-                AutoCAD_PIK_Manager.Log.Error($"Загрузка палитры ПИК. Не определен атрибут CommandClass в сборке {asm.FullName}");
-                return commands;
-            }
-            var atrCommandsClass = (CommandClassAttribute)asm.GetCustomAttribute(typeof(CommandClassAttribute));
-            var methods = atrCommandsClass.Type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            foreach (var method in methods)
-            {
-                if (method.IsDefined(typeof(CommandMethodAttribute)))
-                {
-                    var atrCommand = (CommandMethodAttribute)method.GetCustomAttribute(typeof(CommandMethodAttribute));
-                    if (method.IsDefined(typeof(PaletteCommandAttribute)))
-                    {
-                        var atrPal = (PaletteCommandAttribute)method.GetCustomAttribute(typeof(PaletteCommandAttribute));
-                        // определение картинки для кнопки из ресурсов сборки по имени команды
-                        Bitmap img;
-                        string resourceName = asm.GetName().Name + ".Properties.Resources";
-                        var rm = new System.Resources.ResourceManager(resourceName, asm);
-                        img = (Bitmap)rm.GetObject(atrCommand.GlobalName);
-                        if (img == null)
-                            img = Properties.Resources.unknown;
-
-                        PaletteCommand palCom = new PaletteCommand(atrPal.Name, img, atrCommand.GlobalName, atrPal.Description, atrPal.Group);
-                        // HelpMedia
-                        palCom.HelpMedia = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
-                            groupPik, "Help", atrCommand.GlobalName, atrCommand.GlobalName + ".mp4");
-                        if (!File.Exists(palCom.HelpMedia))
-                        {
-                            palCom.HelpMedia = null;
-                        }
-                        commands.Add(palCom);                        
-                    }
-                }
-            }
-            return commands;
-        }
+        }        
     }
 }

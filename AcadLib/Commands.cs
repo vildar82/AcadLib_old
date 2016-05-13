@@ -19,22 +19,26 @@ namespace AcadLib
 {
     public class Commands : IExtensionApplication
     {
+        /// <summary>
+        /// Общие команды для всех отделов определенные в этой сборке
+        /// </summary>
+        public static List<IPaletteCommand> CommandsPalette { get; set; } 
+
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
         public const string CommandAbout = "PIK_Acadlib_About";
         public const string CommandDbJbjectsCountInfo = "PIK_DbObjectsCountInfo";
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
-        public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";
+        public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";        
 
-        [CommandMethod(Group, "PIK_Start", CommandFlags.Modal)]
-        public void PaletteStart()
+        public void InitCommands()
         {
-            PaletteSetCommands.Start();
+            CommandsPalette = new List<IPaletteCommand>();
         }
 
         [CommandMethod(Group, CommandInsertBlockPikLogo, CommandFlags.Modal)]
-        [PaletteCommand("Блок логотипа", "Вставка блока логотипа ПИК")]
+        //[PaletteCommand("Блок логотипа", "Вставка блока логотипа ПИК")]
         public void InsertBlockPikLogo()
         {
             CommandStart.Start(CommandInsertBlockPikLogo, doc =>
@@ -119,15 +123,15 @@ namespace AcadLib
                                 "Script\\NET\\ГП\\", "PIK_" + "GP" + "_Acad.dll");
                 // Загрузка сбороки ГП                                                        
                 var assGroup = Assembly.LoadFrom(fileGroup);
-                PaletteSetCommands.SetTrayIcon(assGroup);
-                // Обработать ошибку загрузки ???
+                // Список общих команд
+                InitCommands();
             }
         }
 
         public void Terminate()
         {
-            if (CommandCounter.Counter == null) return;
-            CommandCounter.Counter.Save();            
+            // Сохранение счетчика команд пользователя            
+            CommandCounter.Counter?.Save();            
         }
     }
 }

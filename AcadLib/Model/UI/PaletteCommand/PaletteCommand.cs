@@ -37,13 +37,19 @@ namespace AcadLib.PaletteCommands
         public PaletteCommand() { }
 
         public PaletteCommand(string name, Bitmap image, string command, string description, string group = "")
-        {
+        {   
             this.Image = GetSource(image);
             this.Name = name;
             this.Command = command;
             this.Description = description;
             this.Group = group;
-                   
+            // HelpMedia
+            HelpMedia = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
+                AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, "Help", command, command + ".mp4");
+            if (!File.Exists(HelpMedia))
+            {
+                HelpMedia = null;
+            }
         }
 
         public void Execute()
@@ -58,6 +64,10 @@ namespace AcadLib.PaletteCommands
 
         public ImageSource GetSource(Bitmap image)
         {
+            if(image == null)
+            {
+                image = Properties.Resources.unknown;
+            }
             return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
                     image.GetHbitmap(),
                     IntPtr.Zero,

@@ -164,7 +164,7 @@
     <Compile Include="Model\UI\PaletteCommand\CommandStarter.cs" />
     <Compile Include="Model\UI\PaletteCommand\IPaletteCommand.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteCommand.cs" />
-    <Compile Include="Model\UI\PaletteCommand\PaletteCommandAttribute.cs" />
+    <Compile Include="Model\UI\PaletteCommand\PaletteCommandBlock.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteModel.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteSetCommands.cs" />
     <Compile Include="Model\XData\DictNODExt.cs" />

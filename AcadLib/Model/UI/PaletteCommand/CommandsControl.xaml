@@ -33,32 +33,31 @@
         </Style>
         <DataTemplate x:Key="ImageCell">
             <Button Style="{StaticResource palleteCommandButton}" Width="40" Height="40" Click="Button_Click" >
-                <Image Source="{Binding Image}" Margin="2">
-                    <ToolTipService.ToolTip>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Name}" Margin="1" />
-                            <TextBlock Text="{Binding Description}" Margin="1"/>
-                            <MediaElement Name="helpMediaElement" Margin="0,2,0,0">
-                                <MediaElement.Triggers>
-                                    <EventTrigger RoutedEvent="Loaded">
-                                        <EventTrigger.Actions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Duration="0:0:2" From="0" To="0"
+                <Image Source="{Binding Image}" Margin="2"/>
+                <ToolTipService.ToolTip>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Name}" Margin="1" />
+                        <TextBlock Text="{Binding Description}" Margin="1"/>
+                        <MediaElement Name="helpMediaElement" Margin="0,2,0,0">
+                            <MediaElement.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:0:2" From="0" To="0"
                                                                  Storyboard.TargetProperty="Height"/>
-                                                    <DoubleAnimation BeginTime="0:0:2" Duration="0:0:0.6" From="0" To="900"
+                                                <DoubleAnimation BeginTime="0:0:2" Duration="0:0:0.6" From="0" To="900"
                                                                  Storyboard.TargetProperty="Height"/>
-                                                    <MediaTimeline BeginTime="0:0:2.6" Source="{Binding HelpMedia}" RepeatBehavior="Forever"/>
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger.Actions>
-                                    </EventTrigger>
-                                </MediaElement.Triggers>
-                            </MediaElement>
-                        </StackPanel>
-                    </ToolTipService.ToolTip>
-                    <ToolTipService.ShowDuration>60000</ToolTipService.ShowDuration>
-                </Image>
+                                                <MediaTimeline BeginTime="0:0:2.6" Source="{Binding HelpMedia}" RepeatBehavior="Forever"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </MediaElement.Triggers>
+                        </MediaElement>
+                    </StackPanel>
+                </ToolTipService.ToolTip>
+                <ToolTipService.ShowDuration>60000</ToolTipService.ShowDuration>
             </Button>
         </DataTemplate>
     </UserControl.Resources>
