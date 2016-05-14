@@ -27,16 +27,15 @@ namespace TestAcadlib
         [CommandMethod("Test")]
         public void Test()
         {
-            Document doc = AcAp.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
-
-            // Команда рисования полилинии с заданными свойствами.
-            // свойства: слой, цвет, вес линии, тип линии, масштаб типа линии
-            LayerInfo li = new LayerInfo("Test");
-            li.Color = Color.FromColorIndex(ColorMethod.ByAci, 30);
-            Draw.Polyline(li,color: li.Color, lineWeight: LineWeight.LineWeight053,
-                        lineType: "Штрих-пунктирная с двумя точками", lineTypeScale: 53);
+            CommandStart.Start(doc=> 
+            {
+                // Команда рисования полилинии с заданными свойствами.
+                // свойства: слой, цвет, вес линии, тип линии, масштаб типа линии
+                LayerInfo li = new LayerInfo("Test");
+                li.Color = Color.FromColorIndex(ColorMethod.ByAci, 30);
+                Draw.Polyline(li, color: li.Color, lineWeight: LineWeight.LineWeight053,
+                            lineType: "Штрих-пунктирная с двумя точками", lineTypeScale: 53);
+            });                                       
         }       
     }
 }

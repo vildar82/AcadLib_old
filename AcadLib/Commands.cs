@@ -41,7 +41,7 @@ namespace AcadLib
         //[PaletteCommand("Блок логотипа", "Вставка блока логотипа ПИК")]
         public void InsertBlockPikLogo()
         {
-            CommandStart.Start(CommandInsertBlockPikLogo, doc =>
+            CommandStart.Start(doc =>
             {
                 Blocks.BlockInsert.InsertCommonBlock("PIK_Logo", doc.Database);
             });
@@ -50,7 +50,7 @@ namespace AcadLib
         [CommandMethod(Group, CommandAbout, CommandFlags.Modal)]
         public void About()
         {
-            CommandStart.Start(CommandAbout, doc =>
+            CommandStart.Start(doc =>
             {
                 Editor ed = doc.Editor;
                 var acadLibVer = Assembly.GetExecutingAssembly().GetName().Version;
@@ -61,7 +61,7 @@ namespace AcadLib
         [CommandMethod(Group, CommandDbJbjectsCountInfo, CommandFlags.Modal)]
         public void DbObjectsCountInfo()
         {
-            CommandStart.Start(CommandDbJbjectsCountInfo, doc =>
+            CommandStart.Start(doc =>
             {
                 Database db = doc.Database;
                 Editor ed = doc.Editor;
@@ -86,7 +86,7 @@ namespace AcadLib
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
         public void BlockListCommand()
         {
-            CommandStart.Start(CommandBlockList, doc =>
+            CommandStart.Start(doc =>
             {
                 BlockList.List(doc.Database);
             });       
@@ -95,7 +95,7 @@ namespace AcadLib
         [CommandMethod(Group, CommandCleanZombieBlocks, CommandFlags.Modal)]
         public void CleanZombieBlocks()
         {
-            CommandStart.Start(CommandCleanZombieBlocks, doc =>
+            CommandStart.Start(doc =>
             {
                 Database db = doc.Database;
                 var countZombie = db.CleanZombieBlock();
@@ -106,7 +106,7 @@ namespace AcadLib
         [CommandMethod(Group, CommandColorBookNCS, CommandFlags.Modal | CommandFlags.Session)]
         public void ColorBookNCS()
         {
-            CommandStart.Start(CommandColorBookNCS, doc =>
+            CommandStart.Start(doc =>
             {
                 Colors.ColorBookHelper.GenerateNCS();
             });            

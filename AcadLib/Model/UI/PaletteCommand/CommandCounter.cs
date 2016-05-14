@@ -38,7 +38,7 @@ namespace AcadLib
         /// </summary>        
         private Dictionary<string, CommandInfo> _commands;  
 
-        public static void StartCommand(string name)
+        public static void CountCommand(string name)
         {
             if (Counter == null) Init();
             Counter.Add(name);
@@ -46,6 +46,7 @@ namespace AcadLib
 
         private void Add(string name)
         {
+            if (string.IsNullOrEmpty(name)) return;
             if (_commands == null) _commands = new Dictionary<string, CommandInfo>();
             CommandInfo ci;
             if (!_commands.TryGetValue(name, out ci))
@@ -69,7 +70,7 @@ namespace AcadLib
                     Counter = xmlSer.DeserializeXmlFile<CommandCounter>();
                     if (Counter != null)
                     {
-                        Counter._commands = Counter.Commands.ToDictionary(c=>c.CommandName, c=>c);
+                        Counter._commands = Counter.Commands.Where(c=>!string.IsNullOrEmpty(c.CommandName)).ToDictionary(c=>c.CommandName, c=>c);
                         Log.Debug($"Counter != null. Counter.Commands.Count={Counter.Commands.Count}");
                         return;
                     }
