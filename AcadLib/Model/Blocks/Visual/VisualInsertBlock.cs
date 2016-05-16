@@ -11,15 +11,15 @@ namespace AcadLib.Blocks.Visual
 {
     public static class VisualInsertBlock
     {
-        private static Dictionary<string, List<VisualBlock>> dictFiles = new Dictionary<string, List<VisualBlock>>();        
+        private static Dictionary<Predicate<string>, List<VisualBlock>> dictFiles = new Dictionary<Predicate<string>, List<VisualBlock>>();        
 
         public static void InsertBlock(string fileBlocks, Predicate<string> filter, Layers.LayerInfo layer = null)
         {
             List<VisualBlock> visuals;
-            if (!dictFiles.TryGetValue(fileBlocks, out visuals))
-            {
+            if (!dictFiles.TryGetValue(filter, out visuals))
+            {                
                 visuals = LoadVisuals(fileBlocks, filter);
-                dictFiles.Add(fileBlocks, visuals);
+                dictFiles.Add(filter, visuals);
             }
 
             WindowVisualBlocks winVisual = new WindowVisualBlocks(visuals);
