@@ -126,13 +126,13 @@ namespace AcadLib
                 // Список общих команд
                 InitCommands();
             }
-            else if (group == "КР-СБ-ГК")
-            {
-                var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-                                "Script\\NET\\КР-СБ-ГК\\Autocad_ConcerteList.dll");
-                // Загрузка сбороки                                                       
-                var assGroup = Assembly.LoadFrom(fileGroup);
-            }
+            //else if (group == "КР-СБ-ГК")
+            //{
+            //    var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+            //                    "Script\\NET\\КР-СБ-ГК\\Autocad_ConcerteList.dll");
+            //    // Загрузка сбороки                                                       
+            //    var assGroup = Assembly.LoadFrom(fileGroup);
+            //}
         }
 
         public void Terminate()

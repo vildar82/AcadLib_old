@@ -101,6 +101,12 @@ namespace AcadLib.Comparers
                 }
             }
             return len1 - len2;
+        }        
+
+        public int GetHashCode(string obj)
+        {
+            if (obj == null) return 0;
+            return obj.GetHashCode();
         }
     }
 }
