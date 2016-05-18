@@ -24,21 +24,25 @@ namespace AcadLib
         /// </summary>
         public static List<IPaletteCommand> CommandsPalette { get; set; } 
 
-        public const string Group = AutoCAD_PIK_Manager.Commands.Group;
-        public const string CommandAbout = "PIK_Acadlib_About";
+        public const string Group = AutoCAD_PIK_Manager.Commands.Group;        
         public const string CommandDbJbjectsCountInfo = "PIK_DbObjectsCountInfo";
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
         public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";        
-
-        public void InitCommands()
+        
+        /// <summary>
+        /// Список общих команд
+        /// </summary>
+        internal static void AllCommandsCommon()
         {
-            CommandsPalette = new List<IPaletteCommand>();
+            CommandsPalette = new List<IPaletteCommand>()
+            {
+                new PaletteCommand("Блок логотипа", Properties.Resources.PIK_InsertBlockLogo, CommandInsertBlockPikLogo,"Вставка блока логотипа ПИК."),
+            };
         }
 
-        [CommandMethod(Group, CommandInsertBlockPikLogo, CommandFlags.Modal)]
-        //[PaletteCommand("Блок логотипа", "Вставка блока логотипа ПИК")]
+        [CommandMethod(Group, CommandInsertBlockPikLogo, CommandFlags.Modal)]        
         public void InsertBlockPikLogo()
         {
             CommandStart.Start(doc =>
@@ -47,7 +51,7 @@ namespace AcadLib
             });
         }
 
-        [CommandMethod(Group, CommandAbout, CommandFlags.Modal)]
+        [CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]
         public void About()
         {
             CommandStart.Start(doc =>
@@ -122,9 +126,7 @@ namespace AcadLib
                 var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
                                 "Script\\NET\\ГП\\", "PIK_" + "GP" + "_Acad.dll");
                 // Загрузка сбороки ГП                                                        
-                var assGroup = Assembly.LoadFrom(fileGroup);
-                // Список общих команд
-                InitCommands();
+                var assGroup = Assembly.LoadFrom(fileGroup);                
             }
             //else if (group == "КР-СБ-ГК")
             //{

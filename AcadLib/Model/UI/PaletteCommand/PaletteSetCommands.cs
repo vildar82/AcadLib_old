@@ -51,6 +51,7 @@ namespace AcadLib.PaletteCommands
         public static void InitPalette(List<IPaletteCommand> commands)
         {
             CommandsAddin = commands;
+            Commands.AllCommandsCommon();
             SetTrayIcon();
         }
 
