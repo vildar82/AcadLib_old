@@ -19,7 +19,7 @@ namespace AcadLib
             // определение имени команды по вызвавему методу и иего артрибуту CommandMethod;
             string command = string.Empty;
             try
-            {
+            {                
                 var caller = new StackTrace().GetFrame(1).GetMethod();
                 command = GetCallerCommand(caller);
             }
@@ -46,8 +46,8 @@ namespace AcadLib
         private static string GetCallerCommand(MethodBase caller)
         {
             if (caller == null) return "nullCallerMethod!?";
-            var atrCom = (CommandMethodAttribute)caller.GetCustomAttribute(typeof(CommandMethodAttribute));
-            return atrCom?.GlobalName;            
+            var atrCom = (CommandMethodAttribute)caller.GetCustomAttribute(typeof(CommandMethodAttribute));            
+            return atrCom?.GlobalName;
         }
     }
 }
