@@ -76,6 +76,9 @@ namespace AcadLib.Plot
             int indexfile = 0;
             foreach (var fileDwg in filesDwg)
             {
+                if (HostApplicationServices.Current.UserBreak())
+                    throw new Exception(General.CanceledByUser);
+
                 indexfile++;
                 using (var dbTemp = new Database(false, true))
                 {
