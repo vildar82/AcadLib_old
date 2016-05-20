@@ -62,6 +62,7 @@ namespace AcadLib.Plot
         private List<int> _filterNumbers;
         private string _filterByNumbers;
         [XmlIgnore]
+        [Browsable(false)]
         public List<int> FilterNumbers
         {
             get
