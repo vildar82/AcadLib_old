@@ -12,6 +12,22 @@ namespace AcadLib
         public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
 
         /// <summary>
+        /// Превращает строки с диапазоном чисел в последовательность чисел.
+        /// Например "1-5, 8,9" - {1,2,3,4,5,8,9}
+        /// </summary>        
+        public static List<int> ParseRangeNumbers(string text)
+        {
+            var query =
+                from x in text.Split(',')
+                let y = x.Split('-')
+                let b = int.Parse(y[0].Trim())
+                let e = int.Parse(y[y.Length - 1].Trim())
+                from n in Enumerable.Range(b, e - b + 1)
+                select n;
+            return query.ToList();
+        }
+
+        /// <summary>
         /// Проверка - это ортогональный угол - 0,90,180,270,360 градусов.
         /// Допуск по умолчанию 1 градус - AngleComparer
         /// </summary>

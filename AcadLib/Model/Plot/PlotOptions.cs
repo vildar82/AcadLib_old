@@ -6,15 +6,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib.Plot
 {    
+    [Serializable]
     public class PlotOptions
     {
         private static string REGKEY = "PlotOptions";
         private static string KeySortTabOrName = "SortTabOrName";
         private static string KeyOnePdfOrEachDwg = "OnePdfOrEachDwg";
+        private static string KeyFilterByNumbers = "FilterByNumbers";
+        private static string KeyFilterByNames = "FilterByNames";
+        private static string KeyFilterState = "FilterState";
+        
         //private static PlotOptions _instance;
         //public static PlotOptions Instance
         //{
@@ -47,6 +53,44 @@ namespace AcadLib.Plot
         [TypeConverter(typeof(OnePdfOrEachConverter))]
         public bool OnePdfOrEachDwg { get; set; }
 
+        [Category("Фильтр")]
+        [DisplayName("Фильтр по номерам вкладок")]
+        [Description("Печатать только указанные номера вкладок. Номера через запятую и/или тире.")]
+        [DefaultValue("")]        
+        public string FilterByNumbers { get; set; }
+
+        private List<int> _filterNumbers;
+        private string _filterByNumbers;
+        [XmlIgnore]
+        public List<int> FilterNumbers
+        {
+            get
+            {
+                if(_filterByNumbers != null && string.Equals(_filterByNumbers, FilterByNumbers) )
+                {
+                    return _filterNumbers;
+                }
+                else
+                {
+                    _filterNumbers = MathExt.ParseRangeNumbers(FilterByNumbers);
+                    _filterByNumbers = FilterByNumbers;
+                    return _filterNumbers;
+                }
+            }
+        }
+
+        [Category("Фильтр")]
+        [DisplayName("Фильтр по названию вкладок")]
+        [Description("Печатать только вкладки соответствующим заданной строке поиска. Через | можно складывать условия ИЛИ.")]
+        [DefaultValue("")]
+        public string FilterByNames { get; set; }
+
+        [Category("Фильтр")]
+        [DisplayName("Использовать фильтр?")]
+        [Description("Включение и отключение фильтров.")]
+        [DefaultValue(false)]
+        public bool FilterState { get; set; }
+
         public void Load()
         {            
             // загрузка настроек из реестра
@@ -54,6 +98,9 @@ namespace AcadLib.Plot
             {
                 SortTabOrName = reg.Load(KeySortTabOrName, true);
                 OnePdfOrEachDwg = reg.Load(KeyOnePdfOrEachDwg, true);
+                FilterByNumbers = reg.Load(KeyFilterByNumbers, "");
+                FilterByNames = reg.Load(KeyFilterByNames, "");
+                FilterState = reg.Load(KeyFilterState, false);
             }            
         }
 
@@ -64,6 +111,9 @@ namespace AcadLib.Plot
             {
                 reg.Save(KeySortTabOrName, SortTabOrName);
                 reg.Save(KeyOnePdfOrEachDwg, OnePdfOrEachDwg);
+                reg.Save(KeyFilterByNumbers, FilterByNumbers);
+                reg.Save(KeyFilterByNames, FilterByNames);
+                reg.Save(KeyFilterState, FilterState);
             }
         }
 
@@ -76,6 +126,9 @@ namespace AcadLib.Plot
             {
                 SortTabOrName = copyOptions.SortTabOrName;
                 OnePdfOrEachDwg = copyOptions.OnePdfOrEachDwg;
+                FilterState = copyOptions.FilterState;
+                FilterByNames = copyOptions.FilterByNames;
+                FilterByNumbers = copyOptions.FilterByNumbers;
                 Save();
             }            
         }

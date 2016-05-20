@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -93,16 +94,43 @@ namespace AcadLib.Plot
                             if (entry.Key != "Model")
                             {
                                 if (!entry.Value.IsErased)
-                                {                                    
+                                {
                                     var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;
+                                    // Фильтр листов 
+                                    if (Options.FilterState)
+                                    {
+                                        // Номер вкладки
+                                        int tabIndex = layout.TabOrder;
+                                        string tabName = layout.LayoutName;
+                                        bool? filtering = null;
+                                        // Фильтр по именам                                        
+                                        if (!string.IsNullOrWhiteSpace(Options.FilterByNames))
+                                        {
+                                            filtering = FilterByName(tabName);
+                                        }
+                                        // Фильтр по номеру вкладки
+                                        if (!string.IsNullOrWhiteSpace(Options.FilterByNumbers) &&
+                                            (!filtering.HasValue || !filtering.Value))
+                                        {
+                                            filtering = FilterByNumber(tabIndex);
+                                        }
+
+                                        if (filtering.HasValue && !filtering.Value)
+                                        {
+                                            // Лист не прошел фильтр
+                                            continue;
+                                        }
+                                    }
+
                                     DsdEntry dsdEntry = new DsdEntry();
-                                    dsdEntry.Layout =layout.LayoutName;
+                                    dsdEntry.Layout = layout.LayoutName;
                                     dsdEntry.DwgName = fileDwg;
                                     //dsdEntry.Nps = "Setup1";
                                     dsdEntry.NpsSourceDwg = fileDwg;
-                                    dsdEntry.Title =indexfile + "-" + layout.LayoutName;
+                                    dsdEntry.Title = indexfile + "-" + layout.LayoutName;
                                     layouts.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
                                     //dsdCol.Add(dsdEntry);
+
                                 }
                             }
                         }
@@ -120,6 +148,16 @@ namespace AcadLib.Plot
                 }
             }
             PublisherDSD(dsdCol);            
+        }
+
+        private bool FilterByName(string tabName)
+        {
+            return Regex.IsMatch(tabName, Options.FilterByNames, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+        }
+
+        private bool FilterByNumber(int tabIndex)
+        {            
+            return Options.FilterNumbers.Contains(tabIndex);                
         }
 
         public void PublisherDSD(DsdEntryCollection collection)
