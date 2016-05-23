@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using AcadLib.Errors;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
 
@@ -29,6 +30,7 @@ namespace AcadLib
             CommandCounter.CountCommand(command);
             Document doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
+            Inspector.Clear();
             try
             {
                 action(doc);
@@ -41,6 +43,7 @@ namespace AcadLib
                 }
                 doc.Editor.WriteMessage(ex.Message);
             }
+            Inspector.Show();
         }
 
         private static string GetCallerCommand(MethodBase caller)
