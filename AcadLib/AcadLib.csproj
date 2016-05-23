@@ -193,6 +193,13 @@
       <DependentUpon>FormProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\XData\XDataExt.cs" />
+    <Compile Include="Model\XData\XDataViewer\FormXDataView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model\XData\XDataViewer\FormXDataView.designer.cs">
+      <DependentUpon>FormXDataView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\XData\XDataViewer\XDataView.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -253,12 +260,16 @@
     <EmbeddedResource Include="Model\UI\Properties\FormProperties.resx">
       <DependentUpon>FormProperties.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Model\XData\XDataViewer\FormXDataView.resx">
+      <DependentUpon>FormXDataView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\PIK_XDataView.png" />
     <None Include="Resources\PIK_InsertBlockLogo.png" />
     <None Include="Resources\unknown.png" />
     <None Include="Resources\pik_logo.ico" />

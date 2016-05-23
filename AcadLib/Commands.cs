@@ -29,8 +29,9 @@ namespace AcadLib
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
-        public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";        
-        
+        public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";
+        public const string CommandXDataView = "PIK_XDataView";
+
         /// <summary>
         /// Список общих команд
         /// </summary>
@@ -39,6 +40,7 @@ namespace AcadLib
             CommandsPalette = new List<IPaletteCommand>()
             {
                 new PaletteCommand("Блок логотипа", Properties.Resources.PIK_InsertBlockLogo, CommandInsertBlockPikLogo,"Вставка блока логотипа ПИК."),
+                new PaletteCommand("Просмотр расширенных данных примитива", Properties.Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива."),
             };
         }
 
@@ -48,6 +50,15 @@ namespace AcadLib
             CommandStart.Start(doc =>
             {
                 Blocks.BlockInsert.InsertCommonBlock("PIK_Logo", doc.Database);
+            });
+        }
+
+        [CommandMethod(Group, CommandXDataView, CommandFlags.Modal)]
+        public void XDataView()
+        {
+            CommandStart.Start(doc =>
+            {
+                XData.Viewer.XDataView.View();
             });
         }
 
