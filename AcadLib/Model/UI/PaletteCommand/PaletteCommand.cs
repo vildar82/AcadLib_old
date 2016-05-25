@@ -28,6 +28,10 @@ namespace AcadLib.PaletteCommands
         /// </summary>
         public string Group { get; set; }
         /// <summary>
+        /// Ограниечение доступа по логину
+        /// </summary>
+        public List<string> Access { get; set; }
+        /// <summary>
         /// Индекс кнопки на палитре
         /// </summary>
         public int Index { get; set; }
@@ -50,6 +54,12 @@ namespace AcadLib.PaletteCommands
             {
                 HelpMedia = null;
             }
+        }
+
+        public PaletteCommand(List<string> access, string name, Bitmap image, string command, string description, string group = "")            
+            :this(name, image, command, group)
+        {
+            Access = access;
         }
 
         public void Execute()

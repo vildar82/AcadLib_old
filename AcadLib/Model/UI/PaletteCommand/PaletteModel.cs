@@ -50,8 +50,11 @@ namespace AcadLib.PaletteCommands
         public PaletteModel(IEnumerable<IPaletteCommand> commands)
         {
             _paletteCommands = new ObservableCollection<IPaletteCommand>();
-            foreach (var item in commands)            
-                _paletteCommands.Add(item);                        
+            foreach (var item in commands)
+            {
+                if (item.Access == null || item.Access.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase))
+                    _paletteCommands.Add(item);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;        

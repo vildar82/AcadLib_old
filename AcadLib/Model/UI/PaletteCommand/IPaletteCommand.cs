@@ -15,6 +15,7 @@ namespace AcadLib.PaletteCommands
         string Name { get; }
         string Description { get; }
         string Group { get; }
+        List<string> Access { get; }
         void Execute();
     }
 }

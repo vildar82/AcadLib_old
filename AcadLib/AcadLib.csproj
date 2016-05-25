@@ -113,6 +113,7 @@
     <Compile Include="Model\Draw\DrawParameters.cs" />
     <Compile Include="Model\Draw\Draw.cs" />
     <Compile Include="Model\Field\UpdateField.cs" />
+    <Compile Include="Model\Files\CadSettingsPath.cs" />
     <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\Blocks\AttributeExt.cs" />
     <Compile Include="Model\Blocks\AttributeInfo.cs" />
