@@ -57,7 +57,7 @@ namespace AcadLib.PaletteCommands
         }
 
         public PaletteCommand(List<string> access, string name, Bitmap image, string command, string description, string group = "")            
-            :this(name, image, command, group)
+            :this(name, image, command, description, group)
         {
             Access = access;
         }
@@ -74,7 +74,7 @@ namespace AcadLib.PaletteCommands
 
         public ImageSource GetSource(Bitmap image)
         {
-            if(image == null)
+            if (image == null)
             {
                 image = Properties.Resources.unknown;
             }

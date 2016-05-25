@@ -32,7 +32,7 @@ namespace AcadLib.PaletteCommands
 
         public PaletteSetCommands() : base(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, PaletteGuid)
         {
-            Icon = Properties.Resources.pik_logo;
+            Icon = Properties.Resources.pik;
             loadPalettes();           
             // Установка фона контрола на палитре - в зависимости от цветовой темы автокада.            
             CheckTheme();
@@ -111,12 +111,23 @@ namespace AcadLib.PaletteCommands
 
         private static void SetTrayIcon()
         {
-            // Добавление иконки в трей                                    
-            Pane pane = new Pane();
-            pane.ToolTipText = "Палитра ПИК";
-            pane.Icon = Properties.Resources.pik_logo;
-            pane.MouseDown += PikTray_MouseDown;
-            Application.StatusBar.Panes.Add(pane);
+            // Добавление иконки в трей    
+            try
+            {
+                TrayItem ti = new TrayItem();
+                ti.ToolTipText = "Палитра ПИК";
+                ti.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
+                ti.MouseDown += PikTray_MouseDown;                
+                ti.Visible = true;                
+                Application.StatusBar.TrayItems.Add(ti);
+
+                //Pane pane = new Pane();                
+                //pane.ToolTipText = "Палитра ПИК";
+                //pane.Icon = Properties.Resources.pik_logo;
+                //pane.MouseDown += PikTray_MouseDown;
+                //Application.StatusBar.Panes.Add(pane);
+            }
+            catch { }
         }
 
         private static void PikTray_MouseDown(object sender, StatusBarMouseDownEventArgs e)

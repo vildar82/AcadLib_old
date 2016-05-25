@@ -111,11 +111,21 @@ namespace AcadLib.Properties {
         }
         
         /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
+        /// </summary>
+        public static System.Drawing.Icon house {
+            get {
+                object obj = ResourceManager.GetObject("house", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap PIK_InsertBlockLogo {
+        public static System.Drawing.Bitmap logo {
             get {
-                object obj = ResourceManager.GetObject("PIK_InsertBlockLogo", resourceCulture);
+                object obj = ResourceManager.GetObject("logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -123,9 +133,9 @@ namespace AcadLib.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
         /// </summary>
-        public static System.Drawing.Icon pik_logo {
+        public static System.Drawing.Icon pik {
             get {
-                object obj = ResourceManager.GetObject("pik_logo", resourceCulture);
+                object obj = ResourceManager.GetObject("pik", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

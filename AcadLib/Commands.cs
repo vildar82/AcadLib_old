@@ -39,7 +39,7 @@ namespace AcadLib
         {
             CommandsPalette = new List<IPaletteCommand>()
             {
-                new PaletteCommand("Блок логотипа", Properties.Resources.PIK_InsertBlockLogo, CommandInsertBlockPikLogo,"Вставка блока логотипа ПИК."),
+                new PaletteCommand("Блок логотипа", Properties.Resources.logo, CommandInsertBlockPikLogo,"Вставка блока логотипа ПИК."),
                 new PaletteCommand("Просмотр расширенных данных примитива", Properties.Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива."),
             };
         }
@@ -139,13 +139,13 @@ namespace AcadLib
                 // Загрузка сбороки ГП                                                        
                 var assGroup = Assembly.LoadFrom(fileGroup);                
             }
-            //else if (group == "КР-СБ-ГК")
-            //{
-            //    var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-            //                    "Script\\NET\\КР-СБ-ГК\\Autocad_ConcerteList.dll");
-            //    // Загрузка сбороки                                                       
-            //    var assGroup = Assembly.LoadFrom(fileGroup);
-            //}
+            else if (group == "КР-СБ-ГК")
+            {
+                var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+                                "Script\\NET\\КР-СБ-ГК\\Autocad_ConcerteList.dll");
+                // Загрузка сбороки                                                       
+                var assGroup = Assembly.LoadFrom(fileGroup);
+            }
         }
 
         public void Terminate()

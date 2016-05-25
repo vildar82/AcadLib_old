@@ -270,10 +270,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\logo.png" />
+    <None Include="Resources\house.ico" />
+    <None Include="Resources\pik.ico" />
     <None Include="Resources\PIK_XDataView.png" />
-    <None Include="Resources\PIK_InsertBlockLogo.png" />
     <None Include="Resources\unknown.png" />
-    <None Include="Resources\pik_logo.ico" />
     <None Include="AutoCADNetLoad.scr" />
     <None Include="Resources\Collapse.ico" />
     <None Include="Resources\Collapse.png" />
