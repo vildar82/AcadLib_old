@@ -15,7 +15,7 @@ namespace AcadLib.UI
     {
         public FormProperties()
         {
-            InitializeComponent();                        
+            InitializeComponent();                         
         }
 
         private void buttonReset_Click(object sender, EventArgs e)

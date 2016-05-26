@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.IO;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -24,7 +26,7 @@ namespace AcadLib.Blocks
             return Insert(blName);
         }
 
-        public static ObjectId Insert(string blName, Layers.LayerInfo layer)
+        public static ObjectId Insert(string blName, Layers.LayerInfo layer, List<Property> props)
         {
             ObjectId idBlRefInsert = ObjectId.Null;
             Document doc = AcAp.DocumentManager.MdiActiveDocument;
@@ -36,7 +38,7 @@ namespace AcadLib.Blocks
                 if (!bt.Has(blName))
                 {
                     throw new Exception("Блок не определен в чертеже " + blName);
-                }                             
+                }
 
                 ObjectId idBlBtr = bt[blName];
                 Point3d pt = Point3d.Origin;
@@ -44,8 +46,20 @@ namespace AcadLib.Blocks
                 br.SetDatabaseDefaults();
                 if (layer != null)
                 {
-                    Layers.LayerExt.CheckLayerState(layer);                    
-                    br.Layer= layer.Name;
+                    Layers.LayerExt.CheckLayerState(layer);
+                    br.Layer = layer.Name;
+                }
+                
+                if (props != null && br.IsDynamicBlock)
+                {
+                    foreach (DynamicBlockReferenceProperty item in br.DynamicBlockReferencePropertyCollection)
+                    {
+                        var prop = props.FirstOrDefault(p => p.Name.Equals(item.PropertyName, StringComparison.OrdinalIgnoreCase));
+                        if (prop != null)
+                        {
+                            item.Value = prop.Value;
+                        }
+                    }
                 }
 
                 // jig
@@ -64,6 +78,11 @@ namespace AcadLib.Blocks
                 t.Commit();
             }
             return idBlRefInsert;
+        }
+
+        public static ObjectId Insert(string blName, Layers.LayerInfo layer)
+        {
+            return Insert(blName, layer, null);
         }
 
         public static ObjectId Insert(string blName, string layer)
