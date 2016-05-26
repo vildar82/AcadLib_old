@@ -49,7 +49,11 @@ namespace AcadLib.Blocks
                     Layers.LayerExt.CheckLayerState(layer);
                     br.Layer = layer.Name;
                 }
-                
+
+                var spaceBtr = (BlockTableRecord)t.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
+                idBlRefInsert = spaceBtr.AppendEntity(br);
+                t.AddNewlyCreatedDBObject(br, true);
+
                 if (props != null && br.IsDynamicBlock)
                 {
                     foreach (DynamicBlockReferenceProperty item in br.DynamicBlockReferencePropertyCollection)
@@ -57,7 +61,16 @@ namespace AcadLib.Blocks
                         var prop = props.FirstOrDefault(p => p.Name.Equals(item.PropertyName, StringComparison.OrdinalIgnoreCase));
                         if (prop != null)
                         {
-                            item.Value = prop.Value;
+                            try
+                            {
+                                item.Value = prop.Value;
+                            }
+                            catch(Exception ex)
+                            {
+                                Logger.Log.Error(ex, $"Ошибка типа значения для дин параметра '{item.PropertyName}' " +
+                                $"при вставке блока '{blName}': тип устанавливаемого значение '{prop.Value.GetType()}', " + 
+                                $"а должен быть тип '{item.UnitsType}'");
+                            }
                         }
                     }
                 }
@@ -67,13 +80,14 @@ namespace AcadLib.Blocks
                 var pr = ed.Drag(entJig);
                 if (pr.Status == PromptStatus.OK)
                 {
-                    var btrBl = t.GetObject(idBlBtr, OpenMode.ForRead) as BlockTableRecord;
-                    var blRef = (BlockReference)entJig.GetEntity();
-                    var spaceBtr = (BlockTableRecord)t.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
-                    idBlRefInsert = spaceBtr.AppendEntity(blRef);
-                    t.AddNewlyCreatedDBObject(blRef, true);
+                    var btrBl = t.GetObject(idBlBtr, OpenMode.ForRead) as BlockTableRecord;                                        
                     if (btrBl.HasAttributeDefinitions)
-                        AddAttributes(blRef, btrBl, t);
+                        AddAttributes(br, btrBl, t);
+                }
+                else
+                {
+                    br.Erase();
+                    idBlRefInsert = ObjectId.Null;
                 }
                 t.Commit();
             }
