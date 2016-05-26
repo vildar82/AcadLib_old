@@ -27,10 +27,8 @@ namespace TestAcadlib
         [CommandMethod("Test")]
         public void Test()
         {
-            CommandStart.Start(doc=> 
-            {
-                AcadLib.XData.Viewer.XDataView.View();                
-            });                                       
+            DictNOD nod = new DictNOD("456", true);
+            nod.Save("gghfg", "key");
         }       
     }
 }

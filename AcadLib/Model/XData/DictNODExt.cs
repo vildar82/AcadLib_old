@@ -15,10 +15,7 @@ namespace AcadLib
         private string dictName;
         private string dictInnerName;
 
-        /// <summary>
-        /// Словарь с которым будет работать класс.
-        /// </summary>
-        /// <param name="dictName">Название словаря</param>
+        [Obsolete("Используй innerDict конструктор.")]
         public DictNOD(string dictName)
         {
             this.dictName = dictName;
@@ -248,7 +245,7 @@ namespace AcadLib
                         {
                             using (var dicInner = new DBDictionary())
                             {
-                                idDic = dic.SetAt(dictInnerName, dic);
+                                idDic = dic.SetAt(dictInnerName, dicInner);
                                 dicInner.TreatElementsAsHard = true;
                             }
                         }
