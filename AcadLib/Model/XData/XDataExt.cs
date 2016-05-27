@@ -9,6 +9,10 @@ namespace AcadLib
 {
     public static class XDataExt
     {
+        public const string PikApp = "PIK";
+        /// <summary>
+        /// Регистрация приложения в RegAppTable
+        /// </summary>        
         public static void RegApp(this Database db, string regAppName)
         {
             using (RegAppTable rat = db.RegAppTableId.Open(OpenMode.ForRead, false) as RegAppTable)
@@ -25,6 +29,20 @@ namespace AcadLib
             }
         }
 
+        /// <summary>
+        /// Регистрация приложения PIK в RegAppTable
+        /// </summary>
+        /// <param name="db"></param>
+        public static void RegAppPIK(this Database db)
+        {
+            RegApp(db, PikApp);
+        }
+
+        /// <summary>
+        /// Удаление XData связанных с этим приложением
+        /// </summary>
+        /// <param name="dbo"></param>
+        /// <param name="regAppName"></param>
         public static void RemoveXData(this DBObject dbo, string regAppName)
         {
             if (dbo.GetXDataForApplication(regAppName) != null)
@@ -34,6 +52,11 @@ namespace AcadLib
                 dbo.XData = rb;
                 dbo.DowngradeOpen();
             }
+        }
+
+        public static void RemoveXDataPIK(this DBObject dbo)
+        {
+            RemoveXData(dbo, PikApp);
         }
 
         public static void SetXData(this DBObject dbo, string regAppName, int value)
@@ -46,6 +69,11 @@ namespace AcadLib
             }
         }
 
+        public static void SetXDataPIK(this DBObject dbo, int value)
+        {
+            SetXData(dbo, PikApp, value);
+        }
+        
         public static int GetXData(this DBObject dbo, string regAppName)
         {
             var rb = dbo.GetXDataForApplication(regAppName);
@@ -60,6 +88,30 @@ namespace AcadLib
                 }
             }
             return 0;
+        }
+        public static int GetXDatPIK(this DBObject dbo)
+        {
+            return GetXData(dbo, PikApp);
+        }
+
+        public static string GetXDataString(this DBObject dbo, string regAppName)
+        {
+            var rb = dbo.GetXDataForApplication(regAppName);
+            if (rb != null)
+            {
+                foreach (var item in rb)
+                {
+                    if (item.TypeCode == (short)DxfCode.ExtendedDataAsciiString)
+                    {
+                        return (string)item.Value;
+                    }
+                }
+            }
+            return string.Empty;
+        }
+        public static string GetXDatPIKString(this DBObject dbo)
+        {
+            return GetXDataString(dbo, PikApp);
         }
     }
 }
