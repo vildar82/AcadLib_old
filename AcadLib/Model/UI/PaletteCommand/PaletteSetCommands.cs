@@ -76,12 +76,15 @@ namespace AcadLib.PaletteCommands
             foreach (var group in groupCommands)
             {
                 var model = new PaletteModel(group);
-                CommandsControl commControl = new CommandsControl();
-                commControl.DataContext = model;
-                string name = group.Key;
-                if (string.IsNullOrEmpty(name)) name = "Главная";
-                AddVisual(name, commControl);
-                models.Add(model);
+                if (model.PaletteCommands.Any())
+                {
+                    CommandsControl commControl = new CommandsControl();
+                    commControl.DataContext = model;
+                    string name = group.Key;
+                    if (string.IsNullOrEmpty(name)) name = "Главная";
+                    AddVisual(name, commControl);
+                    models.Add(model);
+                }
             }
             // Общие команды для всех отделов определенные в этой сборке
             commands = Commands.CommandsPalette;
