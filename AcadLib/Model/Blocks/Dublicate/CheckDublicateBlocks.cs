@@ -18,7 +18,7 @@ namespace AcadLib.Blocks.Dublicate
     /// </summary>
     public static class CheckDublicateBlocks
     {
-        public static Tolerance Tolerance { get; set; } = new Tolerance(0.02, 10);
+        public static Tolerance Tolerance { get; set; } = new Tolerance(0.2, 10);
         public static int DEPTH = 5;        
         private static int curDepth;
         private static HashSet<ObjectId> attemptedblocks;
