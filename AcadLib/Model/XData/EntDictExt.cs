@@ -107,30 +107,47 @@ namespace AcadLib.XData
 
         private DBDictionary GetDict(bool create)
         {
+            DBDictionary pluginDict = null;
             if (dbo.ExtensionDictionary.IsNull)
             {
-                if (!create)
+                if (create)
                 {
-                    return null;
+                    dbo.CreateExtensionDictionary();
                 }
-                dbo.CreateExtensionDictionary();
+                else
+                {
+                    return pluginDict;
+                }
             }
             var extDict = dbo.ExtensionDictionary.GetObject(OpenMode.ForRead) as DBDictionary;
-
-            DBDictionary pluginDict;
-            if (!extDict.Contains(pluginName))
+            
+            var pikDict = GetDict(extDict, PikApp, create);
+            if (pikDict == null)
             {
-                extDict.UpgradeOpen();
-                pluginDict = new DBDictionary();
-                extDict.SetAt(pluginName, pluginDict);
-                dbo.Database.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(pluginDict, true);
+                return pluginDict;
+            }
+            return GetDict(pikDict, pluginName, create);            
+        }
+
+        private DBDictionary GetDict(DBDictionary dict, string name, bool create)
+        {
+            DBDictionary innerDict = null;
+            if (!dict.Contains(name))
+            {
+                if (create)
+                {
+                    dict.UpgradeOpen();
+                    innerDict = new DBDictionary();
+                    dict.SetAt(name, innerDict);
+                    dbo.Database.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(innerDict, true);
+                }
             }
             else
             {
-                var idInnerDict = extDict.GetAt(pluginName);
-                pluginDict = idInnerDict.GetObject(OpenMode.ForWrite) as DBDictionary;
+                var idInnerDict = dict.GetAt(name);
+                innerDict = idInnerDict.GetObject(OpenMode.ForWrite) as DBDictionary;
             }
-            return pluginDict;
+            return innerDict;
         }
 
         public void Dispose()

@@ -115,6 +115,7 @@
     <Compile Include="Model\Draw\Draw.cs" />
     <Compile Include="Model\Field\UpdateField.cs" />
     <Compile Include="Model\Files\CadSettingsPath.cs" />
+    <Compile Include="Model\Jigs\DragSel.cs" />
     <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\Blocks\AttributeExt.cs" />
     <Compile Include="Model\Blocks\AttributeInfo.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Model\Jigs\RectangleJig.cs" />
     <Compile Include="Model\Plot\PlotOptions.cs" />
     <Compile Include="Model\Registry\RegExt.cs" />
+    <Compile Include="Model\Scale\ScaleHelper.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandCounter.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandInfo.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandsControl.xaml.cs">
