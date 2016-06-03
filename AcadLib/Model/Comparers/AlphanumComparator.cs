@@ -92,7 +92,7 @@ namespace AcadLib.Comparers
                 }
                 else
                 {
-                    result = str1.CompareTo(str2);
+                    result = string.Compare(str1, str2, true);
                 }
 
                 if (result != 0)

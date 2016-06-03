@@ -129,22 +129,36 @@ namespace AcadLib
 
         public void Initialize()
         {
-            // Загрузка сбороки для данного раздела
-            var group = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
-            // пока только для ГП
-            if (group == "ГП") 
+            try
             {
-                var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-                                "Script\\NET\\ГП\\", "PIK_" + "GP" + "_Acad.dll");
-                // Загрузка сбороки ГП                                                        
-                var assGroup = Assembly.LoadFrom(fileGroup);                
+                // Загрузка сбороки для данного раздела
+                var group = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
+                // пока только для ГП
+                if (group == "ГП")
+                {
+                    var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+                                    "Script\\NET\\ГП\\", "PIK_" + "GP" + "_Acad.dll");
+                    // Загрузка сбороки ГП                                                        
+                    var assGroup = Assembly.LoadFrom(fileGroup);
+                }
+                else if (group == "КР-СБ-ГК")
+                {
+                    var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+                                    "Script\\NET\\КР-СБ-ГК\\Autocad_ConcerteList.dll");
+                    // Загрузка сбороки                                                       
+                    var assGroup = Assembly.LoadFrom(fileGroup);
+                }
+                else if (group == "КР-МН")
+                {
+                    var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+                                    "Script\\NET\\КР-МН\\KR_MN_Acad.dll");
+                    // Загрузка сбороки                                                       
+                    var assGroup = Assembly.LoadFrom(fileGroup);
+                }
             }
-            else if (group == "КР-СБ-ГК")
+            catch (System.Exception ex)
             {
-                var fileGroup = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-                                "Script\\NET\\КР-СБ-ГК\\Autocad_ConcerteList.dll");
-                // Загрузка сбороки                                                       
-                var assGroup = Assembly.LoadFrom(fileGroup);
+                Logger.Log.Error(ex, $"Ошибка инициализации AcadLib.");
             }
         }
 

@@ -36,7 +36,7 @@ namespace AcadLib
         public bool Load(string recName, bool defValue)
         {
             bool res = defValue; // default
-            ObjectId idRec = getRec(recName);
+            ObjectId idRec = getRec(recName, false);
             if (idRec.IsNull)
                 return res;
 
@@ -65,7 +65,7 @@ namespace AcadLib
         public int Load(string recName, int defaultValue)
         {
             int res = defaultValue;
-            ObjectId idRec = getRec(recName);
+            ObjectId idRec = getRec(recName, false);
             if (idRec.IsNull)
                 return res;
 
@@ -94,7 +94,7 @@ namespace AcadLib
         public double Load(string recName, double defaultValue)
         {
             double res = defaultValue;
-            ObjectId idRec = getRec(recName);
+            ObjectId idRec = getRec(recName, false);
             if (idRec.IsNull)
                 return res;
 
@@ -123,7 +123,7 @@ namespace AcadLib
         public string Load(string recName, string defaultValue)
         {
             string res = defaultValue;
-            ObjectId idRec = getRec(recName);
+            ObjectId idRec = getRec(recName, false);
             if (idRec.IsNull)
                 return res;
 
@@ -150,7 +150,7 @@ namespace AcadLib
         /// <param name="key">Имя записи XRecord с одним TypedValue</param>
         public void Save(bool value, string key)
         {
-            ObjectId idRec = getRec(key);
+            ObjectId idRec = getRec(key, true);
             if (idRec.IsNull)
                 return;
 
@@ -171,7 +171,7 @@ namespace AcadLib
         /// <param name="keyName">Имя записи XRecord с одним TypedValue</param>
         public void Save(int number, string keyName)
         {
-            ObjectId idRec = getRec(keyName);
+            ObjectId idRec = getRec(keyName, true);
             if (idRec.IsNull)
                 return;
 
@@ -192,7 +192,7 @@ namespace AcadLib
         /// <param name="keyName">Имя записи XRecord с одним TypedValue</param>
         public void Save(double number, string keyName)
         {
-            ObjectId idRec = getRec(keyName);
+            ObjectId idRec = getRec(keyName, true);
             if (idRec.IsNull)
                 return;
 
@@ -213,7 +213,7 @@ namespace AcadLib
         /// <param name="key">Имя записи XRecord с одним TypedValue</param>
         public void Save(string text, string key)
         {
-            ObjectId idRec = getRec(key);
+            ObjectId idRec = getRec(key, true);
             if (idRec.IsNull)
                 return;
 
@@ -227,7 +227,7 @@ namespace AcadLib
             }
         }
 
-        private ObjectId getDict()
+        private ObjectId getDict(bool create)
         {
             ObjectId idDic = ObjectId.Null;
             Database db = HostApplicationServices.WorkingDatabase;
@@ -236,6 +236,7 @@ namespace AcadLib
             {
                 if (!nod.Contains(dictName))
                 {
+                    if (!create) return idDic;
                     nod.UpgradeOpen();
                     using (var dic = new DBDictionary())
                     {
@@ -257,8 +258,27 @@ namespace AcadLib
                     if (!string.IsNullOrEmpty(dictInnerName))
                     {
                         using (var dic = idDic.Open(OpenMode.ForRead) as DBDictionary)
-                        {
-                            idDic = dic.GetAt(dictInnerName);
+                        {                   
+                            if (dic.Contains(dictInnerName))
+                            {
+                                idDic = dic.GetAt(dictInnerName);
+                            }
+                            else
+                            {
+                                if (create)
+                                {
+                                    using (var dicInner = new DBDictionary())
+                                    {
+                                        dic.UpgradeOpen();
+                                        idDic = dic.SetAt(dictInnerName, dicInner);
+                                        dicInner.TreatElementsAsHard = true;
+                                    }
+                                }
+                                else
+                                {
+                                    idDic = ObjectId.Null;
+                                }
+                            }
                         }
                     }
                 }
@@ -266,9 +286,9 @@ namespace AcadLib
             return idDic;
         }
 
-        private ObjectId getRec(string recName)
+        private ObjectId getRec(string recName, bool create)
         {
-            ObjectId idDict = getDict();
+            ObjectId idDict = getDict(create);
             if (idDict.IsNull)
             {
                 return ObjectId.Null;
