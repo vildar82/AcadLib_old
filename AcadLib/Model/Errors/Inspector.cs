@@ -47,6 +47,11 @@ namespace AcadLib.Errors
         //   return errCounts.ToList();
         //}
 
+        public static void AddError(Error err)
+        {            
+            Errors.Add(err);
+        }
+
         public static void AddError(string msg, Icon icon = null)
         {
             var err = new Error(msg, icon);

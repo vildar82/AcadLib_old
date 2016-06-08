@@ -83,9 +83,12 @@ namespace AcadLib.Blocks
             {
                 foreach (DynamicBlockReferenceProperty dyn in blRef.DynamicBlockReferencePropertyCollection)
                 {
-                    if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase)) continue;
-                    Property prop = new Property(dyn.PropertyName, dyn.Value, PropertyType.Dynamic);
-                    props.Add(prop);
+                    if (dyn.VisibleInCurrentVisibilityState)
+                    {
+                        if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase)) continue;
+                        Property prop = new Property(dyn.PropertyName, dyn.Value, PropertyType.Dynamic);
+                        props.Add(prop);
+                    }
                 }
             }
             return props;
