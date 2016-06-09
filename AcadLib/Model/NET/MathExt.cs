@@ -62,6 +62,22 @@ namespace AcadLib
             return radian * 180.0 / Math.PI;
         }
 
+        /// <summary>
+        /// Округление до 5 - вверх
+        /// </summary>        
+        public static int RoundTo5(int i)
+        {
+            if (i % 5 != 0)
+            {
+                var temp = ((i + 5) / 5);
+                i = ((i + 5) / 5) * 5;
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// Округление до 10
+        /// </summary>        
         public static int RoundTo10(int i)
         {
             if (i % 10 != 0)
@@ -71,6 +87,9 @@ namespace AcadLib
             return i;
         }
 
+        /// <summary>
+        /// Округление до 100
+        /// </summary>        
         public static int RoundTo100(int i)
         {
             if (i % 100 != 0)
