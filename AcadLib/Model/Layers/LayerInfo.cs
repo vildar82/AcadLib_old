@@ -40,5 +40,30 @@ namespace AcadLib.Layers
                 IsPlotable = true;
             }
         }
+
+        /// <summary>
+        /// Установка свойст LayerInfo к слою LayerTableRecord
+        /// </summary>
+        /// <param name="lay"></param>
+        public void SetProp(LayerTableRecord lay, Database db)
+        {
+            lay.Name = Name;
+            lay.Color = Color;
+            lay.IsFrozen = IsFrozen;
+            lay.IsLocked = IsLocked;
+            lay.IsOff = IsOff;
+            lay.IsPlottable = IsPlotable;
+            lay.LineWeight = LineWeight;
+            if (!LinetypeObjectId.IsNull)
+                lay.LinetypeObjectId = LinetypeObjectId;
+            else if (!string.IsNullOrEmpty(LineType))
+            {
+                lay.LinetypeObjectId = db.GetLineTypeIdByName(LineType);
+            }
+            else
+            {
+                lay.LinetypeObjectId = db.GetLineTypeIdContinuous();
+            }
+        }
     }
 }

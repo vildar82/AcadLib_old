@@ -46,23 +46,7 @@ namespace AcadLib.Layers
             // Если слоя нет, то он создается.            
             using (var newLayer = new LayerTableRecord())
             {
-                newLayer.Name = layerInfo.Name;
-                newLayer.Color = layerInfo.Color;
-                newLayer.IsFrozen = layerInfo.IsFrozen;
-                newLayer.IsLocked = layerInfo.IsLocked;
-                newLayer.IsOff = layerInfo.IsOff;
-                newLayer.IsPlottable = layerInfo.IsPlotable;
-                newLayer.LineWeight = layerInfo.LineWeight;
-                if (!layerInfo.LinetypeObjectId.IsNull)
-                    newLayer.LinetypeObjectId = layerInfo.LinetypeObjectId;
-                else if (!string.IsNullOrEmpty(layerInfo.LineType))
-                {
-                    newLayer.LinetypeObjectId = lt.Database.GetLineTypeIdByName(layerInfo.LineType);
-                }
-                else
-                {
-                    newLayer.LinetypeObjectId = lt.Database.GetLineTypeIdContinuous();
-                }
+                layerInfo.SetProp(newLayer, lt.Database);
                 lt.UpgradeOpen();
                 idLayer = lt.Add(newLayer);
                 lt.DowngradeOpen();
@@ -76,7 +60,7 @@ namespace AcadLib.Layers
         /// Если слоя нет - то он создается.
         /// </summary>
         /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
-        public static Dictionary<string, ObjectId> CheckLayerState(this List<LayerInfo> layers)
+        public static Dictionary<string, ObjectId> CheckLayerState(this List<LayerInfo> layers, bool checkProps)
         {
             Dictionary<string, ObjectId> resVal = new Dictionary<string, ObjectId>();
             Database db = HostApplicationServices.WorkingDatabase;
@@ -85,7 +69,7 @@ namespace AcadLib.Layers
                 foreach (var layer in layers)
                 {
                     if (lt.Has(layer.Name))
-                    {                        
+                    {
                         using (var lay = lt[layer.Name].Open(OpenMode.ForRead) as LayerTableRecord)
                         {
                             if (lay.IsLocked && lay.IsOff && lay.IsFrozen)
@@ -105,6 +89,10 @@ namespace AcadLib.Layers
                                 }
                             }
                             resVal.Add(layer.Name, lay.Id);
+                            if (checkProps)
+                            {
+                                layer.SetProp(lay, db);
+                            }
                         }
                     }
                     else
@@ -117,13 +105,28 @@ namespace AcadLib.Layers
             return resVal;
         }
 
-        public static ObjectId CheckLayerState(this LayerInfo layer)
+        /// <summary>
+        /// Проверка блокировки слоя IsOff IsLocked IsFrozen.
+        /// Если заблокировано - то разблокируется.
+        /// Если слоя нет - то он создается.
+        /// </summary>
+        /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
+        public static Dictionary<string, ObjectId> CheckLayerState(this List<LayerInfo> layers)
+        {
+            return CheckLayerState(layers, false);
+        }
+
+        public static ObjectId CheckLayerState(this LayerInfo layer, bool checkProps)
         {
             List<LayerInfo> layers = new List<LayerInfo>() { layer };
-            var dictLays = CheckLayerState(layers);
+            var dictLays = CheckLayerState(layers, checkProps);
             ObjectId res;
             dictLays.TryGetValue(layer.Name, out res);
             return res;
+        }
+        public static ObjectId CheckLayerState(this LayerInfo layer)
+        {
+            return CheckLayerState(layer, false);
         }
 
         public static ObjectId CheckLayerState(string layer)
@@ -146,6 +149,6 @@ namespace AcadLib.Layers
                 layersInfo.Add(li);
             }
             return CheckLayerState(layersInfo);
-        }
+        }        
     }
 }
