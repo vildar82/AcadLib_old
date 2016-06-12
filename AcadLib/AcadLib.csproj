@@ -170,7 +170,7 @@
     <Compile Include="Model\UI\PaletteCommand\CommandsControl.xaml.cs">
       <DependentUpon>CommandsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\UI\PaletteCommand\CommandStarter.cs" />
+    <Compile Include="Model\CommandStarter.cs" />
     <Compile Include="Model\UI\PaletteCommand\IPaletteCommand.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteCommand.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteCommandBlock.cs" />

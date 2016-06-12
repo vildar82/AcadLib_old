@@ -14,7 +14,12 @@ namespace AcadLib
 {
     public static class CommandStart
     {
-        [MethodImpl(MethodImplOptions.NoInlining)]
+        /// <summary>
+        /// Оболочка для старта команды - try-catch, log, inspectoe.clear-show, commandcounter
+        /// Условие использования: отключить оптимизацию кода (Параметры проекта -> Сборка) - т.к. используется StackTrace
+        /// </summary>
+        /// <param name="action">Код выполнения команды</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]        
         public static void Start(Action<Document> action)
         {
             // определение имени команды по вызвавему методу и иего артрибуту CommandMethod;
