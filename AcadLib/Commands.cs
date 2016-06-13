@@ -112,8 +112,8 @@ namespace AcadLib {
 
 				if (!string.IsNullOrEmpty(fileGroup))
 				{
-					var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
-					Assembly.LoadFrom(fileGroup);
+					var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);					
+					Assembly.LoadFrom(fileDll);
 				}
 			}
 			catch (System.Exception ex)
