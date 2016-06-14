@@ -123,7 +123,7 @@ namespace AcadLib.Blocks
                         using (var atrRef = new AttributeReference())
                         {
                             atrRef.SetAttributeFromBlock(atrDef, blRef.BlockTransform);
-                            atrRef.TextString = atrDef.TextString;
+                            //atrRef.TextString = atrDef.TextString;
                             blRef.AttributeCollection.AppendAttribute(atrRef);
                             t.AddNewlyCreatedDBObject(atrRef, true);
                         }
