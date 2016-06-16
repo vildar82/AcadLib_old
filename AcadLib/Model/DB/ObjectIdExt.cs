@@ -124,5 +124,19 @@ namespace AcadLib
                 Thread.Sleep(delay2);
             }
         }
+
+        /// <summary>
+        /// Копирование объекта в одной базе
+        /// </summary>
+        /// <param name="idEnt">Копируемый объект</param>
+        /// <param name="idBtrOwner">Куда копировать (контейнер - BlockTableRecord)</param>                
+        public static ObjectId CopyEnt (this ObjectId idEnt, ObjectId idBtrOwner)
+        {
+            Database db = idEnt.Database;
+            IdMapping map = new IdMapping();
+            ObjectIdCollection ids = new ObjectIdCollection(new[] { idEnt });
+            db.DeepCloneObjects(ids, idBtrOwner, map, false);
+            return map[idEnt].Value;
+        }
     }
 }
