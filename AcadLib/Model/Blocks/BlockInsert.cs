@@ -26,6 +26,9 @@ namespace AcadLib.Blocks
             return Insert(blName);
         }
 
+        /// <summary>
+        /// Вставка блока в чертеж - интерактивная (BlockInsertJig)
+        /// </summary>        
         public static ObjectId Insert(string blName, Layers.LayerInfo layer, List<Property> props)
         {
             ObjectId idBlRefInsert = ObjectId.Null;
@@ -111,6 +114,36 @@ namespace AcadLib.Blocks
             return Insert(blName, layer);
         }
 
+        /// <summary>
+        /// Вставка вхождения блока
+        /// </summary>
+        /// <param name="blName">Имя блока</param>
+        /// <param name="pt">Точка вставки</param>
+        /// <param name="owner">Контейнер</param>        
+        /// <param name="t"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        public static BlockReference InsertBlockRef (string blName, Point3d pt, BlockTableRecord owner, Transaction t, double scale = 1)
+        {
+            Database db = owner.Database;
+            var bt = db.BlockTableId.GetObject( OpenMode.ForRead)as BlockTable;
+            var btr = bt[blName].GetObject(OpenMode.ForRead) as BlockTableRecord;
+            var blRef = new BlockReference(pt, btr.Id);
+            blRef.Position = pt;
+            if (scale !=1)            
+                blRef.TransformBy(Matrix3d.Scaling(scale, pt));
+            blRef.SetDatabaseDefaults();
+
+            owner.AppendEntity(blRef);
+            t.AddNewlyCreatedDBObject(blRef, true);
+            
+            AddAttributes(blRef, btr, db.TransactionManager.TopTransaction);
+            return blRef;
+        }
+
+        /// <summary>
+        /// Добавление атрибутов к вставке блока
+        /// </summary>        
         public static void AddAttributes(BlockReference blRef, BlockTableRecord btrBl, Transaction t)
         {
             foreach (ObjectId idEnt in btrBl)

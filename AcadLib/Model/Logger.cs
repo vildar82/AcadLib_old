@@ -13,6 +13,6 @@ namespace AcadLib
         static Logger ()
         {
             Log = new AutoCAD_PIK_Manager.LogAddin(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup);
-        }
+        }        
     }
 }
