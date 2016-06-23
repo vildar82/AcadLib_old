@@ -128,7 +128,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>
         /// <param name="ext">Габаритный контейнер.</param>
         /// <returns></returns>
-        private static bool IsEmptyExt(ref Extents3d ext)
+        public static bool IsEmptyExt(ref Extents3d ext)
         {
             if (ext.MinPoint.DistanceTo(ext.MaxPoint) < Tolerance.Global.EqualPoint)
                 return true;
