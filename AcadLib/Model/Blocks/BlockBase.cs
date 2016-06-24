@@ -15,7 +15,7 @@ namespace AcadLib.Blocks
     /// <summary>
     /// Базовое описание блока
     /// </summary>
-    public abstract class  BlockBase : IBlock
+    public class  BlockBase : IBlock
     {
         private bool _alreadyCalcExtents;
         private Extents3d _extentsToShow;
@@ -122,7 +122,7 @@ namespace AcadLib.Blocks
         /// <param name="propMatch">Имя параметрв или соответствие</param>
         /// <param name="isRequired">Добавлять ли ошибку если нет этого параметра.</param>
         /// <param name="exactMatch">Точное соответствие имени параметра, или заданному паттерну.</param>
-        protected T GetPropValue<T> (string propMatch, bool isRequired = true, bool exactMatch = true)
+        public T GetPropValue<T> (string propMatch, bool isRequired = true, bool exactMatch = true)
         {            
             T resVal = default(T);
             if (exactMatch)
@@ -147,7 +147,7 @@ namespace AcadLib.Blocks
             return prop;            
         }
 
-        protected void FillPropValue (string propMatch, object value, bool exactMatch = true)
+        public void FillPropValue (string propMatch, object value, bool exactMatch = true)
         {
             if (exactMatch)
             {

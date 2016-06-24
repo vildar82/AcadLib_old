@@ -30,6 +30,21 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Показать блок на чертеже
         /// </summary>
-        void Show ();        
+        void Show ();
+        /// <summary>
+        /// Получение свойства блока
+        /// </summary>
+        /// <typeparam name="T">Тип значения</typeparam>
+        /// <param name="propMatch">Соответствие имени свойства</param>
+        /// <param name="isRequired">Обязательное свойство. Будет добалена ошибка в Error.</param>
+        /// <param name="exactMatch">точное соответствие имени свойства</param>        
+        T GetPropValue<T> (string propMatch, bool isRequired = true, bool exactMatch = true);
+        /// <summary>
+        /// Запись свойства
+        /// </summary>
+        /// <param name="propMatch">Соответствие имени свойства</param>
+        /// <param name="value">Значение</param>
+        /// <param name="exactMatch">Точное соответствие имени свойства</param>
+        void FillPropValue (string propMatch, object value, bool exactMatch = true);
     }
 }
