@@ -85,21 +85,20 @@ namespace AcadLib.Field
         {            
             return acdbEvaluateFields(ref id, 16);
         }
+       
+        public static void UpdateInSelected ()
+        {
+            // Обновление полей в блоке
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
 
-        //[CommandMethod("Test", "Test", CommandFlags.Modal)]
-        //public static void Test()
-        //{
-        //    // Обновление полей в блоке
-        //    Document doc = Application.DocumentManager.MdiActiveDocument;
-        //    Database db = doc.Database;
-        //    Editor ed = doc.Editor;
-
-        //    var sel = ed.GetEntity("Выбери блок для обновления полей в атрибутах: ");
-        //    if (sel.Status == PromptStatus.OK)
-        //    {                
-        //        ObjectId id = sel.ObjectId;
-        //        acdbEvaluateFields(ref id, 16);
-        //    }
-        //}
+            var sel = ed.Select("Выбер объектов для обновления полей: ");
+            foreach (var item in sel)
+            {
+                var id = item;
+                acdbEvaluateFields(ref id, 16);
+            }
+        }
     }
 }

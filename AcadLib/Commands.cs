@@ -144,6 +144,14 @@ namespace AcadLib {
 			});
 		}
 
+		[CommandMethod(Group, nameof(PIK_UpdateFieldsInObjects), CommandFlags.Modal)]
+		public void PIK_UpdateFieldsInObjects ()
+		{
+			CommandStart.Start(doc => {
+				Field.UpdateField.UpdateInSelected();
+			});
+		}
+
 		/// <summary>
 		/// Список общих команд
 		/// </summary>
