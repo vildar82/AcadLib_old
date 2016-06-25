@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
@@ -31,6 +32,7 @@ namespace AcadLib.Blocks
         /// Границы для показа
         /// </summary>
         Extents3d ExtentsToShow { get; set; }
+        Error Error { get; set; }
         /// <summary>
         /// Показать блок на чертеже
         /// </summary>
