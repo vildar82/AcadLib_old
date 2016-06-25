@@ -16,6 +16,10 @@ namespace AcadLib.Blocks
         /// Эффективное имя блока
         /// </summary>
         string BlName { get; set; }
+        /// <summary>
+        /// Слой на котором расположен блок
+        /// </summary>
+        string BlLayer { get; set; }
         ObjectId IdBlRef { get; set; }
         ObjectId IdBtr { get; set; }
         Extents3d? Bounds { get; set; }

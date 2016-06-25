@@ -25,6 +25,7 @@ namespace AcadLib.Blocks
         /// Имя блока - эффективное
         /// </summary>
         public string BlName { get; set; }
+        public string BlLayer { get; set; }
         /// <summary>
         /// Границы блока Bounds
         /// </summary>
@@ -51,6 +52,7 @@ namespace AcadLib.Blocks
         {            
             IdBlRef = blRef.Id;
             BlName = blName;
+            BlLayer = blRef.Layer;
             Properties = Property.GetAllProperties(blRef);
             Bounds = blRef.Bounds;            
         }
