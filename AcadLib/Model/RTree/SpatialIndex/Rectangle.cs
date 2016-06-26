@@ -20,6 +20,7 @@
 
 using System;
 using System.Text;
+using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.RTree.SpatialIndex
 {
@@ -81,6 +82,12 @@ namespace AcadLib.RTree.SpatialIndex
             this.max = new double[DIMENSIONS];
 
             set(min, max);
+        }
+
+        public Rectangle(Extents3d extents) : this(extents.MinPoint.X, extents.MinPoint.Y,
+            extents.MaxPoint.X, extents.MaxPoint.Y, 0,0)
+        {
+
         }
 
         /**
