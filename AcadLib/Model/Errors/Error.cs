@@ -202,6 +202,7 @@ namespace AcadLib.Errors
         public void AdditionToMessage(string addMsg)
         {
             _msg += addMsg;
+            _shortMsg = getShortMsg(_msg);
         }
 
         /// <summary>

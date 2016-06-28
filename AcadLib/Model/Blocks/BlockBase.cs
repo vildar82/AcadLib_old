@@ -134,7 +134,14 @@ namespace AcadLib.Blocks
             Property prop = GetProperty(propMatch, isRequired);
             if (prop != null)
             {
-                resVal = (T)Convert.ChangeType(prop.Value, typeof(T));
+                try
+                {
+                    resVal = (T)Convert.ChangeType(prop.Value, typeof(T));
+                }
+                catch
+                {
+                    AddError($"Недопустимый тип значения параметра '{propMatch}'= {prop.Value}.");
+                }
             }
             return resVal;
         }        
@@ -174,7 +181,7 @@ namespace AcadLib.Blocks
         {
             if (Error == null)
             {
-                Error = new Error($"Ошибка в блоке {BlName}: ", IdBlRef, System.Drawing.SystemIcons.Error);
+                Error = new Error($"Ошибка в блоке '{BlName}' {IdBlRef}: ", IdBlRef, System.Drawing.SystemIcons.Error);
                 Inspector.AddError(Error);
             }
             Error.AdditionToMessage(msg);

@@ -66,7 +66,7 @@ namespace AcadLib.Blocks
             var attrs = AttributeInfo.GetAttrRefs(blRef);
             foreach (var atr in attrs)
             {
-                Property prop = new Property(atr.Tag, atr.Text, atr.IdAtr);
+                Property prop = new Property(atr.Tag, atr.Text.Trim(), atr.IdAtr);
                 props.Add(prop);
             }
             props.AddRange(GetDynamicProperties(blRef));
