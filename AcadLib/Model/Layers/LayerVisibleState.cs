@@ -30,7 +30,7 @@ namespace AcadLib.Layers
             foreach (var idLayer in lt)
             {
                 var layer = idLayer.GetObject(OpenMode.ForRead) as LayerTableRecord;
-                res.Add(layer.Name, layer.IsOff || layer.IsFrozen);
+                res.Add(layer.Name, !layer.IsOff && !layer.IsFrozen);
             }
             return res;
         }
