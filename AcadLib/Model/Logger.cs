@@ -8,11 +8,27 @@ namespace AcadLib
 {
     public static class Logger
     {
-        public static AutoCAD_PIK_Manager.LogAddin Log;
+        public static LoggAddinExt Log;
 
         static Logger ()
         {
-            Log = new AutoCAD_PIK_Manager.LogAddin(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup);
+            Log = new LoggAddinExt(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup);
         }        
     }
+
+    public class LoggAddinExt : AutoCAD_PIK_Manager.LogAddin
+    {
+        public LoggAddinExt (string plugin) : base(plugin)
+        {
+        }
+
+        /// <summary>
+        /// Отзыв
+        /// </summary>        
+        public void Report (string msg)
+        {
+            Error("#Report: " + msg);
+        }
+    }
+
 }

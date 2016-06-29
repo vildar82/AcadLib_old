@@ -120,6 +120,12 @@
     <Compile Include="Model\DB\LineTypeExt.cs" />
     <Compile Include="Model\Draw\DrawParameters.cs" />
     <Compile Include="Model\Draw\Draw.cs" />
+    <Compile Include="Model\Errors\FormReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model\Errors\FormReport.Designer.cs">
+      <DependentUpon>FormReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Model\Field\UpdateField.cs" />
     <Compile Include="Model\Files\CadSettingsPath.cs" />
     <Compile Include="Model\Jigs\DragSel.cs" />
@@ -272,6 +278,9 @@
     <EmbeddedResource Include="Model\Errors\FormError.resx">
       <DependentUpon>FormError.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Model\Errors\FormReport.resx">
+      <DependentUpon>FormReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Model\UI\Properties\FormProperties.resx">
       <DependentUpon>FormProperties.cs</DependentUpon>
     </EmbeddedResource>
@@ -284,6 +293,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\send.png" />
+    <None Include="Resources\report.png" />
     <None Include="Resources\logo.png" />
     <None Include="Resources\house.ico" />
     <None Include="Resources\pik.ico" />

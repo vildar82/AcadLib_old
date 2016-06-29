@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AutoCAD_PIK_Manager;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
@@ -34,6 +33,7 @@ namespace AcadLib.Errors
         private ErrorProvider errorProvider1;
         private ContextMenuStrip contextMenuError;
         private ToolStripMenuItem toolStripMenuItemRemove;
+        private System.Windows.Forms.Button buttonReport;
         private bool isAllErrors;
 
         public FormError(bool modal) : this(Inspector.Errors, modal)
@@ -141,18 +141,19 @@ namespace AcadLib.Errors
             this.buttonShow = new System.Windows.Forms.Button();
             this.buttonDelAll = new System.Windows.Forms.Button();
             this.listBoxError = new System.Windows.Forms.ListBox();
+            this.contextMenuError = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItemRemove = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOk = new System.Windows.Forms.Button();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.contextMenuError = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItemRemove = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
+            this.buttonReport = new System.Windows.Forms.Button();
             this.contextMenuError.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
             // textBoxErr
             // 
-            this.textBoxErr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.textBoxErr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxErr.Location = new System.Drawing.Point(12, 391);
             this.textBoxErr.Multiline = true;
@@ -230,8 +231,8 @@ namespace AcadLib.Errors
             // 
             // listBoxError
             // 
-            this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listBoxError.ContextMenuStrip = this.contextMenuError;
             this.listBoxError.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
@@ -248,6 +249,20 @@ namespace AcadLib.Errors
             this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
             this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
             this.listBoxError.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBoxError_KeyUp);
+            // 
+            // contextMenuError
+            // 
+            this.contextMenuError.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemRemove});
+            this.contextMenuError.Name = "contextMenuError";
+            this.contextMenuError.Size = new System.Drawing.Size(138, 26);
+            // 
+            // toolStripMenuItemRemove
+            // 
+            this.toolStripMenuItemRemove.Name = "toolStripMenuItemRemove";
+            this.toolStripMenuItemRemove.Size = new System.Drawing.Size(137, 22);
+            this.toolStripMenuItemRemove.Text = "Исключить";
+            this.toolStripMenuItemRemove.Click += new System.EventHandler(this.toolStripMenuItemRemove_Click);
             // 
             // buttonCancel
             // 
@@ -275,19 +290,18 @@ namespace AcadLib.Errors
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // contextMenuError
+            // buttonReport
             // 
-            this.contextMenuError.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemRemove});
-            this.contextMenuError.Name = "contextMenuError";
-            this.contextMenuError.Size = new System.Drawing.Size(138, 26);
-            // 
-            // toolStripMenuItemRemove
-            // 
-            this.toolStripMenuItemRemove.Name = "toolStripMenuItemRemove";
-            this.toolStripMenuItemRemove.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItemRemove.Text = "Исключить";
-            this.toolStripMenuItemRemove.Click += new System.EventHandler(this.toolStripMenuItemRemove_Click);
+            this.buttonReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonReport.BackgroundImage = global::AcadLib.Properties.Resources.report;
+            this.buttonReport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.buttonReport.Location = new System.Drawing.Point(646, 474);
+            this.buttonReport.Name = "buttonReport";
+            this.buttonReport.Size = new System.Drawing.Size(54, 45);
+            this.buttonReport.TabIndex = 10;
+            this.toolTip1.SetToolTip(this.buttonReport, "Написать о проблеме или предложени");
+            this.buttonReport.UseVisualStyleBackColor = true;
+            this.buttonReport.Click += new System.EventHandler(this.buttonReport_Click);
             // 
             // FormError
             // 
@@ -296,6 +310,7 @@ namespace AcadLib.Errors
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(712, 531);
+            this.Controls.Add(this.buttonReport);
             this.Controls.Add(this.buttonDelAll);
             this.Controls.Add(this.buttonDel);
             this.Controls.Add(this.buttonOk);
@@ -307,8 +322,8 @@ namespace AcadLib.Errors
             this.Controls.Add(this.listBoxError);
             this.Name = "FormError";
             this.Text = "Инфо";
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.contextMenuError.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -349,7 +364,7 @@ namespace AcadLib.Errors
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Сохранение ошибок в Excel");
+                Logger.Log.Error(ex, "Сохранение ошибок в Excel");
             }
         }
 
@@ -455,7 +470,7 @@ namespace AcadLib.Errors
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка удаления дубликатов - {ex.Message}");
-                Log.Error(ex, "FormError DeleteDublicates");
+                Logger.Log.Error(ex, "FormError DeleteDublicates");
             }
         }
 
@@ -483,6 +498,16 @@ namespace AcadLib.Errors
         private void toolStripMenuItemRemove_Click(object sender, EventArgs e)
         {
             RemoveErrorSelected();
+        }
+
+        private void buttonReport_Click (object sender, EventArgs e)
+        {
+            FormReport frmReport = new FormReport ();
+            var res = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frmReport);
+            if (res == DialogResult.OK)
+            {
+                Logger.Log.Report(frmReport.Message);
+            }
         }
     }
 }
