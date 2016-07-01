@@ -49,7 +49,16 @@ namespace AcadLib
                     var values = data.AsArray();
                     if (values.Count() > 0)
                     {
-                        return Convert.ToBoolean(values[0].Value);
+                        try
+                        {
+                            return Convert.ToBoolean(values[0].Value);
+                        }
+                        catch
+                        {
+                            Inspector.AddError($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defValue}'");
+                            Save(defValue, recName);
+                            res = defValue;
+                        }
                     }
                 }
             }
@@ -77,8 +86,17 @@ namespace AcadLib
                         return res;
                     var values = data.AsArray();
                     if (values.Count() > 0)
-                    {
-                        return (int)values[0].Value;
+                    {                        
+                        try
+                        {
+                            return (int)values[0].Value;
+                        }
+                        catch
+                        {
+                            Inspector.AddError($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defaultValue}'");
+                            Save(defaultValue, recName);
+                            res = defaultValue;
+                        }
                     }
                 }
             }
@@ -106,8 +124,17 @@ namespace AcadLib
                         return res;
                     var values = data.AsArray();
                     if (values.Count() > 0)
-                    {
-                        return (double)values[0].Value;
+                    {                        
+                        try
+                        {
+                            return (double)values[0].Value;
+                        }
+                        catch
+                        {
+                            Inspector.AddError($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defaultValue}'");
+                            Save(defaultValue, recName);
+                            res = defaultValue;
+                        }
                     }
                 }
             }
