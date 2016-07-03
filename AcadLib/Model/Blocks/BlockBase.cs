@@ -177,7 +177,7 @@ namespace AcadLib.Blocks
             }
         }
 
-        protected void AddError (string msg)
+        public void AddError (string msg)
         {
             if (Error == null)
             {
