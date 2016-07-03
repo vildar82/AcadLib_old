@@ -46,7 +46,11 @@ namespace AcadLib
                 {
                     Logger.Log.Error(ex, command);
                 }
-                doc.Editor.WriteMessage(ex.Message);
+                else
+                {
+                    Inspector.AddError($"Ошибка в программе. {ex}");
+                }
+                doc.Editor.WriteMessage(ex.Message);                
             }
             Inspector.Show();
         }
