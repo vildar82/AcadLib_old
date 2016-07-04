@@ -45,11 +45,8 @@ namespace AcadLib
                 if (!ex.Message.Contains(General.CanceledByUser))
                 {
                     Logger.Log.Error(ex, command);
-                }
-                else
-                {
                     Inspector.AddError($"Ошибка в программе. {ex}");
-                }
+                }                
                 doc.Editor.WriteMessage(ex.Message);                
             }
             Inspector.Show();
