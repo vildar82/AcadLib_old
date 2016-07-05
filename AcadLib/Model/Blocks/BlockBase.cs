@@ -26,6 +26,7 @@ namespace AcadLib.Blocks
         /// </summary>
         public string BlName { get; set; }
         public string BlLayer { get; set; }
+        public Point3d Position { get; set; }
         /// <summary>
         /// Границы блока Bounds
         /// </summary>
@@ -54,7 +55,8 @@ namespace AcadLib.Blocks
             BlName = blName;
             BlLayer = blRef.Layer;
             Properties = Property.GetAllProperties(blRef);
-            Bounds = blRef.Bounds;            
+            Bounds = blRef.Bounds;
+            Position = blRef.Position;
         }
 
         /// <summary>
