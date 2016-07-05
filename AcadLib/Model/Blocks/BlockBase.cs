@@ -44,6 +44,7 @@ namespace AcadLib.Blocks
         /// </summary>
         public List<Property> Properties { get; set; }
         public Error Error { get; set; }
+        public Matrix3d Transform { get; set; }
 
         /// <summary>
         /// Блок - по имени и ссылке на вхождение блока
@@ -57,6 +58,7 @@ namespace AcadLib.Blocks
             Properties = Property.GetAllProperties(blRef);
             Bounds = blRef.Bounds;
             Position = blRef.Position;
+            Transform = blRef.BlockTransform;
         }
 
         /// <summary>
