@@ -51,7 +51,8 @@ namespace AcadLib.Blocks
         /// <param name="propMatch">Соответствие имени свойства</param>
         /// <param name="value">Значение</param>
         /// <param name="exactMatch">Точное соответствие имени свойства</param>
-        void FillPropValue (string propMatch, object value, bool exactMatch = true);
+        /// <param name="isRequired">Обязательное свойство? Если да, а свойства не найдено, будет добавлена ошибка</param>
+        void FillPropValue (string propMatch, object value, bool exactMatch = true, bool isRequired = true);
         void AddError (string err);
     }
 }

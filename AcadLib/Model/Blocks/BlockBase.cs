@@ -156,13 +156,13 @@ namespace AcadLib.Blocks
             return prop;            
         }
 
-        public void FillPropValue (string propMatch, object value, bool exactMatch = true)
+        public void FillPropValue (string propMatch, object value, bool exactMatch = true, bool isRequired = true)
         {
             if (exactMatch)
             {
                 propMatch = $"^{propMatch}$";
             }
-            FillProp(GetProperty(propMatch), value);
+            FillProp(GetProperty(propMatch, isRequired), value);
         }
 
         protected void FillProp (Property prop, object value)
