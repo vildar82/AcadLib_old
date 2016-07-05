@@ -55,7 +55,8 @@ namespace AcadLib
                         }
                         catch
                         {
-                            Inspector.AddError($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defValue}'");
+                            Logger.Log.Error($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defValue}'");
+                            xRec.Close();
                             Save(defValue, recName);
                             res = defValue;
                         }
@@ -93,7 +94,8 @@ namespace AcadLib
                         }
                         catch
                         {
-                            Inspector.AddError($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defaultValue}'");
+                            Logger.Log.Error($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defaultValue}'");
+                            xRec.Close();
                             Save(defaultValue, recName);
                             res = defaultValue;
                         }
@@ -131,7 +133,8 @@ namespace AcadLib
                         }
                         catch
                         {
-                            Inspector.AddError($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defaultValue}'");
+                            Logger.Log.Error($"Ошибка определения параметра '{recName}'='{values[0].Value}'. Взято значение по умолчанию '{defaultValue}'");
+                            xRec.Close();
                             Save(defaultValue, recName);
                             res = defaultValue;
                         }
