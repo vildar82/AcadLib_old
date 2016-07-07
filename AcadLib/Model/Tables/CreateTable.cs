@@ -1,0 +1,102 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using AcadLib.Jigs;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
+
+namespace AcadLib.Tables
+{
+    public abstract class CreateTable : ICreateTable
+    {
+        protected Database db;
+        protected double scale;
+
+        public string Layer { get; set; }
+        public int NumRows { get; set; }
+        public int NumColumns { get; set; }
+        public string Title { get; set; }
+        public abstract void CalcRows ();
+        protected abstract void FillCells (Table table);
+        protected abstract void SetColumnsAndCap (ColumnsCollection columns);
+
+        public CreateTable (Database db)
+        {
+            this.db = db;
+            scale = Scale.ScaleHelper.GetCurrentAnnoScale(db);
+        }
+
+        public Table Create ()
+        {
+            var table = GetTable();
+            return table;
+        }
+
+        public void Insert (Table table, Document doc)
+        {
+            insertTable(table, doc);
+        }
+
+        /// <summary>
+        /// перед вызовом необходимо заполнить свойства - Title, NumRows, NumColumns
+        /// </summary>        
+        protected Table GetTable ()
+        {
+            Table table = new Table();
+            table.SetDatabaseDefaults(db);
+            table.TableStyle = db.GetTableStylePIK(); // если нет стиля ПИк в этом чертеже, то он скопируетс из шаблона, если он найдется            
+
+            if (!string.IsNullOrEmpty(Layer))
+            {
+                var layerId = Layers.LayerExt.GetLayerOrCreateNew(new Layers.LayerInfo(Layer));
+                table.LayerId = layerId;
+            }
+
+            table.SetSize(NumRows, NumColumns);
+            table.SetBorders(LineWeight.LineWeight050);
+            table.SetRowHeight(8);
+
+            // Название таблицы
+            var rowTitle = table.Cells[0, 0];
+            rowTitle.Alignment = CellAlignment.MiddleCenter;
+            rowTitle.TextHeight = 5;
+            rowTitle.TextString = Title;
+
+            // Заполнение шапки столбцов и их ширин
+            SetColumnsAndCap(table.Columns);
+
+            // Строка заголовков столбцов
+            var rowHeaders = table.Rows[1];
+            rowHeaders.Height = 15;
+            var lwBold = rowHeaders.Borders.Top.LineWeight;
+            rowHeaders.Borders.Bottom.LineWeight = lwBold;
+
+            // Заполнение строк
+            FillCells(table);
+
+            var lastRow = table.Rows.Last();
+            lastRow.Borders.Bottom.LineWeight = lwBold;
+
+            table.GenerateLayout();
+            return table;
+        }
+
+        private void insertTable (Table table, Document doc)
+        {
+            using (var t = doc.TransactionManager.StartTransaction())
+            {
+                TableJig jigTable = new TableJig(table, scale, "Вставка таблицы");
+                if (doc.Editor.Drag(jigTable).Status == PromptStatus.OK)
+                {
+                    var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+                    cs.AppendEntity(table);
+                    db.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(table, true);
+                }
+                t.Commit();
+            }
+        }
+    }
+}

@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AcadLib.Errors;
+using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
@@ -26,11 +27,12 @@ namespace AcadLib.Blocks
         /// </summary>
         public string BlName { get; set; }
         public string BlLayer { get; set; }
+        public virtual Color Color { get; set; }
         public Point3d Position { get; set; }
         /// <summary>
         /// Границы блока Bounds
         /// </summary>
-        public Extents3d? Bounds { get; set; }
+        public virtual Extents3d? Bounds { get; set; }
         /// <summary>
         /// Id вхождения блока
         /// </summary>
@@ -53,12 +55,14 @@ namespace AcadLib.Blocks
         public BlockBase (BlockReference blRef, string blName)
         {            
             IdBlRef = blRef.Id;
+            IdBtr = blRef.BlockTableRecord;
             BlName = blName;
             BlLayer = blRef.Layer;
             Properties = Property.GetAllProperties(blRef);
             Bounds = blRef.Bounds;
             Position = blRef.Position;
             Transform = blRef.BlockTransform;
+            Color = blRef.Color;
         }
 
         /// <summary>

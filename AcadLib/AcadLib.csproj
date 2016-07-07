@@ -176,6 +176,8 @@
     <Compile Include="Model\Registry\RegExt.cs" />
     <Compile Include="Model\Scale\ScaleHelper.cs" />
     <Compile Include="Model\Strings\StringHelper.cs" />
+    <Compile Include="Model\Tables\CreateTable.cs" />
+    <Compile Include="Model\Tables\ICreateTable.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandCounter.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandInfo.cs" />
     <Compile Include="Model\UI\PaletteCommand\CommandsControl.xaml.cs">
@@ -205,7 +207,7 @@
     <Compile Include="Model\RTree\SpatialIndex\Point.cs" />
     <Compile Include="Model\RTree\SpatialIndex\Rectangle.cs" />
     <Compile Include="Model\RTree\SpatialIndex\RTree.cs" />
-    <Compile Include="Model\Table\TableExt.cs" />
+    <Compile Include="Model\Tables\TableExt.cs" />
     <Compile Include="Model\UI\Properties\FormProperties.cs">
       <SubType>Form</SubType>
     </Compile>
