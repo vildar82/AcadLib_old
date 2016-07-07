@@ -191,7 +191,7 @@
     <Compile Include="Model\XData\DictNODExt.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />
     <Compile Include="Model\DB\ObjectIdExt.cs" />
-    <Compile Include="Model\Files\SerializerXml.cs" />
+    <Compile Include="Model\Geometry\SerializerXml.cs" />
     <Compile Include="Model\General.cs" />
     <Compile Include="Model\Layers\LayerExt.cs" />
     <Compile Include="Model\Layers\LayerInfo.cs" />

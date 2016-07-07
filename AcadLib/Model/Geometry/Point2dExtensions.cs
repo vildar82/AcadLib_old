@@ -109,5 +109,12 @@ namespace Autodesk.AutoCAD.Geometry
                 org.X + (distance * Math.Cos(angle)),
                 org.Y + (distance * Math.Sin(angle)));
         }
+
+        public static Point2d Center (this Point2d pt, Point2d other)
+        {
+            return new Point2d(
+                    pt.X + (other.X - pt.X) * 0.5,
+                    pt.Y + (other.Y - pt.Y) * 0.5);
+        }            
     }
 }
