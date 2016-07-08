@@ -189,6 +189,7 @@
     <Compile Include="Model\UI\PaletteCommand\PaletteCommandBlock.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteModel.cs" />
     <Compile Include="Model\UI\PaletteCommand\PaletteSetCommands.cs" />
+    <Compile Include="Model\UI\Properties\XmlSerializableDictionary.cs" />
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\XData\DictNODExt.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />
