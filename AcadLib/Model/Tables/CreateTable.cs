@@ -14,6 +14,7 @@ namespace AcadLib.Tables
     {
         protected Database db;
         protected double scale;
+        protected LineWeight? lwBold;
 
         public string Layer { get; set; }
         public int NumRows { get; set; }
@@ -65,14 +66,14 @@ namespace AcadLib.Tables
             rowTitle.TextHeight = 5;
             rowTitle.TextString = Title;
 
-            // Заполнение шапки столбцов и их ширин
-            SetColumnsAndCap(table.Columns);
-
             // Строка заголовков столбцов
             var rowHeaders = table.Rows[1];
             rowHeaders.Height = 15;
-            var lwBold = rowHeaders.Borders.Top.LineWeight;
+            lwBold = rowHeaders.Borders.Top.LineWeight;
             rowHeaders.Borders.Bottom.LineWeight = lwBold;
+
+            // Заполнение шапки столбцов и их ширин
+            SetColumnsAndCap(table.Columns);            
 
             // Заполнение строк
             FillCells(table);
