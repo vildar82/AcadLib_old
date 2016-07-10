@@ -173,6 +173,7 @@
     <Compile Include="Model\DB\EntityInfo.cs" />
     <Compile Include="Model\Jigs\RectangleJig.cs" />
     <Compile Include="Model\Plot\PlotOptions.cs" />
+    <Compile Include="Model\Regexes\RegexExt.cs" />
     <Compile Include="Model\Registry\RegExt.cs" />
     <Compile Include="Model\Scale\ScaleHelper.cs" />
     <Compile Include="Model\Strings\StringHelper.cs" />

@@ -33,19 +33,22 @@ namespace AcadLib.Errors
                 if (!_alreadyCalcExtents)
                 {
                     _alreadyCalcExtents = true;
-                    using (var ent = _idEnt.Open(OpenMode.ForRead, false, true) as Entity)
+                    if (_hasEntity)
                     {
-                        if (ent != null)
+                        using (var ent = _idEnt.Open(OpenMode.ForRead, false, true) as Entity)
                         {
-                            try
+                            if (ent != null)
                             {
-                                _extents = ent.GeometricExtents;
-                                _extents.TransformBy(Trans);
-                            }
-                            catch (Exception ex)
-                            {
-                                AutoCAD_PIK_Manager.Log.Error(ex, "AcadLib.Error.Extents ent.GeometricExtents;");
-                                _isNullExtents = true;
+                                try
+                                {
+                                    _extents = ent.GeometricExtents;
+                                    _extents.TransformBy(Trans);
+                                }
+                                catch (Exception ex)
+                                {
+                                    AutoCAD_PIK_Manager.Log.Error(ex, "AcadLib.Error.Extents ent.GeometricExtents;");
+                                    _isNullExtents = true;
+                                }
                             }
                         }
                     }
@@ -139,7 +142,7 @@ namespace AcadLib.Errors
             _shortMsg = getShortMsg(_msg);            
             _extents = ext;
             _alreadyCalcExtents = true;
-            _hasEntity = true;
+            _hasEntity = false;
             Icon = icon;
             Trans = trans;
         }

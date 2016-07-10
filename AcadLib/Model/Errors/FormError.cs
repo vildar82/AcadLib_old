@@ -74,7 +74,7 @@ namespace AcadLib.Errors
         {
             errorProvider1.Clear();
             Error err = (Error)listBoxError.SelectedItem;
-            if (err != null && err.HasEntity && ed.Document != null)
+            if (err != null && err.Extents.Diagonal()>1 && ed.Document != null)
             {
                 Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 if (ed.Document != curDoc)
@@ -83,14 +83,14 @@ namespace AcadLib.Errors
                 }
                 else
                 {
-                    if (err.Extents.Diagonal()>1)
-                    {
+                    //if (err.Extents.Diagonal()>1)
+                    //{                        
                         ed.Zoom(err.Extents);
                         if (err.HasEntity)
                         {
                             err.IdEnt.FlickObjectHighlight(2, 100,100);
                         }
-                    }                    
+                    //}                    
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace AcadLib.Errors
         private void listBoxError_SelectedIndexChanged(object sender, EventArgs e)
         {
             Error err = (Error)listBoxError.SelectedItem;
-            buttonShow.Visible = err.HasEntity;
+            buttonShow.Visible = err.Extents.Diagonal()>1;
         }
 
         /// <summary>

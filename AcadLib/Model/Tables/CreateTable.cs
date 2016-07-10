@@ -21,8 +21,8 @@ namespace AcadLib.Tables
         public int NumColumns { get; set; }
         public string Title { get; set; }
         public abstract void CalcRows ();
-        protected abstract void FillCells (Table table);
         protected abstract void SetColumnsAndCap (ColumnsCollection columns);
+        protected abstract void FillCells (Table table);        
 
         public CreateTable (Database db)
         {

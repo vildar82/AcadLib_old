@@ -53,16 +53,23 @@ namespace AcadLib.Blocks
         /// Заполняются параметры блока. и граница Bounds
         /// </summary>        
         public BlockBase (BlockReference blRef, string blName)
-        {            
-            IdBlRef = blRef.Id;
-            IdBtr = blRef.BlockTableRecord;
-            BlName = blName;
-            BlLayer = blRef.Layer;
-            Properties = Property.GetAllProperties(blRef);
-            Bounds = blRef.Bounds;
-            Position = blRef.Position;
-            Transform = blRef.BlockTransform;
-            Color = blRef.Color;
+        {
+            if (blRef == null)
+            {
+                return;
+            }
+            else
+            {
+                IdBlRef = blRef.Id;
+                IdBtr = blRef.BlockTableRecord;
+                BlName = blName;
+                BlLayer = blRef.Layer;
+                Properties = Property.GetAllProperties(blRef);
+                Bounds = blRef.Bounds;
+                Position = blRef.Position;
+                Transform = blRef.BlockTransform;
+                Color = blRef.Color;
+            }
         }
 
         /// <summary>
