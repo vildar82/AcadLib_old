@@ -93,7 +93,7 @@ namespace AcadLib.Colors
                 }
                 catch (Exception ex)
                 {
-                    AutoCAD_PIK_Manager.Log.Error(ex, $"Не удалось десериализовать настройки из файла {fileOptions}");
+                    Logger.Log.Error(ex, $"Не удалось десериализовать настройки из файла {fileOptions}");
                 }
             }
             options = new Options();
@@ -114,7 +114,7 @@ namespace AcadLib.Colors
             }
             catch (Exception ex)
             {
-                AutoCAD_PIK_Manager.Log.Error(ex, $"Не удалось сериализовать настройки в {fileOptions}");
+                Logger.Log.Error(ex, $"Не удалось сериализовать настройки в {fileOptions}");
             }
         }
 

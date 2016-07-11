@@ -14,6 +14,8 @@ namespace AcadLib
 {
     public static class CommandStart
     {
+        public static string CurrentCommand;
+
         /// <summary>
         /// Оболочка для старта команды - try-catch, log, inspectoe.clear-show, commandcounter
         /// Условие использования: отключить оптимизацию кода (Параметры проекта -> Сборка) - т.к. используется StackTrace
@@ -22,17 +24,16 @@ namespace AcadLib
         [MethodImpl(MethodImplOptions.NoInlining)]        
         public static void Start(Action<Document> action)
         {
-            // определение имени команды по вызвавему методу и иего артрибуту CommandMethod;
-            string command = string.Empty;
+            // определение имени команды по вызвавему методу и иего артрибуту CommandMethod;            
             try
             {                
                 var caller = new StackTrace().GetFrame(1).GetMethod();
-                command = GetCallerCommand(caller);
+                CurrentCommand = GetCallerCommand(caller);
             }
             catch { }      
 
-            Logger.Log.StartCommand(command);
-            CommandCounter.CountCommand(command);
+            Logger.Log.StartCommand(CurrentCommand);
+            CommandCounter.CountCommand(CurrentCommand);
             Document doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
             Inspector.Clear();
@@ -44,7 +45,7 @@ namespace AcadLib
             {
                 if (!ex.Message.Contains(General.CanceledByUser))
                 {
-                    Logger.Log.Error(ex, command);
+                    Logger.Log.Error(ex, CurrentCommand);
                     Inspector.AddError($"Ошибка в программе. {ex}");
                 }                
                 doc.Editor.WriteMessage(ex.Message);                

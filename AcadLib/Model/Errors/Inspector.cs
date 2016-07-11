@@ -133,7 +133,7 @@ namespace AcadLib.Errors
         {
             if (HasErrors)
             {
-                Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
+                Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors.Sort();
                 Application.ShowModelessDialog(new FormError(false));
             }
@@ -147,7 +147,7 @@ namespace AcadLib.Errors
         {
             if (HasErrors)
             {
-                Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
+                Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors.Sort();
                 var formErr = new FormError(true);
                 var res = Application.ShowModalDialog(formErr);
@@ -167,7 +167,7 @@ namespace AcadLib.Errors
 
         public static void LogErrors()
         {
-            Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
+            Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
             Errors.Sort();
         }
     }

@@ -46,7 +46,7 @@ namespace AcadLib.Errors
                                 }
                                 catch (Exception ex)
                                 {
-                                    AutoCAD_PIK_Manager.Log.Error(ex, "AcadLib.Error.Extents ent.GeometricExtents;");
+                                    Logger.Log.Error(ex, "AcadLib.Error.Extents ent.GeometricExtents;");
                                     _isNullExtents = true;
                                 }
                             }

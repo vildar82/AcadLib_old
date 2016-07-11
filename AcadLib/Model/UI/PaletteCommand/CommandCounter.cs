@@ -71,16 +71,16 @@ namespace AcadLib
                     if (Counter != null)
                     {
                         Counter._commands = Counter.Commands.Where(c=>!string.IsNullOrEmpty(c.CommandName)).ToDictionary(c=>c.CommandName, c=>c);
-                        Log.Debug($"Counter != null. Counter.Commands.Count={Counter.Commands.Count}");
+                        Logger.Log.Debug($"Counter != null. Counter.Commands.Count={Counter.Commands.Count}");
                         return;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"Не удалось десериализовать файл {FileXml}");
+                    Logger.Log.Error(ex, $"Не удалось десериализовать файл {FileXml}");
                 }
             }
-            Log.Debug($"Counter = new CommandCounter();");
+            Logger.Log.Debug($"Counter = new CommandCounter();");
             Counter = new CommandCounter();                        
         }
 
@@ -101,7 +101,7 @@ namespace AcadLib
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Не удалось сериализовать CommandCounter в {FileXml}");
+                Logger.Log.Error(ex, $"Не удалось сериализовать CommandCounter в {FileXml}");
             }
         }
 
