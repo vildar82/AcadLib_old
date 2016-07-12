@@ -10,6 +10,12 @@ using Autodesk.AutoCAD.EditorInput;
 
 namespace AcadLib.Tables
 {
+    /// <summary>
+    /// Построение таблицы
+    /// 1 CalcRows
+    /// 2 Create
+    /// 3 Insert
+    /// </summary>
     public abstract class CreateTable : ICreateTable
     {
         protected Database db;
