@@ -506,7 +506,7 @@ namespace AcadLib.Errors
             var res = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frmReport);
             if (res == DialogResult.OK)
             {
-                string title = " #Title " + CommandStart.CurrentCommand + ". ";
+                string title = " #Title " + CommandStart.CurrentCommand + ". \n";
                 Logger.Log.Report(title + frmReport.Message);
             }
         }
