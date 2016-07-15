@@ -35,7 +35,16 @@ namespace AcadLib.Hatches
             // добавление контура полилинии в гштриховку
             var ids = new ObjectIdCollection();
             ids.Add(loop.Id);
-            h.AppendLoop(HatchLoopTypes.Default, ids);
+            try
+            {
+                h.AppendLoop(HatchLoopTypes.Default, ids);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"CreateAssociativeHatch");
+                h.Erase();
+                return null;
+            }
             h.EvaluateHatch(true);
 
             var orders = cs.DrawOrderTableId.GetObject(OpenMode.ForWrite) as DrawOrderTable;
