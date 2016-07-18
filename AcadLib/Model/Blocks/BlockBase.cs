@@ -209,7 +209,7 @@ namespace AcadLib.Blocks
         {
             var btr = this.IdBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
             var allPls = btr.GetObjects<Polyline>(OpenMode.ForRead);
-            var pls = allPls.Where(p => p.Layer.Equals(layer, StringComparison.OrdinalIgnoreCase)).ToList();
+            var pls = allPls.Where(p =>p.Visible && p.Layer.Equals(layer, StringComparison.OrdinalIgnoreCase)).ToList();
             return pls;
         }
 

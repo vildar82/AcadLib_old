@@ -72,26 +72,34 @@ namespace AcadLib.PaletteCommands
             models = new List<PaletteModel>();
             var commands = CommandsAddin;
             // Группировка команд
+            string groupCommon = "Общие";
+            List<IPaletteCommand> commonCommands = Commands.CommandsPalette;
             var groupCommands = commands.GroupBy(c => c.Group).OrderBy(g=>g.Key);
             foreach (var group in groupCommands)
             {
-                var model = new PaletteModel(group);
-                if (model.PaletteCommands.Any())
+                if (group.Key.Equals(groupCommon, StringComparison.OrdinalIgnoreCase))
                 {
-                    CommandsControl commControl = new CommandsControl();
-                    commControl.DataContext = model;
-                    string name = group.Key;
-                    if (string.IsNullOrEmpty(name)) name = "Главная";
-                    AddVisual(name, commControl);
-                    models.Add(model);
+                    commonCommands.AddRange(group.ToList());
+                }
+                else
+                {
+                    var model = new PaletteModel(group);
+                    if (model.PaletteCommands.Any())
+                    {
+                        CommandsControl commControl = new CommandsControl();
+                        commControl.DataContext = model;
+                        string name = group.Key;
+                        if (string.IsNullOrEmpty(name)) name = "Главная";
+                        AddVisual(name, commControl);
+                        models.Add(model);
+                    }
                 }
             }
-            // Общие команды для всех отделов определенные в этой сборке
-            commands = Commands.CommandsPalette;
-            var modelCommon = new PaletteModel(commands);
+            // Общие команды для всех отделов определенные в этой сборке            
+            var modelCommon = new PaletteModel(commonCommands);
             var controlCommon = new CommandsControl();
             controlCommon.DataContext = modelCommon;
-            AddVisual("Общие", controlCommon);
+            AddVisual(groupCommon, controlCommon);
             models.Add(modelCommon);
         }                    
 
