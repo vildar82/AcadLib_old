@@ -202,12 +202,35 @@ namespace AcadLib.Blocks
             Error.AdditionToMessage(msg);
         }
 
+        /// <summary>
+        /// Поиск полилинии в этом блоке на слое
+        /// </summary>        
         public List<Polyline> FindPolylineInLayer (string layer)
         {
             var btr = this.IdBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
             var allPls = btr.GetObjects<Polyline>(OpenMode.ForRead);
             var pls = allPls.Where(p => p.Layer.Equals(layer, StringComparison.OrdinalIgnoreCase)).ToList();
             return pls;
+        }
+
+        /// <summary>
+        /// Копирование объекта из этого блока в модель (btr)
+        /// </summary>
+        /// <param name="btr">Куда копировать</param>        
+        /// <param name="idEnt">Что копировать</param>
+        /// <returns>Скопированный объект</returns>
+        public ObjectId CopyEntToModel (BlockTableRecord btr, ObjectId idEnt)
+        {
+            if (!idEnt.IsNull)
+            {
+                var idCopy = idEnt.CopyEnt(btr.Id);
+                using (var entCopy = idCopy.GetObject(OpenMode.ForWrite, false, true) as Entity)
+                {
+                    entCopy.TransformBy(Transform);
+                    return entCopy.Id;
+                }
+            }
+            return ObjectId.Null;
         }
     }
 }
