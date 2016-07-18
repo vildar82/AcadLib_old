@@ -201,5 +201,13 @@ namespace AcadLib.Blocks
             }
             Error.AdditionToMessage(msg);
         }
+
+        public List<Polyline> FindPolylineInLayer (string layer)
+        {
+            var btr = this.IdBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
+            var allPls = btr.GetObjects<Polyline>(OpenMode.ForRead);
+            var pls = allPls.Where(p => p.Layer.Equals(layer, StringComparison.OrdinalIgnoreCase)).ToList();
+            return pls;
+        }
     }
 }
