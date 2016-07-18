@@ -216,14 +216,14 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Копирование объекта из этого блока в модель (btr)
         /// </summary>
-        /// <param name="btr">Куда копировать</param>        
+        /// <param name="idBtrNew">Куда копировать</param>        
         /// <param name="idEnt">Что копировать</param>
         /// <returns>Скопированный объект</returns>
-        public ObjectId CopyEntToModel (BlockTableRecord btr, ObjectId idEnt)
+        public ObjectId CopyEntToModel (ObjectId idBtrNew, ObjectId idEnt)
         {
             if (!idEnt.IsNull)
             {
-                var idCopy = idEnt.CopyEnt(btr.Id);
+                var idCopy = idEnt.CopyEnt(idBtrNew);
                 using (var entCopy = idCopy.GetObject(OpenMode.ForWrite, false, true) as Entity)
                 {
                     entCopy.TransformBy(Transform);
