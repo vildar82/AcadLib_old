@@ -42,6 +42,7 @@ namespace AcadLib.Errors
 
         public FormError(List<Error> errors, bool modal)
         {
+            this.KeyPreview = true;
             this._errors = errors;
             InitializeComponent();
             EnableDialog(modal);                        
@@ -140,13 +141,13 @@ namespace AcadLib.Errors
             this.buttonExport = new System.Windows.Forms.Button();
             this.buttonShow = new System.Windows.Forms.Button();
             this.buttonDelAll = new System.Windows.Forms.Button();
+            this.buttonReport = new System.Windows.Forms.Button();
             this.listBoxError = new System.Windows.Forms.ListBox();
             this.contextMenuError = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItemRemove = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOk = new System.Windows.Forms.Button();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.buttonReport = new System.Windows.Forms.Button();
             this.contextMenuError.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
@@ -229,6 +230,19 @@ namespace AcadLib.Errors
             this.buttonDelAll.Visible = false;
             this.buttonDelAll.Click += new System.EventHandler(this.buttonDelAll_Click);
             // 
+            // buttonReport
+            // 
+            this.buttonReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonReport.BackgroundImage = global::AcadLib.Properties.Resources.report;
+            this.buttonReport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.buttonReport.Location = new System.Drawing.Point(646, 474);
+            this.buttonReport.Name = "buttonReport";
+            this.buttonReport.Size = new System.Drawing.Size(54, 45);
+            this.buttonReport.TabIndex = 10;
+            this.toolTip1.SetToolTip(this.buttonReport, "Написать о проблеме или предложени");
+            this.buttonReport.UseVisualStyleBackColor = true;
+            this.buttonReport.Click += new System.EventHandler(this.buttonReport_Click);
+            // 
             // listBoxError
             // 
             this.listBoxError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -267,7 +281,6 @@ namespace AcadLib.Errors
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.Location = new System.Drawing.Point(572, 363);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
@@ -290,25 +303,11 @@ namespace AcadLib.Errors
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // buttonReport
-            // 
-            this.buttonReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonReport.BackgroundImage = global::AcadLib.Properties.Resources.report;
-            this.buttonReport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.buttonReport.Location = new System.Drawing.Point(646, 474);
-            this.buttonReport.Name = "buttonReport";
-            this.buttonReport.Size = new System.Drawing.Size(54, 45);
-            this.buttonReport.TabIndex = 10;
-            this.toolTip1.SetToolTip(this.buttonReport, "Написать о проблеме или предложени");
-            this.buttonReport.UseVisualStyleBackColor = true;
-            this.buttonReport.Click += new System.EventHandler(this.buttonReport_Click);
-            // 
             // FormError
             // 
             this.AcceptButton = this.buttonOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(712, 531);
             this.Controls.Add(this.buttonReport);
             this.Controls.Add(this.buttonDelAll);
@@ -322,6 +321,7 @@ namespace AcadLib.Errors
             this.Controls.Add(this.listBoxError);
             this.Name = "FormError";
             this.Text = "Инфо";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormError_KeyDown);
             this.contextMenuError.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
@@ -508,6 +508,15 @@ namespace AcadLib.Errors
             {
                 string title = " #Title " + CommandStart.CurrentCommand + ". \n";
                 Logger.Log.Report(title + frmReport.Message);
+            }
+        }
+
+        private void FormError_KeyDown (object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                DialogResult = DialogResult.Cancel;
+                this.Close();
             }
         }
     }

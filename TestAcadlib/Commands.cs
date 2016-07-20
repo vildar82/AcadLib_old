@@ -27,8 +27,8 @@ namespace TestAcadlib
         [CommandMethod("Test")]
         public void Test()
         {
-            DictNOD nod = new DictNOD("456", true);
-            nod.Save("gghfg", "key");
+            Inspector.AddError("fgdfg");
+            var ress = Inspector.ShowDialog();
         }       
     }
 }
