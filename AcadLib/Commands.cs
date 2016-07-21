@@ -109,6 +109,10 @@ namespace AcadLib {
 				{
 					fileGroup = "Script\\NET\\КР-МН\\KR_MN_Acad.dll";
 				}
+				else if (group == "ВК")
+				{
+					fileGroup = "Script\\NET\\ВК\\PIK_VK_Acad.dll";
+				}
 
 				if (!string.IsNullOrEmpty(fileGroup))
 				{
