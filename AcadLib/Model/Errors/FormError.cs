@@ -34,6 +34,7 @@ namespace AcadLib.Errors
         private ContextMenuStrip contextMenuError;
         private ToolStripMenuItem toolStripMenuItemRemove;
         private System.Windows.Forms.Button buttonReport;
+        private System.Windows.Forms.Label lSelectedErrors;
         private bool isAllErrors;
 
         public FormError(bool modal) : this(Inspector.Errors, modal)
@@ -104,7 +105,19 @@ namespace AcadLib.Errors
         private void listBoxError_SelectedIndexChanged(object sender, EventArgs e)
         {
             Error err = (Error)listBoxError.SelectedItem;
-            buttonShow.Visible = err.Extents.Diagonal()>1;
+            buttonShow.Visible = err.Extents.Diagonal()>1;            
+        }
+
+        private void listBoxError_SelectedValueChanged (object sender, EventArgs e)
+        {
+            if (listBoxError.SelectedItems != null && listBoxError.SelectedItems.Count > 1)
+            {
+                lSelectedErrors.Text = listBoxError.SelectedItems.Count.ToString();
+            }
+            else
+            {
+                lSelectedErrors.Text = "";
+            }
         }
 
         /// <summary>
@@ -148,6 +161,7 @@ namespace AcadLib.Errors
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOk = new System.Windows.Forms.Button();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.lSelectedErrors = new System.Windows.Forms.Label();
             this.contextMenuError.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
@@ -261,6 +275,7 @@ namespace AcadLib.Errors
             this.listBoxError.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxError_DrawItem);
             this.listBoxError.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBoxError_MeasureItem);
             this.listBoxError.SelectedIndexChanged += new System.EventHandler(this.listBoxError_SelectedIndexChanged);
+            this.listBoxError.SelectedValueChanged += new System.EventHandler(this.listBoxError_SelectedValueChanged);
             this.listBoxError.DoubleClick += new System.EventHandler(this.buttonShow_Click);
             this.listBoxError.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBoxError_KeyUp);
             // 
@@ -303,12 +318,22 @@ namespace AcadLib.Errors
             // 
             this.errorProvider1.ContainerControl = this;
             // 
+            // lSelectedErrors
+            // 
+            this.lSelectedErrors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lSelectedErrors.AutoSize = true;
+            this.lSelectedErrors.Location = new System.Drawing.Point(72, 367);
+            this.lSelectedErrors.Name = "lSelectedErrors";
+            this.lSelectedErrors.Size = new System.Drawing.Size(0, 13);
+            this.lSelectedErrors.TabIndex = 11;
+            // 
             // FormError
             // 
             this.AcceptButton = this.buttonOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(712, 531);
+            this.Controls.Add(this.lSelectedErrors);
             this.Controls.Add(this.buttonReport);
             this.Controls.Add(this.buttonDelAll);
             this.Controls.Add(this.buttonDel);
@@ -518,6 +543,6 @@ namespace AcadLib.Errors
                 DialogResult = DialogResult.Cancel;
                 this.Close();
             }
-        }
+        }        
     }
 }
