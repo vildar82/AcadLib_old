@@ -18,7 +18,8 @@ namespace AcadLib.Plot
         private static Comparers.AlphanumComparator alphaComparer = Comparers.AlphanumComparator.New;
         private string dir;
         private string filePdfOutputName;
-        private string[] filesDwg;                
+        private string[] filesDwg;
+        private string title = "Печать";              
 
         public PlotOptions Options { get; set; }
 
@@ -75,6 +76,9 @@ namespace AcadLib.Plot
             DsdEntryCollection dsdCol = new DsdEntryCollection();
 
             int indexfile = 0;
+
+            title = $"Печать {filesDwg.Length} файлов dwg...";        
+
             foreach (var fileDwg in filesDwg)
             {
                 if (HostApplicationServices.Current.UserBreak())
@@ -124,7 +128,7 @@ namespace AcadLib.Plot
 
                                     DsdEntry dsdEntry = new DsdEntry();
                                     dsdEntry.Layout = layout.LayoutName;
-                                    dsdEntry.DwgName = fileDwg;
+                                    dsdEntry.DwgName = fileDwg;                                    
                                     //dsdEntry.Nps = "Setup1";
                                     dsdEntry.NpsSourceDwg = fileDwg;
                                     dsdEntry.Title = indexfile + "-" + layout.LayoutName;
@@ -184,10 +188,10 @@ namespace AcadLib.Plot
 
                 using (PlotProgressDialog progressDlg = new PlotProgressDialog(false, nbSheets, true))
                 {
-                    progressDlg.set_PlotMsgString(PlotMessageIndex.DialogTitle, "Печать");
+                    progressDlg.set_PlotMsgString(PlotMessageIndex.DialogTitle, title);
                     progressDlg.set_PlotMsgString(PlotMessageIndex.CancelJobButtonMessage, "Отмена задания");
                     progressDlg.set_PlotMsgString(PlotMessageIndex.CancelSheetButtonMessage, "Отмена листа");
-                    progressDlg.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, "Прогресс печати");
+                    progressDlg.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, title);
                     progressDlg.set_PlotMsgString(PlotMessageIndex.SheetProgressCaption, "Печать листа");
 
                     progressDlg.UpperPlotProgressRange = 100;
@@ -206,6 +210,8 @@ namespace AcadLib.Plot
                     //Application.Publisher.PublishExecute(dsd, PlotConfigManager.CurrentConfig);
 
                     publisher.PublishDsd(dsdFile, progressDlg);
+                    publisher.BeginSheet += Publisher_BeginSheet;
+
                 }
                 File.Delete(dsdFile);
             }
@@ -213,6 +219,11 @@ namespace AcadLib.Plot
             {
                 System.Windows.Forms.MessageBox.Show(ex.Message);
             }
+        }
+
+        private void Publisher_BeginSheet (object sender, PublishSheetEventArgs e)
+        {
+            //throw new NotImplementedException();
         }
 
         //public static string GetLayoutSortName(EnumLayoutsSort layoutSort)

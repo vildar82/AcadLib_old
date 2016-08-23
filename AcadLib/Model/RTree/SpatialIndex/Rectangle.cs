@@ -42,12 +42,12 @@ namespace AcadLib.RTree.SpatialIndex
         /**
          * array containing the minimum value for each dimension; ie { min(x), min(y) }
          */
-        internal double[] max;
+        public double[] max;
 
         /**
          * array containing the maximum value for each dimension; ie { max(x), max(y) }
          */
-        internal double[] min;
+        public double[] min;
 
         /**
          * Constructor.
