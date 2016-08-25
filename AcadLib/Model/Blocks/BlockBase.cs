@@ -22,6 +22,7 @@ namespace AcadLib.Blocks
         private Extents3d _extentsToShow;
         private bool _isNullExtents;
 
+        public Database Db { get; private set; }
         /// <summary>
         /// Имя блока - эффективное
         /// </summary>
@@ -42,6 +43,10 @@ namespace AcadLib.Blocks
         /// </summary>
         public ObjectId IdBtr { get; set; }
         /// <summary>
+        /// Пространство в который вставлен этот блок (определение блока)
+        /// </summary>
+        public ObjectId IdBtrOwner { get; set; }
+        /// <summary>
         /// Параметры - атрибутв и динамические
         /// </summary>
         public List<Property> Properties { get; set; }
@@ -60,6 +65,8 @@ namespace AcadLib.Blocks
             }
             else
             {
+                Db = blRef.Database;
+                IdBtrOwner = blRef.OwnerId;
                 IdBlRef = blRef.Id;
                 IdBtr = blRef.BlockTableRecord;
                 BlName = blName;
@@ -130,6 +137,12 @@ namespace AcadLib.Blocks
                     IdBlRef.FlickObjectHighlight(2, 100, 100);
                 }
             }
+        }
+
+        public void Delete()
+        {
+            var blRef = IdBlRef.GetObject(OpenMode.ForWrite);
+            blRef.Erase();
         }
 
         /// <summary>

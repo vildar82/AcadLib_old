@@ -12,6 +12,15 @@ namespace AcadLib.Blocks
         public static Tolerance Tolerance01 = new Tolerance(0.01, 0.01);
 
         /// <summary>
+        /// Копирование определения блока из файла с общими блоками оформления
+        /// </summary>        
+        public static ObjectId CopyCommonBlockFromTemplate(string blName, Database db)
+        {
+            var res = CopyBlockFromExternalDrawing(blName, BlockInsert.fileCommonBlocks, db, DuplicateRecordCloning.Ignore);
+            return res;
+        }
+
+        /// <summary>
         /// Копирование определенич блока из внешнего чертежа
         /// </summary>
         /// <param name="blName">Имя блока</param>

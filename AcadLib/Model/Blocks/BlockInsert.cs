@@ -13,7 +13,7 @@ namespace AcadLib.Blocks
     public static class BlockInsert
     {
         // Файл шаблонов блоков
-        static string fileBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
+        internal static string fileCommonBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
 
         /// <summary>
         /// Вставка общего блока из файла Блоки-Оформления.
@@ -22,7 +22,7 @@ namespace AcadLib.Blocks
         public static ObjectId InsertCommonBlock(string blName, Database db)
         {
             // Выбор и вставка блока                 
-            Block.CopyBlockFromExternalDrawing(blName, fileBlocks, db, DuplicateRecordCloning.Ignore);
+            Block.CopyBlockFromExternalDrawing(blName, fileCommonBlocks, db, DuplicateRecordCloning.Ignore);
             return Insert(blName);
         }
 
@@ -130,14 +130,21 @@ namespace AcadLib.Blocks
             var btr = bt[blName].GetObject(OpenMode.ForRead) as BlockTableRecord;
             var blRef = new BlockReference(pt, btr.Id);
             blRef.Position = pt;
-            if (scale !=1)            
+            if (blRef.Annotative == AnnotativeStates.True)
+            {
+                // Установка аннотативного масштаба
+                blRef.AddContext(db.Cannoscale);
+            }
+            else if (scale != 1)
+            {
                 blRef.TransformBy(Matrix3d.Scaling(scale, pt));
+            }
             blRef.SetDatabaseDefaults();
 
             owner.AppendEntity(blRef);
             t.AddNewlyCreatedDBObject(blRef, true);
             
-            AddAttributes(blRef, btr, db.TransactionManager.TopTransaction);
+            AddAttributes(blRef, btr, t);
             return blRef;
         }
 

@@ -115,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Blocks\BlockBase.cs" />
+    <Compile Include="Model\Blocks\CommonBlocks\Leader.cs" />
     <Compile Include="Model\Blocks\IBlock.cs" />
     <Compile Include="Model\Blocks\Property.cs" />
     <Compile Include="Model\DB\LineTypeExt.cs" />
