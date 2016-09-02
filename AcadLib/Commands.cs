@@ -88,6 +88,17 @@ namespace AcadLib {
 
 		public void Initialize ()
 		{
+            // Загрузка общей сборки - для всех специальностей
+            try
+            {
+                var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_Acad_Common.dll");
+                Assembly.LoadFrom(fileDll);
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, $"Ошибка инициализации общей сборки PIK_Acad_Common.dll"); 
+            }
+
 			try
 			{
 				// Загрузка сбороки для данного раздела
@@ -95,23 +106,23 @@ namespace AcadLib {
 				string fileGroup = string.Empty;
 				if (group == "АК")
 				{
-					fileGroup = "Script\\NET\\АК\\PIK_AK_Acad.dll";
+					fileGroup = @"Script\NET\АК\PIK_AK_Acad.dll";
 				}
 				else if (group == "ГП")
 				{
-					fileGroup = "Script\\NET\\ГП\\PIK_GP_Acad.dll";
+					fileGroup = @"Script\NET\ГП\PIK_GP_Acad.dll";
 				}
 				else if (group == "КР-СБ-ГК")
 				{
-					fileGroup = "Script\\NET\\КР-СБ-ГК\\Autocad_ConcerteList.dll";
+					fileGroup = @"Script\NET\КР-СБ-ГК\Autocad_ConcerteList.dll";
 				}
 				else if (group == "КР-МН")
 				{
-					fileGroup = "Script\\NET\\КР-МН\\KR_MN_Acad.dll";
+					fileGroup = @"Script\NET\КР-МН\KR_MN_Acad.dll";
 				}
 				else if (group == "ВК")
 				{
-					fileGroup = "Script\\NET\\ВК\\PIK_VK_Acad.dll";
+					fileGroup = @"Script\NET\ВК\PIK_VK_Acad.dll";
 				}
 
 				if (!string.IsNullOrEmpty(fileGroup))
