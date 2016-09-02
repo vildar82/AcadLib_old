@@ -93,12 +93,13 @@ namespace AcadLib.Blocks
             }
             return props;
         }
-
+        
         public bool Equals (Property other)
         {
             if (other == null) return false;
             if (ReferenceEquals(this, other)) return true;
-            var res = Name == other.Name;
+            var res = Name == other.Name && Value.Equals(other.Value);
+
             return res;
         }
 
