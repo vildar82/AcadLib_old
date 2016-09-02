@@ -26,7 +26,7 @@ namespace AcadLib.Blocks
     /// <summary>
     /// Свойства динамического блока
     /// </summary>
-    public class Property
+    public class Property : IEquatable<Property>
     {
         public string Name { get; set; }
         public object Value { get; set; }
@@ -92,6 +92,19 @@ namespace AcadLib.Blocks
                 }
             }
             return props;
+        }
+
+        public bool Equals (Property other)
+        {
+            if (other == null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            var res = Name == other.Name;
+            return res;
+        }
+
+        public override int GetHashCode ()
+        {
+            return Name.GetHashCode();
         }
     }
 }

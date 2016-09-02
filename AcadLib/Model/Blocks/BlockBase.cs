@@ -245,5 +245,19 @@ namespace AcadLib.Blocks
             }
             return ObjectId.Null;
         }
+
+        public bool Equals (IBlock other)
+        {
+            // Если все параметры совпадают
+            if (other == null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            var res = new HashSet<Property>(Properties).SetEquals(other.Properties);
+            return res;
+        }
+
+        public override int GetHashCode ()
+        {
+            return BlName.GetHashCode();
+        }
     }
 }

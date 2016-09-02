@@ -41,14 +41,18 @@ namespace AcadLib
             {
                 action(doc);
             }
+            catch (CancelByUserException cancelByUser)
+            {
+                doc.Editor.WriteMessage(cancelByUser.Message);
+            }
             catch (System.Exception ex)
             {
                 if (!ex.Message.Contains(General.CanceledByUser))
                 {
                     Logger.Log.Error(ex, CurrentCommand);
                     Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
-                }                
-                doc.Editor.WriteMessage(ex.Message);                
+                }
+                doc.Editor.WriteMessage(ex.Message);
             }
             Inspector.Show();
         }

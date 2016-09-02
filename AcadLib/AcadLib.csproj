@@ -127,6 +127,7 @@
     <Compile Include="Model\Errors\FormReport.Designer.cs">
       <DependentUpon>FormReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Exceptions\CancelByUserException.cs" />
     <Compile Include="Model\Field\UpdateField.cs" />
     <Compile Include="Model\Files\CadSettingsPath.cs" />
     <Compile Include="Model\Hatch\HatchExt.cs" />

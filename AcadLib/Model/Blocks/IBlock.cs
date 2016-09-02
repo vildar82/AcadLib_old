@@ -4,15 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AcadLib.Errors;
+using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Blocks
 {
     /// <summary>
     /// Блок на чертеже
     /// </summary>
-    public interface IBlock
+    public interface IBlock : IEquatable<IBlock>
     {
+        Database Db { get; }
         /// <summary>
         /// Эффективное имя блока
         /// </summary>
@@ -21,8 +24,14 @@ namespace AcadLib.Blocks
         /// Слой на котором расположен блок
         /// </summary>
         string BlLayer { get; set; }
+        Point3d Position { get;}
+        Color Color { get;}
         ObjectId IdBlRef { get; set; }
         ObjectId IdBtr { get; set; }
+        /// <summary>
+        /// Пространство в который вставлен этот блок (определение блока)
+        /// </summary>
+        ObjectId IdBtrOwner { get; }
         Extents3d? Bounds { get; set; }
         /// <summary>
         /// Параметры (атр + дин)
@@ -31,7 +40,8 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Границы для показа
         /// </summary>
-        Extents3d ExtentsToShow { get; set; }
+        Extents3d ExtentsToShow { get; }
+        Matrix3d Transform { get; }
         Error Error { get; set; }
         /// <summary>
         /// Показать блок на чертеже
