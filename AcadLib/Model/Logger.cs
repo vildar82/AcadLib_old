@@ -9,10 +9,11 @@ namespace AcadLib
     public static class Logger
     {
         public static LoggAddinExt Log;
+        public static string UserGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
 
         static Logger ()
         {
-            Log = new LoggAddinExt(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup);            
+            Log = new LoggAddinExt(UserGroup);            
         }        
     }
 
@@ -57,7 +58,8 @@ namespace AcadLib
         {
             var newMsg = GetMessage(msg);
             base.Debug(newMsg);
-        }
+        }       
+
         public void Debug (Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
@@ -84,6 +86,11 @@ namespace AcadLib
         {
             var newMsg = GetMessage(msg);
             base.Warn(ex, newMsg);
+        }
+
+        public void StartCommand (CommandStart command)
+        {
+            base.Info($"Start command: {command.CommandName}; Сборка: {command.Assembly.FullName}; ");
         }
 
         private string GetMessage (string msg)

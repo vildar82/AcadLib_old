@@ -12,9 +12,17 @@ using Autodesk.AutoCAD.Runtime;
 
 namespace AcadLib
 {
-    public static class CommandStart
+    public class CommandStart
     {
-        public static string CurrentCommand;
+        public static string CurrentCommand { get; private set; }
+        public string CommandName { get; private set; }
+        public Assembly Assembly { get; private set; }
+
+        public CommandStart(string commandName, Assembly asm)
+        {
+            CommandName = commandName;
+            Assembly = asm;
+        }
 
         /// <summary>
         /// Оболочка для старта команды - try-catch, log, inspectoe.clear-show, commandcounter
@@ -26,14 +34,15 @@ namespace AcadLib
         {
             // определение имени команды по вызвавему методу и иего артрибуту CommandMethod;            
             try
-            {                
+            {
                 var caller = new StackTrace().GetFrame(1).GetMethod();
                 CurrentCommand = GetCallerCommand(caller);
+                var command = new CommandStart(CurrentCommand, caller.DeclaringType.Assembly);
+                Logger.Log.StartCommand(command);
+                CommandCounter.CountCommand(CurrentCommand);
             }
-            catch { }      
+            catch { }
 
-            Logger.Log.StartCommand(CurrentCommand);
-            CommandCounter.CountCommand(CurrentCommand);
             Document doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
             Inspector.Clear();
@@ -58,10 +67,19 @@ namespace AcadLib
         }
 
         private static string GetCallerCommand(MethodBase caller)
-        {
+        {            
             if (caller == null) return "nullCallerMethod!?";
+            string name = string.Empty;
             var atrCom = (CommandMethodAttribute)caller.GetCustomAttribute(typeof(CommandMethodAttribute));            
-            return atrCom?.GlobalName;
+            if (atrCom != null)
+            {
+                name = atrCom.GlobalName;
+            }
+            else
+            {
+                name = caller.Name;
+            }
+            return name;
         }
     }
 }
