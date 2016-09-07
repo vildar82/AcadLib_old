@@ -104,9 +104,9 @@ namespace AcadLib {
 				// Загрузка сбороки для данного раздела
 				var group = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
 				string fileGroup = string.Empty;
-				if (group == "АК")
+				if (group == "СС")
 				{
-					fileGroup = @"Script\NET\АК\PIK_AK_Acad.dll";
+					fileGroup = @"Script\NET\СС\PIK_SS_Acad.dll";
 				}
 				else if (group == "ГП")
 				{
