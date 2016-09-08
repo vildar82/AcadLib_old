@@ -533,8 +533,7 @@ namespace AcadLib.Errors
             if (res == DialogResult.OK)
             {
                 string msg = " #Title " + CommandStart.CurrentCommand + ". \n" + frmReport.Message;
-                Logger.Log.Report(msg);
-                AutoCAD_PIK_Manager.Log.SendMail("#Report", msg);
+                Logger.Log.Report(msg);                
             }
         }
 
