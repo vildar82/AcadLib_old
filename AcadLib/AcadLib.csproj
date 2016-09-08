@@ -204,7 +204,7 @@
     <Compile Include="Model\Layers\LayerInfo.cs" />
     <Compile Include="Model\DB\DBObjectExt.cs" />
     <Compile Include="Model\NET\Extensions.cs" />
-    <Compile Include="Model\NET\MathExt.cs" />
+    <Compile Include="Model\Math\MathExt.cs" />
     <Compile Include="Model\NET\Result.cs" />
     <Compile Include="Model\LoadService.cs" />
     <Compile Include="Model\Plot\PlotDirToPdf.cs" />

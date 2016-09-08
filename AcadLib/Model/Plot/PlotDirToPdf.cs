@@ -220,6 +220,9 @@ namespace AcadLib.Plot
         private List<Layout> FilterLayouts (List<Layout> layouts, PlotOptions options)
         {
             List<Layout> resLayouts = new List<Layout>();
+
+            var filterNums = GetFilterNumbers(layouts.Count, options.FilterByNumbers);
+
             foreach (var layout in layouts)
             {
                 // Номер вкладки
@@ -234,8 +237,8 @@ namespace AcadLib.Plot
                 // Фильтр по номеру вкладки
                 if (!string.IsNullOrWhiteSpace(Options.FilterByNumbers) &&
                     (!filtering.HasValue || !filtering.Value))
-                {                    
-                    filtering = FilterByNumber(tabIndex, layouts.Count);
+                {
+                    filtering = filterNums.Contains(tabIndex);
                 }
 
                 if (filtering.HasValue && !filtering.Value)
@@ -248,20 +251,47 @@ namespace AcadLib.Plot
             return resLayouts;
         }
 
+
+        public List<int> GetFilterNumbers (int countTabs, string filter)
+        {
+            List<int> resNums = new List<int>();            
+            if (Options.FilterState && !string.IsNullOrWhiteSpace(filter))
+            {                
+                string clearStr = string.Empty;
+                var negativeNumbersMatchs = Regex.Matches(filter, @"(^-\d+)|[,-](-\d+)");
+                int startIndex = 0;
+                foreach (Match negMatch in negativeNumbersMatchs)
+                {
+                    // замена негативного числа на соответствующее
+                    var g = negMatch.Groups[1];
+                    if (!g.Success)
+                        g = negMatch.Groups[2];
+                    var negNum = int.Parse(g.Value.Substring(1));
+                    var index = countTabs - negNum + 1;
+                    clearStr += filter.Substring(0, g.Index).Substring(startIndex) + index;
+                    startIndex = g.Index + g.Length;
+                }      
+                if (startIndex!=0)
+                {
+                    filter = clearStr + filter.Substring(startIndex);
+                }
+                
+                var query = 
+                from x in filter.Split(',')
+                let y = x.Split('-')
+                let b = int.Parse(y[0].Trim())
+                let e = int.Parse(y[y.Length - 1].Trim())
+                from n in Enumerable.Range(e>b?b:e, (e>b? e - b:b-e) + 1)
+                select n;
+                resNums = query.ToList();
+            }
+            return resNums;
+        }
+
         private bool FilterByName(string tabName)
         {
             return Regex.IsMatch(tabName, Options.FilterByNames, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-        }
-
-        private bool FilterByNumber (int tabIndex, int countTabs)
-        {
-            int index = tabIndex;
-            if (Options.FilterByNumbersDescending)
-            {
-                index = countTabs - tabIndex +1;
-            }
-            return Options.FilterNumbers.Contains(index);
-        }
+        }        
 
         public void PublisherDSD(DsdEntryCollection collection)
         {

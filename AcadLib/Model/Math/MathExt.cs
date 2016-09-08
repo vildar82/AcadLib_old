@@ -11,6 +11,8 @@ namespace AcadLib
     {
         public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
 
+        
+
         /// <summary>
         /// Превращает строки с диапазоном чисел в последовательность чисел.
         /// Например "1-5, 8,9" - {1,2,3,4,5,8,9}
