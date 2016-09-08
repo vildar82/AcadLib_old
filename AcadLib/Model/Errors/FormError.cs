@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -531,8 +532,9 @@ namespace AcadLib.Errors
             var res = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frmReport);
             if (res == DialogResult.OK)
             {
-                string title = " #Title " + CommandStart.CurrentCommand + ". \n";
-                Logger.Log.Report(title + frmReport.Message);
+                string msg = " #Title " + CommandStart.CurrentCommand + ". \n" + frmReport.Message;
+                Logger.Log.Report(msg);
+                AutoCAD_PIK_Manager.Log.SendMail("#Report", msg);
             }
         }
 

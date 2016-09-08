@@ -167,10 +167,22 @@ namespace AcadLib {
 			});
 		}
 
-		/// <summary>
-		/// Список общих команд
-		/// </summary>
-		internal static void AllCommandsCommon ()
+        [CommandMethod(Group, nameof(PIK_PlotToPdf), CommandFlags.Session)]
+        public void PIK_PlotToPdf ()
+        {
+            CommandStart.Start(doc =>
+            {
+                using (doc.LockDocument())
+                {
+                    Plot.PlotDirToPdf.PromptAndPlot(doc);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Список общих команд
+        /// </summary>
+        internal static void AllCommandsCommon ()
 		{
 			CommandsPalette = new List<IPaletteCommand>()
 			{

@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoCAD.Publishing;
 
@@ -90,9 +92,10 @@ namespace AcadLib.Plot
                     dbTemp.ReadDwgFile(fileDwg, FileOpenMode.OpenForReadAndAllShare, false, "");
                     dbTemp.CloseInput(true);
                     using (var t = dbTemp.TransactionManager.StartTransaction())
-                    {
-                        List<Tuple<Layout, DsdEntry>> layouts = new List<Tuple<Layout, DsdEntry>>();
+                    {                        
                         DBDictionary layoutDict = (DBDictionary)dbTemp.LayoutDictionaryId.GetObject(OpenMode.ForRead);
+
+                        List<Layout> layouts = new List<Layout>();
                         foreach (DBDictionaryEntry entry in layoutDict)
                         {
                             if (entry.Key != "Model")
@@ -100,53 +103,38 @@ namespace AcadLib.Plot
                                 if (!entry.Value.IsErased)
                                 {
                                     var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;
-                                    // Фильтр листов 
-                                    if (Options.FilterState)
-                                    {
-                                        // Номер вкладки
-                                        int tabIndex = layout.TabOrder;
-                                        string tabName = layout.LayoutName;
-                                        bool? filtering = null;
-                                        // Фильтр по именам                                        
-                                        if (!string.IsNullOrWhiteSpace(Options.FilterByNames))
-                                        {
-                                            filtering = FilterByName(tabName);
-                                        }
-                                        // Фильтр по номеру вкладки
-                                        if (!string.IsNullOrWhiteSpace(Options.FilterByNumbers) &&
-                                            (!filtering.HasValue || !filtering.Value))
-                                        {
-                                            filtering = FilterByNumber(tabIndex);
-                                        }
-
-                                        if (filtering.HasValue && !filtering.Value)
-                                        {
-                                            // Лист не прошел фильтр
-                                            continue;
-                                        }
-                                    }
-
-                                    DsdEntry dsdEntry = new DsdEntry();
-                                    dsdEntry.Layout = layout.LayoutName;
-                                    dsdEntry.DwgName = fileDwg;                                    
-                                    //dsdEntry.Nps = "Setup1";
-                                    dsdEntry.NpsSourceDwg = fileDwg;
-                                    dsdEntry.Title = indexfile + "-" + layout.LayoutName;
-                                    layouts.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
-                                    //dsdCol.Add(dsdEntry);
-
+                                    layouts.Add(layout);
                                 }
                             }
                         }
+                        // Фильтр листов 
+                        if (Options.FilterState)
+                        {
+                            layouts = FilterLayouts(layouts, Options);                            
+                        }
+
+                        List<Tuple<Layout, DsdEntry>> layoutsDsd = new List<Tuple<Layout, DsdEntry>>();
+                        foreach (var layout in layouts)
+                        {
+                            DsdEntry dsdEntry = new DsdEntry();
+                            dsdEntry.Layout = layout.LayoutName;
+                            dsdEntry.DwgName = fileDwg;
+                            //dsdEntry.Nps = "Setup1";
+                            dsdEntry.NpsSourceDwg = fileDwg;
+                            dsdEntry.Title = indexfile + "-" + layout.LayoutName;
+                            layoutsDsd.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
+                            //dsdCol.Add(dsdEntry);
+                        }
+
                         if (Options.SortTabOrName)
                         {
-                            layouts.Sort((l1, l2) => l1.Item1.TabOrder.CompareTo(l2.Item1.TabOrder));
-                        }                        
+                            layoutsDsd.Sort((l1, l2) => l1.Item1.TabOrder.CompareTo(l2.Item1.TabOrder));
+                        }
                         else
                         {
-                            layouts.Sort((l1, l2) => l1.Item1.LayoutName.CompareTo(l2.Item1.LayoutName));
-                        }                        
-                        layouts.ForEach(l => dsdCol.Add(l.Item2));
+                            layoutsDsd.Sort((l1, l2) => l1.Item1.LayoutName.CompareTo(l2.Item1.LayoutName));
+                        }
+                        layoutsDsd.ForEach(l => dsdCol.Add(l.Item2));
                         t.Commit();
                     }
                 }
@@ -154,21 +142,132 @@ namespace AcadLib.Plot
             PublisherDSD(dsdCol);            
         }
 
+        public static void PromptAndPlot (Document doc)
+        {
+            Editor ed = doc.Editor;
+            PlotOptions plotOpt = new PlotOptions();
+            bool repeat = false;
+            do
+            {
+                var optPrompt = new PromptKeywordOptions($"\nПечать листов в PDF из текущего чертежа, выбранных файлов или из всех чертежей в папке.");
+                optPrompt.Keywords.Add("Текущего");
+                optPrompt.Keywords.Add("Папки");
+                optPrompt.Keywords.Add("Настройки");
+                optPrompt.Keywords.Default = "Папки";
+
+                var resPrompt = ed.GetKeywords(optPrompt);
+                if (resPrompt.Status == PromptStatus.OK)
+                {
+                    if (resPrompt.StringResult == "Текущего")
+                    {
+                        repeat = false;
+                        Logger.Log.Info("Текущего");
+                        if (!File.Exists(doc.Name))
+                        {
+                            throw new Exception("Нужно сохранить текущий чертеж.");
+                        }
+                        string filePdfName = Path.Combine(Path.GetDirectoryName(doc.Name), Path.GetFileNameWithoutExtension(doc.Name) + ".pdf");
+                        PlotDirToPdf plotter = new PlotDirToPdf(new string[] { doc.Name }, filePdfName);
+                        plotter.Options = plotOpt;
+                        plotter.Plot();
+                    }
+                    else if (resPrompt.StringResult == "Папки")
+                    {
+                        repeat = false;
+                        Logger.Log.Info("Папки");
+                        var dialog = new UI.FileFolderDialog();
+                        dialog.Dialog.Multiselect = true;
+                        dialog.IsFolderDialog = true;
+                        dialog.Dialog.Title = "Выбор папки или файлов для печати чертежей в PDF.";
+                        dialog.Dialog.Filter = "Чертежи|*.dwg";                        
+                        dialog.Dialog.InitialDirectory = Path.GetDirectoryName(doc.Name);
+                        
+                        if (dialog.ShowDialog() == DialogResult.OK)
+                        {
+                            PlotDirToPdf plotter;
+                            string firstFileNameWoExt = Path.GetFileNameWithoutExtension(dialog.Dialog.FileNames.First());
+                            if (dialog.Dialog.FileNames.Count() > 1)
+                            {
+                                plotter = new PlotDirToPdf(dialog.Dialog.FileNames, Path.GetFileName(dialog.SelectedPath));
+                            }
+                            else if (firstFileNameWoExt.Equals("п", StringComparison.OrdinalIgnoreCase))
+                            {
+                                plotter = new PlotDirToPdf(dialog.SelectedPath);
+                            }
+                            else
+                            {
+                                plotter = new PlotDirToPdf(dialog.Dialog.FileNames, firstFileNameWoExt);
+                            }
+                            plotter.Options = plotOpt;
+                            plotter.Plot();
+                        }
+                    }
+                    else if (resPrompt.StringResult == "Настройки")
+                    {
+                        // Сортировка; Все файлы в один пдф или для каждого файла отдельная пдф
+                        plotOpt.Show();
+                        repeat = true;
+                    }
+                }
+                else
+                {
+                    ed.WriteMessage("\nОтменено пользователем.");
+                    return;
+                }
+            } while (repeat);
+        }
+
+        private List<Layout> FilterLayouts (List<Layout> layouts, PlotOptions options)
+        {
+            List<Layout> resLayouts = new List<Layout>();
+            foreach (var layout in layouts)
+            {
+                // Номер вкладки
+                int tabIndex = layout.TabOrder;
+                string tabName = layout.LayoutName;
+                bool? filtering = null;
+                // Фильтр по именам                                        
+                if (!string.IsNullOrWhiteSpace(Options.FilterByNames))
+                {
+                    filtering = FilterByName(tabName);
+                }
+                // Фильтр по номеру вкладки
+                if (!string.IsNullOrWhiteSpace(Options.FilterByNumbers) &&
+                    (!filtering.HasValue || !filtering.Value))
+                {                    
+                    filtering = FilterByNumber(tabIndex, layouts.Count);
+                }
+
+                if (filtering.HasValue && !filtering.Value)
+                {
+                    // Лист не прошел фильтр
+                    continue;
+                }
+                resLayouts.Add(layout);
+            }
+            return resLayouts;
+        }
+
         private bool FilterByName(string tabName)
         {
             return Regex.IsMatch(tabName, Options.FilterByNames, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
         }
 
-        private bool FilterByNumber(int tabIndex)
-        {            
-            return Options.FilterNumbers.Contains(tabIndex);                
+        private bool FilterByNumber (int tabIndex, int countTabs)
+        {
+            int index = tabIndex;
+            if (Options.FilterByNumbersDescending)
+            {
+                index = countTabs - tabIndex +1;
+            }
+            return Options.FilterNumbers.Contains(index);
         }
 
         public void PublisherDSD(DsdEntryCollection collection)
         {
             try
             {
-                Application.SetSystemVariable("BACKGROUNDPLOT", 0);
+                Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
                 DsdData dsd = new DsdData();
 
                 dsd.SetDsdEntryCollection(collection);
@@ -202,7 +301,7 @@ namespace AcadLib.Plot
 
                     progressDlg.IsVisible = true;
 
-                    Publisher publisher = Application.Publisher;
+                    Publisher publisher = Autodesk.AutoCAD.ApplicationServices.Application.Publisher;
                     PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
 
                     //Application.Publisher.AboutToBeginPublishing += new Autodesk.AutoCAD.Publishing.AboutToBeginPublishingEventHandler(Publisher_AboutToBeginPublishing);
