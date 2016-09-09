@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -9,6 +10,16 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class PolylineExtensions
    {
+        public static List<Point2d> GetPoints(this Polyline pl)
+        {
+            List<Point2d> points = new List<Point2d>();
+            for (int i = 0; i < pl.NumberOfVertices; i++)
+            {                
+                points.Add(pl.GetPoint2dAt(i));
+            }
+            return points;
+        }
+
         /// <summary>
         /// Breaks the polyline at specified point.
         /// </summary>

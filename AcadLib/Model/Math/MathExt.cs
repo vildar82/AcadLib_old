@@ -10,8 +10,38 @@ namespace AcadLib
     public static class MathExt
     {
         public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
+        public const double PI2 = Math.PI * 2;
+        public const double PIHalf = Math.PI / 2;
+        public const double RatioDegreeToRadian = Math.PI / 180;
+        public const double RatioRadianToDegree = 180 / Math.PI;
 
-        
+        /// <summary>
+        /// Это нечетное число
+        /// </summary>        
+        public static bool IsOdd (this int value)
+        {
+            return value % 2 != 0;
+        }
+
+        /// <summary>
+        /// Это четное число
+        /// </summary>        
+        public static bool IsEven (this int value)
+        {
+            return value % 2 == 0;
+        }
+
+        /// <summary>
+        /// Сравнение десятичных чисел с допуском
+        /// </summary>
+        /// <param name="d">Первое число</param>
+        /// <param name="other">Второе число</param>
+        /// <param name="precision">Допуск разницы</param>
+        /// <returns>true - равны, false - не равны</returns>
+        public static bool IsEqual (this double d, double other, double precision = double.Epsilon)
+        {
+            return Math.Abs(d - other) <= precision;
+        }
 
         /// <summary>
         /// Превращает строки с диапазоном чисел в последовательность чисел.
@@ -51,7 +81,7 @@ namespace AcadLib
         /// <returns>Угол в радианах</returns>
         public static double ToRadians(this double degrees)
         {
-            return degrees * (Math.PI / 180.0);
+            return degrees * RatioDegreeToRadian;// (Math.PI / 180.0);
         }
 
         /// <summary>
@@ -61,7 +91,7 @@ namespace AcadLib
         /// <returns>Угол в градусах</returns>
         public static double ToDegrees(this double radian)
         {
-            return radian * 180.0 / Math.PI;
+            return radian * RatioRadianToDegree;// 180.0 / Math.PI;
         }
 
         /// <summary>

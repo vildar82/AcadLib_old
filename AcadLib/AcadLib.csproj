@@ -129,7 +129,6 @@
     </Compile>
     <Compile Include="Model\Exceptions\CancelByUserException.cs" />
     <Compile Include="Model\Field\UpdateField.cs" />
-    <Compile Include="Model\Files\CadSettingsPath.cs" />
     <Compile Include="Model\Hatch\HatchExt.cs" />
     <Compile Include="Model\Jigs\DragSel.cs" />
     <Compile Include="Model\Layers\LayerVisibleState.cs" />
