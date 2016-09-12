@@ -93,6 +93,11 @@ namespace AcadLib
             base.Info($"Start command: {command.CommandName}; Сборка: {command.Assembly.FullName}; ");
         }
 
+        public void StartLisp (string command, string file)
+        {
+            base.Info($"Start Lisp: {command}; Файл: {file}; ");
+        }
+
         private string GetMessage (string msg)
         {
             return $"Команда: {CommandStart.CurrentCommand}; Сообщение: {msg}";

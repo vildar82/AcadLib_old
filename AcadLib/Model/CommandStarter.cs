@@ -23,6 +23,11 @@ namespace AcadLib
             CommandName = commandName;
             Assembly = asm;
         }
+        
+        public static void StartLisp (string commandName, string file)
+        {
+            Logger.Log.StartLisp(commandName, file);
+        }
 
         /// <summary>
         /// Оболочка для старта команды - try-catch, log, inspectoe.clear-show, commandcounter

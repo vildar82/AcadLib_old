@@ -86,7 +86,25 @@ namespace AcadLib {
 			});
 		}
 
-		public void Initialize ()
+        [LispFunction(nameof(PIK_SrartLisp))]
+        public void PIK_SrartLisp(ResultBuffer rb)
+        {
+            var tvs = rb.AsArray();
+            string command = string.Empty;
+            string file = string.Empty;
+            var countTV = tvs.Length;
+            if (countTV > 0)
+            {
+                command = tvs[0].Value.ToString();
+                if (countTV>1)
+                {
+                    file = tvs[1].Value.ToString();
+                }
+            }
+            CommandStart.StartLisp(command, file);
+        }
+
+        public void Initialize ()
 		{
             // Загрузка общей сборки - для всех специальностей
             try
