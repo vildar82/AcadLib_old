@@ -345,8 +345,15 @@ namespace AcadLib.Errors
             this.Controls.Add(this.textBoxErr);
             this.Controls.Add(this.buttonShow);
             this.Controls.Add(this.listBoxError);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormError";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Инфо";
+            this.TopMost = true;
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormError_KeyDown);
             this.contextMenuError.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
