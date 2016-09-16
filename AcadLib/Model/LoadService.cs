@@ -24,6 +24,11 @@ namespace AcadLib
             LoadPackages("MoreLinq.dll");
         }
 
+        public static void LoadMicroMvvm ()
+        {
+            LoadPackages("MicroMvvm.dll");
+        }
+
         /// <summary>
         /// EntityFramework
         /// </summary>
