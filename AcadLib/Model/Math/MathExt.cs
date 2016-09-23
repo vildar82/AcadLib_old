@@ -91,7 +91,7 @@ namespace AcadLib
         /// <returns>Угол в градусах</returns>
         public static double ToDegrees(this double radian)
         {
-            return radian * RatioRadianToDegree;// 180.0 / Math.PI;
+            return (radian % PI2) * RatioRadianToDegree;// 180.0 / Math.PI;
         }
 
         /// <summary>

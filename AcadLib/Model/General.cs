@@ -34,6 +34,10 @@ namespace AcadLib
             /// Квадратная степень- ²
             /// </summary>
             public const string Square = "²";
+            /// <summary>
+            /// Градус - °
+            /// </summary>
+            public const string Degree = "°";
         }
 
         /// <summary>
