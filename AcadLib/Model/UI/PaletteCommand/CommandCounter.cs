@@ -60,8 +60,7 @@ namespace AcadLib
         public static void Init()
         {            
             // загрузка из файла
-            FileXml = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                    "PIK\\AutoCAD\\CommandCounter.xml");
+            FileXml =General.GetUserDataFile("","CommandCounter.xml");
             if (File.Exists(FileXml))
             {
                 SerializerXml xmlSer = new SerializerXml(FileXml);

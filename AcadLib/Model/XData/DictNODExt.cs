@@ -24,7 +24,26 @@ namespace AcadLib
         public DictNOD(string innerDict, bool hasInnerDict)
         {
             this.dictName = "PIK";
-            this.dictInnerName = innerDict;
+            this.dictInnerName = innerDict;            
+        }
+
+        /// <summary>
+        /// Сохранение публичных свойств объекта в словарь
+        /// </summary>        
+        public void Save<T> (T obj) where T : class
+        {
+            var type = typeof(T);
+            var props = type.GetProperties(System.Reflection.BindingFlags.Public);
+            var idDict = getDict(true);
+            if (idDict.IsNull)
+                return;
+
+            foreach (var prop in props)
+            {
+                var val = prop.GetValue(obj);
+
+            }
+
         }
 
         /// <summary>
@@ -264,6 +283,7 @@ namespace AcadLib
 
             using (DBDictionary nod = (DBDictionary)db.NamedObjectsDictionaryId.Open(OpenMode.ForRead))
             {
+                var dictPik = getDict(nod,dictName, create);
                 if (!nod.Contains(dictName))
                 {
                     if (!create) return idDic;
@@ -316,9 +336,25 @@ namespace AcadLib
             return idDic;
         }
 
+        private DBDictionary getDict (DBDictionary parentDict, string dictName, bool create)
+        {
+            DBDictionary res = null;
+            if (parentDict.Contains(dictName))
+            {
+                var idDict = parentDict[dictName];
+            }
+            return res;
+        }
+
         private ObjectId getRec(string recName, bool create)
         {
             ObjectId idDict = getDict(create);
+            var idRec = getRec(idDict, recName);
+            return idRec;
+        }
+
+        private ObjectId getRec (ObjectId idDict, string recName)
+        {            
             if (idDict.IsNull)
             {
                 return ObjectId.Null;
@@ -337,6 +373,65 @@ namespace AcadLib
                 else idRec = dic.GetAt(recName);
             }
             return idRec;
+        }
+
+        private TypedValue GetTV<T>(T value)
+        {
+            DxfCode dxfCode = DxfCode.Invalid;
+            TypeSwitch.Do(value,
+                TypeSwitch.Case<bool>(x => dxfCode = DxfCode.Bool),
+                TypeSwitch.Case<int>(x => dxfCode = DxfCode.Int32),                
+                TypeSwitch.Case<double>(x => dxfCode = DxfCode.Real),
+                TypeSwitch.Case<string>(x => dxfCode = DxfCode.Text));
+            var tv = new TypedValue((int)dxfCode, value);
+            return tv;
+        }
+    }
+
+    static class TypeSwitch
+    {
+        public class CaseInfo
+        {
+            public bool IsDefault { get; set; }
+            public Type Target { get; set; }
+            public Action<object> Action { get; set; }
+        }
+
+        public static void Do (object source, params CaseInfo[] cases)
+        {
+            var type = source.GetType();
+            foreach (var entry in cases)
+            {
+                if (entry.IsDefault || entry.Target.IsAssignableFrom(type))
+                {
+                    entry.Action(source);
+                    break;
+                }
+            }
+        }
+
+        public static CaseInfo Case<T> (Action action)
+        {
+            return new CaseInfo() {
+                Action = x => action(),
+                Target = typeof(T)
+            };
+        }
+
+        public static CaseInfo Case<T> (Action<T> action)
+        {
+            return new CaseInfo() {
+                Action = (x) => action((T)x),
+                Target = typeof(T)
+            };
+        }
+
+        public static CaseInfo Default (Action action)
+        {
+            return new CaseInfo() {
+                Action = x => action(),
+                IsDefault = true
+            };
         }
     }
 }
