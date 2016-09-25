@@ -41,7 +41,7 @@ namespace AcadLib.Files
         /// </summary>
         /// <typeparam name="T">Тип считываемого объекта></typeparam>
         /// <param name="file">Файл xml</param>
-        /// <returns>Объект T или дефолтный объект из конструктора без параметров</returns>
+        /// <returns>Объект T или null</returns>
         public static T Load<T> (string file) where T: class, new()
         {
             var ser = new SerializerXml(file);
@@ -53,7 +53,7 @@ namespace AcadLib.Files
             catch(Exception ex)
             {
                 Logger.Log.Error(ex, $"Ошибка десирилизации объекта {typeof(T)} из файла {file}");
-                res = new T();
+                //res = new T();
             }
             return res;                
         }
