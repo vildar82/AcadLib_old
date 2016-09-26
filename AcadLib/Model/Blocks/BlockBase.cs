@@ -75,7 +75,20 @@ namespace AcadLib.Blocks
                 Bounds = blRef.Bounds;
                 Position = blRef.Position;
                 Transform = blRef.BlockTransform;
-                Color = blRef.Color;
+                Color = GetColor(blRef);
+            }
+        }
+
+        private Color GetColor (BlockReference blRef)
+        {
+            if (blRef.Color.IsByLayer)
+            {
+                var lay = blRef.LayerId.GetObject(OpenMode.ForRead) as LayerTableRecord;
+                return lay.Color;
+            }
+            else
+            {
+                return blRef.Color;
             }
         }
 

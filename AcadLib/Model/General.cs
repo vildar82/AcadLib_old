@@ -41,10 +41,10 @@ namespace AcadLib
         }
 
         /// <summary>
-        /// Файл из папки пользовательских данных
+        /// Файл из папки пользовательских данных (AppData\PIK\Autocad\...)
         /// </summary>
-        /// <param name="folderName"></param>
-        /// <param name="fileName"></param>
+        /// <param name="folderName">Имя программы\плагина</param>
+        /// <param name="fileName">Имя файла</param>
         /// <returns></returns>
         public static string GetUserDataFile (string folderName, string fileName)
         {
@@ -59,6 +59,6 @@ namespace AcadLib
                 Directory.CreateDirectory(folder);            
             var file = Path.Combine(folder, fileName);
             return file;
-        }
+        }        
     }
 }

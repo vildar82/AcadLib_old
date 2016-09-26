@@ -48,9 +48,24 @@ namespace AcadLib
             LoadPackages("PowerCollections.dll");            
         }        
 
+        public static void LoadCatel()
+        {
+            LoadPackages(@"Catel\Catel.Core.dll");
+            LoadPackages(@"Catel\Catel.MVVM.dll");
+            LoadPackages(@"Catel\Catel.Extensions.Controls.dll");
+            LoadPackages(@"Catel\Catel.Extensions.FluentValidation.dll");
+            LoadPackages(@"Catel\Catel.Fody.Attributes.dll");
+            LoadPackages(@"Catel\FluentValidation.dll");
+        }
+
         private static void LoadPackages(string name)
         {
             var dll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\packages\" + name);
+            LoadFrom(dll);
+        }
+
+        public static void LoadFrom(string dll)
+        {
             if (File.Exists(dll))
             {
                 Assembly.LoadFrom(dll);
