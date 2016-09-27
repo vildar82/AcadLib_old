@@ -196,6 +196,7 @@
     <Compile Include="Model\UI\PaletteCommand\PaletteSetCommands.cs" />
     <Compile Include="Model\UI\Properties\XmlSerializableDictionary.cs" />
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
+    <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Model\WPF\Converters\RadiansToDegreeConverterExtension.cs" />
     <Compile Include="Model\WPF\EnumBindingSourceExtension.cs" />
     <Compile Include="Model\XData\DictNODExt.cs" />
