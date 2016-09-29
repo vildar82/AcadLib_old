@@ -56,6 +56,7 @@ namespace AcadLib
             LoadPackages(@"Catel\Catel.Extensions.FluentValidation.dll");
             LoadPackages(@"Catel\Catel.Fody.Attributes.dll");
             LoadPackages(@"Catel\FluentValidation.dll");
+            LoadPackages(@"Catel\System.Windows.Interactivity.dll");            
         }
 
         private static void LoadPackages(string name)

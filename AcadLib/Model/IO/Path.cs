@@ -16,14 +16,19 @@ namespace AcadLib.IO
         /// <returns>Полный путь к файлу. Наличие файла не проверяется. Папка создается</returns>
         public static string GetSharedFile (string pluginName, string fileName)
         {
+            string resFilePath = string.Empty;
             var pluginFolder = System.IO.Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
                 AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, pluginName);
             if (!System.IO.Directory.Exists(pluginFolder))
             {
-                System.IO.Directory.CreateDirectory(pluginFolder);
+                try
+                {
+                    System.IO.Directory.CreateDirectory(pluginFolder);
+                }
+                catch { }
             }
-            var file = System.IO.Path.Combine(pluginFolder, fileName);
-            return file;
+            resFilePath = System.IO.Path.Combine(pluginFolder, fileName);
+            return resFilePath;
         }
     }
 }
