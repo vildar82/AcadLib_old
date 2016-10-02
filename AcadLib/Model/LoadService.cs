@@ -56,12 +56,17 @@ namespace AcadLib
             LoadPackages(@"Catel\Catel.Extensions.FluentValidation.dll");
             LoadPackages(@"Catel\Catel.Fody.Attributes.dll");
             LoadPackages(@"Catel\FluentValidation.dll");
-            LoadPackages(@"Catel\System.Windows.Interactivity.dll");            
+            LoadPackages(@"Catel\System.Windows.Interactivity.dll");
+        }
+
+        public static void LoadMetro()
+        {
+            LoadPackages(@"Metro\MahApps.Metro.dll");            
         }
 
         private static void LoadPackages(string name)
         {
-            var dll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\packages\" + name);
+            var dll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, @"packages\" + name);
             LoadFrom(dll);
         }
 

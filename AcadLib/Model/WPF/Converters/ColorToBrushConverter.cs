@@ -13,9 +13,25 @@ namespace AcadLib.WPF.Converters
     public class ColorToBrushConverter : MarkupExtension, IValueConverter
     {
         public object Convert (object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var dc = (System.Drawing.Color)value;
-            return new SolidColorBrush(new Color { A = dc.A, R = dc.R, G = dc.G, B = dc.B });
+        {            
+            if (value is System.Drawing.Color)
+            {
+                var dc = (System.Drawing.Color)value;
+                return new SolidColorBrush(Color.FromArgb(dc.A, dc.R, dc.G, dc.B));
+            }            
+
+            if (value is Color)
+            {
+                return new SolidColorBrush((Color)value);
+            }            
+
+            if (value is  Autodesk.AutoCAD.Colors.Color)
+            {
+                var ac = (Autodesk.AutoCAD.Colors.Color)value;
+                return new SolidColorBrush(Color.FromRgb(ac.Red, ac.Green, ac.Blue));
+            }
+
+            return null;
         }
 
         public object ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)

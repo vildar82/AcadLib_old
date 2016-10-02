@@ -16,6 +16,33 @@ namespace AcadLib
         public const double RatioRadianToDegree = 180 / Math.PI;
 
         /// <summary>
+        /// Приведение угла к значению от 0 до 2PI (один оборот)
+        /// </summary>
+        /// <param name="angle">Исходный угол в радианах</param>
+        /// <returns>Угол в радианах соответствующий исходному углу, но в пределах от 0 до 2pi (круг)</returns>
+        public static double FixedAngle (this double angle)
+        {            
+            if (angle < 0)
+            {
+                angle = PI2 + angle % PI2;
+            }
+            else if (angle >= PI2)
+            {
+                angle %= PI2;
+            }
+            return angle;
+        }
+
+        public static double ToHours (this int min)
+        {
+            return Math.Round(min * 0.01667, 1);
+        }
+        public static double ToHours (this double min)
+        {
+            return Math.Round(min *0.01667, 1);
+        }
+
+        /// <summary>
         /// Это нечетное число
         /// </summary>        
         public static bool IsOdd (this int value)
