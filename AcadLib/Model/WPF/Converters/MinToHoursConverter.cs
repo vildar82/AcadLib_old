@@ -9,26 +9,15 @@ using System.Windows.Markup;
 
 namespace AcadLib.WPF.Converters
 {
-    public class MinToHoursConverter : MarkupExtension, IValueConverter
+    [ValueConversion(typeof(int), typeof(double))]
+    [ValueConversion(typeof(double), typeof(double))]
+    public class MinToHoursConverter : ConvertorBase
     {
-        public object Convert (object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert (object value, Type targetType, object parameter, CultureInfo culture)
         {
             var min = System.Convert.ToInt32(value);
             var hours = Math.Round(min / 60d, 1);
             return hours;
         }
-
-        public object ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object ProvideValue (IServiceProvider serviceProvider)
-        {
-            if (_converter == null)
-                _converter = new MinToHoursConverter();
-            return _converter;
-        }
-        private static MinToHoursConverter _converter = null;
     }
 }

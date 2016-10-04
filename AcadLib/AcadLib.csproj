@@ -197,6 +197,7 @@
     <Compile Include="Model\UI\Properties\XmlSerializableDictionary.cs" />
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />
+    <Compile Include="Model\WPF\Converters\ConvertorBase.cs" />
     <Compile Include="Model\WPF\Converters\MinToHoursConverter.cs" />
     <Compile Include="Model\WPF\Converters\RadiansToDegreeConverterExtension.cs" />
     <Compile Include="Model\WPF\EnumBindingSourceExtension.cs" />

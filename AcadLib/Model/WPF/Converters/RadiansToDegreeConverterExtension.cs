@@ -9,24 +9,19 @@ using System.Windows.Markup;
 
 namespace AcadLib.WPF.Converters
 {
-    public class RadiansToDegreeConverterExtension : MarkupExtension, IValueConverter
+    [ValueConversion(typeof(int), typeof(string))]
+    [ValueConversion(typeof(double), typeof(string))]
+    public class RadiansToDegreeConverterExtension : ConvertorBase
     {        
-        public object Convert (object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert (object value, Type targetType, object parameter, CultureInfo culture)
         {
             double date = System.Convert.ToDouble(value);
             return date.ToDegrees().ToString("N2");
         }
-        public object ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
         {
             double date = System.Convert.ToDouble(value);
             return date.ToRadians();
-        }
-        public override object ProvideValue (IServiceProvider serviceProvider)
-        {
-            if (_converter == null)
-                _converter = new RadiansToDegreeConverterExtension();
-            return _converter;
-        }
-        private static RadiansToDegreeConverterExtension _converter = null;
+        }       
     }
 }
