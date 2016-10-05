@@ -535,13 +535,22 @@ namespace AcadLib.Errors
 
         private void buttonReport_Click (object sender, EventArgs e)
         {
-            FormReport frmReport = new FormReport ();
-            var res = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frmReport);
-            if (res == DialogResult.OK)
+
+            if (General.IsJokeUser())
             {
-                string msg = " #Title " + CommandStart.CurrentCommand + ". \n" + frmReport.Message;
-                Logger.Log.Report(msg);                
+                // Шутка
+                System.Diagnostics.Process.Start("https://www.youtube.com/embed/T9RFb8xXZlk?autoplay=1");
             }
+            else
+            {
+                FormReport frmReport = new FormReport();
+                var res = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frmReport);
+                if (res == DialogResult.OK)
+                {
+                    string msg = " #Title " + CommandStart.CurrentCommand + ". \n" + frmReport.Message;
+                    Logger.Log.Report(msg);
+                }
+            }            
         }
 
         private void FormError_KeyDown (object sender, KeyEventArgs e)
