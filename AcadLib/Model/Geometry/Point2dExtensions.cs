@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -115,6 +116,11 @@ namespace Autodesk.AutoCAD.Geometry
             return new Point2d(
                     pt.X + (other.X - pt.X) * 0.5,
                     pt.Y + (other.Y - pt.Y) * 0.5);
-        }            
+        }
+
+        public static string ToStringEx (this Point2d pt)
+        {
+            return pt.ToString("0.00", CultureInfo.CurrentCulture);
+        }
     }
 }

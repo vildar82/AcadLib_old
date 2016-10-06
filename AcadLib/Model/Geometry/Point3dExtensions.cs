@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using AcadLib.Geometry;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -224,6 +225,11 @@ namespace Autodesk.AutoCAD.Geometry
                     break;
             }
             return pt.TransformBy(mat);
+        }
+
+        public static string ToStringEx (this Point3d pt)
+        {
+            return pt.ToString("0.00", CultureInfo.CurrentCulture);
         }
     }
 }
