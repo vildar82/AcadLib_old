@@ -10,6 +10,13 @@ namespace AcadLib
     public static class XDataExt
     {
         public const string PikApp = "PIK";
+
+        private static Dictionary<Type, int> dictXDataTypedValues = new Dictionary<Type, int> {            
+            { typeof(int), (int)DxfCode.ExtendedDataInteger32 },
+            { typeof(double), (int)DxfCode.ExtendedDataReal },
+            { typeof(string),(int)DxfCode.ExtendedDataAsciiString }
+        };
+
         /// <summary>
         /// Регистрация приложения в RegAppTable
         /// </summary>        
@@ -69,6 +76,38 @@ namespace AcadLib
             }
         }
 
+        /// <summary>
+        /// Запись значения в XData
+        /// Регистрируется приложение regAppName
+        /// </summary>
+        /// <param name="dbo">DBObject</param>
+        /// <param name="value">Значение одного из стандартного типа - int, double, string</param>
+        public static void SetXData<T> (this DBObject dbo, string regAppName, T value)
+        {
+            RegApp(dbo.Database, regAppName);
+            var tvValu = GetTypedValue(value);
+            using (var rb = new ResultBuffer(
+                        new TypedValue((int)DxfCode.ExtendedDataRegAppName, PikApp),
+                        tvValu))
+            {
+                dbo.XData = rb;
+            }
+        }
+
+        /// <summary>
+        /// Запись значения в XData
+        /// Регистрируется приложение regAppName
+        /// </summary>
+        /// <param name="dbo">DBObject</param>
+        /// <param name="value">Значение одного из стандартного типа - int, double, string</param>
+        public static void SetXDataPIK<T> (this DBObject dbo, T value)
+        {
+            SetXData(dbo, PikApp, value);
+        }
+
+        /// <summary>
+        /// Запись int
+        /// ПРиложение не регистрируется        
         public static void SetXDataPIK(this DBObject dbo, int value)
         {
             SetXData(dbo, PikApp, value);
@@ -112,6 +151,46 @@ namespace AcadLib
         public static string GetXDatPIKString(this DBObject dbo)
         {
             return GetXDataString(dbo, PikApp);
+        }
+
+        /// <summary>
+        /// Считывание значение с объекта
+        /// </summary>
+        /// <typeparam name="T">Тип значения - int, double, string</typeparam>        
+        /// <returns>Значение или дефолтное значение для этого типа (0,0,null) если не найдено</returns>
+        public static T GetXData<T> (this DBObject dbo, string regAppName)
+        {
+            var dxfT = dictXDataTypedValues[typeof(T)];
+            var rb = dbo.GetXDataForApplication(regAppName);
+            if (rb != null)
+            {
+                foreach (var item in rb)
+                {
+                    if (item.TypeCode == dxfT)
+                    {
+                        return (T)item.Value;
+                    }
+                }
+            }
+            return default(T);
+        }
+
+        /// <summary>
+        /// Считывание значения из XData определенного типа, приложения PIK
+        /// </summary>
+        /// <typeparam name="T">Тип значения - int, double, string</typeparam>
+        /// <param name="dbo">Объект</param>
+        /// <returns>Значение или дефолтное значение типа, если не найдено</returns>
+        public static T GetXDataPIK<T> (this DBObject dbo)
+        {
+            return GetXData<T>(dbo, PikApp);
+        }
+
+        private static TypedValue GetTypedValue (object value)
+        {
+            var dxfCode = dictXDataTypedValues[value.GetType()];
+            var tv = new TypedValue(dxfCode, value);
+            return tv;
         }
     }
 }
