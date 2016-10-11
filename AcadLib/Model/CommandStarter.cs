@@ -50,6 +50,7 @@ namespace AcadLib
 
             Document doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
+            Logger.Log.Info($"Document={doc.Name}");
             Inspector.Clear();
             try
             {
