@@ -14,6 +14,14 @@ namespace AcadLib.Jigs
     /// </summary>
     public static class DragSel
     {
+        /// <summary>
+        /// Перемещение объектов
+        /// Открытая транзакция не требуется
+        /// </summary>
+        /// <param name="ed"></param>
+        /// <param name="ids"></param>
+        /// <param name="pt"></param>
+        /// <returns></returns>
         public static bool Drag(Editor ed, ObjectId[] ids, Point3d pt)
         {
             SelectionSet selSet = SelectionSet.FromObjectIds(ids);

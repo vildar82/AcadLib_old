@@ -81,5 +81,17 @@ namespace AcadLib
                 throw new Exception($"Не найден файл {dll}.");
             }
         }
+
+        public static void LoadFromTry(string dll)
+        {
+            try
+            {
+                LoadFrom(dll);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "LoadFromTry - " + dll);
+            }
+        }
     }
 }

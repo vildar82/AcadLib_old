@@ -106,16 +106,12 @@ namespace AcadLib {
 
         public void Initialize ()
 		{
-            // Загрузка общей сборки - для всех специальностей
-            try
-            {
-                var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_Acad_Common.dll");
-                Assembly.LoadFrom(fileDll);
-            }
-            catch (System.Exception ex)
-            {
-                Logger.Log.Error(ex, $"Ошибка инициализации общей сборки PIK_Acad_Common.dll"); 
-            }
+            // MicroMvvm
+            var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
+            LoadService.LoadFromTry(fileDll);
+            // Загрузка общей сборки - для всех специальностей             
+            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_Acad_Common.dll");
+            LoadService.LoadFromTry(fileDll);                
 
 			try
 			{
@@ -145,7 +141,7 @@ namespace AcadLib {
 
 				if (!string.IsNullOrEmpty(fileGroup))
 				{
-					var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);					
+					fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);					
 					Assembly.LoadFrom(fileDll);
 				}
 			}

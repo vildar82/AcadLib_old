@@ -30,8 +30,13 @@ namespace AcadLib.XData
         /// </summary>        
         public void Save (string rec, object value)
         {
-            ResultBuffer rb = new ResultBuffer(new TypedValue(GetExtendetDataType(value.GetType()), value));
-            Xrecord xRec = GetXRecord(rec, true);            
+            Save(new List<TypedValue> { new TypedValue(GetExtendetDataType(value.GetType()), value) }, rec);            
+        }
+
+        public void Save (List<TypedValue> values, string rec)
+        {
+            ResultBuffer rb = new ResultBuffer(values.ToArray());
+            Xrecord xRec = GetXRecord(rec, true);
             if (xRec == null)
             {
                 return;
@@ -42,15 +47,16 @@ namespace AcadLib.XData
         /// <summary>
         /// Чтение Xrecord из объекта
         /// </summary>
-        /// <typeparam name="T">Хранимый тип - может быть string, int, double</typeparam>        
+        /// <typeparam name="T">Хранимый тип - может быть string, int, double, List/<TypedValue/></typeparam>        
         public T Load<T> (string rec)
         {
-            int type = GetExtendetDataType(typeof(T));
+            var typeT = typeof(T);
+            int type = GetExtendetDataType(typeT);
             var xRec = GetXRecord(rec, false);
             if (xRec == null)
             {
                 return default(T);
-            }
+            }            
 
             foreach (var item in xRec.Data)
             {
@@ -60,6 +66,24 @@ namespace AcadLib.XData
                 }
             }
             return default(T);
+        }
+
+        /// <summary>
+        /// Чтение всех Xrecord из словаря плагина
+        /// </summary>        
+        public Dictionary<string, List<TypedValue>> LoadAllXRecords ()
+        {
+            var dict = GetDict(false);
+            if (dict == null) return null;
+
+            var res = new Dictionary<string, List<TypedValue>>();
+            foreach (var item in dict)
+            {
+                var rec = item.Value.GetObject(OpenMode.ForRead) as Xrecord;
+                if (rec == null) continue;
+                res.Add(item.Key, rec.Data.AsArray().ToList());
+            }
+            return res;
         }
 
         private int GetExtendetDataType(Type value)
@@ -103,7 +127,7 @@ namespace AcadLib.XData
                 }
             }
             return null;
-        }
+        }       
 
         private DBDictionary GetDict(bool create)
         {
