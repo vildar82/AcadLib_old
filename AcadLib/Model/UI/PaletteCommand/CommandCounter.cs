@@ -70,7 +70,7 @@ namespace AcadLib
                     if (Counter != null)
                     {
                         Counter._commands = Counter.Commands.Where(c=>!string.IsNullOrEmpty(c.CommandName)).ToDictionary(c=>c.CommandName, c=>c);
-                        Logger.Log.Debug($"Counter != null. Counter.Commands.Count={Counter.Commands.Count}");
+                        Logger.Log.Debug($"Counter.Commands.Count={Counter.Commands.Count}");
                         return;
                     }
                 }
