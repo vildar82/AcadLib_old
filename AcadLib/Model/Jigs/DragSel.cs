@@ -27,24 +27,25 @@ namespace AcadLib.Jigs
             SelectionSet selSet = SelectionSet.FromObjectIds(ids);
             PromptPointResult ppr = ed.Drag(selSet, "\nТочка вставки:", (Point3d ptInput, ref Matrix3d mat) =>
             {
-                if (ptInput == pt) return SamplerStatus.NoChange;
+                if (ptInput.IsEqualTo(pt)) return SamplerStatus.NoChange;
                 mat = Matrix3d.Displacement(pt.GetVectorTo(ptInput));
-                using (var t = ed.Document.TransactionManager.StartTransaction())
-                {
-                    foreach (var item in ids)
-                    {
-                        var ent = item.GetObject(OpenMode.ForWrite, false, true) as Entity;
-                        ent.TransformBy(mat);
-                    }
-                    t.Commit();
-                }
-                
-                pt = ptInput;
+                //pt = ptInput;
                 return SamplerStatus.OK;
             });
 
             if (ppr.Status == PromptStatus.OK)
             {
+                using (var t = ed.Document.TransactionManager.StartTransaction())
+                {
+                    foreach (var item in ids)
+                    {
+                        var mat = Matrix3d.Displacement(pt.GetVectorTo(ppr.Value));
+                        var ent = item.GetObject(OpenMode.ForWrite, false, true) as Entity;
+                        ent.TransformBy(mat);
+                    }
+                    t.Commit();
+                }
+
                 return true;
             }
             else
