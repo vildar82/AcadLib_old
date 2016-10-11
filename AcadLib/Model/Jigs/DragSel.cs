@@ -17,6 +17,7 @@ namespace AcadLib.Jigs
         /// <summary>
         /// Перемещение объектов
         /// Открытая транзакция не требуется
+        /// При отмене пользователем - объекты удаляются
         /// </summary>
         /// <param name="ed"></param>
         /// <param name="ids"></param>
@@ -50,6 +51,15 @@ namespace AcadLib.Jigs
             }
             else
             {
+                using (var t = ed.Document.TransactionManager.StartTransaction())
+                {
+                    foreach (var id in ids)
+                    {
+                        var ent = id.GetObject(OpenMode.ForWrite);
+                        ent.Erase();
+                    }
+                    t.Commit();
+                }
                 return false;
             }
         }
