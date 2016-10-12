@@ -28,22 +28,27 @@ namespace AcadLib
         }
 
         /// <summary>
-        /// Сохранение публичных свойств объекта в словарь
-        /// </summary>        
-        public void Save<T> (T obj) where T : class
+        /// Чтение списка записей для заданной XRecord по имени
+        /// </summary>
+        /// <param name="recName">Имя XRecord в словаре</param>
+        /// <returns>Список значений в XRecord или null</returns>
+        public List<TypedValue> Load (string recName)
         {
-            var type = typeof(T);
-            var props = type.GetProperties(System.Reflection.BindingFlags.Public);
-            var idDict = getDict(true);
-            if (idDict.IsNull)
-                return;
+            List<TypedValue> values = null;
+            ObjectId idRec = getRec(recName, false);
+            if (idRec.IsNull)
+                return values;
 
-            foreach (var prop in props)
+            using (var xRec = idRec.Open(OpenMode.ForRead) as Xrecord)
             {
-                var val = prop.GetValue(obj);
-
+                using (var data = xRec.Data)
+                {
+                    if (data == null)
+                        return values;
+                    values = data.AsArray().ToList();                    
+                }
             }
-
+            return values;
         }
 
         /// <summary>
@@ -272,6 +277,22 @@ namespace AcadLib
                 {
                     rb.Add(new TypedValue((int)DxfCode.Text, text));
                     xRec.Data = rb;
+                }
+            }
+        }
+
+        public void Save (List<TypedValue> values, string key)
+        {
+            if (values == null || values.Count == 0) return;
+            ObjectId idRec = getRec(key, true);
+            if (idRec.IsNull)
+                return;
+
+            using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
+            {
+                using (ResultBuffer rb = new ResultBuffer(values.ToArray()))
+                {
+                    xRec.Data = rb;                    
                 }
             }
         }

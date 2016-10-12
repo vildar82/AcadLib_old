@@ -226,6 +226,7 @@
       <DependentUpon>FormProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\XData\EntDictExt.cs" />
+    <Compile Include="Model\XData\TypedValueExt.cs" />
     <Compile Include="Model\XData\XDataExt.cs" />
     <Compile Include="Model\XData\XDataViewer\FormXDataView.cs">
       <SubType>Form</SubType>
