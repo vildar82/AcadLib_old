@@ -24,7 +24,7 @@ namespace AcadLib.Jigs
         /// <param name="pt"></param>
         /// <returns></returns>
         public static bool Drag(Editor ed, ObjectId[] ids, Point3d pt)
-        {
+        {            
             SelectionSet selSet = SelectionSet.FromObjectIds(ids);
             PromptPointResult ppr = ed.Drag(selSet, "\nТочка вставки:", (Point3d ptInput, ref Matrix3d mat) =>
             {
