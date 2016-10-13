@@ -19,7 +19,7 @@ namespace TestAcadlib.XData
         {
             deep = 0;
             var nod = new DictNOD("Test", true);
-            var rec = new RecED();
+            var rec = new DicED();
             rec.Name = "Test";
 
             rec.Recs = GetRecs("RecsTest", 5);
@@ -32,7 +32,7 @@ namespace TestAcadlib.XData
         public void TestLoadExtDataNOD()
         {
             var nod = new DictNOD("Test", true);
-            var recEd = nod.Load();
+            var recEd = nod.LoadED("Test");
         }
 
         private List<RecXD> GetRecs (string name, int number)
@@ -45,15 +45,15 @@ namespace TestAcadlib.XData
             return recs;
         }
 
-        private List<RecED> GetInners (string name, int number)
+        private List<DicED> GetInners (string name, int number)
         {                      
-            var res = new List<RecED>();
+            var res = new List<DicED>();
             if (deep > 3) return res;
                 deep++;
 
             for (int i = 0; i < number; i++)
             {
-                var recEd = new RecED();
+                var recEd = new DicED();
                 recEd.Name = name + i;
                 recEd.Recs = GetRecs("Recs_" + recEd.Name, 5);
                 recEd.Inners = GetInners("Inners_" + recEd.Name, 2);

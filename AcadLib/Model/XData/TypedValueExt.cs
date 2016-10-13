@@ -51,9 +51,9 @@ namespace AcadLib
             {
                 code = (int)DxfCode.ExtendedDataInteger32;
             }
-            else if (typeObj == typeof(double))
+            else if (typeObj == typeof(byte))
             {
-                code = (int)DxfCode.ExtendedDataReal;
+                code = (int)DxfCode.ExtendedDataInteger32;
             }
             else if (typeObj == typeof(double))
             {

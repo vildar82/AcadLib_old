@@ -16,6 +16,8 @@ namespace AcadLib
         private string dictName;
         private string dictInnerName;
 
+        public Database Db { get; set; } = HostApplicationServices.WorkingDatabase;
+
         [Obsolete("Используй innerDict конструктор.")]
         public DictNOD(string dictName)
         {
@@ -298,7 +300,7 @@ namespace AcadLib
             }
         }
 
-        public void Save (RecED recEd)
+        public void Save (DicED recEd)
         {
             if (recEd == null || string.IsNullOrEmpty(recEd.Name)) return;
 
@@ -311,24 +313,35 @@ namespace AcadLib
             }
         }
 
-        public RecED Load()
+        public DicED LoadED(string dicName)
         {            
             ObjectId idDict = getDict(true);
-            if (idDict.IsNull) return null;
+            if (idDict.IsNull) return null;            
 
-            RecED res;            
-            using (var dic = idDict.Open(OpenMode.ForRead) as DBDictionary)
+            DicED res = null;            
+            using (var dicPlugin = idDict.Open(OpenMode.ForRead) as DBDictionary)
             {
-                res = getRecEd(dic);
-                res.Name = dictInnerName;
+                var idDicRec = getDict(dicPlugin, dicName, false);
+                if (!idDicRec.IsNull)
+                {
+                    using (var dicRec = idDicRec.Open(OpenMode.ForWrite) as DBDictionary)
+                    {                        
+                        res = getRecEd(dicRec);
+                        if (res != null)
+                        {
+                            res.Name = dictInnerName;
+                        }
+                    }
+                }
             }
             return res;
         }
 
-        private static RecED getRecEd (DBDictionary dic)
+        private static DicED getRecEd (DBDictionary dic)
         {
-            RecED res = new RecED();            
-            res.Inners = new List<RecED>();
+            if (dic == null) return null;
+            DicED res = new DicED();            
+            res.Inners = new List<DicED>();
             res.Recs = new List<RecXD>();
             foreach (var item in dic)
             {
@@ -350,22 +363,28 @@ namespace AcadLib
             return res;
         }
 
-        private void setDict (DBDictionary dicParent, RecED ed)
+        /// <summary>
+        /// Запись значений из RecED в DBDictionary
+        /// </summary>        
+        private void setDict (DBDictionary dicParent, DicED ed)
         {
             if (ed == null) return;
             var dicId = getDict(dicParent, ed.Name, true);
             using (var dic = dicId.Open(OpenMode.ForWrite) as DBDictionary)
             {
-                // Запись списка значений в XRecord
-                foreach (var item in ed.Recs)
+                if (dic != null)
                 {
-                    setRec(dic, item);
-                }               
+                    // Запись списка значений в XRecord
+                    foreach (var item in ed.Recs)
+                    {
+                        setRec(dic, item);
+                    }
 
-                // Запись вложенных словарей
-                foreach (var item in ed.Inners)
-                {
-                    setDict(dic, item);
+                    // Запись вложенных словарей
+                    foreach (var item in ed.Inners)
+                    {
+                        setDict(dic, item);
+                    }
                 }
             }
         }
@@ -385,10 +404,9 @@ namespace AcadLib
 
         private ObjectId getDict(bool create)
         {
-            ObjectId idDic = ObjectId.Null;
-            Database db = HostApplicationServices.WorkingDatabase;
+            ObjectId idDic = ObjectId.Null;            
 
-            using (DBDictionary nod = (DBDictionary)db.NamedObjectsDictionaryId.Open(OpenMode.ForRead))
+            using (DBDictionary nod = (DBDictionary)Db.NamedObjectsDictionaryId.Open(OpenMode.ForRead))
             {                
                 if (!nod.Contains(dictName))
                 {

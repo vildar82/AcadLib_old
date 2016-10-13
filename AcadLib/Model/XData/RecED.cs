@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace AcadLib.XData
 {
     /// <summary>
-    /// Словарь для сохранения в словарь
+    /// Значение для сохранения в словарь Extension Dictionary. 
     /// Имена Recs и Inners должны быть уникальными
     /// </summary>
-    public class RecED
+    public class DicED
     {
         /// <summary>
         /// Имя словаря
@@ -19,14 +19,14 @@ namespace AcadLib.XData
         /// <summary>
         /// Вложенные словари
         /// </summary>
-        public List<RecED> Inners { get; set; }
+        public List<DicED> Inners { get; set; }
         /// <summary>
         /// Записи этого словаря
         /// </summary>
         public List<RecXD> Recs { get; set; }
 
-        public RecED () { }
-        public RecED (string name)
+        public DicED () { }
+        public DicED (string name)
         {
             Name = name;
         }
@@ -42,13 +42,13 @@ namespace AcadLib.XData
             Recs.Add(recXd);
         }
 
-        public void AddInner(RecED recEd)
+        public void AddInner(DicED recEd)
         {
             if (recEd == null) return;
             if (!IsCorrectName(recEd.Name))
                 throw new Exception("Invalid Name - " + recEd.Name);
 
-            if (Inners == null) Inners = new List<RecED>();
+            if (Inners == null) Inners = new List<DicED>();
 
             Inners.Add(recEd);
         }
@@ -58,7 +58,7 @@ namespace AcadLib.XData
             return Recs?.Find(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));            
         }
 
-        public RecED GetInner (string name)
+        public DicED GetInner (string name)
         {
             return Inners?.Find(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
