@@ -45,7 +45,7 @@ namespace AcadLib.Comparers
 
         public int GetHashCode(Point3d p)
         {
-            return p.GetHashCode();
+            return 0;
         }
     }
 }

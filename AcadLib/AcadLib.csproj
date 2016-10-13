@@ -118,6 +118,7 @@
     <Compile Include="Model\Blocks\CommonBlocks\Leader.cs" />
     <Compile Include="Model\Blocks\IBlock.cs" />
     <Compile Include="Model\Blocks\Property.cs" />
+    <Compile Include="Model\Comparers\IntEqualityComparer.cs" />
     <Compile Include="Model\DB\LineTypeExt.cs" />
     <Compile Include="Model\Draw\DrawParameters.cs" />
     <Compile Include="Model\Draw\Draw.cs" />
@@ -226,6 +227,8 @@
       <DependentUpon>FormProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\XData\EntDictExt.cs" />
+    <Compile Include="Model\XData\RecED.cs" />
+    <Compile Include="Model\XData\RecXD.cs" />
     <Compile Include="Model\XData\TypedValueExt.cs" />
     <Compile Include="Model\XData\XDataExt.cs" />
     <Compile Include="Model\XData\XDataViewer\FormXDataView.cs">

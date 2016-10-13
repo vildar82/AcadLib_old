@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AcadLib.Errors;
+using AcadLib.XData;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
@@ -297,18 +298,103 @@ namespace AcadLib
             }
         }
 
+        public void Save (RecED recEd)
+        {
+            if (recEd == null || string.IsNullOrEmpty(recEd.Name)) return;
+
+            ObjectId idDict = getDict(true);
+            if (idDict.IsNull) return;
+
+            using (var dic = idDict.Open(OpenMode.ForWrite) as DBDictionary)
+            {
+                setDict(dic, recEd);
+            }
+        }
+
+        public RecED Load()
+        {            
+            ObjectId idDict = getDict(true);
+            if (idDict.IsNull) return null;
+
+            RecED res;            
+            using (var dic = idDict.Open(OpenMode.ForRead) as DBDictionary)
+            {
+                res = getRecEd(dic);
+                res.Name = dictInnerName;
+            }
+            return res;
+        }
+
+        private static RecED getRecEd (DBDictionary dic)
+        {
+            RecED res = new RecED();            
+            res.Inners = new List<RecED>();
+            res.Recs = new List<RecXD>();
+            foreach (var item in dic)
+            {
+                var entry = item.Value.Open(OpenMode.ForRead);
+                if (entry is Xrecord)
+                {
+                    var xrec = (Xrecord)entry;
+                    var values = xrec.Data.AsArray();
+                    var rec = new RecXD { Name = item.Key, Values = values.ToList() };
+                    res.Recs.Add(rec);
+                }
+                else if (entry is DBDictionary)
+                {
+                    var recEd = getRecEd((DBDictionary)entry);
+                    recEd.Name = item.Key;
+                    res.Inners.Add(recEd);
+                }
+            }
+            return res;
+        }
+
+        private void setDict (DBDictionary dicParent, RecED ed)
+        {
+            if (ed == null) return;
+            var dicId = getDict(dicParent, ed.Name, true);
+            using (var dic = dicId.Open(OpenMode.ForWrite) as DBDictionary)
+            {
+                // Запись списка значений в XRecord
+                foreach (var item in ed.Recs)
+                {
+                    setRec(dic, item);
+                }               
+
+                // Запись вложенных словарей
+                foreach (var item in ed.Inners)
+                {
+                    setDict(dic, item);
+                }
+            }
+        }
+
+        private void setRec (DBDictionary dic, RecXD rec)
+        {
+            if (rec == null) return;
+            var idXrec = getRec(dic, rec.Name);
+            using (var xrec = idXrec.Open(OpenMode.ForWrite) as Xrecord)
+            {
+                using (var rb = new ResultBuffer(rec.Values.ToArray()))
+                {
+                    xrec.Data = rb;
+                }
+            }
+        }        
+
         private ObjectId getDict(bool create)
         {
             ObjectId idDic = ObjectId.Null;
             Database db = HostApplicationServices.WorkingDatabase;
 
             using (DBDictionary nod = (DBDictionary)db.NamedObjectsDictionaryId.Open(OpenMode.ForRead))
-            {
-                var dictPik = getDict(nod,dictName, create);
+            {                
                 if (!nod.Contains(dictName))
                 {
                     if (!create) return idDic;
-                    nod.UpgradeOpen();
+                    if (!nod.IsWriteEnabled)
+                        nod.UpgradeOpen();
                     using (var dic = new DBDictionary())
                     {
                         idDic = nod.SetAt(dictName, dic);
@@ -340,7 +426,8 @@ namespace AcadLib
                                 {
                                     using (var dicInner = new DBDictionary())
                                     {
-                                        dic.UpgradeOpen();
+                                        if (!dic.IsWriteEnabled)
+                                            dic.UpgradeOpen();
                                         idDic = dic.SetAt(dictInnerName, dicInner);
                                         dicInner.TreatElementsAsHard = true;
                                     }
@@ -357,12 +444,19 @@ namespace AcadLib
             return idDic;
         }
 
-        private DBDictionary getDict (DBDictionary parentDict, string dictName, bool create)
+        private ObjectId getDict (DBDictionary parentDict, string dictName, bool create)
         {
-            DBDictionary res = null;
+            ObjectId res = ObjectId.Null;            
             if (parentDict.Contains(dictName))
             {
-                var idDict = parentDict[dictName];
+                res = parentDict.GetAt(dictName);
+            }
+            else if (create)
+            {
+                using (var newDic = new DBDictionary())
+                {
+                    res = parentDict.SetAt(dictName, newDic);
+                }
             }
             return res;
         }
@@ -383,16 +477,24 @@ namespace AcadLib
             ObjectId idRec = ObjectId.Null;
             using (var dic = idDict.Open(OpenMode.ForRead) as DBDictionary)
             {
-                if (!dic.Contains(recName))
-                {
-                    using (var xRec = new Xrecord())
-                    {
-                        dic.UpgradeOpen();
-                        idRec = dic.SetAt(recName, xRec);
-                    }
-                }
-                else idRec = dic.GetAt(recName);
+                idRec = getRec(dic, recName);                
             }
+            return idRec;
+        }
+
+        private ObjectId getRec (DBDictionary dic, string recName)
+        {
+            ObjectId idRec;
+            if (!dic.Contains(recName))
+            {
+                using (var xRec = new Xrecord())
+                {
+                    if (!dic.IsWriteEnabled)
+                        dic.UpgradeOpen();
+                    idRec = dic.SetAt(recName, xRec);
+                }
+            }
+            else idRec = dic.GetAt(recName);
             return idRec;
         }
 

@@ -18,8 +18,6 @@ using AcadLib;
 using AcadLib.Layers;
 using Autodesk.AutoCAD.Colors;
 
-[assembly: CommandClass(typeof (TestAcadlib.Commands))]
-
 namespace TestAcadlib
 {
     public class Commands
