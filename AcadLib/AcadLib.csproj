@@ -134,6 +134,9 @@
     <Compile Include="Model\Hatch\HatchExt.cs" />
     <Compile Include="Model\IO\Path.cs" />
     <Compile Include="Model\Jigs\DragSel.cs" />
+    <Compile Include="Model\Jokes\IJoke.cs" />
+    <Compile Include="Model\Jokes\Joke.cs" />
+    <Compile Include="Model\Jokes\JokeHelper.cs" />
     <Compile Include="Model\Layers\LayerVisibleState.cs" />
     <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\Blocks\AttributeExt.cs" />

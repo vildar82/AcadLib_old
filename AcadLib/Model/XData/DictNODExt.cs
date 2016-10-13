@@ -375,15 +375,21 @@ namespace AcadLib
                 if (dic != null)
                 {
                     // Запись списка значений в XRecord
-                    foreach (var item in ed.Recs)
+                    if (ed.Recs != null)
                     {
-                        setRec(dic, item);
+                        foreach (var item in ed.Recs)
+                        {
+                            setRec(dic, item);
+                        }
                     }
 
                     // Запись вложенных словарей
-                    foreach (var item in ed.Inners)
+                    if (ed.Inners != null)
                     {
-                        setDict(dic, item);
+                        foreach (var item in ed.Inners)
+                        {
+                            setDict(dic, item);
+                        }
                     }
                 }
             }

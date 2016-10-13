@@ -536,10 +536,10 @@ namespace AcadLib.Errors
         private void buttonReport_Click (object sender, EventArgs e)
         {
 
-            if (General.IsJokeUser())
+            if (Jokes.JokeHelper.IsJokeUser())
             {
                 // Шутка
-                System.Diagnostics.Process.Start("https://www.youtube.com/embed/T9RFb8xXZlk?autoplay=1");
+                Jokes.JokeHelper.Show();                
             }
             else
             {

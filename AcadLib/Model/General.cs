@@ -17,10 +17,7 @@ namespace AcadLib
         /// </summary>
         public const string CanceledByUser = "Отменено пользователем";
 
-        /// <summary>
-        /// Юзеры для шуток
-        /// </summary>
-        public static List<string> JokeUsers { get; set; } = new List<string> { "inkinli", "KhisyametdinovVT", "OstaninAM" };
+        
 
         /// <summary>
         /// Символы строковые
@@ -64,14 +61,6 @@ namespace AcadLib
                 Directory.CreateDirectory(folder);            
             var file = Path.Combine(folder, fileName);
             return file;
-        }
-
-        /// <summary>
-        /// Текущий пользователь пригоден для шуток
-        /// </summary>        
-        public static bool IsJokeUser ()
-        {
-            return JokeUsers.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase);
-        }
+        }        
     }
 }
