@@ -19,11 +19,11 @@ namespace AcadLib
         public static T GetTvValue<T> (this TypedValue tv)
         {
             T res;
-            if (tv.Value is T)
-            {                
+            try
+            {
                 res = (T)tv.Value;
             }
-            else
+            catch
             {
                 res = default(T);
             }
