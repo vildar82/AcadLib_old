@@ -40,6 +40,7 @@ namespace AcadLib
         /// Регистрация приложения PIK в RegAppTable
         /// </summary>
         /// <param name="db"></param>
+        [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void RegAppPIK(this Database db)
         {
             RegApp(db, PikApp);
@@ -61,11 +62,15 @@ namespace AcadLib
             }
         }
 
+        [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void RemoveXDataPIK(this DBObject dbo)
         {
             RemoveXData(dbo, PikApp);
         }
 
+        /// <summary>
+        /// Приложение не регистрируется !!!
+        /// </summary>        
         public static void SetXData(this DBObject dbo, string regAppName, int value)
         {
             using (var rb = new ResultBuffer(
@@ -100,6 +105,7 @@ namespace AcadLib
         /// </summary>
         /// <param name="dbo">DBObject</param>
         /// <param name="value">Значение одного из стандартного типа - int, double, string</param>
+        [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void SetXDataPIK<T> (this DBObject dbo, T value)
         {
             SetXData(dbo, PikApp, value);
@@ -107,7 +113,8 @@ namespace AcadLib
 
         /// <summary>
         /// Запись int
-        /// ПРиложение не регистрируется        
+        /// ПРиложение не регистрируется   
+        [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void SetXDataPIK(this DBObject dbo, int value)
         {
             SetXData(dbo, PikApp, value);
@@ -128,6 +135,7 @@ namespace AcadLib
             }
             return 0;
         }
+        [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static int GetXDatPIK(this DBObject dbo)
         {
             return GetXData(dbo, PikApp);
@@ -148,6 +156,7 @@ namespace AcadLib
             }
             return string.Empty;
         }
+        [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static string GetXDatPIKString(this DBObject dbo)
         {
             return GetXDataString(dbo, PikApp);
@@ -181,6 +190,7 @@ namespace AcadLib
         /// <typeparam name="T">Тип значения - int, double, string</typeparam>
         /// <param name="dbo">Объект</param>
         /// <returns>Значение или дефолтное значение типа, если не найдено</returns>
+        [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static T GetXDataPIK<T> (this DBObject dbo)
         {
             return GetXData<T>(dbo, PikApp);

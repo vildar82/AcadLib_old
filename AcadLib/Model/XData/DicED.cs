@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.XData
 {
@@ -36,21 +37,32 @@ namespace AcadLib.XData
             if (recXd == null) return;     
             if (!IsCorrectName(recXd.Name))            
                 throw new Exception("Invalid Name - " + recXd.Name);
-            
+                        
             if (Recs == null) Recs = new List<RecXD>();
-
             Recs.Add(recXd);
         }
-
-        public void AddInner(DicED recEd)
+        public void AddRec (string name, List<TypedValue> values)
         {
-            if (recEd == null) return;
-            if (!IsCorrectName(recEd.Name))
-                throw new Exception("Invalid Name - " + recEd.Name);
+            AddRec(new RecXD(name, values));
+        }
+
+        public void AddInner(DicED dic)
+        {
+            if (dic == null) return;
+            if (!IsCorrectName(dic.Name))
+                throw new Exception("Invalid Name - " + dic.Name);
 
             if (Inners == null) Inners = new List<DicED>();
+            Inners.Add(dic);
+        }
 
-            Inners.Add(recEd);
+        public void AddInner (string name, DicED dic)
+        {
+            if (dic != null)
+            {
+                dic.Name = name;
+                AddInner(dic);
+            }
         }
 
         public RecXD GetRec(string name)

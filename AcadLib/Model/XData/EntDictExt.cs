@@ -8,8 +8,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 namespace AcadLib.XData
 {
     /// <summary>
-    /// Расширенные данные примитива.
-    /// Должна быть запущена Транзакция! И объект открыт для записи.
+    /// Расширенные данные примитива.    
     /// </summary>
     public class EntDictExt : IDisposable
     {
@@ -50,7 +49,7 @@ namespace AcadLib.XData
         /// Сохранение данных в объекте. 
         /// Можно передать только string, int, double
         /// </summary>            
-        [Obsolete("Используй `DicED`", true)]
+        [Obsolete("Используй `DicED`")]
         public void Save (string rec, object value)
         {
             var values = new List<TypedValue> { TypedValueExt.GetTvExtData(value) };
@@ -76,7 +75,7 @@ namespace AcadLib.XData
         /// Чтение Xrecord из объекта
         /// </summary>
         /// <typeparam name="T">Хранимый тип - может быть string, int, double, List/<TypedValue/></typeparam>
-        [Obsolete("Используй `DicED`", true)]
+        [Obsolete("Используй `DicED`")]
         public T Load<T> (string rec)
         {
             T res = default(T);
@@ -106,7 +105,7 @@ namespace AcadLib.XData
         /// <summary>
         /// Чтение всех Xrecord из словаря плагина
         /// </summary>   
-        [Obsolete("Используй `DicED`", true)]
+        [Obsolete("Используй `DicED`")]
         public Dictionary<string, List<TypedValue>> LoadAllXRecords ()
         {
             Dictionary<string, List<TypedValue>> res = null;
@@ -155,7 +154,7 @@ namespace AcadLib.XData
             return res;
         }
 
-        [Obsolete("Используй `TypedValueExt`", true)]
+        [Obsolete("Используй `TypedValueExt`")]
         private int GetExtendetDataType (Type value)
         {            
             if (value == typeof(string))

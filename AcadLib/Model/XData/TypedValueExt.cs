@@ -11,7 +11,7 @@ namespace AcadLib
     {
         /// <summary>
         /// Возвращает значение TypedValue
-        /// Типы - int, double, string - те которые возможны в TypedValue DxfCode
+        /// Типы - int, bool, byte, double, string - те которые возможны в TypedValue DxfCode
         /// Не проверяется соответствие типа значения и номера кода DxfCode !!!
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -22,7 +22,13 @@ namespace AcadLib
             T res;
             try
             {
-                res = (T)Convert.ChangeType(tv.Value, typeof(T));
+                var value = tv.Value;
+                if (typeof(T) == typeof(bool))
+                {
+                    // 0 - false, иначе true
+                    value = (int)tv.Value == 0 ? false : true;
+                }
+                res = (T)Convert.ChangeType(value, typeof(T));
             }
             catch
             {
@@ -33,9 +39,8 @@ namespace AcadLib
 
         /// <summary>
         /// Создание TypedValue для сохранение в расширенные данные DxfCode.ExtendedData
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// bool, byte, int, double, string
+        /// </summary>        
         public static TypedValue GetTvExtData(object value)
         {
             var typeObj = value.GetType();
