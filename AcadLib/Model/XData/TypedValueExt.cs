@@ -12,6 +12,7 @@ namespace AcadLib
         /// <summary>
         /// Возвращает значение TypedValue
         /// Типы - int, double, string - те которые возможны в TypedValue DxfCode
+        /// Не проверяется соответствие типа значения и номера кода DxfCode !!!
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="tv"></param>
@@ -21,7 +22,7 @@ namespace AcadLib
             T res;
             try
             {
-                res = (T)tv.Value;
+                res = (T)Convert.ChangeType(tv.Value, typeof(T));
             }
             catch
             {
