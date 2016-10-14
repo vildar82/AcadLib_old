@@ -41,6 +41,8 @@
     <AssemblyVersionSettings>None.None.DayOfYearStamp.Increment</AssemblyVersionSettings>
     <AssemblyFileVersionSettings>None.None.DayOfYearStamp.Increment</AssemblyFileVersionSettings>
     <Prefer32Bit>false</Prefer32Bit>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>CS1561</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -230,6 +232,7 @@
       <DependentUpon>FormProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\XData\EntDictExt.cs" />
+    <Compile Include="Model\XData\ExtDicHelper.cs" />
     <Compile Include="Model\XData\RecED.cs" />
     <Compile Include="Model\XData\RecXD.cs" />
     <Compile Include="Model\XData\TypedValueExt.cs" />

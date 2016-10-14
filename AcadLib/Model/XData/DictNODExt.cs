@@ -10,6 +10,7 @@ namespace AcadLib
     /// <summary>
     /// Сохранение и извлечение значений из словаря чертежа
     /// Работает с HostApplicationServices.WorkingDatabase при каждом вызове метода сохранения или считывания значения.
+    /// Или нужно задать Database в поле Db.
     /// </summary>
     public class DictNOD
     {
@@ -18,7 +19,7 @@ namespace AcadLib
 
         public Database Db { get; set; } = HostApplicationServices.WorkingDatabase;
 
-        [Obsolete("Используй innerDict конструктор.")]
+        [Obsolete("Используй `innerDict` конструктор.")]
         public DictNOD(string dictName)
         {
             this.dictName = dictName;
@@ -31,18 +32,45 @@ namespace AcadLib
         }
 
         /// <summary>
+        /// Сохранение словаря
+        /// </summary>
+        /// <param name="dicEd">Словарь для сохранения</param>
+        public void Save (DicED dicEd)
+        {
+            if (dicEd == null || string.IsNullOrEmpty(dicEd.Name)) return;
+            var dicId = GetDicPlugin(true);
+            ExtDicHelper.SetDicED(dicId, dicEd);
+        }
+
+        /// <summary>
+        /// Чтение словаря
+        /// </summary>
+        /// <param name="dicName">Имя словаря</param>
+        /// <returns>Словарь по ключу `dicName` если он есть.</returns>
+        public DicED LoadED (string dicName)
+        {
+            var dicId = GetDicPlugin(false);
+            var res = ExtDicHelper.GetDicEd(dicId);
+            if (res != null)
+                res.Name = dicName;
+            return res;
+        }
+
+        /// <summary>
         /// Чтение списка записей для заданной XRecord по имени
         /// </summary>
         /// <param name="recName">Имя XRecord в словаре</param>
         /// <returns>Список значений в XRecord или null</returns>
+        [Obsolete("Используй `DicED`")]
         public List<TypedValue> Load (string recName)
         {
             List<TypedValue> values = null;
-            ObjectId idRec = getRec(recName, false);
-            if (idRec.IsNull)
+
+            var recId = GetRec(recName, false);           
+            if (recId.IsNull)
                 return values;
 
-            using (var xRec = idRec.Open(OpenMode.ForRead) as Xrecord)
+            using (var xRec = recId.Open(OpenMode.ForRead) as Xrecord)
             {
                 using (var data = xRec.Data)
                 {
@@ -60,10 +88,11 @@ namespace AcadLib
         /// <param name="recName">Имя XRecord записи в словаре</param>
         /// <param name="defValue">Возвращаемое значение если такой записи нет в словаре.</param>
         /// <returns></returns>
+        [Obsolete("Используй `DicED`")]
         public bool Load(string recName, bool defValue)
         {
             bool res = defValue; // default
-            ObjectId idRec = getRec(recName, false);
+            ObjectId idRec = GetRec(recName, false);
             if (idRec.IsNull)
                 return res;
 
@@ -99,10 +128,11 @@ namespace AcadLib
         /// <param name="recName">Имя XRecord записи в словаре</param>
         /// <param name="defaultValue">Возвращаемое значение если такой записи нет в словаре.</param>
         /// <returns></returns>
+        [Obsolete("Используй `DicED`")]
         public int Load(string recName, int defaultValue)
         {
             int res = defaultValue;
-            ObjectId idRec = getRec(recName, false);
+            ObjectId idRec = GetRec(recName, false);
             if (idRec.IsNull)
                 return res;
 
@@ -138,10 +168,11 @@ namespace AcadLib
         /// <param name="recName">Имя XRecord записи в словаре</param>
         /// <param name="defaultValue">Возвращаемое значение если такой записи нет в словаре.</param>
         /// <returns></returns>
+        [Obsolete("Используй `DicED`")]
         public double Load(string recName, double defaultValue)
         {
             double res = defaultValue;
-            ObjectId idRec = getRec(recName, false);
+            ObjectId idRec = GetRec(recName, false);
             if (idRec.IsNull)
                 return res;
 
@@ -176,11 +207,12 @@ namespace AcadLib
         /// </summary>
         /// <param name="recName">Имя XRecord записи в словаре</param>
         /// <param name="defaultValue">Возвращаемое значение если такой записи нет в словаре.</param>
-        /// <returns></returns>
+        ///<returns></returns>
+        [Obsolete("Используй `DicED`")]
         public string Load(string recName, string defaultValue)
         {
             string res = defaultValue;
-            ObjectId idRec = getRec(recName, false);
+            ObjectId idRec = GetRec(recName, false);
             if (idRec.IsNull)
                 return res;
 
@@ -205,9 +237,10 @@ namespace AcadLib
         /// </summary>
         /// <param name="value">Сохраняемое значение</param>
         /// <param name="key">Имя записи XRecord с одним TypedValue</param>
+        [Obsolete("Используй `DicED`")]
         public void Save(bool value, string key)
         {
-            ObjectId idRec = getRec(key, true);
+            ObjectId idRec = GetRec(key, true);
             if (idRec.IsNull)
                 return;
 
@@ -226,9 +259,10 @@ namespace AcadLib
         /// </summary>
         /// <param name="number">Значение</param>
         /// <param name="keyName">Имя записи XRecord с одним TypedValue</param>
+        [Obsolete("Используй `DicED`")]
         public void Save(int number, string keyName)
         {
-            ObjectId idRec = getRec(keyName, true);
+            ObjectId idRec = GetRec(keyName, true);
             if (idRec.IsNull)
                 return;
 
@@ -247,9 +281,10 @@ namespace AcadLib
         /// </summary>
         /// <param name="number">Значение</param>
         /// <param name="keyName">Имя записи XRecord с одним TypedValue</param>
+        [Obsolete("Используй `DicED`")]
         public void Save(double number, string keyName)
         {
-            ObjectId idRec = getRec(keyName, true);
+            ObjectId idRec = GetRec(keyName, true);
             if (idRec.IsNull)
                 return;
 
@@ -268,9 +303,10 @@ namespace AcadLib
         /// </summary>
         /// <param name="text">Значение</param>
         /// <param name="key">Имя записи XRecord с одним TypedValue</param>
+        [Obsolete("Используй `DicED`")]
         public void Save(string text, string key)
         {
-            ObjectId idRec = getRec(key, true);
+            ObjectId idRec = GetRec(key, true);
             if (idRec.IsNull)
                 return;
 
@@ -284,10 +320,11 @@ namespace AcadLib
             }
         }
 
+        [Obsolete("Используй `DicED`")]
         public void Save (List<TypedValue> values, string key)
         {
             if (values == null || values.Count == 0) return;
-            ObjectId idRec = getRec(key, true);
+            ObjectId idRec = GetRec(key, true);
             if (idRec.IsNull)
                 return;
 
@@ -300,285 +337,29 @@ namespace AcadLib
             }
         }
 
-        public void Save (DicED recEd)
+        private ObjectId GetDicPlugin (bool create)
         {
-            if (recEd == null || string.IsNullOrEmpty(recEd.Name)) return;
+            ObjectId res = ObjectId.Null;
 
-            ObjectId idDict = getDict(true);
-            if (idDict.IsNull) return;
-
-            using (var dic = idDict.Open(OpenMode.ForWrite) as DBDictionary)
+            var dicNodId = Db.NamedObjectsDictionaryId;
+            var dicPikId = ExtDicHelper.GetDic(dicNodId, dictName, create);
+            if (string.IsNullOrEmpty( dictInnerName))
             {
-                setDict(dic, recEd);
+                res = dicPikId;
             }
-        }
-
-        public DicED LoadED(string dicName)
-        {            
-            ObjectId idDict = getDict(true);
-            if (idDict.IsNull) return null;            
-
-            DicED res = null;            
-            using (var dicPlugin = idDict.Open(OpenMode.ForRead) as DBDictionary)
+            else
             {
-                var idDicRec = getDict(dicPlugin, dicName, false);
-                if (!idDicRec.IsNull)
-                {
-                    using (var dicRec = idDicRec.Open(OpenMode.ForWrite) as DBDictionary)
-                    {                        
-                        res = getRecEd(dicRec);
-                        if (res != null)
-                        {
-                            res.Name = dictInnerName;
-                        }
-                    }
-                }
+                var dicPluginId = ExtDicHelper.GetDic(dicPikId, dictInnerName, create);
+                res = dicPluginId;
             }
             return res;
         }
 
-        private static DicED getRecEd (DBDictionary dic)
+        [Obsolete("Используй `DicED`")]
+        private ObjectId GetRec (string key, bool create)
         {
-            if (dic == null) return null;
-            DicED res = new DicED();            
-            res.Inners = new List<DicED>();
-            res.Recs = new List<RecXD>();
-            foreach (var item in dic)
-            {
-                var entry = item.Value.Open(OpenMode.ForRead);
-                if (entry is Xrecord)
-                {
-                    var xrec = (Xrecord)entry;
-                    var values = xrec.Data.AsArray();
-                    var rec = new RecXD { Name = item.Key, Values = values.ToList() };
-                    res.Recs.Add(rec);
-                }
-                else if (entry is DBDictionary)
-                {
-                    var recEd = getRecEd((DBDictionary)entry);
-                    recEd.Name = item.Key;
-                    res.Inners.Add(recEd);
-                }
-            }
-            return res;
-        }
-
-        /// <summary>
-        /// Запись значений из RecED в DBDictionary
-        /// </summary>        
-        private void setDict (DBDictionary dicParent, DicED ed)
-        {
-            if (ed == null) return;
-            var dicId = getDict(dicParent, ed.Name, true);
-            using (var dic = dicId.Open(OpenMode.ForWrite) as DBDictionary)
-            {
-                if (dic != null)
-                {
-                    // Запись списка значений в XRecord
-                    if (ed.Recs != null)
-                    {
-                        foreach (var item in ed.Recs)
-                        {
-                            setRec(dic, item);
-                        }
-                    }
-
-                    // Запись вложенных словарей
-                    if (ed.Inners != null)
-                    {
-                        foreach (var item in ed.Inners)
-                        {
-                            setDict(dic, item);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void setRec (DBDictionary dic, RecXD rec)
-        {
-            if (rec == null) return;
-            var idXrec = getRec(dic, rec.Name);
-            using (var xrec = idXrec.Open(OpenMode.ForWrite) as Xrecord)
-            {
-                using (var rb = new ResultBuffer(rec.Values.ToArray()))
-                {
-                    xrec.Data = rb;
-                }
-            }
-        }        
-
-        private ObjectId getDict(bool create)
-        {
-            ObjectId idDic = ObjectId.Null;            
-
-            using (DBDictionary nod = (DBDictionary)Db.NamedObjectsDictionaryId.Open(OpenMode.ForRead))
-            {                
-                if (!nod.Contains(dictName))
-                {
-                    if (!create) return idDic;
-                    if (!nod.IsWriteEnabled)
-                        nod.UpgradeOpen();
-                    using (var dic = new DBDictionary())
-                    {
-                        idDic = nod.SetAt(dictName, dic);
-                        dic.TreatElementsAsHard = true;
-                        if (!string.IsNullOrEmpty(dictInnerName))
-                        {
-                            using (var dicInner = new DBDictionary())
-                            {
-                                idDic = dic.SetAt(dictInnerName, dicInner);
-                                dicInner.TreatElementsAsHard = true;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    idDic = nod.GetAt(dictName);
-                    if (!string.IsNullOrEmpty(dictInnerName))
-                    {
-                        using (var dic = idDic.Open(OpenMode.ForRead) as DBDictionary)
-                        {                   
-                            if (dic.Contains(dictInnerName))
-                            {
-                                idDic = dic.GetAt(dictInnerName);
-                            }
-                            else
-                            {
-                                if (create)
-                                {
-                                    using (var dicInner = new DBDictionary())
-                                    {
-                                        if (!dic.IsWriteEnabled)
-                                            dic.UpgradeOpen();
-                                        idDic = dic.SetAt(dictInnerName, dicInner);
-                                        dicInner.TreatElementsAsHard = true;
-                                    }
-                                }
-                                else
-                                {
-                                    idDic = ObjectId.Null;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return idDic;
-        }
-
-        private ObjectId getDict (DBDictionary parentDict, string dictName, bool create)
-        {
-            ObjectId res = ObjectId.Null;            
-            if (parentDict.Contains(dictName))
-            {
-                res = parentDict.GetAt(dictName);
-            }
-            else if (create)
-            {
-                using (var newDic = new DBDictionary())
-                {
-                    res = parentDict.SetAt(dictName, newDic);
-                }
-            }
-            return res;
-        }
-
-        private ObjectId getRec(string recName, bool create)
-        {
-            ObjectId idDict = getDict(create);
-            var idRec = getRec(idDict, recName);
-            return idRec;
-        }
-
-        private ObjectId getRec (ObjectId idDict, string recName)
-        {            
-            if (idDict.IsNull)
-            {
-                return ObjectId.Null;
-            }
-            ObjectId idRec = ObjectId.Null;
-            using (var dic = idDict.Open(OpenMode.ForRead) as DBDictionary)
-            {
-                idRec = getRec(dic, recName);                
-            }
-            return idRec;
-        }
-
-        private ObjectId getRec (DBDictionary dic, string recName)
-        {
-            ObjectId idRec;
-            if (!dic.Contains(recName))
-            {
-                using (var xRec = new Xrecord())
-                {
-                    if (!dic.IsWriteEnabled)
-                        dic.UpgradeOpen();
-                    idRec = dic.SetAt(recName, xRec);
-                }
-            }
-            else idRec = dic.GetAt(recName);
-            return idRec;
-        }
-
-        private TypedValue GetTV<T>(T value)
-        {
-            DxfCode dxfCode = DxfCode.Invalid;
-            TypeSwitch.Do(value,
-                TypeSwitch.Case<bool>(x => dxfCode = DxfCode.Bool),
-                TypeSwitch.Case<int>(x => dxfCode = DxfCode.Int32),                
-                TypeSwitch.Case<double>(x => dxfCode = DxfCode.Real),
-                TypeSwitch.Case<string>(x => dxfCode = DxfCode.Text));
-            var tv = new TypedValue((int)dxfCode, value);
-            return tv;
-        }
-    }
-
-    static class TypeSwitch
-    {
-        public class CaseInfo
-        {
-            public bool IsDefault { get; set; }
-            public Type Target { get; set; }
-            public Action<object> Action { get; set; }
-        }
-
-        public static void Do (object source, params CaseInfo[] cases)
-        {
-            var type = source.GetType();
-            foreach (var entry in cases)
-            {
-                if (entry.IsDefault || entry.Target.IsAssignableFrom(type))
-                {
-                    entry.Action(source);
-                    break;
-                }
-            }
-        }
-
-        public static CaseInfo Case<T> (Action action)
-        {
-            return new CaseInfo() {
-                Action = x => action(),
-                Target = typeof(T)
-            };
-        }
-
-        public static CaseInfo Case<T> (Action<T> action)
-        {
-            return new CaseInfo() {
-                Action = (x) => action((T)x),
-                Target = typeof(T)
-            };
-        }
-
-        public static CaseInfo Default (Action action)
-        {
-            return new CaseInfo() {
-                Action = x => action(),
-                IsDefault = true
-            };
+            var dicId = GetDicPlugin(create);
+            return ExtDicHelper.GetRec(dicId, key, create);            
         }
     }
 }

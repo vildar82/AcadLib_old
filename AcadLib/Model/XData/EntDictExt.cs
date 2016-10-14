@@ -22,73 +22,143 @@ namespace AcadLib.XData
             if (dbo == null) throw new ArgumentNullException();
             this.dbo = dbo;
             this.pluginName = pluginName;            
-        }        
+        }
+
+        /// <summary>
+        /// Сохранение словаря в объект.
+        /// dbo\ExtDic\Pik\Plugin\dic
+        /// </summary>
+        /// <param name="dic">Словарь для сохранения</param>
+        public void Save (DicED dic)
+        {
+            var dicId = GetDicPlugin(true);
+            ExtDicHelper.SetDicED(dicId, dic);
+        }
+
+
+        /// <summary>
+        /// Чтение словаря плагина
+        /// </summary>
+        /// <returns>Словарь плагина. Имя DicED.Name - не заполняется.</returns>
+        public DicED Load ()
+        {
+            var dicId = GetDicPlugin(false);
+            return ExtDicHelper.GetDicEd(dicId);            
+        }
 
         /// <summary>
         /// Сохранение данных в объекте. 
         /// Можно передать только string, int, double
-        /// </summary>        
+        /// </summary>            
+        [Obsolete("Используй `DicED`", true)]
         public void Save (string rec, object value)
         {
-            Save(new List<TypedValue> { new TypedValue(GetExtendetDataType(value.GetType()), value) }, rec);            
+            var values = new List<TypedValue> { TypedValueExt.GetTvExtData(value) };
+            Save(values, rec);            
         }
 
+        [Obsolete("Используй `DicED`", true)]
         public void Save (List<TypedValue> values, string rec)
         {
-            ResultBuffer rb = new ResultBuffer(values.ToArray());
-            Xrecord xRec = GetXRecord(rec, true);
-            if (xRec == null)
+            var idRec = GetXRecord(rec, true);
+            if (idRec.IsNull) return;
+            using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
             {
-                return;
+                if (xRec == null) return;
+                using (ResultBuffer rb = new ResultBuffer(values.ToArray()))
+                {
+                    xRec.Data = rb;
+                }
             }
-            xRec.Data = rb;
         }
 
         /// <summary>
         /// Чтение Xrecord из объекта
         /// </summary>
-        /// <typeparam name="T">Хранимый тип - может быть string, int, double, List/<TypedValue/></typeparam>        
+        /// <typeparam name="T">Хранимый тип - может быть string, int, double, List/<TypedValue/></typeparam>
+        [Obsolete("Используй `DicED`", true)]
         public T Load<T> (string rec)
         {
-            var typeT = typeof(T);
-            int type = GetExtendetDataType(typeT);
-            var xRec = GetXRecord(rec, false);
-            if (xRec == null)
+            T res = default(T);
+            var typeT = typeof(T);            
+            int type = GetExtendetDataType (typeT);
+            
+            var xRecId = GetXRecord(rec, false);
+            if (!xRecId.IsNull)
             {
-                return default(T);
-            }            
-
-            foreach (var item in xRec.Data)
-            {
-                if (type == item.TypeCode)
+                using (var xRec = xRecId.Open(OpenMode.ForRead) as Xrecord)
                 {
-                    return (T)item.Value;
+                    if (xRec != null)
+                    {
+                        foreach (var item in xRec.Data)
+                        {
+                            if (type == item.TypeCode)
+                            {
+                                return (T)item.Value;
+                            }
+                        }
+                    }
                 }
-            }
-            return default(T);
-        }
-
-        /// <summary>
-        /// Чтение всех Xrecord из словаря плагина
-        /// </summary>        
-        public Dictionary<string, List<TypedValue>> LoadAllXRecords ()
-        {
-            var dict = GetDict(false);
-            if (dict == null) return null;
-
-            var res = new Dictionary<string, List<TypedValue>>();
-            foreach (var item in dict)
-            {
-                var rec = item.Value.GetObject(OpenMode.ForRead) as Xrecord;
-                if (rec == null) continue;
-                res.Add(item.Key, rec.Data.AsArray().ToList());
             }
             return res;
         }
 
-        private int GetExtendetDataType(Type value)
+        /// <summary>
+        /// Чтение всех Xrecord из словаря плагина
+        /// </summary>   
+        [Obsolete("Используй `DicED`", true)]
+        public Dictionary<string, List<TypedValue>> LoadAllXRecords ()
         {
-            if(value == typeof(string))
+            Dictionary<string, List<TypedValue>> res = null;
+
+            var dicPluginId = GetDicPlugin(false);            
+            if (!dicPluginId.IsNull)
+            {
+                using (var dicPlugin = dicPluginId.Open( OpenMode.ForRead) as DBDictionary)
+                {
+                    if (dicPlugin != null)
+                    {
+                        res = new Dictionary<string, List<TypedValue>>();
+                        foreach (var item in dicPlugin)
+                        {
+                            var rec = item.Value.GetObject(OpenMode.ForRead) as Xrecord;
+                            if (rec == null) continue;
+                            res.Add(item.Key, rec.Data.AsArray().ToList());
+                        }
+                    }
+                }
+            }            
+            return res;
+        }        
+
+        private ObjectId GetXRecord(string key, bool create)
+        {
+            ObjectId res = ObjectId.Null;
+            // Словарь плагина
+            var idDicPlugin = GetDicPlugin(create);
+            // Запись key
+            var idRecKey = ExtDicHelper.GetRec(idDicPlugin, key, create);
+            res = idRecKey;
+            return res;            
+        }       
+
+        private ObjectId GetDicPlugin (bool create)
+        {
+            ObjectId res = ObjectId.Null;
+            // Словарь объекта
+            var idDboDic = ExtDicHelper.GetDboExtDic(dbo, create);
+            // Словарь ПИК
+            var idDicPik = ExtDicHelper.GetDic(idDboDic, PikApp, create);
+            // Словарь плагина
+            var idDicPlugin = ExtDicHelper.GetDic(idDicPik, pluginName, create);            
+            res = idDicPlugin;
+            return res;
+        }
+
+        [Obsolete("Используй `TypedValueExt`", true)]
+        private int GetExtendetDataType (Type value)
+        {            
+            if (value == typeof(string))
             {
                 return (int)DxfCode.ExtendedDataAsciiString;
             }
@@ -98,80 +168,12 @@ namespace AcadLib.XData
             }
             else if (value == typeof(double))
             {
-                return (int)DxfCode.ExtendedDataReal;                
+                return (int)DxfCode.ExtendedDataReal;
             }
             else
             {
                 throw new ArgumentException($"В расшир.данные можно сохранять только string, int, double, а тип '{value.GetType()}' нет.");
             }
-        }
-
-        private Xrecord GetXRecord(string rec, bool create)
-        {
-            var dict = GetDict(create);
-            if (dict == null) return null;
-
-            if (dict.Contains(rec))
-            {
-                OpenMode mode = create ? OpenMode.ForWrite : OpenMode.ForRead;
-                return dict.GetAt(rec).GetObject(mode) as Xrecord;
-            }
-            else
-            {
-                if (create)
-                {
-                    Xrecord xRec = new Xrecord();
-                    dict.SetAt(rec, xRec);
-                    dict.Database.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(xRec, true);
-                    return xRec;
-                }
-            }
-            return null;
-        }       
-
-        private DBDictionary GetDict(bool create)
-        {
-            DBDictionary pluginDict = null;
-            if (dbo.ExtensionDictionary.IsNull)
-            {
-                if (create)
-                {
-                    dbo.CreateExtensionDictionary();
-                }
-                else
-                {
-                    return pluginDict;
-                }
-            }
-            var extDict = dbo.ExtensionDictionary.GetObject(OpenMode.ForRead) as DBDictionary;
-            
-            var pikDict = GetDict(extDict, PikApp, create);
-            if (pikDict == null)
-            {
-                return pluginDict;
-            }
-            return GetDict(pikDict, pluginName, create);            
-        }
-
-        private DBDictionary GetDict(DBDictionary dict, string name, bool create)
-        {
-            DBDictionary innerDict = null;
-            if (!dict.Contains(name))
-            {
-                if (create)
-                {
-                    dict.UpgradeOpen();
-                    innerDict = new DBDictionary();
-                    dict.SetAt(name, innerDict);
-                    dbo.Database.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(innerDict, true);
-                }
-            }
-            else
-            {
-                var idInnerDict = dict.GetAt(name);
-                innerDict = idInnerDict.GetObject(OpenMode.ForWrite) as DBDictionary;
-            }
-            return innerDict;
         }
 
         public void Dispose()
