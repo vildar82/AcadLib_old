@@ -43,16 +43,33 @@ namespace AcadLib
         }
 
         /// <summary>
-        /// Чтение словаря
+        /// Чтение вложенного словаря плагина - по имени вложенного словаря
         /// </summary>
         /// <param name="dicName">Имя словаря</param>
         /// <returns>Словарь по ключу `dicName` если он есть.</returns>
         public DicED LoadED (string dicName)
         {
-            var dicId = GetDicPlugin(false);
-            var res = ExtDicHelper.GetDicEd(dicId);
+            var dicPluginId = GetDicPlugin(false);
+            var dicResId = ExtDicHelper.GetDic(dicPluginId, dicName, false);
+            var res = ExtDicHelper.GetDicEd(dicResId);
             if (res != null)
+            {
                 res.Name = dicName;
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Чтение всего словаря плагина
+        /// </summary>        
+        public DicED LoadED ()
+        {
+            var dicPluginId = GetDicPlugin(false);            
+            var res = ExtDicHelper.GetDicEd(dicPluginId);
+            if (res != null)
+            {
+                res.Name = dictInnerName;
+            }
             return res;
         }
 
