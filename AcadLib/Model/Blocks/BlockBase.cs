@@ -59,32 +59,19 @@ namespace AcadLib.Blocks
         /// </summary>        
         public BlockBase (BlockReference blRef, string blName)
         {
-            if (blRef == null)
-            {
-                return;
-            }
-            else
-            {
-                Db = blRef.Database;
-                IdBtrOwner = blRef.OwnerId;
-                IdBlRef = blRef.Id;
-                IdBtr = blRef.BlockTableRecord;
-                BlName = blName;
-                BlLayer = blRef.Layer;
-                Properties = Property.GetAllProperties(blRef);
-                Bounds = blRef.Bounds;
-                Position = blRef.Position;
-                Transform = blRef.BlockTransform;
-                Color = GetColor(blRef);
-            }
+            if (blRef == null)                return;                           
+            BlName = blName;
+            Update(blRef);
         }
 
         private Color GetColor (BlockReference blRef)
         {
             if (blRef.Color.IsByLayer)
             {
-                var lay = blRef.LayerId.GetObject(OpenMode.ForRead) as LayerTableRecord;
-                return lay.Color;
+                using (var lay = blRef.LayerId.Open(OpenMode.ForRead) as LayerTableRecord)
+                {
+                    return lay.Color;
+                }
             }
             else
             {
@@ -271,6 +258,29 @@ namespace AcadLib.Blocks
         public override int GetHashCode ()
         {
             return BlName.GetHashCode();
+        }
+
+        public void Update (BlockReference blRef)
+        {
+            // Считать блок заново
+            if (blRef == null)
+            {
+                return;
+            }
+            else
+            {
+                Db = blRef.Database;
+                IdBtrOwner = blRef.OwnerId;
+                IdBlRef = blRef.Id;
+                IdBtr = blRef.BlockTableRecord;
+                //BlName = blName;
+                BlLayer = blRef.Layer;
+                Properties = Property.GetAllProperties(blRef);
+                Bounds = blRef.Bounds;
+                Position = blRef.Position;
+                Transform = blRef.BlockTransform;
+                Color = GetColor(blRef);
+            }
         }
     }
 }
