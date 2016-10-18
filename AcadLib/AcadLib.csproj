@@ -42,7 +42,7 @@
     <AssemblyFileVersionSettings>None.None.DayOfYearStamp.Increment</AssemblyFileVersionSettings>
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <NoWarn>CS1561</NoWarn>
+    <NoWarn>CS1561, CS1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />

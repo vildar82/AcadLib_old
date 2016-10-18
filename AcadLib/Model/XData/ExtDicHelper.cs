@@ -22,7 +22,7 @@ namespace AcadLib.XData
         public static ObjectId GetRec (ObjectId dicId, string key, bool create)
         {
             ObjectId res = ObjectId.Null;
-            if (dicId.IsNull) return res;
+            if (dicId.IsNull || string.IsNullOrEmpty(key)) return res;
             using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
             {
                 if (dic != null)
@@ -55,7 +55,7 @@ namespace AcadLib.XData
         public static ObjectId GetDic (ObjectId dicId, string key, bool create)
         {
             ObjectId res = ObjectId.Null;
-            if (dicId.IsNull) return res;
+            if (dicId.IsNull || string.IsNullOrEmpty(key)) return res;
             using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
             {
                 if (dic != null)
@@ -180,7 +180,7 @@ namespace AcadLib.XData
         /// <param name="rec">Запись XRecord</param>
         public static void SetRecXD (ObjectId dicId, RecXD rec)
         {
-            if (rec == null) return;
+            if (rec == null || rec.Values == null || rec.Values.Count==0) return;
             var idXrec = GetRec(dicId, rec.Name, true);
             if (idXrec.IsNull) return;
             using (var xrec = idXrec.Open(OpenMode.ForWrite) as Xrecord)

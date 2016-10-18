@@ -10,7 +10,6 @@ using System.Windows.Markup;
 namespace AcadLib.WPF
 {
     /// <summary>
-    /// 
     /// ComboBox ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:MyEnum}}}"    /// 
     /// </summary>
     public class EnumBindingSourceExtension : MarkupExtension
