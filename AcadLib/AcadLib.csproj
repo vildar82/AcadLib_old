@@ -121,6 +121,7 @@
     <Compile Include="Model\Blocks\IBlock.cs" />
     <Compile Include="Model\Blocks\Property.cs" />
     <Compile Include="Model\Comparers\IntEqualityComparer.cs" />
+    <Compile Include="Model\Comparers\Point2dComparer.cs" />
     <Compile Include="Model\DB\LineTypeExt.cs" />
     <Compile Include="Model\Draw\DrawParameters.cs" />
     <Compile Include="Model\Draw\Draw.cs" />
