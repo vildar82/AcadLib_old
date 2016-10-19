@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoCAD_PIK_Manager.Settings;
 
 namespace AcadLib
 {
@@ -62,5 +63,10 @@ namespace AcadLib
             var file = Path.Combine(folder, fileName);
             return file;
         }        
+
+        public static bool IsCadManager()
+        {
+            return Environment.UserName.Equals(PikSettings.PikFileSettings.LoginCADManager, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

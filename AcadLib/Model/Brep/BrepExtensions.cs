@@ -72,5 +72,54 @@ namespace AcadLib
             }
             return resVal;
         }
+
+        /// <summary>
+        /// Объекдинение полилиний.
+        /// Полилинии должны быть замкнуты!
+        /// </summary>        
+        /// <param name="over">Контур который должен быть "над" объединенными полилиниями. Т.е. контур этой полилинии вырезается из полученного контура, если попадает на него.</param>
+        public static List<Polyline3d> Union (this List<Polyline> pls, Polyline over)
+        {
+            if (pls == null || pls.Count == 0) return null;
+            List<Polyline3d> res;
+            var regions = createRegion(pls);
+            res = createPl(regions);
+            return res;
+        }       
+
+        private static List<Region> createRegion (List<Polyline> pls)
+        {
+            List<Region> res = new List<Region>();
+            var dbs = new DBObjectCollection();
+            foreach (var pl in pls)
+            {
+                dbs.Add(pl);
+            }
+            var dbsRegions = Region.CreateFromCurves(dbs);
+            foreach (var item in dbsRegions)
+            {
+                res.Add((Region)item);
+            }
+            return res;
+        }
+
+        private static Region createRegion (Polyline pl)
+        {
+            var dbs = new DBObjectCollection();
+            dbs.Add(pl);
+            var dbsRegs = Region.CreateFromCurves(dbs);
+            return (Region)dbsRegs[0];
+        }
+
+        private static List<Polyline3d> createPl (List<Region> regions)
+        {
+            List<Polyline3d> res = new List<Polyline3d>();
+            foreach (var r in regions)
+            {
+                var pl = GetRegionContour(r);
+                res.Add(pl);
+            }
+            return res;
+        }
     }    
 }

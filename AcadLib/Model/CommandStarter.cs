@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AcadLib.Errors;
+using AcadLib.Model.Statistic;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
 
@@ -16,8 +17,11 @@ namespace AcadLib
     {
         public static string CurrentCommand { get; private set; }
         public string CommandName { get; private set; }
+        public string Plugin { get; set; }
+        public string Doc { get; set; }
         public Assembly Assembly { get; private set; }
 
+        public CommandStart () { }
         public CommandStart(string commandName, Assembly asm)
         {
             CommandName = commandName;
@@ -37,20 +41,27 @@ namespace AcadLib
         [MethodImpl(MethodImplOptions.NoInlining)]        
         public static void Start(Action<Document> action)
         {
+            CommandStart commandStart = new CommandStart();
             // определение имени команды по вызвавему методу и иего артрибуту CommandMethod;            
             try
             {
                 var caller = new StackTrace().GetFrame(1).GetMethod();
                 CurrentCommand = GetCallerCommand(caller);
-                var command = new CommandStart(CurrentCommand, caller.DeclaringType.Assembly);
-                Logger.Log.StartCommand(command);
+                //commandStart = new CommandStart(CurrentCommand, caller.DeclaringType.Assembly);
+                commandStart.CommandName = CurrentCommand;
+                commandStart.Assembly = caller.DeclaringType.Assembly;
+                commandStart.Plugin = commandStart.Assembly.GetName().Name;
+                Logger.Log.StartCommand(commandStart);
                 CommandCounter.CountCommand(CurrentCommand);
             }
             catch { }
 
-            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Document doc = Application.DocumentManager.MdiActiveDocument;            
             if (doc == null) return;
+            commandStart.Doc = doc.Name;
             Logger.Log.Info($"Document={doc.Name}");
+            PluginStatisticsHelper.PluginStart(commandStart);
+
             Inspector.Clear();
             try
             {
