@@ -9,12 +9,12 @@ namespace AcadLib.Geometry
     /// Provides extension methods for the Polyline type.
     /// </summary>
     public static class PolylineExtensions
-   {
-        public static List<Point2d> GetPoints(this Polyline pl)
+    {
+        public static List<Point2d> GetPoints (this Polyline pl)
         {
             List<Point2d> points = new List<Point2d>();
             for (int i = 0; i < pl.NumberOfVertices; i++)
-            {                
+            {
                 points.Add(pl.GetPoint2dAt(i));
             }
             return points;
@@ -26,7 +26,7 @@ namespace AcadLib.Geometry
         /// <param name="pline">The polyline this method applies to.</param>
         /// <param name="brkPt">The point where to break the polyline.</param>
         /// <returns>An array of the two resullting polylines.</returns>
-        public static Polyline[] BreakAtPoint(this Polyline pline, Point3d brkPt)
+        public static Polyline[] BreakAtPoint (this Polyline pline, Point3d brkPt)
         {
             brkPt = pline.GetClosestPointTo(brkPt, false);
 
@@ -94,7 +94,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pl">The instance to which the method applies.</param>
         /// <returns>The centroid of the polyline (OCS coordinates).</returns>
-        public static Point2d Centroid2d(this Polyline pl)
+        public static Point2d Centroid2d (this Polyline pl)
         {
             Point2d cen = new Point2d();
             Triangle2d tri = new Triangle2d();
@@ -142,7 +142,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pl">The instance to which the method applies.</param>
         /// <returns>The centroid of the polyline (WCS coordinates).</returns>
-        public static Point3d Centroid(this Polyline pl)
+        public static Point3d Centroid (this Polyline pl)
         {
             return pl.Centroid2d().Convert3d(pl.Normal, pl.Elevation);
         }
@@ -152,7 +152,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pline">The instance to which the method applies.</param>
         /// <param name="radius">The arc radius.</param>
-        public static void FilletAll(this Polyline pline, double radius)
+        public static void FilletAll (this Polyline pline, double radius)
         {
             int n = pline.Closed ? 0 : 1;
             for (int i = n; i < pline.NumberOfVertices - n; i += 1 + pline.FilletAt(i, radius))
@@ -166,7 +166,7 @@ namespace AcadLib.Geometry
         /// <param name="index">The index of the vertex.</param>
         /// <param name="radius">The arc radius.</param>
         /// <returns>1 if the operation succeeded, 0 if it failed.</returns>
-        public static int FilletAt(this Polyline pline, int index, double radius)
+        public static int FilletAt (this Polyline pline, int index, double radius)
         {
             int prev = index == 0 && pline.Closed ? pline.NumberOfVertices - 1 : index - 1;
             if (pline.GetSegmentType(prev) != SegmentType.Line ||
@@ -203,7 +203,7 @@ namespace AcadLib.Geometry
         /// <param name="p2">Second point</param>
         /// <param name="p3">Third point</param>
         /// <returns>True if points are clockwise, False otherwise.</returns>
-        private static bool Clockwise(Point2d p1, Point2d p2, Point2d p3)
+        private static bool Clockwise (Point2d p1, Point2d p2, Point2d p3)
         {
             return ((p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X)) < 1e-8;
         }
@@ -215,7 +215,7 @@ namespace AcadLib.Geometry
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <param name="direction">Direction (in WCS coordinates) of the projection.</param>
         /// <returns>The projected Polyline.</returns>
-        public static Polyline GetProjectedPolyline(this Polyline pline, Plane plane, Vector3d direction)
+        public static Polyline GetProjectedPolyline (this Polyline pline, Plane plane, Vector3d direction)
         {
             Tolerance tol = new Tolerance(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
@@ -240,7 +240,7 @@ namespace AcadLib.Geometry
         /// <param name="pline">The polyline to project.</param>
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <returns>The projected polyline</returns>
-        public static Polyline GetOrthoProjectedPolyline(this Polyline pline, Plane plane)
+        public static Polyline GetOrthoProjectedPolyline (this Polyline pline, Plane plane)
         {
             return pline.GetProjectedPolyline(plane, plane.Normal);
         }
@@ -251,73 +251,86 @@ namespace AcadLib.Geometry
         /// <param name="bulge">The bulge this method applies to.</param>
         /// <param name="factor">the factor to apply to the bulge.</param>
         /// <returns>The new bulge.</returns>
-        public static double MultiplyBulge(double bulge, double factor)
+        public static double MultiplyBulge (double bulge, double factor)
         {
             return Math.Tan(Math.Atan(bulge) * factor);
         }
 
-      private struct Point
-      {
-         public double X, Y;
-      }
+        private struct Point
+        {
+            public double X, Y;
+        }
 
-      public static bool IsPointOnPolyline(this Polyline pl, Point3d pt)
-      {
-         bool isOn = false;
-         pl.Elevation = 0;
-         Point3d ptZeroZ = new Point3d(pt.X, pt.Y, 0);
-         for (int i = 0; i < pl.NumberOfVertices; i++)
-         {
-            Curve3d seg = null;
-
-            SegmentType segType = pl.GetSegmentType(i);
-            if (segType == SegmentType.Arc)
-               seg = pl.GetArcSegmentAt(i);
-            else if (segType == SegmentType.Line)
-               seg = pl.GetLineSegmentAt(i);
-
-            if (seg != null)
+        public static bool IsPointOnPolyline (this Polyline pl, Point3d pt)
+        {
+            bool isOn = false;
+            pl.Elevation = 0;
+            Point3d ptZeroZ = new Point3d(pt.X, pt.Y, 0);
+            for (int i = 0; i < pl.NumberOfVertices; i++)
             {
-               isOn = seg.IsOn(ptZeroZ);
-               if (isOn)
-                  break;
+                Curve3d seg = null;
+
+                SegmentType segType = pl.GetSegmentType(i);
+                if (segType == SegmentType.Arc)
+                    seg = pl.GetArcSegmentAt(i);
+                else if (segType == SegmentType.Line)
+                    seg = pl.GetLineSegmentAt(i);
+
+                if (seg != null)
+                {
+                    isOn = seg.IsOn(ptZeroZ);
+                    if (isOn)
+                        break;
+                }
             }
-         }
-         return isOn;
-      }
+            return isOn;
+        }
 
-      public static bool IsPointInsidePolygon(this Polyline polygon, Point3d pt)
-      {
-         int n = polygon.NumberOfVertices;
-         double angle = 0;
-         Point pt1, pt2;
+        public static bool IsPointInsidePolygon (this Polyline polygon, Point3d pt)
+        {
+            int n = polygon.NumberOfVertices;
+            double angle = 0;
+            Point pt1, pt2;
 
-         for (int i = 0; i < n; i++)
-         {
-            pt1.X = polygon.GetPoint2dAt(i).X - pt.X;
-            pt1.Y = polygon.GetPoint2dAt(i).Y - pt.Y;
-            pt2.X = polygon.GetPoint2dAt((i + 1) % n).X - pt.X;
-            pt2.Y = polygon.GetPoint2dAt((i + 1) % n).Y - pt.Y;
-            angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
-         }
+            for (int i = 0; i < n; i++)
+            {
+                pt1.X = polygon.GetPoint2dAt(i).X - pt.X;
+                pt1.Y = polygon.GetPoint2dAt(i).Y - pt.Y;
+                pt2.X = polygon.GetPoint2dAt((i + 1) % n).X - pt.X;
+                pt2.Y = polygon.GetPoint2dAt((i + 1) % n).Y - pt.Y;
+                angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
+            }
 
-         if (Math.Abs(angle) < Math.PI)
-            return false;
-         else
-            return true;
-      }
-      private static double Angle2D(double x1, double y1, double x2, double y2)
-      {
-         double dtheta, theta1, theta2;
+            if (Math.Abs(angle) < Math.PI)
+                return false;
+            else
+                return true;
+        }
 
-         theta1 = Math.Atan2(y1, x1);
-         theta2 = Math.Atan2(y2, x2);
-         dtheta = theta2 - theta1;
-         while (dtheta > Math.PI)
-            dtheta -= (Math.PI * 2);
-         while (dtheta < -Math.PI)
-            dtheta += (Math.PI * 2);
-         return (dtheta);
-      }
-   }
+        public static Polyline CreatePolyline (this List<Point2d> pts)
+        {
+            var pl = new Polyline();
+            pts = pts.DistinctPoints();
+            for (int i = 0; i < pts.Count; i++)
+            {
+                pl.AddVertexAt(i, pts[i], 0, 0, 0);
+            }
+            pl.Closed = true;
+            return pl;
+        }
+
+        private static double Angle2D (double x1, double y1, double x2, double y2)
+        {
+            double dtheta, theta1, theta2;
+
+            theta1 = Math.Atan2(y1, x1);
+            theta2 = Math.Atan2(y2, x2);
+            dtheta = theta2 - theta1;
+            while (dtheta > Math.PI)
+                dtheta -= (Math.PI * 2);
+            while (dtheta < -Math.PI)
+                dtheta += (Math.PI * 2);
+            return (dtheta);
+        }
+    }
 }

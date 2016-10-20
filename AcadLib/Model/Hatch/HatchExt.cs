@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
+using AcadLib.Geometry;
 
 namespace AcadLib.Hatches
 {
@@ -50,6 +52,31 @@ namespace AcadLib.Hatches
             var orders = cs.DrawOrderTableId.GetObject(OpenMode.ForWrite) as DrawOrderTable;
             orders.MoveToBottom(new ObjectIdCollection(new[] { h.Id }));            
 
+            return h;
+        }
+
+        public static Hatch CreateHatch (this List<Point2d> pts)
+        {
+            pts = pts.DistinctPoints();            
+            var ptCol = new Point2dCollection(pts.ToArray());
+            ptCol.Add(pts[0]);
+            var dCol = new DoubleCollection(new double[pts.Count]);
+            var h = new Hatch();
+            h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");            
+            h.AppendLoop(HatchLoopTypes.Default, ptCol, dCol);
+            h.EvaluateHatch(false);
+            return h;
+        }
+
+        public static Hatch CreateHatch (this List<Point3d> pts)
+        {
+            return CreateHatch(pts.ConvertAll(Point3dExtensions.Convert2d));
+        }
+
+        public static Hatch CreateHatch (this Polyline pl)
+        {
+            var pts = pl.GetPoints();
+            var h = CreateHatch(pts);
             return h;
         }
     }

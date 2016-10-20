@@ -136,7 +136,7 @@ namespace AcadLib.XData
             // Словарь плагина
             var idDicPlugin = GetDicPlugin(create);
             // Запись key
-            var idRecKey = ExtDicHelper.GetRec(idDicPlugin, key, create);
+            var idRecKey = ExtDicHelper.GetRec(idDicPlugin, key, create, create);
             res = idRecKey;
             return res;            
         }       
@@ -147,9 +147,9 @@ namespace AcadLib.XData
             // Словарь объекта
             var idDboDic = ExtDicHelper.GetDboExtDic(dbo, create);
             // Словарь ПИК
-            var idDicPik = ExtDicHelper.GetDic(idDboDic, PikApp, create);
+            var idDicPik = ExtDicHelper.GetDic(idDboDic, PikApp, create, false);
             // Словарь плагина
-            var idDicPlugin = ExtDicHelper.GetDic(idDicPik, pluginName, create);            
+            var idDicPlugin = ExtDicHelper.GetDic(idDicPik, pluginName, create, false);            
             res = idDicPlugin;
             return res;
         }

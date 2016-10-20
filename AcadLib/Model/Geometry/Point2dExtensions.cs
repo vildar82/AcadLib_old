@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -10,6 +12,16 @@ namespace Autodesk.AutoCAD.Geometry
     /// </summary>
     public static class Point2dExtensions
     {
+        /// <summary>
+        /// Отсеивание одинаковых точек
+        /// </summary>
+        /// <param name="points"></param>        
+        public static List<Point2d> DistinctPoints (this List<Point2d> points)
+        {
+            //  Отсеивание одинаковых точек            
+            return points.Distinct(new AcadLib.Comparers.Point2dEqualityComparer()).ToList();
+        }
+
         /// <summary>
         /// Converts a 2d point into a 3d point with Z coodinate equal to 0.
         /// </summary>

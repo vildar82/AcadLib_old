@@ -7,6 +7,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
+using AcadLib;
 
 namespace TestAcadlib.Brep
 {
@@ -19,9 +20,32 @@ namespace TestAcadlib.Brep
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            var selPr = new PromptSelectionOptions();            
-            ed.GetSelection();
-            
+            var tvs = new TypedValue[] { new TypedValue((int)DxfCode.Start, "LWPOLYLINE") };
+            var selFilter = new SelectionFilter(tvs);                                        
+            var sel = ed.GetSelection(selFilter);
+            if (sel.Status != PromptStatus.OK) return;
+
+            using (var t = db.TransactionManager.StartTransaction())
+            {
+                var idsPls = sel.Value.GetObjectIds();
+                List<Polyline> pls = new List<Polyline>();
+                foreach (var item in idsPls)
+                {
+                    var pl = item.GetObject(OpenMode.ForRead) as Polyline;                    
+                    pls.Add(pl);
+                }
+
+                Region union = BrepExtensions.Union(pls, null);               
+
+                //var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;                
+                //if (union != null)
+                //{                     
+                //    cs.AppendEntity(union);
+                //    t.AddNewlyCreatedDBObject(union, true);
+                //}                
+
+                t.Commit();
+            }
         }
     }
 }

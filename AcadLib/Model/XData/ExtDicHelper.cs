@@ -15,11 +15,12 @@ namespace AcadLib.XData
 
         /// <summary>
         /// Получение записи XRecord словаря по имени.
-        /// Если такая запись есть в словаре то возвращается ее id 
+        /// Если такая запись есть в словаре то возвращается ее id, а Data записи очищаются.
         /// То, что id точно XRecord, а не DBDictionary - не проверяется!!!
         /// Если нет, то создается новая если create = true.
+        /// <param name="clear">Очищать ли Xrecord если она уже есть.</param>
         /// </summary>        
-        public static ObjectId GetRec (ObjectId dicId, string key, bool create)
+        public static ObjectId GetRec (ObjectId dicId, string key, bool create, bool clear)
         {
             ObjectId res = ObjectId.Null;
             if (dicId.IsNull || string.IsNullOrEmpty(key)) return res;
@@ -29,7 +30,15 @@ namespace AcadLib.XData
                 {
                     if (dic.Contains(key))
                     {
-                        res = dic.GetAt(key);
+                        res = dic.GetAt(key);   
+                        if (clear)
+                        {
+                            using (var xr = res.Open(OpenMode.ForWrite) as Xrecord)
+                            {
+                                if (xr != null)
+                                    xr.Data = null;
+                            }
+                        }
                     }
                     else if (create)
                     {
@@ -46,13 +55,15 @@ namespace AcadLib.XData
         }
 
         /// <summary>
-        /// Получение вложенного словаря
+        /// Получение вложенного словаря.
+        /// Если create=true то если такой словарь существует - он очищается.
         /// </summary>
         /// <param name="dicId">Родительский словарь DBDictionary</param>
         /// <param name="key">Имя вложенного словаря - который нужно получить</param>
         /// <param name="create">Создавать если его нет.</param>
+        /// <param name="clear">Очищать ли словарь если он уже есть</param>
         /// <returns>Id DBDictionary вложенного словаря</returns>
-        public static ObjectId GetDic (ObjectId dicId, string key, bool create)
+        public static ObjectId GetDic (ObjectId dicId, string key, bool create, bool clear)
         {
             ObjectId res = ObjectId.Null;
             if (dicId.IsNull || string.IsNullOrEmpty(key)) return res;
@@ -63,6 +74,19 @@ namespace AcadLib.XData
                     if (dic.Contains(key))
                     {
                         res = dic.GetAt(key);
+                        if (clear)
+                        {
+                            using (var resDic = res.Open(OpenMode.ForWrite) as DBDictionary)
+                            {
+                                foreach (var item in resDic)
+                                {
+                                    using (var entry = item.Value.Open(OpenMode.ForWrite))
+                                    {
+                                        entry.Erase();
+                                    }
+                                }
+                            }
+                        }
                     }
                     else if (create)
                     {
@@ -152,7 +176,7 @@ namespace AcadLib.XData
         public static void SetDicED (ObjectId idDicParent, DicED edDic)
         {
             if (edDic == null) return;
-            var dicId = GetDic(idDicParent, edDic.Name, true);
+            var dicId = GetDic(idDicParent, edDic.Name, true, true);
             if (dicId.IsNull) return;
 
             // Запись списка значений в XRecord
@@ -181,7 +205,7 @@ namespace AcadLib.XData
         public static void SetRecXD (ObjectId dicId, RecXD rec)
         {
             if (rec == null || rec.Values == null || rec.Values.Count==0) return;
-            var idXrec = GetRec(dicId, rec.Name, true);
+            var idXrec = GetRec(dicId, rec.Name, true, true);
             if (idXrec.IsNull) return;
             using (var xrec = idXrec.Open(OpenMode.ForWrite) as Xrecord)
             {

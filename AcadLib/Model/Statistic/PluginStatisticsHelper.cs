@@ -12,17 +12,21 @@ namespace AcadLib.Model.Statistic
     {
         public static void PluginStart (CommandStart command)
         {
-            if (General.IsCadManager()) return;
-            try
+            Task.Run(() =>
             {
-                var pg = new C_PluginStatisticTableAdapter();
-                pg.Insert("AutoCAD", command.Plugin, command.CommandName,
-                    FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion,
-                    command.Doc, Environment.UserName, DateTime.Now);
-            }            
-            catch(Exception ex) {
-                Logger.Log.Error(ex, "PluginStatisticsHelper.PluginStart");                
-            }
+                if (General.IsCadManager()) return;
+                try
+                {
+                    var pg = new C_PluginStatisticTableAdapter();
+                    pg.Insert("AutoCAD", command.Plugin, command.CommandName,
+                        FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion,
+                        command.Doc, Environment.UserName, DateTime.Now);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Error(ex, "PluginStatisticsHelper.PluginStart");
+                }
+            });
         }
     }
 }

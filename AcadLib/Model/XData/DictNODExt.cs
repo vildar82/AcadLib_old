@@ -50,7 +50,7 @@ namespace AcadLib
         public DicED LoadED (string dicName)
         {
             var dicPluginId = GetDicPlugin(false);
-            var dicResId = ExtDicHelper.GetDic(dicPluginId, dicName, false);
+            var dicResId = ExtDicHelper.GetDic(dicPluginId, dicName, false, false);
             var res = ExtDicHelper.GetDicEd(dicResId);
             if (res != null)
             {
@@ -359,14 +359,14 @@ namespace AcadLib
             ObjectId res = ObjectId.Null;
 
             var dicNodId = Db.NamedObjectsDictionaryId;
-            var dicPikId = ExtDicHelper.GetDic(dicNodId, dictName, create);
+            var dicPikId = ExtDicHelper.GetDic(dicNodId, dictName, create, false);
             if (string.IsNullOrEmpty( dictInnerName))
             {
                 res = dicPikId;
             }
             else
             {
-                var dicPluginId = ExtDicHelper.GetDic(dicPikId, dictInnerName, create);
+                var dicPluginId = ExtDicHelper.GetDic(dicPikId, dictInnerName, create, false);
                 res = dicPluginId;
             }
             return res;
@@ -376,7 +376,7 @@ namespace AcadLib
         private ObjectId GetRec (string key, bool create)
         {
             var dicId = GetDicPlugin(create);
-            return ExtDicHelper.GetRec(dicId, key, create);            
+            return ExtDicHelper.GetRec(dicId, key, create, false);            
         }
     }
 }

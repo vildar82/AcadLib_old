@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using AcadLib.Geometry;
 
 namespace AcadLib
 {
@@ -42,7 +45,7 @@ namespace AcadLib
             return GetRegionContour(r1);            
         }
 
-        private static Polyline3d GetRegionContour(Region reg)
+        public static Polyline3d GetRegionContour(this Region reg)
         {
             Polyline3d resVal = null;
             double maxArea = 0;
@@ -53,15 +56,15 @@ namespace AcadLib
                 {
                     if (loop.LoopType == LoopType.LoopExterior)
                     {
-                        HashSet<Point3d> ptsHash = new HashSet<Point3d>();                                                
+                        List<Point3d> ptsVertex = new List<Point3d>();                                                
                         foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)
                         {
-                            if (!ptsHash.Any(p => p.IsEqualTo(vert.Point, Tolerance.Global)))
+                            if (!ptsVertex.Any(p => p.IsEqualTo(vert.Point, Tolerance.Global)))
                             {
-                                ptsHash.Add(vert.Point);
+                                ptsVertex.Add(vert.Point);
                             }                            
                         }
-                        Point3dCollection pts = new Point3dCollection(ptsHash.ToArray());
+                        Point3dCollection pts = new Point3dCollection(ptsVertex.ToArray());
                         var pl = new Polyline3d(Poly3dType.SimplePoly, pts, true);
                         if (pl.Area>maxArea)
                         {
@@ -73,19 +76,61 @@ namespace AcadLib
             return resVal;
         }
 
+        public static List<KeyValuePair<Polyline, BrepLoopType>> GetPolylines (this Region reg)
+        {
+            var resVal = new List<KeyValuePair<Polyline, BrepLoopType>>(); ;
+            Brep brep = new Brep(reg);
+            foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
+            {
+                foreach (BoundaryLoop loop in face.Loops)
+                {
+                    List<Point2d> ptsVertex = new List<Point2d>();
+                    foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)                    
+                        ptsVertex.Add(vert.Point.Convert2d());
+
+                    var pl = ptsVertex.CreatePolyline();
+                    resVal.Add(new KeyValuePair<Polyline, BrepLoopType>(pl, (BrepLoopType)loop.LoopType));
+                }
+            }
+            return resVal;
+        }
+
+        public static List<Point3d> GetVertices (this Region reg)
+        {
+            var ptsVertex = new List<Point3d>();
+            Brep brep = new Brep(reg);
+            foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
+            {
+                foreach (BoundaryLoop loop in face.Loops)
+                {                    
+                    foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)
+                    {
+                        ptsVertex.Add(vert.Point);
+                    }
+                }
+            }
+            return ptsVertex;
+        }
+
+
         /// <summary>
         /// Объекдинение полилиний.
         /// Полилинии должны быть замкнуты!
         /// </summary>        
         /// <param name="over">Контур который должен быть "над" объединенными полилиниями. Т.е. контур этой полилинии вырезается из полученного контура, если попадает на него.</param>
-        public static List<Polyline3d> Union (this List<Polyline> pls, Polyline over)
+        public static Region Union (this List<Polyline> pls, Region over)
         {
-            if (pls == null || pls.Count == 0) return null;
-            List<Polyline3d> res;
+            if (pls == null || pls.Count == 0) return null;            
             var regions = createRegion(pls);
-            res = createPl(regions);
-            return res;
-        }       
+            var union = unionRegions(regions); 
+            
+            // Вырезание over региона
+            if (over != null)
+            {
+                union.BooleanOperation(BooleanOperationType.BoolSubtract, over);
+            }                                          
+            return union;
+        }
 
         private static List<Region> createRegion (List<Polyline> pls)
         {
@@ -105,6 +150,7 @@ namespace AcadLib
 
         private static Region createRegion (Polyline pl)
         {
+            if (pl == null) return null;
             var dbs = new DBObjectCollection();
             dbs.Add(pl);
             var dbsRegs = Region.CreateFromCurves(dbs);
@@ -113,6 +159,7 @@ namespace AcadLib
 
         private static List<Polyline3d> createPl (List<Region> regions)
         {
+            if (regions == null || regions.Count == 0) return null;
             List<Polyline3d> res = new List<Polyline3d>();
             foreach (var r in regions)
             {
@@ -120,6 +167,20 @@ namespace AcadLib
                 res.Add(pl);
             }
             return res;
+        }
+
+        private static Region unionRegions (List<Region> regions)
+        {
+            if (regions == null || regions.Count == 0) return null;
+            if (regions.Count == 1) return regions[0];           
+
+            var union = regions[0];            
+            for (int i = 1; i < regions.Count; i++)
+            {
+                var cr = regions[i];
+                union.BooleanOperation(BooleanOperationType.BoolUnite, cr);                
+            }
+            return union;
         }
     }    
 }
