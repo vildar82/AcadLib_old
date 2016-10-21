@@ -258,6 +258,7 @@ namespace AcadLib.Plot
             if (Options.FilterState && !string.IsNullOrWhiteSpace(filter))
             {                
                 string clearStr = string.Empty;
+                filter = filter.Trim().Replace(" ", "");
                 var negativeNumbersMatchs = Regex.Matches(filter, @"(^-\d+)|[,-](-\d+)");
                 int startIndex = 0;
                 foreach (Match negMatch in negativeNumbersMatchs)

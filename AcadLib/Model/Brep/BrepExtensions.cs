@@ -77,7 +77,7 @@ namespace AcadLib
         }
 
         public static List<KeyValuePair<Polyline, BrepLoopType>> GetPolylines (this Region reg)
-        {
+        {            
             var resVal = new List<KeyValuePair<Polyline, BrepLoopType>>(); ;
             Brep brep = new Brep(reg);
             foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
@@ -90,6 +90,24 @@ namespace AcadLib
 
                     var pl = ptsVertex.CreatePolyline();
                     resVal.Add(new KeyValuePair<Polyline, BrepLoopType>(pl, (BrepLoopType)loop.LoopType));
+                }
+            }
+            return resVal;
+        }
+
+        public static List<KeyValuePair<Point2dCollection, BrepLoopType>> GetPoints2dByLoopType (this Region reg)
+        {            
+            var resVal = new List<KeyValuePair<Point2dCollection, BrepLoopType>>(); ;
+            Brep brep = new Brep(reg);
+            foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
+            {
+                foreach (BoundaryLoop loop in face.Loops)
+                {
+                    List<Point2d> ptsVertex = new List<Point2d>();
+                    foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)
+                        ptsVertex.Add(vert.Point.Convert2d());                    
+                    var pts2dCol = new Point2dCollection(ptsVertex.ToArray());
+                    resVal.Add(new KeyValuePair<Point2dCollection, BrepLoopType>(pts2dCol, (BrepLoopType)loop.LoopType));
                 }
             }
             return resVal;

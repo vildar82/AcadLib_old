@@ -33,13 +33,17 @@ namespace AcadLib
             return angle;
         }
 
-        public static double ToHours (this int min)
+        public static string ToHours (this int min)
         {
-            return Math.Round(min * 0.01667, 1);
+            //return Math.Round(min * 0.01667, 1);
+            return ToHours((double)min);
         }
-        public static double ToHours (this double min)
+        public static string ToHours (this double min)
         {
-            return Math.Round(min *0.01667, 1);
+            //return Math.Round(min *0.01667, 1);
+            TimeSpan span = TimeSpan.FromMinutes(min);
+            string label = $"{span.Hours}ч.{span.Minutes}м.";
+            return label;
         }
 
         /// <summary>
