@@ -245,6 +245,8 @@
     <Compile Include="Model\XData\EntDictExt.cs" />
     <Compile Include="Model\XData\ExtDicHelper.cs" />
     <Compile Include="Model\XData\DicED.cs" />
+    <Compile Include="Model\XData\Interface\IExtDataSave.cs" />
+    <Compile Include="Model\XData\Interface\ITypedDataValues.cs" />
     <Compile Include="Model\XData\RecXD.cs" />
     <Compile Include="Model\XData\TypedValueExt.cs" />
     <Compile Include="Model\XData\XDataExt.cs" />
