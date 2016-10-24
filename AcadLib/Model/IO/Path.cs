@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,16 +20,26 @@ namespace AcadLib.IO
             string resFilePath = string.Empty;
             var pluginFolder = System.IO.Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
                 AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, pluginName);
-            if (!System.IO.Directory.Exists(pluginFolder))
+            if (!Directory.Exists(pluginFolder))
             {
                 try
                 {
-                    System.IO.Directory.CreateDirectory(pluginFolder);
+                    Directory.CreateDirectory(pluginFolder);
                 }
                 catch { }
             }
             resFilePath = System.IO.Path.Combine(pluginFolder, fileName);
             return resFilePath;
+        }
+
+        /// <summary>
+        /// Создает папку в темпе и возрвращает полный путь
+        /// </summary>        
+        public static string GetTemporaryDirectory ()
+        {
+            string tempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
         }
     }
 }

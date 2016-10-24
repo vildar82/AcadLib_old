@@ -124,6 +124,7 @@
     <Compile Include="Model\Comparers\IntEqualityComparer.cs" />
     <Compile Include="Model\Comparers\Point2dComparer.cs" />
     <Compile Include="Model\DB\LineTypeExt.cs" />
+    <Compile Include="Model\DB\ManagedSystemVariable.cs" />
     <Compile Include="Model\Draw\DrawParameters.cs" />
     <Compile Include="Model\Draw\Draw.cs" />
     <Compile Include="Model\Errors\FormReport.cs">
@@ -257,6 +258,7 @@
       <DependentUpon>FormXDataView.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\XData\XDataViewer\XDataView.cs" />
+    <Compile Include="Model\XRef\XRefExt.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
