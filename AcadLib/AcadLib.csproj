@@ -136,6 +136,7 @@
     <Compile Include="Model\Exceptions\CancelByUserException.cs" />
     <Compile Include="Model\Exceptions\ErrorException.cs" />
     <Compile Include="Model\Field\UpdateField.cs" />
+    <Compile Include="Model\Geometry\Polylines\PolylineLoops.cs" />
     <Compile Include="Model\Hatch\HatchExt.cs" />
     <Compile Include="Model\IO\Path.cs" />
     <Compile Include="Model\Jigs\DragSel.cs" />
