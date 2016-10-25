@@ -19,51 +19,52 @@ namespace AcadLib.Geometry
         /// <param name="above">Петля выше или ниже точек пересечения</param>
         /// <param name="includePtIntersects">Включать ли сами точки пересечения в результат</param>
         /// <returns>Список точек петли пересечения</returns>
-        public static List<Point2d> GetLoopSideBetweenHorizontalIntersectPoints (this Polyline contour, 
-            Point3d ptIntersect1, Point3d ptIntersect2, bool above = true, bool includePtIntersects=true)
+        public static List<Point2d> GetLoopSideBetweenHorizontalIntersectPoints (this Polyline contour,
+            Point3d ptIntersect1, Point3d ptIntersect2, bool above = true, bool includePtIntersects = true)
         {
             List<Point2d> pointsLoopAbove = new List<Point2d>();
 
-            if (includePtIntersects)
-                pointsLoopAbove.Add(ptIntersect1.Convert2d());
-
-            int numVertex = contour.NumberOfVertices;
+            var ptIntersectStart = ptIntersect1;
+            var ptIntersectEnd = ptIntersect2;           
 
             // Индекс стартовой точки петли (вершины) с нужной стороны от точки пересечения
             int dir;
             var indexStart = GetStartIndex(contour, ptIntersect1, above, out dir);
             int indexCur = indexStart;
-
-            // Добавление первой стартовой точки (вершины)
-            AddPoint(pointsLoopAbove, dir, ref indexCur, contour);
-
+            
             int dirEnd;
             var indexEnd = GetStartIndex(contour, ptIntersect2, above, out dirEnd);
-
-            //bool isContinue = true;
-
-            int countWhile = 0;
-            if (indexStart != indexEnd)
+            if (dir == 0)
             {
-                while (indexCur != indexEnd)
-                {
-                    if (indexCur == -1)
-                    {
-                        indexCur = numVertex - 1;
-                    }
-                    else if (indexCur == numVertex)
-                    {
-                        indexCur = 0;
-                    }
-                    
-                    AddPoint(pointsLoopAbove, dir, ref indexCur, contour);                    
-                    countWhile++;
-                }
-                // Добавление последней стартовой точки (вершины)
-                AddPoint(pointsLoopAbove, dir, ref indexEnd, contour);
+                dir = dirEnd;
+                indexCur = indexEnd;
+                indexEnd = indexStart;
+                ptIntersectStart = ptIntersect2;
+                ptIntersectEnd = ptIntersect1;
             }
+
             if (includePtIntersects)
-                pointsLoopAbove.Add(ptIntersect2.Convert2d());
+                pointsLoopAbove.Add(ptIntersectStart.Convert2d());
+
+            if (dir != 0)
+            {
+                if (indexCur == indexEnd)
+                {
+                    AddPoint(pointsLoopAbove, dir, ref indexCur, contour);
+                }
+                else
+                {
+                    while (indexCur != indexEnd)
+                    {
+                        AddPoint(pointsLoopAbove, dir, ref indexCur, contour);
+                    }
+                    // Добавление последней вершины
+                    AddPoint(pointsLoopAbove, dir, ref indexCur, contour);
+                }
+            }            
+
+            if (includePtIntersects)
+                pointsLoopAbove.Add(ptIntersectEnd.Convert2d());
 
             return pointsLoopAbove;
         }
@@ -73,6 +74,14 @@ namespace AcadLib.Geometry
             var pt = contour.GetPoint2dAt(indexCur);
             pointsLoopAbove.Add(pt);
             indexCur += dir;
+            if (indexCur == -1)
+            {
+                indexCur = contour.NumberOfVertices - 1;
+            }
+            else if (indexCur == contour.NumberOfVertices)
+            {
+                indexCur = 0;
+            }
         }
 
         private static int GetStartIndex (Polyline contour, Point3d ptIntersect1, bool above,
@@ -80,15 +89,22 @@ namespace AcadLib.Geometry
         {
             var param = contour.GetParameterAtPoint(ptIntersect1);
             int indexMin = (int)param;
-            int indexMax = (int)Math.Ceiling(param);
+            int indexMax = (int)Math.Ceiling(param);            
             var seg = contour.GetLineSegmentAt(indexMin);
-            dir = 1;
             var indexStart = indexMax;
-            if ((above && (seg.StartPoint.Y > seg.EndPoint.Y)) ||
-                (!above && (seg.StartPoint.Y < seg.EndPoint.Y)))
+            if (indexMin == indexMax)
             {
-                indexStart = indexMin;
-                dir = -1;
+                dir = 0;
+            }
+            else
+            {
+                dir = 1;
+                if ((above && (seg.StartPoint.Y > seg.EndPoint.Y)) ||
+                    (!above && (seg.StartPoint.Y < seg.EndPoint.Y)))
+                {
+                    indexStart = indexMin;
+                    dir = -1;
+                }
             }
             return indexStart;
         }
