@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,8 +26,11 @@ namespace TestAcadlib.WPF
 
     public enum MyEnum
     {
+        [Description("Один")]
         One,
+        [Description("Два")]
         Two,
+        [Description("Три")]
         Three
     }
 }

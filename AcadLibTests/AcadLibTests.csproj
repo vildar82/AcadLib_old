@@ -53,6 +53,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Model\Comparers\IntEqualityComparerTests.cs" />
+    <Compile Include="Model\WPF\Converters\EnumDescriptionTypeConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

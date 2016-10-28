@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup;
 
-namespace AcadLib.WPF
+namespace AcadLib.WPF.Converters
 {
     /// <summary>
     /// ComboBox ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:MyEnum}}}"    /// 
@@ -93,6 +93,22 @@ namespace AcadLib.WPF
             }
 
             return base.ConvertTo(context, culture, value, destinationType);
+        }
+
+        public static string GetEnumDescription (Enum value)
+        {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+
+            DescriptionAttribute[] attributes =
+                (DescriptionAttribute[])fi.GetCustomAttributes(
+                typeof(DescriptionAttribute),
+                false);
+
+            if (attributes != null &&
+                attributes.Length > 0)
+                return attributes[0].Description;
+            else
+                return value.ToString();
         }
     }
 }
