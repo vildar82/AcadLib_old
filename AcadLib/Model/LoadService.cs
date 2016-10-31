@@ -27,6 +27,7 @@ namespace AcadLib
         public static void LoadMicroMvvm ()
         {
             LoadPackages("MicroMvvm.dll");
+            LoadPackages("System.Windows.Interactivity.dll");
         }
 
         /// <summary>

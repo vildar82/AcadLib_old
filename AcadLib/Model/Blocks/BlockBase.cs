@@ -198,9 +198,26 @@ namespace AcadLib.Blocks
             if (prop == null) return;
             if (prop.Type == PropertyType.Attribute && !prop.IdAtrRef.IsNull)
             {
-                using (var atr = prop.IdAtrRef.GetObject(OpenMode.ForWrite, false, true) as AttributeReference)
+                var atr = prop.IdAtrRef.GetObject(OpenMode.ForWrite, false, true) as AttributeReference;
+                atr.TextString = value?.ToString() ?? "";
+            }
+            else if (prop.Type == PropertyType.Dynamic)
+            {
+                if (value == null) return;
+                var blRef = IdBlRef.GetObject(OpenMode.ForWrite) as BlockReference;
+                var dynProp = blRef.DynamicBlockReferencePropertyCollection.Cast<DynamicBlockReferenceProperty>()
+                    .FirstOrDefault(p => p.PropertyName.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
+                if (dynProp != null)
                 {
-                    atr.TextString = value?.ToString() ?? "";
+                    try
+                    {
+                        dynProp.Value = value;
+                    }
+                    catch
+                    {
+                        Inspector.AddError($"Не удалосось установить динамический параметр {prop.Name} со значением {prop.Value} в блок {BlName}",
+                            IdBlRef, System.Drawing.SystemIcons.Error);
+                    }
                 }
             }
         }
