@@ -138,5 +138,11 @@ namespace AcadLib
             db.DeepCloneObjects(ids, idBtrOwner, map, false);
             return map[idEnt].Value;
         }
+
+        public static bool IsValidEx (this ObjectId id)
+        {
+            var res = id.IsValid && !id.IsNull;
+            return res;
+        }
     }
 }
