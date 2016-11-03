@@ -7,6 +7,10 @@ using Autodesk.AutoCAD.Geometry;
 namespace AcadLib.Geometry
 {
     /// <summary>
+    /// Enumeration of offset side options
+    /// </summary>
+    public enum OffsetSide { In, Out, Left, Right, Both }
+    /// <summary>
     /// Provides extension methods for the Polyline type.
     /// </summary>
     public static class PolylineExtensions
@@ -334,10 +338,7 @@ namespace AcadLib.Geometry
             return (dtheta);
         }
 
-        /// <summary>
-        /// Enumeration of offset side options
-        /// </summary>
-        public enum OffsetSide { In, Out, Left, Right, Both }
+        
 
         /// <summary>
         /// Offset the source polyline to specified side(s).
@@ -389,12 +390,33 @@ namespace AcadLib.Geometry
                     return null;
             }
         }
-        private static void Dispose (this IEnumerable<Polyline> plines)
+        public static void Dispose (this IEnumerable<Polyline> plines)
         {
             foreach (Polyline pline in plines)
             {
                 pline.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Проверка наличия самопересечений в полилинии
+        /// True - нет самопересечений
+        /// </summary>        
+        public static bool CheckCross (this Polyline pline)
+        {
+            MPolygon mpoly = new MPolygon();
+            bool isValidBoundary = false;
+            try
+            {
+                mpoly.AppendLoopFromBoundary(pline, true, Tolerance.Global.EqualPoint);
+                if (mpoly.NumMPolygonLoops != 0)
+                {
+                    isValidBoundary = true;
+                }
+            }
+            catch { }
+            mpoly.Dispose();
+            return isValidBoundary;
         }
     }
 }
