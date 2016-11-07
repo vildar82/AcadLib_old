@@ -418,5 +418,26 @@ namespace AcadLib.Geometry
             mpoly.Dispose();
             return isValidBoundary;
         }
+
+        /// <summary>
+        /// Следующий индекс полилинии
+        /// </summary>
+        /// <param name="pl">Полилиния</param>
+        /// <param name="index">Текущий индек</param>
+        /// <param name="dir">Величина сдвига индекса. 1 - на ед вверх, -1 на ед. вниз, и т.д.</param>
+        /// <returns>Текущий индекс + сдвиг. С проверкой попадания индекса в кол-во вершин полилинии.</returns>
+        public static int NextVertexIndex (this Polyline pl, int index, int dir =1)
+        {
+            var res = index+dir;
+            if (res < 0)
+            {
+                res = pl.NumberOfVertices - 1;
+            }
+            else if (res >= pl.NumberOfVertices)
+            {
+                res = 0;
+            }
+            return res;
+        }
     }
 }

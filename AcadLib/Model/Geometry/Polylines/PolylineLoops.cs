@@ -11,6 +11,15 @@ namespace AcadLib.Geometry
     public static class PolylineLoops
     {
         /// <summary>
+        /// Точки петли полилинии слева/справа от точек пересечения
+        /// </summary>        
+        public static List<Point2d> GetLoopSideBetweenVerticalIntersectPoints (this Polyline contour,
+            Point3d ptIntersect1, Point3d ptIntersect2, bool isLeftSide = true, bool includePtIntersects = true)
+        {
+            var pointsLoopSide = new List<Point2d>();
+        }
+
+        /// <summary>
         /// Точки "петли" полилинии между точками пересечения.
         /// </summary>
         /// <param name="contour">Исходная Полилиния</param>
@@ -22,7 +31,7 @@ namespace AcadLib.Geometry
         public static List<Point2d> GetLoopSideBetweenHorizontalIntersectPoints (this Polyline contour,
             Point3d ptIntersect1, Point3d ptIntersect2, bool above = true, bool includePtIntersects = true)
         {
-            List<Point2d> pointsLoopAbove = new List<Point2d>();
+            var pointsLoopAbove = new List<Point2d>();
 
             var ptIntersectStart = ptIntersect1;
             var ptIntersectEnd = ptIntersect2;           
