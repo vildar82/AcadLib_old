@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -12,11 +13,15 @@ namespace AcadLib
     {
         public static void AddEntityToCurrentSpace (this Entity ent)
         {
-            var db = HostApplicationServices.WorkingDatabase;
-            using (var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord)
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;
+            using (doc.LockDocument())
+            using (var t = db.TransactionManager.StartTransaction())
             {
+                var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
                 cs.AppendEntity(ent);
                 db.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(ent, true);
+                t.Commit();
             }
         }
 
