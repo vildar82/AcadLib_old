@@ -14,7 +14,7 @@ namespace AcadLib.XData
     {
         const string PikApp = "PIK";
         readonly DBObject dbo;
-        readonly string pluginName;
+        readonly string pluginName;        
 
         public EntDictExt(DBObject dbo, string pluginName)
         {

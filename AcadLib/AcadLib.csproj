@@ -142,8 +142,10 @@
     <Compile Include="Model\Exceptions\ErrorException.cs" />
     <Compile Include="Model\Field\UpdateField.cs" />
     <Compile Include="Model\Geometry\DisposableCollection.cs" />
+    <Compile Include="Model\Geometry\Polylines\AverageVertexPolylines.cs" />
     <Compile Include="Model\Geometry\Polylines\MergePolyline.cs" />
     <Compile Include="Model\Geometry\Polylines\PolylineLoops.cs" />
+    <Compile Include="Model\Geometry\Polylines\PolylineVertex.cs" />
     <Compile Include="Model\Hatch\HatchExt.cs" />
     <Compile Include="Model\IO\Path.cs" />
     <Compile Include="Model\Jigs\DragSel.cs" />
@@ -230,6 +232,7 @@
     <Compile Include="Model\WPF\Converters\MinToHoursConverter.cs" />
     <Compile Include="Model\WPF\Converters\RadiansToDegreeConverterExtension.cs" />
     <Compile Include="Model\WPF\Converters\EnumBindingSourceExtension.cs" />
+    <Compile Include="Model\XData\DboDataSaveExt.cs" />
     <Compile Include="Model\XData\DictNODExt.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />
     <Compile Include="Model\DB\ObjectIdExt.cs" />
@@ -257,6 +260,7 @@
     <Compile Include="Model\XData\EntDictExt.cs" />
     <Compile Include="Model\XData\ExtDicHelper.cs" />
     <Compile Include="Model\XData\DicED.cs" />
+    <Compile Include="Model\XData\Interface\IDboDataSave.cs" />
     <Compile Include="Model\XData\Interface\IExtDataSave.cs" />
     <Compile Include="Model\XData\Interface\ITypedDataValues.cs" />
     <Compile Include="Model\XData\RecXD.cs" />
