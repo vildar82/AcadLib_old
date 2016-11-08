@@ -229,6 +229,7 @@
     <Compile Include="Model\WPF\Converters\BooleanToOppositeBooleanConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Model\WPF\Converters\ConvertorBase.cs" />
+    <Compile Include="Model\WPF\Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Model\WPF\Converters\MinToHoursConverter.cs" />
     <Compile Include="Model\WPF\Converters\RadiansToDegreeConverterExtension.cs" />
     <Compile Include="Model\WPF\Converters\EnumBindingSourceExtension.cs" />

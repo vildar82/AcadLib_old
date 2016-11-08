@@ -79,36 +79,30 @@ namespace AcadLib.WPF.Converters
         {
             if (destinationType == typeof(string))
             {
-                if (value != null)
-                {
-                    FieldInfo fi = value.GetType().GetField(value.ToString());
-                    if (fi != null)
-                    {
-                        var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-                        return ((attributes.Length > 0) && (!String.IsNullOrEmpty(attributes[0].Description))) ? attributes[0].Description : value.ToString();
-                    }
-                }
-
-                return string.Empty;
+                return  GetEnumDescription(value);                
             }
-
             return base.ConvertTo(context, culture, value, destinationType);
         }
 
-        public static string GetEnumDescription (Enum value)
+        public static string GetEnumDescription (object enumValue)
         {
-            FieldInfo fi = value.GetType().GetField(value.ToString());
-
-            DescriptionAttribute[] attributes =
-                (DescriptionAttribute[])fi.GetCustomAttributes(
-                typeof(DescriptionAttribute),
-                false);
-
-            if (attributes != null &&
-                attributes.Length > 0)
+            if (enumValue == null) return null;
+            FieldInfo fi = enumValue.GetType().GetField(enumValue.ToString());
+            if (fi == null) return null;
+            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute),false);            
+            
+            if (attributes != null && attributes.Length > 0)
                 return attributes[0].Description;
             else
-                return value.ToString();
+                return enumValue.ToString();
+        }
+    }
+
+    public static class EnumDescriptionExt
+    {
+        public static string Description(this object enumValue)
+        {
+            return EnumDescriptionTypeConverter.GetEnumDescription(enumValue);
         }
     }
 }
