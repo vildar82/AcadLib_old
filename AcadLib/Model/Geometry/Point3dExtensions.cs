@@ -14,6 +14,14 @@ namespace Autodesk.AutoCAD.Geometry
     /// </summary>
     public static class Point3dExtensions
     {
+        public static Point3d Center (this Point3d pt, Point3d other)
+        {
+            return new Point3d(
+                    pt.X + (other.X - pt.X) * 0.5,
+                    pt.Y + (other.Y - pt.Y) * 0.5,
+                    pt.Z + (other.Z - pt.Z) * 0.5);
+        }
+
         /// <summary>
         /// Converts a 3d point into a 2d point (projection on XY plane).
         /// </summary>

@@ -12,6 +12,28 @@ namespace AcadLib
 {
     public static class ObjectIdExt
     {
+        public static void ShowEnt (this ObjectId id)
+        {
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null || !id.IsValidEx()) return;
+
+            using (doc.LockDocument())
+            using (var t = id.Database.TransactionManager.StartTransaction())
+            {
+                var ent = id.GetObject(OpenMode.ForRead) as Entity;
+                if (ent != null)
+                {
+                    try
+                    {
+                        doc.Editor.Zoom(ent.GeometricExtents);
+                        id.FlickObjectHighlight(2, 100, 100);
+                    }
+                    catch { }
+                }
+                t.Commit();
+            }
+        }
+
         public static void ShowEnt(this ObjectId id, Extents3d ext, Document docOrig)
         {
             Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;

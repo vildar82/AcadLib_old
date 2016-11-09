@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -164,7 +165,14 @@ namespace AcadLib.Blocks
             {
                 try
                 {
-                    resVal = (T)Convert.ChangeType(prop.Value, typeof(T));
+                    var value = prop.Value;
+                    var culture = CultureInfo.InvariantCulture;
+                    if (value is string && typeof(T) == typeof(double))
+                    {
+                        value = ((string)value).Replace(",", ".");
+                        culture = new CultureInfo("en-US");
+                    }
+                    resVal = (T)Convert.ChangeType(value, typeof(T), culture);
                 }
                 catch
                 {

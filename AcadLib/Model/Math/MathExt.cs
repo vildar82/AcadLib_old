@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +45,11 @@ namespace AcadLib
             TimeSpan span = TimeSpan.FromMinutes(min);
             string label = $"{span.Hours}ч.{span.Minutes}м.";
             return label;
+        }
+
+        public static double ToMin (this double h)
+        {
+            return h * 60;
         }
 
         /// <summary>
@@ -318,6 +324,14 @@ namespace AcadLib
                 }                
                 return res;                
             }
+        }
+
+        public static double ToDouble (this string val)
+        {
+            string s = val.Replace(",", ".");
+            CultureInfo ci = new CultureInfo("en-US");
+            double d = double.Parse(s, ci.NumberFormat);
+            return d;
         }
     }
 }
