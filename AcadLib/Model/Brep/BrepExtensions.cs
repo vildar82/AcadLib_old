@@ -130,6 +130,41 @@ namespace AcadLib
             return ptsVertex;
         }
 
+        public static Hatch CreateHatch (this Region region)
+        {
+            var plsByLoop = region.GetPoints2dByLoopType();
+            var externalLoops = plsByLoop.Where(p => p.Value != BrepLoopType.LoopInterior).ToList();
+            var interiorLoops = plsByLoop.Where(p => p.Value == BrepLoopType.LoopInterior).ToList();
+
+            if (!externalLoops.Any())
+            {
+                return null;
+            }
+
+            var h = new Hatch();
+            h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+
+            foreach (var item in externalLoops)
+            {
+                var pts2dCol = item.Key;
+                pts2dCol.Add(item.Key[0]);
+                h.AppendLoop(HatchLoopTypes.External, pts2dCol, new DoubleCollection(new double[externalLoops.Count + 1]));
+            }
+
+            if (interiorLoops.Any())
+            {
+                foreach (var item in interiorLoops)
+                {
+                    var pts2dCol = item.Key;
+                    pts2dCol.Add(item.Key[0]);
+                    h.AppendLoop(HatchLoopTypes.SelfIntersecting, pts2dCol, new DoubleCollection(new double[interiorLoops.Count + 1]));
+                }
+            }
+
+            h.EvaluateHatch(true);
+            return h;
+        }
+
 
         /// <summary>
         /// Объекдинение полилиний.
