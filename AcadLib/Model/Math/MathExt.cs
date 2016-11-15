@@ -12,7 +12,8 @@ namespace AcadLib
     {
         public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
         public const double PI2 = Math.PI * 2;
-        public const double PIHalf = Math.PI / 2;
+        public const double PIHalf = Math.PI *0.5;
+        public const double PIQuart = Math.PI * 25;
         public const double RatioDegreeToRadian = Math.PI / 180;
         public const double RatioRadianToDegree = 180 / Math.PI;
 

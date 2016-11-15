@@ -12,16 +12,20 @@ namespace AcadLib.XData
         public static void SaveDboDict(this IDboDataSave dboSave)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            var entDic = new EntDictExt(dboSave.GetDBObject(), dboSave.PluginName);
-            entDic.Save(dboSave.GetExtDic(doc));
+            using (var entDic = new EntDictExt(dboSave.GetDBObject(), dboSave.PluginName))
+            {
+                entDic.Save(dboSave.GetExtDic(doc));
+            }
         }
 
         public static void LoadDboDict(this IDboDataSave dboSave)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            var entDic = new EntDictExt(dboSave.GetDBObject(), dboSave.PluginName);
-            var dicED = entDic.Load();
-            dboSave.SetExtDic(dicED, doc);
+            using (var entDic = new EntDictExt(dboSave.GetDBObject(), dboSave.PluginName))
+            {
+                var dicED = entDic.Load();
+                dboSave.SetExtDic(dicED, doc);
+            }
         }
     }
 }

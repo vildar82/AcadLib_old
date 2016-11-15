@@ -176,7 +176,11 @@ namespace AcadLib.XData
         }
 
         public void Dispose()
-        {            
+        {
+            if (dbo != null && !dbo.IsDisposed)
+            {
+                dbo.Dispose();
+            }
         }
     }
 }
