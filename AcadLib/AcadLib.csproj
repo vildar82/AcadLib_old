@@ -100,6 +100,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Package\Excel\4.0.5\EPPlus.dll</HintPath>
     </Reference>
+    <Reference Include="PIK_DB_Projects">
+      <HintPath>..\..\ОБЩЕЕ\DBMDM\PIK_DB_Projects\PIK_DB_Projects\bin\Release\PIK_DB_Projects.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

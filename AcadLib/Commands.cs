@@ -105,51 +105,56 @@ namespace AcadLib {
         }
 
         public void Initialize ()
-		{
-            // MicroMvvm
+        {
+            // MicroMvvm            
             var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
             LoadService.LoadFromTry(fileDll);
             // Загрузка общей сборки - для всех специальностей             
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_Acad_Common.dll");
-            LoadService.LoadFromTry(fileDll);                
+            LoadService.LoadFromTry(fileDll);
 
-			try
-			{
-				// Загрузка сбороки для данного раздела
-				var group = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
-				string fileGroup = string.Empty;
-				if (group == "СС")
-				{
-					fileGroup = @"Script\NET\СС\PIK_SS_Acad.dll";
-				}
-				else if (group == "ГП")
-				{
-					fileGroup = @"Script\NET\ГП\PIK_GP_Acad.dll";
-				}
-				else if (group == "КР-СБ-ГК")
-				{
-					fileGroup = @"Script\NET\КР-СБ-ГК\Autocad_ConcerteList.dll";
-				}
-				else if (group == "КР-МН")
-				{
-					fileGroup = @"Script\NET\КР-МН\KR_MN_Acad.dll";
-				}
-				else if (group == "ВК")
-				{
-					fileGroup = @"Script\NET\ВК\PIK_VK_Acad.dll";
-				}
+            // Загрузка сбороки для данного раздела
+            var group = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
+            string fileGroup = string.Empty;
+            if (group == "СС")
+            {
+                fileGroup = @"Script\NET\СС\PIK_SS_Acad.dll";
+            }
+            else if (group == "ГП")
+            {
+                fileGroup = @"Script\NET\ГП\PIK_GP_Acad.dll";
+            }
+            else if (group == "КР-СБ-ГК")
+            {
+                fileGroup = @"Script\NET\КР-СБ-ГК\Autocad_ConcerteList.dll";
+            }
+            else if (group == "КР-МН")
+            {
+                fileGroup = @"Script\NET\КР-МН\KR_MN_Acad.dll";
+            }
+            else if (group == "ВК")
+            {
+                fileGroup = @"Script\NET\ВК\PIK_VK_Acad.dll";
+            }
+            if (!string.IsNullOrEmpty(fileGroup))
+            {
+                fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
+                LoadService.LoadFromTry(fileDll);
+                //Assembly.LoadFrom(fileDll);
+            }
 
-				if (!string.IsNullOrEmpty(fileGroup))
-				{
-					fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);					
-					Assembly.LoadFrom(fileDll);
-				}
-			}
-			catch (System.Exception ex)
-			{
-				Logger.Log.Error(ex, $"Ошибка инициализации AcadLib.");
-			}
-		}
+            // Загрузка базы MDM
+            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll");
+            LoadService.LoadFromTry(fileDll);
+            try
+            {
+                LoadService.LoadEntityFramework();
+            }
+            catch(Exception ex)
+            {
+                Logger.Log.Error(ex, "LoadEntityFramework");
+            }
+        }
 
 		[CommandMethod(Group, CommandInsertBlockPikLogo, CommandFlags.Modal)]
 		public void InsertBlockPikLogo ()

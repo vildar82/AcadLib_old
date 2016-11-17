@@ -334,5 +334,18 @@ namespace AcadLib
             double d = double.Parse(s, ci.NumberFormat);
             return d;
         }
+
+        public static int GetStartInt(this string input)
+        {
+            var res = Strings.StringHelper.GetStartInteger(input);
+            if (res.Success)
+            {
+                return res.Value;
+            }
+            else
+            {
+                throw new Exception(res.Error);
+            }
+        }
     }
 }

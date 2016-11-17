@@ -35,7 +35,6 @@ namespace AcadLib.Blocks.Visual
             List<VisualBlock> visualBlocks = new List<VisualBlock>();
             using (var dbTemp = new Database(false, true))
             {
-
                 dbTemp.ReadDwgFile(file, FileOpenMode.OpenForReadAndReadShare, true, "");
                 using (var t = dbTemp.TransactionManager.StartTransaction())
                 {
@@ -51,6 +50,8 @@ namespace AcadLib.Blocks.Visual
                     }
                     t.Commit();
                 }
+                var alpha = Comparers.AlphanumComparator.New;
+                visualBlocks.Sort((v1, v2) => alpha.Compare(v1.Name, v2.Name));
             }
             return visualBlocks;
         }
