@@ -50,10 +50,25 @@ namespace AcadLib.XData
         /// </summary>
         public void Delete (string dicName = null)
         {
-            var dicId = GetDicPlugin(false);            
+            var dicId = GetDicPlugin(false);                
             if (!string.IsNullOrEmpty(dicName))
             {
-                dicId = ExtDicHelper.GetDic(dicId, dicName, false, false);                
+                // Проверить. Если в словаре объекта есть только удаляемый словарь по имени, то удалить весь словарь объекта
+                var dicDbo = ExtDicHelper.GetDicEd(dicId);
+                var dicDelete = dicDbo.GetInner(dicName);
+                if (dicDelete != null)
+                {
+                    if (dicDbo.Inners.Count != 1 || dicDbo.Recs.Any())
+                    {                        
+                        //Удаление только словаря с этим именем
+                        dicId = ExtDicHelper.GetDic(dicId, dicName, false, false);
+                    }
+                }
+                else
+                {
+                    // С этим именем нет словаря. Ничего не нужно удалять
+                    return;
+                }                
             }            
             // Удаление словаря
             ExtDicHelper.DeleteDic(dicId);
