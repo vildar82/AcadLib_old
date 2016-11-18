@@ -46,6 +46,20 @@ namespace AcadLib.XData
         }
 
         /// <summary>
+        /// Удаление словаря из объекта
+        /// </summary>
+        public void Delete (string dicName = null)
+        {
+            var dicId = GetDicPlugin(false);            
+            if (!string.IsNullOrEmpty(dicName))
+            {
+                dicId = ExtDicHelper.GetDic(dicId, dicName, false, false);                
+            }            
+            // Удаление словаря
+            ExtDicHelper.DeleteDic(dicId);
+        }
+
+        /// <summary>
         /// Сохранение данных в объекте. 
         /// Можно передать только string, int, double
         /// </summary>            

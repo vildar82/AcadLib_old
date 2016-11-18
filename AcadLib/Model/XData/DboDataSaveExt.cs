@@ -27,5 +27,19 @@ namespace AcadLib.XData
                 dboSave.SetExtDic(dicED, doc);
             }
         }
+
+        /// <summary>
+        /// Удаление словаря из объекта
+        /// </summary>
+        /// <param name="dboSave">Объект чертежа</param>
+        /// <param name="dicName">Имя удаляемого словаря или пусто для удаления всего словаря плагина</param>
+        public static void DeleteDboDict (this IDboDataSave dboSave, string dicName = null)
+        {
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            using (var entDic = new EntDictExt(dboSave.GetDBObject(), dboSave.PluginName))
+            {
+                entDic.Delete(dicName);                
+            }
+        }
     }
 }

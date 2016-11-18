@@ -55,6 +55,22 @@ namespace AcadLib.XData
         }
 
         /// <summary>
+        /// Удаление словаря
+        /// </summary>
+        /// <param name="dicId">Словарь</param>
+        public static void DeleteDic (ObjectId dicId)
+        {
+            if (dicId.IsNull) return;
+            using (var dic = dicId.Open( OpenMode.ForWrite) as DBDictionary)
+            {
+                if (dic != null)
+                {
+                    dic.Erase();
+                }
+            }
+        }
+
+        /// <summary>
         /// Получение вложенного словаря.
         /// Если create=true то если такой словарь существует - он очищается.
         /// </summary>
