@@ -12,7 +12,7 @@ namespace AcadLib.XData
     /// </summary>
     public class EntDictExt : IDisposable
     {
-        const string PikApp = "PIK";
+        
         readonly DBObject dbo;
         readonly string pluginName;        
 
@@ -59,19 +59,14 @@ namespace AcadLib.XData
                 if (dicDelete != null)
                 {
                     if (dicDbo.Inners.Count != 1 || dicDbo.Recs.Any())
-                    {                        
+                    {
                         //Удаление только словаря с этим именем
                         dicId = ExtDicHelper.GetDic(dicId, dicName, false, false);
-                    }
-                }
-                else
-                {
-                    // С этим именем нет словаря. Ничего не нужно удалять
-                    return;
-                }                
+                    }                    
+                }                             
             }            
             // Удаление словаря
-            ExtDicHelper.DeleteDic(dicId);
+            ExtDicHelper.DeleteDic(dicId, dbo);
         }
 
         /// <summary>
@@ -176,7 +171,7 @@ namespace AcadLib.XData
             // Словарь объекта
             var idDboDic = ExtDicHelper.GetDboExtDic(dbo, create);
             // Словарь ПИК
-            var idDicPik = ExtDicHelper.GetDic(idDboDic, PikApp, create, false);
+            var idDicPik = ExtDicHelper.GetDic(idDboDic, ExtDicHelper.PikApp, create, false);
             // Словарь плагина
             var idDicPlugin = ExtDicHelper.GetDic(idDicPik, pluginName, create, false);            
             res = idDicPlugin;

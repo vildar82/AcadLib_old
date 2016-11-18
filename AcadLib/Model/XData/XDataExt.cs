@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AcadLib.XData;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
 {
     public static class XDataExt
     {
-        public const string PikApp = "PIK";
-
         private static Dictionary<Type, int> dictXDataTypedValues = new Dictionary<Type, int> {            
             { typeof(int), (int)DxfCode.ExtendedDataInteger32 },
             { typeof(double), (int)DxfCode.ExtendedDataReal },
@@ -43,7 +42,7 @@ namespace AcadLib
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void RegAppPIK(this Database db)
         {
-            RegApp(db, PikApp);
+            RegApp(db, ExtDicHelper.PikApp);
         }
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace AcadLib
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void RemoveXDataPIK(this DBObject dbo)
         {
-            RemoveXData(dbo, PikApp);
+            RemoveXData(dbo, ExtDicHelper.PikApp);
         }
 
         /// <summary>
@@ -92,7 +91,7 @@ namespace AcadLib
             RegApp(dbo.Database, regAppName);
             var tvValu = GetTypedValue(value);
             using (var rb = new ResultBuffer(
-                        new TypedValue((int)DxfCode.ExtendedDataRegAppName, PikApp),
+                        new TypedValue((int)DxfCode.ExtendedDataRegAppName, ExtDicHelper.PikApp),
                         tvValu))
             {
                 dbo.XData = rb;
@@ -108,7 +107,7 @@ namespace AcadLib
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void SetXDataPIK<T> (this DBObject dbo, T value)
         {
-            SetXData(dbo, PikApp, value);
+            SetXData(dbo, ExtDicHelper.PikApp, value);
         }
 
         /// <summary>
@@ -117,7 +116,7 @@ namespace AcadLib
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void SetXDataPIK(this DBObject dbo, int value)
         {
-            SetXData(dbo, PikApp, value);
+            SetXData(dbo, ExtDicHelper.PikApp, value);
         }
         
         public static int GetXData(this DBObject dbo, string regAppName)
@@ -138,7 +137,7 @@ namespace AcadLib
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static int GetXDatPIK(this DBObject dbo)
         {
-            return GetXData(dbo, PikApp);
+            return GetXData(dbo, ExtDicHelper.PikApp);
         }
 
         public static string GetXDataString(this DBObject dbo, string regAppName)
@@ -159,7 +158,7 @@ namespace AcadLib
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static string GetXDatPIKString(this DBObject dbo)
         {
-            return GetXDataString(dbo, PikApp);
+            return GetXDataString(dbo, ExtDicHelper.PikApp);
         }
 
         /// <summary>
@@ -193,7 +192,7 @@ namespace AcadLib
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static T GetXDataPIK<T> (this DBObject dbo)
         {
-            return GetXData<T>(dbo, PikApp);
+            return GetXData<T>(dbo, ExtDicHelper.PikApp);
         }
 
         private static TypedValue GetTypedValue (object value)

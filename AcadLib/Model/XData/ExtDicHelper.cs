@@ -10,6 +10,7 @@ namespace AcadLib.XData
 {
     public static class ExtDicHelper
     {
+        public const string PikApp = "PIK";
         private static RXClass rxRecord = RXObject.GetClass(typeof(Xrecord));
         private static RXClass rxDBDic = RXObject.GetClass(typeof(DBDictionary));
 
@@ -58,16 +59,28 @@ namespace AcadLib.XData
         /// Удаление словаря
         /// </summary>
         /// <param name="dicId">Словарь</param>
-        public static void DeleteDic (ObjectId dicId)
+        public static void DeleteDic (ObjectId dicId, DBObject dbo)
         {
             if (dicId.IsNull) return;
-            using (var dic = dicId.Open( OpenMode.ForWrite) as DBDictionary)
+            using (var dic = dicId.Open(OpenMode.ForWrite) as DBDictionary)
             {
                 if (dic != null)
                 {
                     dic.Erase();
                 }
             }
+            // Проверить. Если больше нет словарей в объекте, то очистить словарь объекта.
+            var dboExtDicId = ExtDicHelper.GetDboExtDic(dbo, false);
+            if (dboExtDicId.IsNull) return;
+            using (var dboExtDic = dboExtDicId.Open(OpenMode.ForRead) as DBDictionary)
+            {
+                if (dboExtDic == null) return;                
+                if (dboExtDic.Count == 0 || (dboExtDic.Count == 1 && dboExtDic.Contains(PikApp)))
+                {
+                    dboExtDic.UpgradeOpen();
+                    dboExtDic.Erase();                    
+                }
+            }        
         }
 
         /// <summary>

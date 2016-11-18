@@ -27,7 +27,7 @@ namespace AcadLib
 
         public DictNOD(string innerDict, bool hasInnerDict)
         {
-            this.dictName = "PIK";
+            this.dictName = ExtDicHelper.PikApp;
             this.dictInnerName = innerDict;            
         }
 
