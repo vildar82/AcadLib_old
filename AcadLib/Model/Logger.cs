@@ -103,5 +103,4 @@ namespace AcadLib
             return $"Команда: {CommandStart.CurrentCommand}; Сообщение: {msg}";
         }
     }
-
 }
