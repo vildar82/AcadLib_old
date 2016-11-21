@@ -19,6 +19,7 @@ namespace AcadLib
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+                if (!ent.IsWriteEnabled) ent.UpgradeOpen();
                 cs.AppendEntity(ent);
                 db.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(ent, true);
                 t.Commit();

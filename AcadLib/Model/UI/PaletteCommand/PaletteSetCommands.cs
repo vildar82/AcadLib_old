@@ -19,6 +19,7 @@ namespace AcadLib.PaletteCommands
     {
         private static PaletteSetCommands _paletteSet;
         private static readonly Guid PaletteGuid = new Guid("623e4502-7407-4566-9d71-3ecbda06b088");
+        private static string commandStartPalette;
 
         /// <summary>
         /// Данные для палитры
@@ -30,7 +31,8 @@ namespace AcadLib.PaletteCommands
         /// </summary>
         public static List<IPaletteCommand> CommandsAddin { get; set; } 
 
-        public PaletteSetCommands() : base(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, PaletteGuid)
+        public PaletteSetCommands() : 
+            base(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, PaletteSetCommands.commandStartPalette, PaletteGuid)
         {
             Icon = Properties.Resources.pik;
             loadPalettes();           
@@ -48,8 +50,10 @@ namespace AcadLib.PaletteCommands
         /// Добавление значка ПИК в трей для запуска палитры.
         /// </summary>
         /// <param name="commands"></param>
-        public static void InitPalette(List<IPaletteCommand> commands)
+        /// <param name="commandStartPalette">Имя команды для старта палитры</param>
+        public static void InitPalette(List<IPaletteCommand> commands, string commandStartPalette)
         {
+            PaletteSetCommands.commandStartPalette = commandStartPalette;
             CommandsAddin = commands;
             Commands.AllCommandsCommon();
             SetTrayIcon();

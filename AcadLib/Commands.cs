@@ -210,6 +210,10 @@ namespace AcadLib {
             {
                 Logger.Log.Error(ex, "LoadEntityFramework");
             }
+
+            // Загрузка общей библмотеки NetLib
+            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\NetLib.dll");
+            LoadService.LoadFromTry(fileDll);
         }
     }
 }
