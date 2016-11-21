@@ -125,18 +125,18 @@ namespace AcadLib.PaletteCommands
             // Добавление иконки в трей    
             try
             {
-                //TrayItem ti = new TrayItem();                
-                //ti.ToolTipText = "Палитра ПИК";
-                //ti.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
-                //ti.MouseDown += PikTray_MouseDown;                
-                //ti.Visible = true;                
-                //Application.StatusBar.TrayItems.Add(ti);                
+                TrayItem ti = new TrayItem();
+                ti.ToolTipText = "Палитра ПИК";
+                ti.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
+                ti.MouseDown += PikTray_MouseDown;
+                ti.Visible = true;
+                Application.StatusBar.TrayItems.Add(ti);
 
-                Pane pane = new Pane();                
-                pane.ToolTipText = "Палитра ПИК";                                
-                pane.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
-                pane.MouseDown += PikTray_MouseDown;
-                Application.StatusBar.Panes.Add(pane);
+                //Pane pane = new Pane();                
+                //pane.ToolTipText = "Палитра ПИК";                                
+                //pane.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
+                //pane.MouseDown += PikTray_MouseDown;
+                //Application.StatusBar.Panes.Add(pane);
             }
             catch { }
         }
