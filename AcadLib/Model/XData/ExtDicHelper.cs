@@ -24,7 +24,7 @@ namespace AcadLib.XData
         public static ObjectId GetRec (ObjectId dicId, string key, bool create, bool clear)
         {
             ObjectId res = ObjectId.Null;
-            if (dicId.IsNull || string.IsNullOrEmpty(key)) return res;
+            if (!dicId.IsValidEx() || string.IsNullOrEmpty(key)) return res;
             using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
             {
                 if (dic != null)
@@ -61,7 +61,7 @@ namespace AcadLib.XData
         /// <param name="dicId">Словарь</param>
         public static void DeleteDic (ObjectId dicId, DBObject dbo)
         {
-            if (dicId.IsNull) return;
+            if (!dicId.IsValidEx()) return;
             using (var dic = dicId.Open(OpenMode.ForWrite) as DBDictionary)
             {
                 if (dic != null)
@@ -95,7 +95,7 @@ namespace AcadLib.XData
         public static ObjectId GetDic (ObjectId dicId, string key, bool create, bool clear)
         {
             ObjectId res = ObjectId.Null;
-            if (dicId.IsNull || string.IsNullOrEmpty(key)) return res;
+            if (!dicId.IsValidEx() || string.IsNullOrEmpty(key)) return res;
             using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
             {
                 if (dic != null)
@@ -166,7 +166,7 @@ namespace AcadLib.XData
         public static DicED GetDicEd (ObjectId dicId)
         {
             DicED res = null;
-            if (dicId.IsNull) return res;
+            if (!dicId.IsValidEx()) return res;
 
             using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
             {
@@ -206,7 +206,7 @@ namespace AcadLib.XData
         {
             if (edDic == null) return;
             var dicId = GetDic(idDicParent, edDic.Name, true, true);
-            if (dicId.IsNull) return;
+            if (!dicId.IsValidEx()) return;
 
             // Запись списка значений в XRecord
             if (edDic.Recs != null)
@@ -235,7 +235,7 @@ namespace AcadLib.XData
         {
             if (rec == null || rec.Values == null || rec.Values.Count==0) return;
             var idXrec = GetRec(dicId, rec.Name, true, true);
-            if (idXrec.IsNull) return;
+            if (!idXrec.IsValidEx()) return;
             using (var xrec = idXrec.Open(OpenMode.ForWrite) as Xrecord)
             {
                 using (var rb = new ResultBuffer(rec.Values.ToArray()))
