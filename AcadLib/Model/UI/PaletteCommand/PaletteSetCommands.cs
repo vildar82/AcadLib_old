@@ -133,8 +133,7 @@ namespace AcadLib.PaletteCommands
                 //Application.StatusBar.TrayItems.Add(ti);                
 
                 Pane pane = new Pane();                
-                pane.ToolTipText = "Палитра ПИК";                
-                pane.Style = PaneStyles.Stretch | PaneStyles.Command;                
+                pane.ToolTipText = "Палитра ПИК";                                
                 pane.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
                 pane.MouseDown += PikTray_MouseDown;
                 Application.StatusBar.Panes.Add(pane);
