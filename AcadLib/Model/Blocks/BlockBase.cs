@@ -11,6 +11,8 @@ using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using NetLib;
+    
 
 namespace AcadLib.Blocks
 {
@@ -166,13 +168,7 @@ namespace AcadLib.Blocks
                 try
                 {
                     var value = prop.Value;
-                    var culture = CultureInfo.InvariantCulture;
-                    if (value is string && typeof(T) == typeof(double))
-                    {
-                        value = ((string)value).Replace(",", ".");
-                        culture = new CultureInfo("en-US");
-                    }
-                    resVal = (T)Convert.ChangeType(value, typeof(T), culture);
+                    resVal = prop.Value.GetValue<T>();                    
                 }
                 catch
                 {
