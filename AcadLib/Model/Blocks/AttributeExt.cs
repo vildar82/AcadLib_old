@@ -12,6 +12,19 @@ namespace AcadLib.Extensions
     /// </summary>
     public static class AttributeExt
     {
+        /// <summary>
+        /// Поворот атрибута в 0
+        /// </summary>        
+        public static void Normalize(this AttributeReference atr)
+        {
+            if (atr.Rotation != 0)
+            {
+                if (!atr.IsWriteEnabled)
+                    atr.UpgradeOpen();
+                atr.Rotation = 0;
+            }
+        }
+
         public static bool Is(this AttributeReference attr, string tag)
         {
             return string.Equals(attr.Tag, tag, StringComparison.CurrentCultureIgnoreCase);
