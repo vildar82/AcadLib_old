@@ -23,6 +23,11 @@ namespace AcadLib
         {
         }
 
+        public new void InfoLisp(string msg)
+        {            
+            base.InfoLisp(msg);
+        }
+
         /// <summary>
         /// Отзыв
         /// </summary>        

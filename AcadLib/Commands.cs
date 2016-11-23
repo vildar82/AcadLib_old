@@ -86,25 +86,15 @@ namespace AcadLib {
 			});
 		}
 
-        [LispFunction(nameof(PIK_SrartLisp))]
-        public void PIK_SrartLisp(ResultBuffer rb)
+        [LispFunction(nameof(PIK_LispLog))]
+        public void PIK_LispLog(ResultBuffer rb)
         {
-            var tvs = rb.AsArray();
-            string command = string.Empty;
-            string file = string.Empty;
-            var countTV = tvs.Length;
-            if (countTV > 0)
+            var tvs = rb.AsArray();                        
+            if (tvs.Any())
             {
-                command = tvs[0].Value.ToString();
-                if (countTV>1)
-                {
-                    file = tvs[1].Value.ToString();
-                }
-            }
-            CommandStart.StartLisp(command, file);
-        }
-
-        
+                Logger.Log.InfoLisp(tvs[0].Value.ToString());
+            }            
+        }        
 
 		[CommandMethod(Group, CommandInsertBlockPikLogo, CommandFlags.Modal)]
 		public void InsertBlockPikLogo ()
