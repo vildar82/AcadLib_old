@@ -76,7 +76,7 @@ namespace AcadLib
                 if (!ex.Message.Contains(General.CanceledByUser))
                 {
                     Logger.Log.Error(ex, CurrentCommand);
-                    Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
+                    Inspector.AddError($"Ошибка в программе. {ex}", System.Drawing.SystemIcons.Error);
                 }
                 doc.Editor.WriteMessage(ex.Message);
             }
