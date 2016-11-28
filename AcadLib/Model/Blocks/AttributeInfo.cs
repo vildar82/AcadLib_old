@@ -57,7 +57,7 @@ namespace AcadLib.Blocks
                     foreach (var idEnt in btr)
                     {
                         using (var attrDef = idEnt.Open(OpenMode.ForRead, false, true) as AttributeDefinition)
-                        {
+                        {                            
                             if (attrDef != null && attrDef.Visible)
                             {
                                 var attrDefInfo = new AttributeInfo(attrDef);
