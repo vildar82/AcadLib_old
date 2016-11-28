@@ -327,6 +327,9 @@ namespace AcadLib
             }
         }
 
+        /// <summary>
+        /// Парсинг десятичного числа из строки - замена , на . (в англ. культуре)
+        /// </summary>        
         public static double ToDouble (this string val)
         {
             string s = val.Replace(",", ".");

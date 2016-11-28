@@ -297,12 +297,14 @@ namespace AcadLib.Errors
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.Location = new System.Drawing.Point(572, 363);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 8;
             this.buttonCancel.Text = "Прервать";
             this.buttonCancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
             // buttonOk
             // 
@@ -560,6 +562,11 @@ namespace AcadLib.Errors
                 DialogResult = DialogResult.Cancel;
                 this.Close();
             }
-        }        
+        }
+
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

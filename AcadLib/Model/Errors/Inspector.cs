@@ -154,7 +154,7 @@ namespace AcadLib.Errors
                 if (res != System.Windows.Forms.DialogResult.OK)
                 {
                     formErr.EnableDialog(false);
-                    Application.ShowModelessDialog(formErr);
+                    //Application.ShowModelessDialog(formErr);
                     throw new Exception("Отменено пользователем.");
                 }
                 return res;
