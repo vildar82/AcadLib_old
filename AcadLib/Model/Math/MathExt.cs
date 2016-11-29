@@ -332,10 +332,7 @@ namespace AcadLib
         /// </summary>        
         public static double ToDouble (this string val)
         {
-            string s = val.Replace(",", ".");
-            CultureInfo ci = new CultureInfo("en-US");
-            double d = double.Parse(s, ci.NumberFormat);
-            return d;
+            return NetLib.MathExt.ToDouble(val);
         }
 
         public static int GetStartInt(this string input)
