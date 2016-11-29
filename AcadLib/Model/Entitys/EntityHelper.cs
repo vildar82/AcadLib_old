@@ -13,6 +13,7 @@ namespace AcadLib
     {
         public static void AddEntityToCurrentSpace (this Entity ent)
         {
+            if (ent.IsDisposed) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
             using (doc.LockDocument())
