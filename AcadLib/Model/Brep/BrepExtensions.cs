@@ -33,6 +33,10 @@ namespace AcadLib
                 {
                     Region r = (Region)dbsRegions[0];
                     colReg.Add(r);
+                    foreach (var item in dbsRegions.Cast<DBObject>().Skip(1))
+                    {
+                        item.Dispose();
+                    }
                 }                
             }
 
@@ -41,7 +45,11 @@ namespace AcadLib
             foreach (var iReg in colReg.Skip(1))
             {
                 r1.BooleanOperation(BooleanOperationType.BoolUnite, iReg);
-            }            
+            }
+            foreach (var item in colReg)
+            {
+                item.Dispose();
+            }
             return GetRegionContour(r1);            
         }
 
@@ -175,7 +183,22 @@ namespace AcadLib
         {
             if (pls == null || pls.Count == 0) return null;            
             var regions = createRegion(pls);
-            var union = unionRegions(regions); 
+            Region union;
+            try
+            {
+                union = unionRegions(regions);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                foreach (var item in regions)
+                {
+                    item.Dispose();
+                }
+            }
             
             // Вырезание over региона
             if (over != null)
