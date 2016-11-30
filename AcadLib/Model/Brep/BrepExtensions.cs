@@ -183,7 +183,7 @@ namespace AcadLib
         {
             if (pls == null || pls.Count == 0) return null;            
             var regions = createRegion(pls);
-            Region union;
+            Region union = null;
             try
             {
                 union = unionRegions(regions);
@@ -194,6 +194,7 @@ namespace AcadLib
             }
             finally
             {
+                regions.Remove(union);
                 foreach (var item in regions)
                 {
                     item.Dispose();
