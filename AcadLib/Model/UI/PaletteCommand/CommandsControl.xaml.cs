@@ -28,6 +28,7 @@ namespace AcadLib.PaletteCommands
 
         private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
+            if (e.Exception.HResult == -2146233079) return;
             Logger.Log.Error("CommandsControl.Dispatcher_UnhandledException: " + e.Exception.ToString());
             e.Handled = true;
         }
