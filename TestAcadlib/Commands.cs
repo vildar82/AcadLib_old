@@ -16,6 +16,7 @@ using AcadLib.Blocks.Dublicate;
 using AcadLib.Blocks.Visual;
 using AcadLib;
 using AcadLib.Layers;
+using AcadLib.Jigs;
 using Autodesk.AutoCAD.Colors;
 
 namespace TestAcadlib
@@ -25,8 +26,21 @@ namespace TestAcadlib
         [CommandMethod("Test")]
         public void Test()
         {
-            Inspector.AddError("fgdfg");
-            var ress = Inspector.ShowDialog();
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+            Database db = doc.Database;
+
+            var tables = new List<Entity>();
+            for (int i = 0; i < 10; i++)
+            {
+                var table = new Table();
+                table.SetSize(i, i * 2);
+                table.Cells[0, 0].TextString = i.ToString();
+                table.GenerateLayout();
+                tables.Add(table);                
+            }           
+
+            ed.Drag(tables, 50);
         }       
     }
 }
