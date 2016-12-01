@@ -46,22 +46,23 @@ namespace AcadLib
         /// <summary>
         /// Файл из папки пользовательских данных (AppData\PIK\Autocad\...)
         /// </summary>
-        /// <param name="folderName">Имя программы\плагина</param>
+        /// <param name="pluginName">Имя программы(плагина)</param>
         /// <param name="fileName">Имя файла</param>
-        /// <returns></returns>
-        public static string GetUserDataFile (string folderName, string fileName)
+        [Obsolete("Используй Path.GetUserPluginFolder()")]
+        public static string GetUserDataFile (string pluginName, string fileName)
         {
-            if (userDataFolder == null)
-            {
-                userDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create), @"PIK\AutoCAD");
-                if (!Directory.Exists(userDataFolder))
-                    Directory.CreateDirectory(userDataFolder);
-            }
-            var folder = Path.Combine(userDataFolder, folderName);
-            if (!Directory.Exists(folder))            
-                Directory.CreateDirectory(folder);            
-            var file = Path.Combine(folder, fileName);
-            return file;
+            return IO.Path.GetUserPluginFile(pluginName, fileName);
+            //if (userDataFolder == null)
+            //{
+            //    userDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create), @"PIK\AutoCAD");
+            //    if (!Directory.Exists(userDataFolder))
+            //        Directory.CreateDirectory(userDataFolder);
+            //}
+            //var folder = Path.Combine(userDataFolder, folderName);
+            //if (!Directory.Exists(folder))            
+            //    Directory.CreateDirectory(folder);            
+            //var file = Path.Combine(folder, fileName);
+            //return file;
         }        
 
         public static bool IsCadManager()
