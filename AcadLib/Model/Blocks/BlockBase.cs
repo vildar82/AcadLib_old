@@ -166,8 +166,7 @@ namespace AcadLib.Blocks
             if (prop != null)
             {
                 try
-                {
-                    var value = prop.Value;
+                {                    
                     resVal = prop.Value.GetValue<T>();                    
                 }
                 catch
