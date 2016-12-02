@@ -14,7 +14,15 @@ namespace AcadLib.Scale
         /// </summary>        
         public static double GetCurrentAnnoScale(Database db)
         {
-            return 1 / db.Cannoscale.Scale;
+            try
+            {
+                return 1 / db.Cannoscale.Scale;
+            }
+            catch(Exception ex)
+            {
+                Logger.Log.Error(ex, "GetCurrentAnnoScale");
+            }
+            return 1;
         }
     }
 }

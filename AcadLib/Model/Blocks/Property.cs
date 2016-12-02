@@ -98,15 +98,24 @@ namespace AcadLib.Blocks
             }
             return props;
         }
-        
+
+        private bool EqualValue(object value)
+        {            
+            if (this.Value is double && value is double)
+            {
+                return Math.Abs((double)Value - (double)value) < 0.0001;
+            }
+            return Value.Equals(value);
+        }
+
         public bool Equals (Property other)
         {
             if (other == null) return false;
             if (ReferenceEquals(this, other)) return true;
-            var res = Name == other.Name && Value.Equals(other.Value);
+            var res = Name == other.Name && EqualValue(other.Value);
 
             return res;
-        }
+        }        
 
         public override int GetHashCode ()
         {
