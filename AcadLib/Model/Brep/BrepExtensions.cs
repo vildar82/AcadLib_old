@@ -46,7 +46,7 @@ namespace AcadLib
             {
                 r1.BooleanOperation(BooleanOperationType.BoolUnite, iReg);
             }
-            foreach (var item in colReg)
+            foreach (var item in colReg.Skip(1))
             {
                 item.Dispose();
             }

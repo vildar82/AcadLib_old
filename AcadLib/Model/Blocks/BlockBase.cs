@@ -167,7 +167,7 @@ namespace AcadLib.Blocks
             {
                 try
                 {                    
-                    resVal = prop.Value.GetValue<T>();                    
+                    resVal = prop.Value.GetValue<T>();                      
                 }
                 catch
                 {
