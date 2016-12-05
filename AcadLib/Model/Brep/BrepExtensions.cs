@@ -174,14 +174,20 @@ namespace AcadLib
         }
 
 
+        public static Region Union(this List<Polyline> pls, Region over)
+        {
+            return Union(pls, over);
+        }
+
+
         /// <summary>
         /// Объекдинение полилиний.
         /// Полилинии должны быть замкнуты!
         /// </summary>        
         /// <param name="over">Контур который должен быть "над" объединенными полилиниями. Т.е. контур этой полилинии вырезается из полученного контура, если попадает на него.</param>
-        public static Region Union (this List<Polyline> pls, Region over)
+        public static Region Union (this IEnumerable<Polyline> pls, Region over)
         {
-            if (pls == null || pls.Count == 0) return null;            
+            if (pls == null || !pls.Any()) return null;            
             var regions = createRegion(pls);
             Region union = null;
             try
@@ -209,7 +215,7 @@ namespace AcadLib
             return union;
         }
 
-        private static List<Region> createRegion (List<Polyline> pls)
+        private static List<Region> createRegion (IEnumerable<Polyline> pls)
         {
             List<Region> res = new List<Region>();
             var dbs = new DBObjectCollection();
