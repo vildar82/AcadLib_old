@@ -176,9 +176,8 @@ namespace AcadLib
 
         public static Region Union(this List<Polyline> pls, Region over)
         {
-            return Union(pls, over);
+            return Union((IEnumerable<Polyline>)pls, over);
         }
-
 
         /// <summary>
         /// Объекдинение полилиний.
