@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Autodesk.AutoCAD.ApplicationServices;
+using System.Windows.Input;
+using MicroMvvm;
 
 namespace AcadLib.PaletteCommands
 {
@@ -22,7 +24,7 @@ namespace AcadLib.PaletteCommands
         /// <summary>
         /// Имя команды AutoCAD
         /// </summary>
-        public string Command { get; set; }
+        public string CommandName { get; set; }
         /// <summary>
         /// Группа команд - для объекдинения в палитры
         /// </summary>
@@ -35,16 +37,18 @@ namespace AcadLib.PaletteCommands
         /// Индекс кнопки на палитре
         /// </summary>
         public int Index { get; set; }
-
         public string HelpMedia { get; set; }
+        public List<MenuItemCommand> ContexMenuItems { get; set; }
+        public ICommand Command { get; set; }
 
-        public PaletteCommand() { }
+        //public PaletteCommand() { }
 
         public PaletteCommand(string name, Bitmap image, string command, string description, string group = "")
         {   
             this.Image = GetSource(image);
             this.Name = name;
-            this.Command = command;
+            this.CommandName = command;
+            Command = new RelayCommand(Execute);
             this.Description = description;
             this.Group = group;
             // HelpMedia
@@ -62,7 +66,7 @@ namespace AcadLib.PaletteCommands
             Access = access;
         }
 
-        public void Execute()
+        public virtual void Execute()
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;

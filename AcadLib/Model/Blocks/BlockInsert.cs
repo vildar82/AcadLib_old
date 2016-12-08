@@ -33,8 +33,10 @@ namespace AcadLib.Blocks
         {
             ObjectId idBlRefInsert = ObjectId.Null;
             Document doc = AcAp.DocumentManager.MdiActiveDocument;
+            if (doc == null) return ObjectId.Null;
             Database db = doc.Database;
             Editor ed = doc.Editor;
+            using (doc.LockDocument())
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var bt = t.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -68,10 +70,10 @@ namespace AcadLib.Blocks
                             {
                                 item.Value = prop.Value;
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 Logger.Log.Error(ex, $"Ошибка типа значения для дин параметра '{item.PropertyName}' " +
-                                $"при вставке блока '{blName}': тип устанавливаемого значение '{prop.Value.GetType()}', " + 
+                                $"при вставке блока '{blName}': тип устанавливаемого значение '{prop.Value.GetType()}', " +
                                 $"а должен быть тип '{item.UnitsType}'");
                             }
                         }
@@ -83,7 +85,7 @@ namespace AcadLib.Blocks
                 var pr = ed.Drag(entJig);
                 if (pr.Status == PromptStatus.OK)
                 {
-                    var btrBl = t.GetObject(idBlBtr, OpenMode.ForRead) as BlockTableRecord;                                        
+                    var btrBl = t.GetObject(idBlBtr, OpenMode.ForRead) as BlockTableRecord;
                     if (btrBl.HasAttributeDefinitions)
                         AddAttributes(br, btrBl, t);
                 }

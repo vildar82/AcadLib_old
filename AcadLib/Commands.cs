@@ -204,6 +204,12 @@ namespace AcadLib {
             // Загрузка общей библмотеки NetLib
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\NetLib.dll");
             LoadService.LoadFromTry(fileDll);
+
+            // Коннекторы к базе MDM
+            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
+            LoadService.LoadFromTry(fileDll);
+            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDBCToLISP.dll");
+            LoadService.LoadFromTry(fileDll);
         }
     }
 }

@@ -90,7 +90,7 @@ namespace AcadLib.PaletteCommands
                     var model = new PaletteModel(group);
                     if (model.PaletteCommands.Any())
                     {
-                        CommandsControl commControl = new CommandsControl();
+                        UI.CommandsControl commControl = new UI.CommandsControl();
                         commControl.DataContext = model;
                         string name = group.Key;
                         if (string.IsNullOrEmpty(name)) name = "Главная";
@@ -101,7 +101,7 @@ namespace AcadLib.PaletteCommands
             }
             // Общие команды для всех отделов определенные в этой сборке            
             var modelCommon = new PaletteModel(commonCommands);
-            var controlCommon = new CommandsControl();
+            var controlCommon = new UI.CommandsControl();
             controlCommon.DataContext = modelCommon;
             AddVisual(groupCommon, controlCommon);
             models.Add(modelCommon);

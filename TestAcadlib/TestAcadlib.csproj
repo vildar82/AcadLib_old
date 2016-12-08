@@ -96,6 +96,7 @@
     <Compile Include="Comparers\TestPoint2dComparer.cs" />
     <Compile Include="Geometry\Polylines\TestAverageVertexPolylines.cs" />
     <Compile Include="Geometry\Polylines\TestMergePolyline.cs" />
+    <Compile Include="PaletteComands\TestPalette.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WPF\Class1.cs" />
     <Compile Include="WPF\Window1.xaml.cs">

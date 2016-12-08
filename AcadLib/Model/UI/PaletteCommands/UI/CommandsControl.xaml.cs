@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AcadLib.PaletteCommands
+namespace AcadLib.PaletteCommands.UI
 {
     /// <summary>
     /// Логика взаимодействия для CommandsControl.xaml
@@ -23,7 +23,7 @@ namespace AcadLib.PaletteCommands
         public CommandsControl()
         {
             InitializeComponent();
-            this.Dispatcher.UnhandledException += Dispatcher_UnhandledException;                        
+            this.Dispatcher.UnhandledException += Dispatcher_UnhandledException;                  
         }
 
         private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -31,7 +31,7 @@ namespace AcadLib.PaletteCommands
             if (e.Exception.HResult != -2146233079)
             {
                 Logger.Log.Error("CommandsControl.Dispatcher_UnhandledException: " + e.Exception.ToString());
-            }
+            }            
             e.Handled = true;
         }
 
@@ -47,6 +47,6 @@ namespace AcadLib.PaletteCommands
             var selComm = ((FrameworkElement)sender).DataContext as PaletteCommand;
             if (selComm == null) return;
             selComm.Execute();
-        }
+        }        
     }
 }

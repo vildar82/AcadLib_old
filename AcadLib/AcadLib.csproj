@@ -77,6 +77,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Package\Excel\4.0.5\EPPlus.dll</HintPath>
     </Reference>
+    <Reference Include="MicroMvvm, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="NetLib">
       <HintPath>..\..\NetLib\NetLib\NetLib\bin\Release\NetLib.dll</HintPath>
       <Private>False</Private>
@@ -97,8 +98,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnitsNet, Version=3.36.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnitsNet.3.36.0\lib\net35\UnitsNet.dll</HintPath>
+    <Reference Include="UnitsNet, Version=3.48.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnitsNet.3.48.0\lib\net35\UnitsNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -198,17 +199,19 @@
     <Compile Include="Model\Tables\CreateTable.cs" />
     <Compile Include="Model\Tables\ICreateTable.cs" />
     <Compile Include="Model\Entitys\EntityHelper.cs" />
-    <Compile Include="Model\UI\PaletteCommand\CommandCounter.cs" />
-    <Compile Include="Model\UI\PaletteCommand\CommandInfo.cs" />
-    <Compile Include="Model\UI\PaletteCommand\CommandsControl.xaml.cs">
+    <Compile Include="Model\UI\PaletteCommands\Blocks\BlockInsertCommand.cs" />
+    <Compile Include="Model\UI\PaletteCommands\CommandCounter.cs" />
+    <Compile Include="Model\UI\PaletteCommands\CommandInfo.cs" />
+    <Compile Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml.cs">
       <DependentUpon>CommandsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\CommandStarter.cs" />
-    <Compile Include="Model\UI\PaletteCommand\IPaletteCommand.cs" />
-    <Compile Include="Model\UI\PaletteCommand\PaletteCommand.cs" />
-    <Compile Include="Model\UI\PaletteCommand\PaletteCommandBlock.cs" />
-    <Compile Include="Model\UI\PaletteCommand\PaletteModel.cs" />
-    <Compile Include="Model\UI\PaletteCommand\PaletteSetCommands.cs" />
+    <Compile Include="Model\UI\PaletteCommands\ContextMenu\MenuItemCommand.cs" />
+    <Compile Include="Model\UI\PaletteCommands\IPaletteCommand.cs" />
+    <Compile Include="Model\UI\PaletteCommands\PaletteCommand.cs" />
+    <Compile Include="Model\UI\PaletteCommands\PaletteModel.cs" />
+    <Compile Include="Model\UI\PaletteCommands\PaletteSetCommands.cs" />
+    <Compile Include="Model\UI\PaletteCommands\UI\DesignTimePalette.cs" />
     <Compile Include="Model\UI\Properties\XmlSerializableDictionary.cs" />
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToHidingVisibilityConverter.cs" />
@@ -351,6 +354,7 @@
     <None Include="Model\Statistic\DataSetStatistic.xss">
       <DependentUpon>DataSetStatistic.xsd</DependentUpon>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -402,14 +406,11 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="Model\Blocks\Visual\WindowVisualBlocks.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Model\UI\PaletteCommand\CommandsControl.xaml">
+    <Page Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
