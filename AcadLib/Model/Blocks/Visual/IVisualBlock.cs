@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MicroMvvm;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,7 @@ namespace AcadLib.Blocks.Visual
     {
         string Name { get; set; }
         ImageSource Image { get; set; }
+        string File { get; set; }
+        RelayCommand Redefine { get; set; }
     }
 }

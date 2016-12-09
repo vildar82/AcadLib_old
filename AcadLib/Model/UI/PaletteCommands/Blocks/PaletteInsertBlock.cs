@@ -39,19 +39,19 @@ namespace AcadLib.PaletteCommands
         private void CreateContexMenu()
         {
             ContexMenuItems = new List<MenuItemCommand>();
-            var menu = new MenuItemCommand("Переопределить", new RelayCommand(Redifine, CanRedifine));
+            var menu = new MenuItemCommand("Переопределить", new RelayCommand(Redefine, CanRedefine));
             ContexMenuItems.Add(menu);
         }
 
         /// <summary>
         /// Переопределение блока
         /// </summary>
-        private void Redifine()
+        private void Redefine()
         {
             CopyBlock(DuplicateRecordCloning.Replace);
         }
 
-        private bool CanRedifine()
+        private bool CanRedefine()
         {
             var resCan = false;
             // Проверить, есть ли в текущем чертеже такой блок

@@ -1,4 +1,5 @@
-﻿using NetLib.WPF;
+﻿using MicroMvvm;
+using NetLib.WPF;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

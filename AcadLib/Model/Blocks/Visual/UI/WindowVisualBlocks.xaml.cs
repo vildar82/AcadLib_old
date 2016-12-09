@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace AcadLib.Blocks.Visual
+namespace AcadLib.Blocks.Visual.UI
 {
     /// <summary>
     /// Логика взаимодействия для WindowVisualBlocks.xaml
@@ -21,24 +21,19 @@ namespace AcadLib.Blocks.Visual
     {
         public VisualBlock Selected;
 
-        public WindowVisualBlocks(List<VisualBlock> visuals)
+        public WindowVisualBlocks(VisualBlocksViewModel vm)
         {
             InitializeComponent();
+            DataContext = vm;            
 
-            VisualModel model = new VisualModel();
-            DataContext = model;
-            model.LoadData(visuals);
-
-            ListBoxVisuals.MouseLeftButtonUp += ListBoxVisuals_MouseLeftButtonUp;
+            //lbVisuals.MouseLeftButtonUp += ListBoxVisuals_MouseLeftButtonUp;
             //lvwBlocks.MouseLeftButtonUp += ListBoxVisuals_MouseLeftButtonUp;            
         }
+       
 
-        private void ListBoxVisuals_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void ButtonInsert_Click(object sender, RoutedEventArgs e)
         {
-            Selected = ListBoxVisuals.SelectedItem as VisualBlock;
-            //Selected = lvwBlocks.SelectedItem as VisualBlock;
-            DialogResult = true;
-            this.Hide();
+            Hide();
         }
     }
 }

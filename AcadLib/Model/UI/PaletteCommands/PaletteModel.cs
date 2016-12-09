@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Autodesk.AutoCAD.Runtime;
 using NetLib.WPF;
+using MicroMvvm;
 
 namespace AcadLib.PaletteCommands
 {

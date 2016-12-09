@@ -6,33 +6,31 @@ using System.Threading.Tasks;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Windows.Data;
+using AcadLib.Blocks.Visual.UI;
 
 namespace AcadLib.Blocks.Visual
 {
     public static class VisualInsertBlock
     {
-        private static Dictionary<Predicate<string>, List<VisualBlock>> dictFiles = new Dictionary<Predicate<string>, List<VisualBlock>>();        
+        private static Dictionary<Predicate<string>, List<IVisualBlock>> dictFiles = new Dictionary<Predicate<string>, List<IVisualBlock>>();        
 
         public static void InsertBlock(string fileBlocks, Predicate<string> filter, Layers.LayerInfo layer = null)
         {
-            List<VisualBlock> visuals;
+            List<IVisualBlock> visuals;
             if (!dictFiles.TryGetValue(filter, out visuals))
             {                
                 visuals = LoadVisuals(fileBlocks, filter);
                 dictFiles.Add(filter, visuals);
             }
 
-            WindowVisualBlocks winVisual = new WindowVisualBlocks(visuals);
-            var dlgRes = Application.ShowModalWindow(winVisual);
-            if (dlgRes.HasValue && dlgRes.Value)
-            {                
-                insert(winVisual.Selected, fileBlocks, layer);
-            }
+            var vm = new VisualBlocksViewModel(visuals);
+            var winVisual = new WindowVisualBlocks(vm);
+            Application.ShowModalWindow(winVisual);            
         }        
 
-        public static List<VisualBlock> LoadVisuals(string file, Predicate<string> filter)
+        public static List<IVisualBlock> LoadVisuals(string file, Predicate<string> filter)
         {
-            List<VisualBlock> visualBlocks = new List<VisualBlock>();
+            var visualBlocks = new List<IVisualBlock>();
             using (var dbTemp = new Database(false, true))
             {
                 dbTemp.ReadDwgFile(file, FileOpenMode.OpenForReadAndReadShare, true, "");
@@ -44,7 +42,8 @@ namespace AcadLib.Blocks.Visual
                         var btr = idBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
                         if (filter(btr.Name))
                         {
-                            VisualBlock visualBl = new VisualBlock(btr);
+                            var visualBl = new VisualBlock(btr);
+                            visualBl.File = file;
                             visualBlocks.Add(visualBl);
                         }
                     }
@@ -56,16 +55,30 @@ namespace AcadLib.Blocks.Visual
             return visualBlocks;
         }
 
-        private static void insert(VisualBlock selected, string fileBlocks, Layers.LayerInfo layer)
+        /// <summary>
+        /// Переопределенеи блока
+        /// </summary>        
+        public static void Redefine(IVisualBlock block)
         {
-            if (selected == null) return;
+            if (block == null) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
-            var db = doc.Database;
-            var idBtr = getInsertBtr(selected.Name, fileBlocks, db);
-            AcadLib.Blocks.BlockInsert.Insert(selected.Name, layer);
+            if (doc == null) return;
+            using (doc.LockDocument())
+            {
+                Block.Redefine(block.Name, block.File, doc.Database);
+            }
         }
 
-        private static ObjectId getInsertBtr(string name, string fileBlocks, Database dbdest)
+        public static void Insert(IVisualBlock block, Layers.LayerInfo layer = null)
+        {
+            if (block == null) return;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;
+            var idBtr = GetInsertBtr(block.Name, block.File, db);
+            BlockInsert.Insert(block.Name, layer);
+        }
+
+        private static ObjectId GetInsertBtr(string name, string fileBlocks, Database dbdest)
         {
             // Есть ли уже блок в текущем файле
             using (var bt = dbdest.BlockTableId.Open( OpenMode.ForRead)as BlockTable)
@@ -76,7 +89,7 @@ namespace AcadLib.Blocks.Visual
                 }
             }
             // Копирование блока из файла шаблона
-            return  AcadLib.Blocks.Block.CopyBlockFromExternalDrawing(name, fileBlocks, dbdest);
+            return Block.CopyBlockFromExternalDrawing(name, fileBlocks, dbdest);
         }
     }
 }

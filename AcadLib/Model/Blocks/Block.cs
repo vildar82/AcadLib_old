@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib.Blocks
 {
@@ -18,6 +19,20 @@ namespace AcadLib.Blocks
         {
             var res = CopyBlockFromExternalDrawing(blName, BlockInsert.fileCommonBlocks, db, DuplicateRecordCloning.Ignore);
             return res;
+        }
+
+        /// <summary>
+        /// Определен ли данный блок в активном чертеже
+        /// </summary>        
+        public static bool HasBlockThisDrawing(string name)
+        {
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null)
+                throw new Exception("Нет активного документа!");
+            using (var bt = doc.Database.BlockTableId.Open( OpenMode.ForRead) as BlockTable)
+            {
+                return bt.Has(name);
+            }
         }
 
         /// <summary>
@@ -46,8 +61,18 @@ namespace AcadLib.Blocks
             if (!resCopy.TryGetValue(blName, out idRes))
             {
                 throw new Autodesk.AutoCAD.Runtime.Exception(Autodesk.AutoCAD.Runtime.ErrorStatus.MissingBlockName, $"Не найден блок {blName}");
-            }
+            }            
             return idRes;
+        }
+
+        /// <summary>
+        /// Перелопределение блока
+        /// </summary>        
+        public static void Redefine(string name, string file, Database destDb)
+        {            
+            var idBtr = CopyBlockFromExternalDrawing(name, file, destDb, DuplicateRecordCloning.Replace);
+            // Синхронизация атрибутов
+            idBtr.SynchronizeAttributes();            
         }
 
         /// <summary>
@@ -152,6 +177,33 @@ namespace AcadLib.Blocks
                     }
                 }
             }
+
+            // Если задан режим переопределения - то перерисовка геометрии динамических блоков
+            if (mode == DuplicateRecordCloning.Replace)
+            {
+                using (var t = destDb.TransactionManager.StartTransaction())
+                {
+                    var bt = destDb.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
+                    foreach (var item in resVal)
+                    {
+                        if (item.Value.IsValidEx())
+                        {
+                            var btr = item.Value.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                            if (btr.IsDynamicBlock)
+                            {
+                                try
+                                {
+                                    btr.UpgradeOpen();
+                                    btr.UpdateAnonymousBlocks();
+                                }
+                                catch { }
+                            }
+                        }
+                    }
+                    t.Commit();
+                }
+            }
+
             return resVal;
         }
 

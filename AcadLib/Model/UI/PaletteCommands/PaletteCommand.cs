@@ -72,7 +72,7 @@ namespace AcadLib.PaletteCommands
             if (doc == null) return;
             using (doc.LockDocument())
             {
-                doc.SendStringToExecute(Command + " ", true, false, true);
+                doc.SendStringToExecute(CommandName + " ", true, false, true);
             }
         }
 
