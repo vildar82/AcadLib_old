@@ -13,6 +13,14 @@ namespace AcadLib.Blocks
         public static Tolerance Tolerance01 = new Tolerance(0.01, 0.01);
 
         /// <summary>
+        /// Это пользовательский блок, а не лист, ссылка, анонимный или спец.блок(*).
+        /// </summary>        
+        public static bool IsUserBlock(this BlockTableRecord btr)
+        {
+            return !btr.IsLayout && !btr.IsAnonymous && !btr.IsFromExternalReference && !btr.Name.StartsWith("*");
+        }
+
+        /// <summary>
         /// Копирование определения блока из файла с общими блоками оформления
         /// </summary>        
         public static ObjectId CopyCommonBlockFromTemplate(string blName, Database db)
