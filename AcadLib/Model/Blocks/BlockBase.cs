@@ -32,6 +32,7 @@ namespace AcadLib.Blocks
         public string BlName { get; set; }
         public string BlLayer { get; set; }
         public ObjectId LayerId { get; set; }
+        public bool IsVisible { get; set; } = true;
         public virtual Color Color { get; set; }
         public Point3d Position { get; set; }
         /// <summary>
@@ -78,20 +79,7 @@ namespace AcadLib.Blocks
             Update(blRef);
         }
 
-        private Color GetColor (BlockReference blRef)
-        {
-            if (blRef.Color.IsByLayer)
-            {
-                using (var lay = blRef.LayerId.Open(OpenMode.ForRead) as LayerTableRecord)
-                {
-                    return lay.Color;
-                }
-            }
-            else
-            {
-                return blRef.Color;
-            }
-        }
+        
 
         /// <summary>
         /// Границы для показа пользователю
@@ -313,6 +301,29 @@ namespace AcadLib.Blocks
                 Transform = blRef.BlockTransform;
                 Color = GetColor(blRef);
                 Rotation = blRef.Rotation;
+                if (!blRef.Visible)
+                {
+                    IsVisible = false;
+                }
+            }
+        }
+
+        private Color GetColor(BlockReference blRef)
+        {
+            if (blRef.Color.IsByLayer)
+            {
+                using (var lay = blRef.LayerId.Open(OpenMode.ForRead) as LayerTableRecord)
+                {
+                    if (lay.IsFrozen || lay.IsOff)
+                    {
+                        IsVisible = false;
+                    }
+                    return lay.Color;
+                }
+            }
+            else
+            {
+                return blRef.Color;
             }
         }
 
