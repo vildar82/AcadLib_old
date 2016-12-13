@@ -374,36 +374,36 @@ namespace AcadLib.Blocks
         /// Нормализация блока с сохранением границ (опираясь на нижнюю точку границы до и после нормализации)
         /// </summary>
         /// <param name="blRef"></param>
+        [Obsolete("Не работает!!!", true)]
         public static void Normalize(this BlockReference blRef)
         {
-            var boundsBefore = blRef.GeometricExtents;
-            Matrix3d mat = Matrix3d.Identity;
-            if (blRef.Rotation != 0)
-            {
-                var matRotate = Matrix3d.Rotation(-blRef.Rotation, Vector3d.ZAxis, blRef.Position);
-                mat = mat * matRotate;
-            }
-
             // Корректировка масштабирования и зеркальности
             var scale1 = new Scale3d(1);
             if (blRef.ScaleFactors != scale1)
             {
-                var matScale = blRef.ScaleFactors.GetMatrix();
-                matScale = matScale.Inverse();
-                mat = mat * matScale;
+                blRef.ScaleFactors = scale1;
+                //var matScale = blRef.ScaleFactors.GetMatrix();
+                //matScale = matScale.Inverse();
+                //mat = mat * matScale;
             }
 
-            if (mat != Matrix3d.Identity)
+            if (blRef.Rotation != 0)
             {
-                blRef.TransformBy(mat);
-                var boundsNew = blRef.GeometricExtents;
-                var vecMove = boundsBefore.MinPoint - boundsNew.MinPoint;
-                if (vecMove.Length != 0)
-                {
-                    var move = Matrix3d.Displacement(vecMove);
-                    blRef.TransformBy(move);
-                }
-            }
+                var matRotate = Matrix3d.Rotation(-blRef.Rotation, Vector3d.ZAxis, blRef.Position);                
+                blRef.TransformBy(matRotate);
+            }            
+
+            //if (mat != Matrix3d.Identity)
+            //{
+            //    blRef.TransformBy(mat);
+            //    var boundsNew = blRef.GeometricExtents;
+            //    var vecMove = boundsBefore.MinPoint - boundsNew.MinPoint;
+            //    if (vecMove.Length != 0)
+            //    {
+            //        var move = Matrix3d.Displacement(vecMove);
+            //        blRef.TransformBy(move);
+            //    }
+            //}
         }
     }
 }

@@ -113,6 +113,7 @@
     <Compile Include="Model\Blocks\CommonBlocks\Leader.cs" />
     <Compile Include="Model\Blocks\IBlock.cs" />
     <Compile Include="Model\Blocks\Property.cs" />
+    <Compile Include="Model\Blocks\PropertyType.cs" />
     <Compile Include="Model\Blocks\Visual\UI\VisualBlocksViewModel.cs" />
     <Compile Include="Model\Brep\BrepLoopType.cs" />
     <Compile Include="Model\Comparers\IntEqualityComparer.cs" />

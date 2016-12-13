@@ -7,30 +7,20 @@ using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
 {
-    public enum PropertyType
-    {
-        /// <summary>
-        /// Не установлено
-        /// </summary>
-        None,
-        /// <summary>
-        /// Аттрибут
-        /// </summary>
-        Attribute,
-        /// <summary>
-        /// Динамическое свойство
-        /// </summary>
-        Dynamic
-    }
+    
 
     /// <summary>
     /// Свойства динамического блока
     /// </summary>
-    public class Property : IEquatable<Property>
+    public class Property : IEquatable<Property>, ICloneable
     {
         public string Name { get; set; }
         public object Value { get; set; }
         public PropertyType Type { get; set; }
+        /// <summary>
+        /// Видит ли пользователь это свойство
+        /// </summary>
+        public bool IsShow { get; set; }
         public bool IsReadOnly { get; set; } = false;
         /// <summary>
         /// Только, если тип параматера - атрибут!
@@ -49,6 +39,7 @@ namespace AcadLib.Blocks
             Value = value;
             IdAtrRef = idAtrRef;
             Type = PropertyType.Attribute;
+            IsShow = true;
         }
 
         public Property(string name, object value, PropertyType type)
@@ -56,6 +47,15 @@ namespace AcadLib.Blocks
             Name = name;
             Value = value;
             Type = type;
+        }
+
+        public Property(DynamicBlockReferenceProperty dynProp)
+        {
+            Name = dynProp.PropertyName;
+            Value = dynProp.Value;
+            Type = PropertyType.Dynamic;
+            IsShow = dynProp.Show;
+            IsReadOnly = dynProp.ReadOnly;
         }
 
         /// <summary>
@@ -87,11 +87,7 @@ namespace AcadLib.Blocks
                     if (dyn.VisibleInCurrentVisibilityState)
                     {
                         if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase)) continue;
-                        Property prop = new Property(dyn.PropertyName, dyn.Value, PropertyType.Dynamic);
-                        if (dyn.ReadOnly)
-                        {
-                            prop.IsReadOnly = true;
-                        }
+                        Property prop = new Property(dyn);                        
                         props.Add(prop);
                     }
                 }
@@ -120,6 +116,11 @@ namespace AcadLib.Blocks
         public override int GetHashCode ()
         {
             return Name.GetHashCode();
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }

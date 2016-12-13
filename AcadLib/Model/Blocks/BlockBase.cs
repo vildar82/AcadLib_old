@@ -31,6 +31,7 @@ namespace AcadLib.Blocks
         /// </summary>
         public string BlName { get; set; }
         public string BlLayer { get; set; }
+        public ObjectId LayerId { get; set; }
         public virtual Color Color { get; set; }
         public Point3d Position { get; set; }
         /// <summary>
@@ -55,6 +56,16 @@ namespace AcadLib.Blocks
         public List<Property> Properties { get; set; }
         public Error Error { get; set; }
         public Matrix3d Transform { get; set; }
+        public double Rotation { get { return rotation; }
+            set { if (rotation != value)
+                {
+                    rotation = value;
+                    SetRotation(value);
+                }
+            }
+        }        
+
+        double rotation;
 
         /// <summary>
         /// Блок - по имени и ссылке на вхождение блока
@@ -62,7 +73,7 @@ namespace AcadLib.Blocks
         /// </summary>        
         public BlockBase (BlockReference blRef, string blName)
         {
-            if (blRef == null)                return;                           
+            if (blRef == null) return;                           
             BlName = blName;
             Update(blRef);
         }
@@ -112,7 +123,7 @@ namespace AcadLib.Blocks
                 _alreadyCalcExtents = true;
                 _extentsToShow = value;
             }
-        }
+        }        
 
         /// <summary>
         /// Показ блока (по границе) пользователю с миганием
@@ -280,7 +291,7 @@ namespace AcadLib.Blocks
             return BlName.GetHashCode();
         }
 
-        public void Update (BlockReference blRef)
+        public virtual void Update (BlockReference blRef)
         {
             // Считать блок заново
             if (blRef == null)
@@ -292,15 +303,27 @@ namespace AcadLib.Blocks
                 Db = blRef.Database;
                 IdBtrOwner = blRef.OwnerId;
                 IdBlRef = blRef.Id;
-                IdBtr = blRef.BlockTableRecord;
+                IdBtr = blRef.IsDynamicBlock? blRef.DynamicBlockTableRecord : blRef.BlockTableRecord;
                 //BlName = blName;
                 BlLayer = blRef.Layer;
+                LayerId = blRef.LayerId;
                 Properties = Property.GetAllProperties(blRef);
                 Bounds = blRef.Bounds;
                 Position = blRef.Position;
                 Transform = blRef.BlockTransform;
                 Color = GetColor(blRef);
+                Rotation = blRef.Rotation;
             }
         }
+
+        /// <summary>
+        /// Установка поворота блока
+        /// </summary>        
+        private void SetRotation(double value)
+        {
+            var blRef = IdBlRef.GetObject(OpenMode.ForWrite) as BlockReference;
+            var matRot = Matrix3d.Rotation(blRef.Rotation - value, Vector3d.ZAxis, blRef.Position);
+            blRef.TransformBy(matRot);
+        }        
     }
 }
