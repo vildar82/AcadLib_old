@@ -11,8 +11,7 @@ using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
-using NetLib;
-    
+using NetLib;    
 
 namespace AcadLib.Blocks
 {
