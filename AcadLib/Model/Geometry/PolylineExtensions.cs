@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using AcadLib.Scale;
+using Autodesk.AutoCAD.Colors;
 
 namespace AcadLib.Geometry
 {
@@ -15,6 +17,90 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class PolylineExtensions
     {
+        public static void TestDrawVertexNumbers(this Polyline pl, Color color)
+        {
+            var scale =ScaleHelper.GetCurrentAnnoScale(HostApplicationServices.WorkingDatabase);
+            for (int i = 0; i < pl.NumberOfVertices; i++)
+            {
+                var text = new DBText();
+                text.TextString = i.ToString();
+                text.Position = pl.GetPoint2dAt(i).Convert3d();
+                text.Height = 2.5 * scale;
+                text.Color = color;
+                EntityHelper.AddEntityToCurrentSpace(text);
+            }
+        }
+
+        /// <summary>
+        /// Прополка полилинии
+        /// </summary>        
+        public static void Wedding (this Polyline pl, Tolerance tolerance)
+        {
+            var count = pl.NumberOfVertices;
+            for (int i = 1; i < count; i++)
+            {
+                int iPrew;
+                int iCur;
+                int iNext;
+                iPrew = i-1;
+                iCur = i;
+                iNext = i + 1;
+                if (iNext == count)
+                {
+                    break;
+                }
+                var prew = pl.GetPoint2dAt(iPrew);
+                var cur = pl.GetPoint2dAt(iCur);
+                var next = pl.GetPoint2dAt(iNext);                                
+                if (IsPointsOnSomeLine(prew, cur, next, tolerance))
+                {
+                    pl.RemoveVertexAt(i);
+                    i--;
+                    count--;
+                }
+            }
+            
+            count = pl.NumberOfVertices;
+
+            // Если начальная точка совпадает с конечной, то проверка сегменов до и после
+            if (count > 3)
+            {
+                Point2d fp = pl.GetPoint2dAt(0);
+                Point2d lp = pl.GetPoint2dAt(count - 1);
+                Point2d next = pl.GetPoint2dAt(1);                
+                if (fp.IsEqualTo(lp, tolerance))
+                {
+                    var cur = fp;
+                    var prew = pl.GetPoint2dAt(count - 2);                                        
+                    if (IsPointsOnSomeLine(prew, cur, next, tolerance))
+                    {
+                        pl.RemoveVertexAt(count - 1);
+                        pl.RemoveVertexAt(0);
+                        if (!pl.Closed)
+                        {
+                            pl.Closed = true;
+                        }
+                    }
+                }
+                else if (pl.Closed)
+                {
+                    var prew = lp;
+                    var cur = fp;
+                    if (IsPointsOnSomeLine(prew, cur, next, tolerance))
+                    {
+                        pl.RemoveVertexAt(0);                        
+                    }
+                }
+            }
+        }
+
+        private static bool IsPointsOnSomeLine(Point2d pt1, Point2d pt2, Point2d pt3, Tolerance tolerance)
+        {
+            var vec1 = pt2 - pt1;
+            var vec2 = pt3 - pt1;
+            return vec1.IsParallelTo(vec2, tolerance);            
+        }
+
         public static List<Point2d> GetPoints (this Polyline pl)
         {
             List<Point2d> points = new List<Point2d>();

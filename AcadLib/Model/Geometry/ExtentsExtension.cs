@@ -10,6 +10,16 @@ namespace Autodesk.AutoCAD.DatabaseServices
 {
    public static class ExtentsExtension
    {
+        public static Extents3d Convert3d(this Extents2d ext)
+        {
+            return new Extents3d(ext.MinPoint.Convert3d(), ext.MaxPoint.Convert3d());
+        }
+
+        public static Polyline GetPolyline(this Extents2d ext)
+        {
+            return ext.Convert3d().GetPolyline();
+        }
+
         public static Polyline GetPolyline(this Extents3d ext)
         {
             var pl = new Polyline();

@@ -12,6 +12,14 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class Polyline2dExtensions
     {
+        public static Extents2d GetRectangleFromCenter(this Point2d center, double side)
+        {
+            var hs = side * 0.5;
+            return new Extents2d(new Point2d(center.X - hs, center.Y - hs),
+                                 new Point2d(center.X + hs, center.Y + hs));
+        }
+
+
         /// <summary>
         /// Gets the vertices list of the polyline 2d.
         /// </summary>

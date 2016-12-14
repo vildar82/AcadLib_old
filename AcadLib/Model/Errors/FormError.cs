@@ -77,7 +77,7 @@ namespace AcadLib.Errors
         {
             errorProvider1.Clear();
             Error err = (Error)listBoxError.SelectedItem;
-            if (err != null && err.Extents.Diagonal()>1 && ed.Document != null)
+            if (err != null && err.Extents.Diagonal()!=0 && ed.Document != null)
             {
                 Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 if (ed.Document != curDoc)

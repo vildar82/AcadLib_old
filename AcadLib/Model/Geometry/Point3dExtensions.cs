@@ -14,6 +14,19 @@ namespace Autodesk.AutoCAD.Geometry
     /// </summary>
     public static class Point3dExtensions
     {
+        /// <summary>
+        /// Получение квадрата от центральной точки
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="side"></param>
+        /// <returns></returns>
+        public static Extents3d GetRectangleFromCenter(this Point3d center, double side)
+        {
+            var hs = side * 0.5;
+            return new Extents3d(new Point3d (center.X-hs, center.Y-hs, 0), 
+                                 new Point3d(center.X + hs, center.Y + hs, 0));
+        }
+
         public static Point3d Center (this Point3d pt, Point3d other)
         {
             return new Point3d(
