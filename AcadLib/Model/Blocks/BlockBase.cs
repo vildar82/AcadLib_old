@@ -77,9 +77,7 @@ namespace AcadLib.Blocks
             if (blRef == null) return;                           
             BlName = blName;
             Update(blRef);
-        }
-
-        
+        }        
 
         /// <summary>
         /// Границы для показа пользователю
