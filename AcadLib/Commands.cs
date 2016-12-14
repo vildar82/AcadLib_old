@@ -219,7 +219,12 @@ namespace AcadLib
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\ASPADBConnector.dll");
             LoadService.LoadFromTry(fileDll);
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\ALDBConnector.dll");
-            LoadService.LoadFromTry(fileDll);            
+            LoadService.LoadFromTry(fileDll);
+            // Удаление старых коннекторов
+            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDBCToLISP.dll");
+            LoadService.DeleteTry(fileDll);            
+            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
+            LoadService.DeleteTry(fileDll);            
         }
     }
 }

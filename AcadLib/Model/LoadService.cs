@@ -94,5 +94,17 @@ namespace AcadLib
                 Logger.Log.Error(ex, "LoadFromTry - " + dll);
             }
         }
+
+        public static void DeleteTry(string file)
+        {
+            if (File.Exists(file))
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch { }
+            }
+        }
     }
 }
