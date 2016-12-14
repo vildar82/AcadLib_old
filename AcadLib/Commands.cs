@@ -170,29 +170,29 @@ namespace AcadLib
             LoadService.LoadFromTry(fileDll);
 
             // Загрузка сбороки для данного раздела
-            var group = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
-            string fileGroup = string.Empty;
-            if (group == "СС")
+            var groups = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined;
+            var fileGroups = new List<string>();
+            if (groups.Any(g=> g == "СС"))
             {
-                fileGroup = @"Script\NET\СС\PIK_SS_Acad.dll";
+                fileGroups.Add(@"Script\NET\СС\PIK_SS_Acad.dll");
             }
-            else if (group == "ГП")
+            else if (groups.Any(g => g == "ГП"))
             {
-                fileGroup = @"Script\NET\ГП\PIK_GP_Acad.dll";
+                fileGroups.Add(@"Script\NET\ГП\PIK_GP_Acad.dll");
             }
-            else if (group == "КР-СБ-ГК")
+            else if (groups.Any(g => g == "КР-СБ-ГК"))
             {
-                fileGroup = @"Script\NET\КР-СБ-ГК\Autocad_ConcerteList.dll";
+                fileGroups.Add(@"Script\NET\КР-СБ-ГК\Autocad_ConcerteList.dll");
             }
-            else if (group == "КР-МН")
+            else if (groups.Any(g => g == "КР-МН"))
             {
-                fileGroup = @"Script\NET\КР-МН\KR_MN_Acad.dll";
+                fileGroups.Add(@"Script\NET\КР-МН\KR_MN_Acad.dll");
             }
-            else if (group == "ВК")
+            else if (groups.Any(g => g == "ВК"))
             {
-                fileGroup = @"Script\NET\ВК\PIK_VK_Acad.dll";
+                fileGroups.Add(@"Script\NET\ВК\PIK_VK_Acad.dll");
             }
-            if (!string.IsNullOrEmpty(fileGroup))
+            foreach (var fileGroup in fileGroups)            
             {
                 fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
                 LoadService.LoadFromTry(fileDll);

@@ -254,7 +254,9 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             ObjectId idStyleDest = ObjectId.Null;
             // файл шаблона
-            string fileTemplate = Path.Combine(PikSettings.LocalSettingsFolder, "Template", PikSettings.UserGroup, PikSettings.UserGroup + ".dwt");
+            var userGroup = PikSettings.UserGroupsCombined.First();
+            string fileTemplate = Path.Combine(PikSettings.LocalSettingsFolder, "Template", userGroup,
+                userGroup + ".dwt");
             if (File.Exists(fileTemplate))
             {
                 using (Database dbTemplate = new Database(false, true))
