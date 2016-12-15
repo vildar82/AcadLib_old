@@ -21,5 +21,10 @@ namespace AcadLib.XData
             Name = name;
             Values = values;
         }
+
+        public bool IsEmpty()
+        {
+            return Values == null || Values.Count == 0;
+        }
     }
 }

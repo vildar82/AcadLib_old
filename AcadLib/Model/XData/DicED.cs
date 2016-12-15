@@ -34,7 +34,7 @@ namespace AcadLib.XData
 
         public void AddRec (RecXD recXd)
         {
-            if (recXd == null) return;     
+            if (recXd == null || recXd.IsEmpty()) return;     
             if (!IsCorrectName(recXd.Name))            
                 throw new Exception("Invalid Name - " + recXd.Name);
                         
@@ -48,12 +48,22 @@ namespace AcadLib.XData
 
         public void AddInner(DicED dic)
         {
-            if (dic == null) return;
+            if (dic == null || dic.IsEmpty()) return;
             if (!IsCorrectName(dic.Name))
                 throw new Exception("Invalid Name - " + dic.Name);
 
             if (Inners == null) Inners = new List<DicED>();
             Inners.Add(dic);
+        }
+
+        /// <summary>
+        /// Проверка, пустой ли словарь - нет записей и нет вложенных словарей или они пустые
+        /// </summary>        
+        public bool IsEmpty()
+        {
+            // Если нет записей или они все пустые, и если нет вложенных словарей или они все пустые
+            return (Recs == null || Recs.All(r => r.IsEmpty())) &&
+                   (Inners == null || Inners.All(i => i.IsEmpty()));            
         }
 
         public void AddInner (string name, DicED dic)

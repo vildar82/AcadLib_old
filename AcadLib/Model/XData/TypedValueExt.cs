@@ -9,7 +9,7 @@ using NetLib;
 namespace AcadLib
 {
     public static class TypedValueExt
-    {
+    {        
         public static T GetValue<T>(this Dictionary<string, object> dictValues, string name, T defaultValue)
         {
             object value;
@@ -29,15 +29,23 @@ namespace AcadLib
         }
 
         public static Dictionary<string, object> ToDictionary(this IEnumerable<TypedValue> values)
-        {
+        {            
             var dictValues = new Dictionary<string, object>();
+            if (values == null) return dictValues;
             string name = string.Empty;            
             foreach (var item in values)
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    dictValues.Add(name, item.Value);
-                    name = string.Empty;
+                    try
+                    {
+                        dictValues.Add(name, item.Value);
+                        name = string.Empty;
+                    }
+                    catch(Exception ex)
+                    {
+                        Logger.Log.Error(ex, $"ToDictionary() - name={name}, value={item.Value}");
+                    }
                 }
                 else
                 {
@@ -60,13 +68,7 @@ namespace AcadLib
             T res;
             try
             {
-                var value = tv.Value;
-                if (typeof(T) == typeof(bool))
-                {
-                    // 0 - false, иначе true
-                    value = (int)tv.Value == 0 ? false : true;
-                }
-                res = (T)Convert.ChangeType(value, typeof(T));
+                return tv.Value.GetValue<T>();                
             }
             catch
             {
