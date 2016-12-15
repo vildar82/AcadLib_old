@@ -165,9 +165,13 @@ namespace AcadLib.Blocks
                 {                    
                     resVal = prop.Value.GetValue<T>();                      
                 }
-                catch
+                catch(Exception ex)
                 {
-                    AddError($"Недопустимый тип значения параметра '{propMatch}'= {prop.Value}.");
+                    var err = $"Недопустимый тип значения параметра '{propMatch}'= {prop.Value}";
+                    if (isRequired)
+                        AddError(err);
+                    else
+                        Logger.Log.Error(ex, err);
                 }
             }
             return resVal;
