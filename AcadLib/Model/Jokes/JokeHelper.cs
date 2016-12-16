@@ -17,7 +17,7 @@ namespace AcadLib.Jokes
         /// <summary>
         /// Юзеры для шуток
         /// </summary>
-        public static List<string> JokeUsers { get; set; } = new List<string> { "inkinli", "OstaninAM", AutoCAD_PIK_Manager.Settings.PikSettings.PikFileSettings.LoginCADManager };
+        public static List<string> JokeUsers { get; set; } = new List<string> { "inkinli", "OstaninAM" }; //, AutoCAD_PIK_Manager.Settings.PikSettings.PikFileSettings.LoginCADManager };
 
         /// <summary>
         /// Текущий пользователь пригоден для шуток
@@ -54,7 +54,7 @@ namespace AcadLib.Jokes
         private static List<IJoke> LoadJokes ()
         {
             List<IJoke> res = new List<IJoke>();
-            jokes.AddRange(JokeUrl.Load());            
+            res.AddRange(JokeUrl.Load());            
             return res;
         }
     }

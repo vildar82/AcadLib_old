@@ -12,6 +12,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Microsoft.Office.Interop.Excel;
+using System.Diagnostics;
 
 namespace AcadLib.Errors
 {
@@ -545,13 +546,15 @@ namespace AcadLib.Errors
             }
             else
             {
-                FormReport frmReport = new FormReport();
-                var res = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frmReport);
-                if (res == DialogResult.OK)
-                {
-                    string msg = " #Title " + CommandStart.CurrentCommand + ". \n" + frmReport.Message;
-                    Logger.Log.Report(msg);
-                }
+                string subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";
+                SendMail(subject);
+                //FormReport frmReport = new FormReport();
+                //var res = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frmReport);
+                //if (res == DialogResult.OK)
+                //{
+                //    //string msg = " #Title " + CommandStart.CurrentCommand + ". \n" + frmReport.Message;                    
+                //    //Logger.Log.Report(msg);
+                //}
             }            
         }
 
@@ -567,6 +570,12 @@ namespace AcadLib.Errors
         private void buttonCancel_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void SendMail (string subject)
+        {
+            var to = "khisyametdinovvt@pik.ru";            
+            Process.Start($"mailto:{to}?subject={subject}");              
         }
     }
 }
