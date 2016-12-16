@@ -165,8 +165,17 @@ namespace AcadLib.Geometry
         private static int GetStartIndex (Polyline contour, Point3d ptIntersect1, 
             Func<LineSegment3d, bool> checkSeg,
              out int dir)
-        {            
-            var param = contour.GetParameterAtPoint(ptIntersect1);           
+        {
+            double param;
+            try
+            {
+                param = contour.GetParameterAtPoint(ptIntersect1);
+            }
+            catch
+            {
+                var pt = contour.GetClosestPointTo(ptIntersect1, false);
+                param = contour.GetParameterAtPoint(pt);
+            }
 
             int indexMin = (int)param;
             if (indexMin == contour.NumberOfVertices)
