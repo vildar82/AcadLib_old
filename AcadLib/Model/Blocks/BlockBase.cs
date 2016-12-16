@@ -56,16 +56,7 @@ namespace AcadLib.Blocks
         public List<Property> Properties { get; set; }
         public Error Error { get; set; }
         public Matrix3d Transform { get; set; }
-        public double Rotation { get { return rotation; }
-            set { if (rotation != value)
-                {
-                    rotation = value;
-                    SetRotation(value);
-                }
-            }
-        }        
-
-        double rotation;
+        public double Rotation { get; set; }
 
         /// <summary>
         /// Блок - по имени и ссылке на вхождение блока
@@ -326,16 +317,6 @@ namespace AcadLib.Blocks
             {
                 return blRef.Color;
             }
-        }
-
-        /// <summary>
-        /// Установка поворота блока
-        /// </summary>        
-        private void SetRotation(double value)
-        {
-            var blRef = IdBlRef.GetObject(OpenMode.ForWrite) as BlockReference;
-            var matRot = Matrix3d.Rotation(blRef.Rotation - value, Vector3d.ZAxis, blRef.Position);
-            blRef.TransformBy(matRot);
         }        
     }
 }

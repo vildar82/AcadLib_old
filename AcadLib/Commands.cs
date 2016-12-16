@@ -13,7 +13,6 @@ using Autodesk.AutoCAD.Runtime;
 
 namespace AcadLib
 {
-
     public class Commands : IExtensionApplication
     {
         internal static string fileCommonBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
