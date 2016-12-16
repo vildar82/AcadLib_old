@@ -218,7 +218,7 @@ namespace AcadLib
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
             LoadService.DeleteTry(fileDll);
 
-            // Очистка локальных логов                     
+            // Очистка локальных логов - временно!                   
             try
             {
                 ClearLogs();
