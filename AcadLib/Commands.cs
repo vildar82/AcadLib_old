@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -101,16 +102,7 @@ namespace AcadLib
             {
                 Logger.Log.InfoLisp(tvs[0].Value.ToString());
             }
-        }
-
-        //[CommandMethod(Group, CommandInsertBlockPikLogo, CommandFlags.Modal)]
-        //public void InsertBlockPikLogo()
-        //{
-        //    CommandStart.Start(doc =>
-        //    {
-        //        Blocks.BlockInsert.InsertCommonBlock("PIK_Logo", doc.Database);
-        //    });
-        //}
+        }        
 
         public void Terminate()
         {
@@ -172,7 +164,7 @@ namespace AcadLib
             // Загрузка сбороки для данного раздела
             var groups = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined;
             var fileGroups = new List<string>();
-            if (groups.Any(g=> g == "СС"))
+            if (groups.Any(g => g == "СС"))
             {
                 fileGroups.Add(@"Script\NET\СС\PIK_SS_Acad.dll");
             }
@@ -192,7 +184,7 @@ namespace AcadLib
             {
                 fileGroups.Add(@"Script\NET\ВК\PIK_VK_Acad.dll");
             }
-            foreach (var fileGroup in fileGroups)            
+            foreach (var fileGroup in fileGroups)
             {
                 fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
                 LoadService.LoadFromTry(fileDll);
@@ -206,7 +198,7 @@ namespace AcadLib
             {
                 LoadService.LoadEntityFramework();
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 Logger.Log.Error(ex, "LoadEntityFramework");
             }
@@ -222,9 +214,30 @@ namespace AcadLib
             LoadService.LoadFromTry(fileDll);
             // Удаление старых коннекторов
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDBCToLISP.dll");
-            LoadService.DeleteTry(fileDll);            
+            LoadService.DeleteTry(fileDll);
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
-            LoadService.DeleteTry(fileDll);            
+            LoadService.DeleteTry(fileDll);
+
+            // Очистка локальных логов                     
+            try
+            {
+                ClearLogs();
+            }
+            catch { }
+        }
+
+        private void ClearLogs()
+        {
+            var dirDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, "Dll");
+            var fileLogs = Directory.GetFiles(dirDll, "*.log");
+            foreach (var item in fileLogs)
+            {                
+                try
+                {
+                    File.Delete(item);
+                }
+                catch { }
+            }
         }
     }
 }
