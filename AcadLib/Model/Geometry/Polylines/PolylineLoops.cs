@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using AcadLib.Geometry;
 
 namespace AcadLib.Geometry
 {
@@ -166,16 +167,7 @@ namespace AcadLib.Geometry
             Func<LineSegment3d, bool> checkSeg,
              out int dir)
         {
-            double param;
-            try
-            {
-                param = contour.GetParameterAtPoint(ptIntersect1);
-            }
-            catch
-            {
-                var pt = contour.GetClosestPointTo(ptIntersect1, false);
-                param = contour.GetParameterAtPoint(pt);
-            }
+            var param = contour.GetParameterAtPointTry(ptIntersect1);            
 
             int indexMin = (int)param;
             if (indexMin == contour.NumberOfVertices)
