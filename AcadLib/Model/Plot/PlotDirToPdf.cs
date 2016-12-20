@@ -298,6 +298,9 @@ namespace AcadLib.Plot
         {
             try
             {
+                var destFile = Path.Combine(dir, filePdfOutputName + ".pdf");
+                CheckFileAccess(destFile);
+
                 Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
                 DsdData dsd = new DsdData();
 
@@ -308,7 +311,7 @@ namespace AcadLib.Plot
                 dsd.SheetType = SheetType.MultiPdf;
                 dsd.IsSheetSet = true;
                 dsd.NoOfCopies = 1;
-                dsd.DestinationName = Path.Combine(dir, filePdfOutputName);
+                dsd.DestinationName = destFile;
                 dsd.SheetSetName = "PublisherSet";
                 dsd.PromptForDwfName = false;
                 string dsdFile = Path.Combine(dir, "PublisherDsd.dsd");
@@ -349,6 +352,33 @@ namespace AcadLib.Plot
             {
                 System.Windows.Forms.MessageBox.Show(ex.Message);
             }
+        }
+
+        private void CheckFileAccess(string destFile)
+        {
+            var fi = new FileInfo(destFile);
+            int countWhile = 0;
+            do
+            {
+                try
+                {
+                    using (fi.OpenWrite())
+                    {
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var dlgRes = MessageBox.Show($"{ex.Message}\n\rУстраните причину и нажмите продолжить.",
+                        "Печать", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
+                    if (dlgRes == DialogResult.Cancel)
+                    {
+                        throw new CancelByUserException();
+                    }
+                }
+                countWhile++;
+            } while (countWhile < 3);
+            throw new Exception("Превышено число попыток доступа к файлу. Выход.");
         }
 
         private void Publisher_BeginSheet (object sender, PublishSheetEventArgs e)
