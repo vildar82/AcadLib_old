@@ -37,9 +37,13 @@ namespace AcadLib.Geometry
             }
         }
 
+        /// <summary>
+        /// Подписывание вершин полилинии
+        /// </summary>        
         public static void TestDrawVertexNumbers(this Polyline pl, Color color)
         {
             var scale =ScaleHelper.GetCurrentAnnoScale(HostApplicationServices.WorkingDatabase);
+            var texts = new List<Entity>();
             for (int i = 0; i < pl.NumberOfVertices; i++)
             {
                 var text = new DBText();
@@ -47,8 +51,9 @@ namespace AcadLib.Geometry
                 text.Position = pl.GetPoint2dAt(i).Convert3d();
                 text.Height = 2.5 * scale;
                 text.Color = color;
-                EntityHelper.AddEntityToCurrentSpace(text);
+                texts.Add(text);                
             }
+            EntityHelper.AddEntityToCurrentSpace(texts);
         }
 
         /// <summary>
@@ -372,11 +377,11 @@ namespace AcadLib.Geometry
             public double X, Y;
         }
 
+        [Obsolete("Используй новую перегрузку с параметром допуска, она работает быстрее.")]
         public static bool IsPointOnPolyline (this Polyline pl, Point3d pt)
         {
-            bool isOn = false;
-            pl.Elevation = 0;
-            Point3d ptZeroZ = new Point3d(pt.X, pt.Y, 0);
+            bool isOn = false;            
+            Point3d ptZeroZ = new Point3d(pt.X, pt.Y, pl.Elevation);
             for (int i = 0; i < pl.NumberOfVertices; i++)
             {
                 Curve3d seg = null;
@@ -397,12 +402,30 @@ namespace AcadLib.Geometry
             return isOn;
         }
 
+        /// <summary>
+        /// Лежит ли точка на полилинии.
+        /// Через GetClosestPointTo().
+        /// </summary>
+        /// <param name="pl">Полилиния</param>
+        /// <param name="pt">Точка</param>
+        /// <param name="gap">Допуск. Если 0, то используется Tolerance.Global</param>        
+        public static bool IsPointOnPolyline(this Polyline pl, Point3d pt, double gap)
+        {
+            var ptPl = pl.GetClosestPointTo(pt, false);            
+            var tolerance = gap==0? Tolerance.Global: new Tolerance(gap, gap);
+            return pt.IsEqualTo(ptPl, tolerance);
+        }
+
+        /// <summary>
+        /// Попадает ли точка внутрь полигона (все линейные сегменты)
+        /// Но, работает быстрее, чем IsPointInsidePolyline. Примерно в 10раз.
+        /// </summary>      
+        [Obsolete("Используй IsPointInsidePolyline(), подходящий для дуговых полилиний.")]
         public static bool IsPointInsidePolygon (this Polyline polygon, Point3d pt)
         {
             int n = polygon.NumberOfVertices;
             double angle = 0;
             Point pt1, pt2;
-
             for (int i = 0; i < n; i++)
             {
                 pt1.X = polygon.GetPoint2dAt(i).X - pt.X;
@@ -411,11 +434,69 @@ namespace AcadLib.Geometry
                 pt2.Y = polygon.GetPoint2dAt((i + 1) % n).Y - pt.Y;
                 angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
             }
+            return !(Math.Abs(angle) < Math.PI);                
+        }
 
-            if (Math.Abs(angle) < Math.PI)
-                return false;
-            else
-                return true;
+        /// <summary>
+        /// Попадает ли точка внутрь полилинии. 
+        /// Предполагается, что полилиния имеет замкнутый контур.
+        /// Подходит для полилиний с дуговыми сегментами.
+        /// Работает медленнее чем IsPointInsidePolygon(), примерно в 10 раз.
+        /// </summary>        
+        /// <param name="onIsInside">Если исходная точка лежит на полилинии, то считать, что она внутри или нет: True - внутри, False - снаружи.</param>
+        /// <exception cref="Exceptions.ErrorException">Не удалось определить за несколько попыток.</exception>
+        public static bool IsPointInsidePolyline(this Polyline pl, Point3d pt, bool onIsInside = false)
+        {
+            using (var ray = new Ray())
+            {
+                ray.BasePoint = pt;
+                var vec = new Vector3d(0, 1, pt.Z);
+                ray.SecondPoint = pt + vec;
+                using (var ptsIntersects = new Point3dCollection())
+                {
+                    bool isContinue = false;
+                    bool isPtOnPolyline = false;
+                    int countWhile = 0;
+                    do
+                    {
+                        using (var plane = new Plane())
+                        {
+                            pl.IntersectWith(ray, Intersect.OnBothOperands, plane, ptsIntersects, IntPtr.Zero, IntPtr.Zero);
+                        }
+                        isContinue = ptsIntersects.Cast<Point3d>().Any(p =>
+                        {
+                            if (pt.IsEqualTo(p))
+                            {
+                                isPtOnPolyline = true;
+                                return true;
+                            }
+                            var param = pl.GetParameterAtPoint(p);
+                            return param % 1 == 0;
+                        });
+
+                        if (isPtOnPolyline)
+                        {
+                            return onIsInside;
+                        }
+
+                        if (isContinue)
+                        {
+                            vec = vec.RotateBy(0.01, Vector3d.ZAxis);
+                            ray.SecondPoint = pt + vec;
+                            ptsIntersects.Clear();
+                            countWhile++;
+                            if (countWhile > 3)
+                            {
+                                throw new Exceptions.ErrorException(new Errors.Error (
+                                    "Не определено попадает ли точка внутрь полилинии.", 
+                                    pt.GetRectangleFromCenter(3), Matrix3d.Identity, 
+                                    System.Drawing.SystemIcons.Error));
+                            }
+                        }
+                    } while (isContinue);
+                    return ptsIntersects.Count.IsOdd();
+                }
+            }
         }
 
         public static Polyline CreatePolyline (this List<Point2d> pts)
@@ -442,9 +523,7 @@ namespace AcadLib.Geometry
             while (dtheta < -Math.PI)
                 dtheta += (Math.PI * 2);
             return (dtheta);
-        }
-
-        
+        }        
 
         /// <summary>
         /// Offset the source polyline to specified side(s).

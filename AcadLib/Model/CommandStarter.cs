@@ -71,6 +71,10 @@ namespace AcadLib
             {
                 doc.Editor.WriteMessage(cancelByUser.Message);
             }
+            catch (Exceptions.ErrorException error)
+            {
+                Inspector.AddError(error.Error);
+            }
             catch (System.Exception ex)
             {
                 if (!ex.Message.Contains(General.CanceledByUser))

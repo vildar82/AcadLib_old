@@ -95,6 +95,7 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Comparers\TestPoint2dComparer.cs" />
     <Compile Include="Geometry\Polylines\TestAverageVertexPolylines.cs" />
+    <Compile Include="Geometry\Polylines\TestPolyline.cs" />
     <Compile Include="Geometry\Polylines\TestWeddingPolyline.cs" />
     <Compile Include="Geometry\Polylines\TestMergePolyline.cs" />
     <Compile Include="PaletteComands\TestPalette.cs" />
