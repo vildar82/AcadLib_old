@@ -124,7 +124,7 @@ namespace AcadLib.Blocks.Dublicate
             {
                 if (!(item is ObjectId)) continue;
                 ObjectId idEnt = (ObjectId)item;
-
+                if (!idEnt.IsValidEx()) continue;
                 var dbo = idEnt.GetObject(OpenMode.ForRead, false, true);
                 // Проверялся ли уже такое определение блока                            
                 if (isFirstDbo)
