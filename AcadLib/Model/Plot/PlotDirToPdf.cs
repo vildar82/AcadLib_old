@@ -68,7 +68,7 @@ namespace AcadLib.Plot
         private void PlotFileToPdf(string file)
         {
             dir = Path.GetDirectoryName(file);
-            filePdfOutputName = Path.GetFileNameWithoutExtension(file) + ".pdf";            
+            filePdfOutputName = Path.GetFileNameWithoutExtension(file);            
             filesDwg = new[] { file};
             PlotFiles();
         }
@@ -298,7 +298,8 @@ namespace AcadLib.Plot
         {
             try
             {
-                var destFile = Path.Combine(dir, filePdfOutputName + ".pdf");
+                filePdfOutputName += ".pdf";
+                var destFile = Path.Combine(dir, filePdfOutputName);
                 CheckFileAccess(destFile);
 
                 Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
