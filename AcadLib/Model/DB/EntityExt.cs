@@ -40,8 +40,5 @@ namespace AcadLib.Extensions
             ent.AddContext(contextAnnoScale);
             ent.RemoveContext(ent.Database.Cannoscale);
         }
-
-
-        
     }
 }

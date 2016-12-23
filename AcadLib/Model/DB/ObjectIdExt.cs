@@ -12,7 +12,7 @@ namespace AcadLib
 {
     public static class ObjectIdExt
     {
-        public static void ShowEnt (this ObjectId id)
+        public static void ShowEnt(this ObjectId id, int num, int delay1, int delay2)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null || !id.IsValidEx()) return;
@@ -26,12 +26,16 @@ namespace AcadLib
                     try
                     {
                         doc.Editor.Zoom(ent.GeometricExtents);
-                        id.FlickObjectHighlight(2, 100, 100);
+                        id.FlickObjectHighlight(num, delay1, delay2);
                     }
                     catch { }
                 }
                 t.Commit();
             }
+        }
+        public static void ShowEnt (this ObjectId id)
+        {
+            ShowEnt(id, 2,100,100);
         }
 
         public static void ShowEnt(this ObjectId id, Extents3d ext, Document docOrig)
