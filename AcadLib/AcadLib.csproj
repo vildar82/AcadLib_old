@@ -132,6 +132,7 @@
     </Compile>
     <Compile Include="Model\Exceptions\CancelByUserException.cs" />
     <Compile Include="Model\Exceptions\ErrorException.cs" />
+    <Compile Include="Model\Exceptions\UserBreakException.cs" />
     <Compile Include="Model\Field\UpdateField.cs" />
     <Compile Include="Model\Geometry\DisposableCollection.cs" />
     <Compile Include="Model\Geometry\Polylines\AverageVertexPolylines.cs" />
