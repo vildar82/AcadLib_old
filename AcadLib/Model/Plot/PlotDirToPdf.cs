@@ -299,9 +299,12 @@ namespace AcadLib.Plot
         public void PublisherDSD(DsdEntryCollection collection)
         {
             try
-            {
+            {                
                 string dsdFile = Path.Combine(dir, filePdfOutputName + ".dsd");
-                filePdfOutputName += ".pdf";
+                if (!filePdfOutputName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    filePdfOutputName += ".pdf";
+                }
                 var destFile = Path.Combine(dir, filePdfOutputName);
 
                 CheckFileAccess(destFile);               
