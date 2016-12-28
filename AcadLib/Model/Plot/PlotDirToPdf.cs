@@ -11,6 +11,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoCAD.Publishing;
+using AutoCAD_PIK_Manager.Settings;
 
 namespace AcadLib.Plot
 {
@@ -74,72 +75,73 @@ namespace AcadLib.Plot
         }
 
         private void PlotFiles()
-        {            
-            DsdEntryCollection dsdCol = new DsdEntryCollection();
-
-            int indexfile = 0;
-
-            title = $"Печать {filesDwg.Length} файлов dwg...";        
-
-            foreach (var fileDwg in filesDwg)
+        {
+            using (var dsdCol = new DsdEntryCollection())
             {
-                if (HostApplicationServices.Current.UserBreak())
-                    throw new Exception(General.CanceledByUser);
+                int indexfile = 0;
 
-                indexfile++;
-                using (var dbTemp = new Database(false, true))
+                title = $"Печать {filesDwg.Length} файлов dwg...";
+
+                foreach (var fileDwg in filesDwg)
                 {
-                    dbTemp.ReadDwgFile(fileDwg, FileOpenMode.OpenForReadAndAllShare, false, "");
-                    dbTemp.CloseInput(true);
-                    using (var t = dbTemp.TransactionManager.StartTransaction())
-                    {                        
-                        DBDictionary layoutDict = (DBDictionary)dbTemp.LayoutDictionaryId.GetObject(OpenMode.ForRead);
+                    if (HostApplicationServices.Current.UserBreak())
+                        throw new Exception(General.CanceledByUser);
 
-                        List<Layout> layouts = new List<Layout>();
-                        foreach (DBDictionaryEntry entry in layoutDict)
+                    indexfile++;
+                    using (var dbTemp = new Database(false, true))
+                    {
+                        dbTemp.ReadDwgFile(fileDwg, FileOpenMode.OpenForReadAndAllShare, false, "");
+                        dbTemp.CloseInput(true);
+                        using (var t = dbTemp.TransactionManager.StartTransaction())
                         {
-                            if (entry.Key != "Model")
+                            DBDictionary layoutDict = (DBDictionary)dbTemp.LayoutDictionaryId.GetObject(OpenMode.ForRead);
+
+                            List<Layout> layouts = new List<Layout>();
+                            foreach (DBDictionaryEntry entry in layoutDict)
                             {
-                                if (!entry.Value.IsErased)
+                                if (entry.Key != "Model")
                                 {
-                                    var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;
-                                    layouts.Add(layout);
+                                    if (!entry.Value.IsErased)
+                                    {
+                                        var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;
+                                        layouts.Add(layout);
+                                    }
                                 }
                             }
-                        }
-                        // Фильтр листов 
-                        if (Options.FilterState)
-                        {
-                            layouts = FilterLayouts(layouts, Options);                            
-                        }
+                            // Фильтр листов 
+                            if (Options.FilterState)
+                            {
+                                layouts = FilterLayouts(layouts, Options);
+                            }
 
-                        List<Tuple<Layout, DsdEntry>> layoutsDsd = new List<Tuple<Layout, DsdEntry>>();
-                        foreach (var layout in layouts)
-                        {
-                            DsdEntry dsdEntry = new DsdEntry();
-                            dsdEntry.Layout = layout.LayoutName;
-                            dsdEntry.DwgName = fileDwg;
-                            //dsdEntry.Nps = "Setup1";
-                            dsdEntry.NpsSourceDwg = fileDwg;
-                            dsdEntry.Title = indexfile + "-" + layout.LayoutName;
-                            layoutsDsd.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
-                            //dsdCol.Add(dsdEntry);
-                        }
+                            List<Tuple<Layout, DsdEntry>> layoutsDsd = new List<Tuple<Layout, DsdEntry>>();
+                            foreach (var layout in layouts)
+                            {
+                                DsdEntry dsdEntry = new DsdEntry();
+                                dsdEntry.Layout = layout.LayoutName;
+                                dsdEntry.DwgName = fileDwg;
+                                //dsdEntry.Nps = "Setup1";
+                                dsdEntry.NpsSourceDwg = fileDwg;                                
+                                dsdEntry.Title = indexfile + "-" + layout.LayoutName;
+                                layoutsDsd.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
+                                //dsdCol.Add(dsdEntry);
+                            }
 
-                        if (Options.SortTabOrName)
-                        {
-                            layoutsDsd.Sort((l1, l2) => l1.Item1.TabOrder.CompareTo(l2.Item1.TabOrder));
+                            if (Options.SortTabOrName)
+                            {
+                                layoutsDsd.Sort((l1, l2) => l1.Item1.TabOrder.CompareTo(l2.Item1.TabOrder));
+                            }
+                            else
+                            {
+                                layoutsDsd.Sort((l1, l2) => l1.Item1.LayoutName.CompareTo(l2.Item1.LayoutName));
+                            }
+                            layoutsDsd.ForEach(l => dsdCol.Add(l.Item2));
+                            t.Commit();
                         }
-                        else
-                        {
-                            layoutsDsd.Sort((l1, l2) => l1.Item1.LayoutName.CompareTo(l2.Item1.LayoutName));
-                        }
-                        layoutsDsd.ForEach(l => dsdCol.Add(l.Item2));
-                        t.Commit();
                     }
                 }
-            }
-            PublisherDSD(dsdCol);            
+                PublisherDSD(dsdCol);
+            }        
         }
 
         public static void PromptAndPlot (Document doc)
@@ -149,11 +151,11 @@ namespace AcadLib.Plot
             bool repeat = false;
             do
             {
-                var optPrompt = new PromptKeywordOptions($"\nПечать листов в PDF из текущего чертежа, выбранных файлов или из всех чертежей в папке.");
+                var optPrompt = new PromptKeywordOptions($"\nПечать листов в PDF из:");
                 optPrompt.Keywords.Add("Текущего");
                 optPrompt.Keywords.Add("Папки");
                 optPrompt.Keywords.Add("Настройки");
-                optPrompt.Keywords.Default = "Папки";
+                optPrompt.Keywords.Default = plotOpt.DefaultPlotSource;
 
                 var resPrompt = ed.GetKeywords(optPrompt);
                 if (resPrompt.Status == PromptStatus.OK)
@@ -298,26 +300,35 @@ namespace AcadLib.Plot
         {
             try
             {
+                string dsdFile = Path.Combine(dir, filePdfOutputName + ".dsd");
                 filePdfOutputName += ".pdf";
                 var destFile = Path.Combine(dir, filePdfOutputName);
-                CheckFileAccess(destFile);
+
+                CheckFileAccess(destFile);               
 
                 Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
-                DsdData dsd = new DsdData();
+                using (var dsd = new DsdData())
+                {                    
+                    if (PikSettings.UserGroup == "ДО")
+                    {
+                        dsd.PlotStampOn = true;
+                        dsd.ProjectPath = dir;
+                    }
 
-                dsd.SetDsdEntryCollection(collection);
+                    dsd.SetDsdEntryCollection(collection);
 
-                //dsd.ProjectPath = dirOutput;
-                dsd.LogFilePath = Path.Combine(dir, "logPlotPdf.log");
-                dsd.SheetType = SheetType.MultiPdf;
-                dsd.IsSheetSet = true;
-                dsd.NoOfCopies = 1;
-                dsd.DestinationName = destFile;
-                dsd.SheetSetName = "PublisherSet";
-                dsd.PromptForDwfName = false;
-                string dsdFile = Path.Combine(dir, "PublisherDsd.dsd");
-                dsd.WriteDsd(dsdFile);
-
+                    //dsd.ProjectPath = dirOutput;
+                    dsd.LogFilePath = Path.Combine(dir, "logPlotPdf.log");
+                    dsd.SheetType = SheetType.MultiPdf;
+                    dsd.IsSheetSet = true;
+                    dsd.NoOfCopies = 1;
+                    dsd.IsHomogeneous = false;
+                    dsd.DestinationName = destFile;
+                    dsd.SheetSetName = "PublisherSet";
+                    dsd.PromptForDwfName = false;                    
+                    //dsd.WriteDsd(dsdFile);
+                    PostProcessDSD(dsd, dsdFile);
+                }
                 int nbSheets = collection.Count;
 
                 using (PlotProgressDialog progressDlg = new PlotProgressDialog(false, nbSheets, true))
@@ -344,8 +355,8 @@ namespace AcadLib.Plot
                     //Application.Publisher.PublishExecute(dsd, PlotConfigManager.CurrentConfig);
 
                     publisher.PublishDsd(dsdFile, progressDlg);
-                    publisher.BeginSheet += Publisher_BeginSheet;
-
+                    progressDlg.Destroy();               
+                    //publisher.BeginSheet += Publisher_BeginSheet;
                 }
                 File.Delete(dsdFile);
             }
@@ -401,5 +412,51 @@ namespace AcadLib.Plot
         //            return "";
         //    }
         //}
+
+        private void PostProcessDSD(DsdData dsd, string destFile)
+        {
+            string str;
+            string newStr;
+            string tmpFile = Path.Combine(dir, "temp.dsd");
+
+            dsd.WriteDsd(tmpFile);
+
+            using (StreamReader reader = new StreamReader(tmpFile, Encoding.Default))
+            using (StreamWriter writer = new StreamWriter(destFile, false, Encoding.Default))
+            {
+                string fileDwg = string.Empty;
+                while (!reader.EndOfStream)
+                {
+                    str = reader.ReadLine();
+                    if (str.StartsWith("Has3DDWF="))
+                    {
+                        newStr = "Has3DDWF=0";
+                    }
+                    else if (str.StartsWith("DWG=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        fileDwg= str.Substring(4);
+                        newStr = str;
+                    }
+                    else if (str.StartsWith("OriginalSheetPath="))
+                    {
+                        newStr = "OriginalSheetPath=" + fileDwg;
+                    }
+                    else if (str.StartsWith("Type="))
+                    {
+                        newStr = "Type=6";
+                    }                                        
+                    else if (str.StartsWith("PromptForDwfName="))
+                    {
+                        newStr = "PromptForDwfName=FALSE";
+                    }                    
+                    else
+                    {
+                        newStr = str;
+                    }
+                    writer.WriteLine(newStr);
+                }
+            }
+            File.Delete(tmpFile);
+        }
     }
 }

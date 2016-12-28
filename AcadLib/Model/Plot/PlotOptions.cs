@@ -20,7 +20,8 @@ namespace AcadLib.Plot
         private static string KeyFilterByNumbers = "FilterByNumbers";        
         private static string KeyFilterByNames = "FilterByNames";
         private static string KeyFilterState = "FilterState";
-        
+        private static string KeyDefaultPlotSource = "DefaultPlotSource";
+
         //private static PlotOptions _instance;
         //public static PlotOptions Instance
         //{
@@ -53,6 +54,13 @@ namespace AcadLib.Plot
         [TypeConverter(typeof(OnePdfOrEachConverter))]
         public bool OnePdfOrEachDwg { get; set; }
 
+        [Category("Печать")]
+        [DisplayName("Поумолчанию печать из:")]
+        [Description("При вызове команды установить опцию поумолчанию печати из текущего чертежа или выбор папки.")]
+        [DefaultValue("Текущего")]
+        [TypeConverter(typeof(PlotSourceConverter))]
+        public string DefaultPlotSource { get; set; }
+
         [Category("Фильтр")]
         [DisplayName("Фильтр по номерам вкладок:")]
         [Description("Печатать только указанные номера вкладок. Номера через запятую и/или тире. Отрицательные числа считаются с конца вкладок.\n\r Например: 16--4 печать с 16 листа до 4 с конца; -1--3 печать трех последних листов.")]
@@ -82,6 +90,7 @@ namespace AcadLib.Plot
                 FilterByNumbers = reg.Load(KeyFilterByNumbers, "");                
                 FilterByNames = reg.Load(KeyFilterByNames, "");
                 FilterState = reg.Load(KeyFilterState, false);
+                DefaultPlotSource = reg.Load(KeyDefaultPlotSource, "Текущего");
             }            
         }
 
@@ -95,6 +104,7 @@ namespace AcadLib.Plot
                 reg.Save(KeyFilterByNumbers, FilterByNumbers);                
                 reg.Save(KeyFilterByNames, FilterByNames);
                 reg.Save(KeyFilterState, FilterState);
+                reg.Save(KeyDefaultPlotSource, DefaultPlotSource);
             }
         }
 
@@ -109,7 +119,8 @@ namespace AcadLib.Plot
                 OnePdfOrEachDwg = copyOptions.OnePdfOrEachDwg;
                 FilterState = copyOptions.FilterState;
                 FilterByNames = copyOptions.FilterByNames;
-                FilterByNumbers = copyOptions.FilterByNumbers;                
+                FilterByNumbers = copyOptions.FilterByNumbers;
+                DefaultPlotSource = copyOptions.DefaultPlotSource;               
                 Save();
             }            
         }
@@ -165,5 +176,27 @@ namespace AcadLib.Plot
         {
             return (bool)value ? "Общий" : "Для каждого dwg";
         }        
+    }
+
+    public class PlotSourceConverter : TypeConverter
+    {
+        private List<string> values = new List<string>() { "Текущего", "Папки" };
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) { return true; }
+
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) { return true; }
+
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+        {
+            return new StandardValuesCollection(values);
+        }
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return true;
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        {
+            return value;
+        }
     }
 }
