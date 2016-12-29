@@ -94,6 +94,7 @@
     <Compile Include="Brep\TestBrep.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Comparers\TestPoint2dComparer.cs" />
+    <Compile Include="Errors\ErrorsTest.cs" />
     <Compile Include="Geometry\Polylines\TestAverageVertexPolylines.cs" />
     <Compile Include="Geometry\Polylines\TestPolyline.cs" />
     <Compile Include="Geometry\Polylines\TestWeddingPolyline.cs" />

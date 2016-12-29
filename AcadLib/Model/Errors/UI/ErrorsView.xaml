@@ -1,0 +1,27 @@
+﻿<Window x:Class="AcadLib.Errors.ErrorsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AcadLib.Errors"
+        d:DataContext="{d:DesignInstance local:ErrorsViewModel,
+                                     IsDesignTimeCreatable=True}"
+        mc:Ignorable="d"
+        Title="Инфо" Height="300" Width="300">
+    <Window.Resources>
+        <DataTemplate x:Key="ErrorTemplate">
+            <TextBlock Text="{Binding Message}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="ErrorsItemsTemplate">
+            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}">
+                <ItemsControl ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}">                    
+                </ItemsControl>
+            </Expander>
+        </DataTemplate>        
+    </Window.Resources>
+    <Grid>
+        <ItemsControl ItemsSource="{Binding Errors}" ItemTemplate="{StaticResource ErrorsItemsTemplate}">
+            
+        </ItemsControl>
+    </Grid>
+</Window>

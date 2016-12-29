@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.EditorInput;
+using System.Windows;
 
 namespace AcadLib.Errors
 {
@@ -20,7 +23,8 @@ namespace AcadLib.Errors
         private bool _hasEntity;
 
         public object Tag { get; set; }
-        public Matrix3d Trans { get; set; }
+        public Matrix3d Trans { get; set; }       
+
         public string Message { get { return _msg; } }
         public string ShortMsg { get { return _shortMsg; } }
         public ObjectId IdEnt { get { return _idEnt; } }
@@ -55,14 +59,35 @@ namespace AcadLib.Errors
                 }
                 if (_isNullExtents)
                 {
-                    Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Границы объекта не определены.");
+                    Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowAlertDialog("Границы объекта не определены.");
                 }
                 return _extents;
             }
         }
 
-        private Error(Error err)
+        public void Show()
         {
+            try
+            {
+                var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+                var ed = doc.Editor;
+
+                if (Extents.Diagonal() > 1) ed.Zoom(Extents);
+
+                if (HasEntity)
+                {
+                    // Проверка соответствия документа
+                    if (IdEnt.Database == doc.Database)
+                        IdEnt.FlickObjectHighlight(2, 60, 60);
+                    else
+                        MessageBox.Show($"Должен быть активен чертеж {IdEnt.Database.Filename}");
+                }
+            }
+            catch { }
+        }
+
+        private Error(Error err)
+        {            
             this._msg = err._msg;
             this._shortMsg = err._shortMsg;
             this._idEnt = err._idEnt;
@@ -183,18 +208,18 @@ namespace AcadLib.Errors
 
         public int CompareTo(Error other)
         {
-            return Message.CompareTo(other.Message);
+            return string.Compare(Message,other.Message);
         }
 
         public bool Equals(Error other)
         {
-            return Message.Equals(other.Message);
+            return string.Equals(Message,other.Message);
         }
 
-        //public override int GetHashCode()
-        //{
-        //   return _msg.GetHashCode();
-        //}
+        public override int GetHashCode()
+        {
+           return Message.GetHashCode();
+        }
 
         public Error GetCopy()
         {

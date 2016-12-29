@@ -11,6 +11,7 @@
     <AssemblyName>AcadLib</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -130,6 +131,11 @@
     <Compile Include="Model\Errors\FormReport.Designer.cs">
       <DependentUpon>FormReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Errors\UI\ErrorModel.cs" />
+    <Compile Include="Model\Errors\UI\ErrorsView.xaml.cs">
+      <DependentUpon>ErrorsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Errors\UI\ErrorsViewModel.cs" />
     <Compile Include="Model\Exceptions\CancelByUserException.cs" />
     <Compile Include="Model\Exceptions\ErrorException.cs" />
     <Compile Include="Model\Exceptions\UserBreakException.cs" />
@@ -419,6 +425,10 @@
     <Page Include="Model\Blocks\Visual\UI\WindowVisualBlocks.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Model\Errors\UI\ErrorsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml">
       <Generator>MSBuild:Compile</Generator>

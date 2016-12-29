@@ -73,17 +73,15 @@ namespace AcadLib
             {
                 // Highlight entity
                 using (DocumentLock doclock = doc.LockDocument())
+                using (Transaction tr = doc.TransactionManager.StartTransaction())
                 {
-                    using (Transaction tr = doc.TransactionManager.StartTransaction())
-                    {
-                        Entity en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
-                        ObjectId[] ids = new ObjectId[1]; ids[0] = id;
-                        SubentityId index = new SubentityId(SubentityType.Null, 0);
-                        FullSubentityPath path = new FullSubentityPath(ids, index);
-                        en.Highlight(path, true);
-                        tr.Commit();
-                    }
-                }
+                    Entity en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
+                    ObjectId[] ids = new ObjectId[1]; ids[0] = id;
+                    SubentityId index = new SubentityId(SubentityType.Null, IntPtr.Zero);
+                    FullSubentityPath path = new FullSubentityPath(ids, index);
+                    en.Highlight(path, true);
+                    tr.Commit();
+                }                
                 doc.Editor.UpdateScreen();
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
@@ -94,7 +92,7 @@ namespace AcadLib
                     {
                         Entity en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
                         ObjectId[] ids = new ObjectId[1]; ids[0] = id;
-                        SubentityId index = new SubentityId(SubentityType.Null, 0);
+                        SubentityId index = new SubentityId(SubentityType.Null, IntPtr.Zero);
                         FullSubentityPath path = new FullSubentityPath(ids, index);
                         en.Unhighlight(path, true);
                         tr.Commit();
@@ -123,7 +121,7 @@ namespace AcadLib
                 {
                     using (Transaction tr = doc.TransactionManager.StartTransaction())
                     {
-                        SubentityId subId = new SubentityId(SubentityType.Null, 0);
+                        SubentityId subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
                         FullSubentityPath path = new FullSubentityPath(idsPath, subId);
                         var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
                         ent.Highlight(path, true);
@@ -138,7 +136,7 @@ namespace AcadLib
                 {
                     using (Transaction tr = doc.TransactionManager.StartTransaction())
                     {
-                        SubentityId subId = new SubentityId(SubentityType.Null, 0);
+                        SubentityId subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
                         FullSubentityPath path = new FullSubentityPath(idsPath, subId);
                         var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
                         ent.Unhighlight(path, true);

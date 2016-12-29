@@ -134,8 +134,16 @@ namespace AcadLib.Errors
             if (HasErrors)
             {
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
-                Errors = SortErrors(Errors);                
+                Errors = SortErrors(Errors);
+
+                // WinForms
                 Application.ShowModelessDialog(new FormError(false));
+
+                //// WPF
+                //var errVM = new ErrorsViewModel(Errors);
+                //errVM.IsDialog = false;
+                //var errView = new ErrorsView(errVM);
+                //Application.ShowModelessWindow(errView);
             }
         }
 
@@ -155,6 +163,8 @@ namespace AcadLib.Errors
             {
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors = SortErrors(Errors);
+
+                // WinForms
                 var formErr = new FormError(true);
                 var res = Application.ShowModalDialog(formErr);
                 if (res != System.Windows.Forms.DialogResult.OK)
@@ -164,6 +174,19 @@ namespace AcadLib.Errors
                     throw new Exception("Отменено пользователем.");
                 }
                 return res;
+
+                //// WPF
+                //var errVM = new ErrorsViewModel(Errors);
+                //errVM.IsDialog = true;
+                //var errView = new ErrorsView(errVM);
+                //if (Application.ShowModalWindow(errView) == true)
+                //{
+                //    return System.Windows.Forms.DialogResult.OK;
+                //}
+                //else
+                //{                
+                //    throw new CancelByUserException();
+                //}                
             }
             else
             {
