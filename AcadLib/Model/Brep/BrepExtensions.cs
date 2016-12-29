@@ -230,7 +230,7 @@ namespace AcadLib
             return res;
         }
 
-        private static Region createRegion (Polyline pl)
+        public static Region CreateRegion (Polyline pl)
         {
             if (pl == null) return null;
             var dbs = new DBObjectCollection();

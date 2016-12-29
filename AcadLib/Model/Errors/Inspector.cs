@@ -134,9 +134,15 @@ namespace AcadLib.Errors
             if (HasErrors)
             {
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
-                Errors.Sort();
+                Errors = SortErrors(Errors);                
                 Application.ShowModelessDialog(new FormError(false));
             }
+        }
+
+        private static List<Error> SortErrors(List<Error> errors)
+        {
+            var comparer = Comparers.AlphanumComparator.New;
+            return errors.OrderBy(o=>o.Message, comparer).ToList();
         }
 
         /// <summary>
@@ -148,7 +154,7 @@ namespace AcadLib.Errors
             if (HasErrors)
             {
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
-                Errors.Sort();
+                Errors = SortErrors(Errors);
                 var formErr = new FormError(true);
                 var res = Application.ShowModalDialog(formErr);
                 if (res != System.Windows.Forms.DialogResult.OK)
