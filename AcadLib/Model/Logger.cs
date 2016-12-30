@@ -95,7 +95,7 @@ namespace AcadLib
 
         public void StartCommand (CommandStart command)
         {
-            base.Info($"Start command: {command.CommandName}; Сборка: {command.Assembly.FullName}; ");
+            base.Info($"Start command: {command?.CommandName}; Сборка: {command?.Assembly?.FullName}; ");
         }
 
         public void StartLisp (string command, string file)

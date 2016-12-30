@@ -7,9 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AcadLib.Errors;
-using AcadLib.Model.Statistic;
+using AcadLib.Statistic;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
+using AcadLib.Statistic;
 
 namespace AcadLib
 {
@@ -41,28 +42,20 @@ namespace AcadLib
         [MethodImpl(MethodImplOptions.NoInlining)]        
         public static void Start(Action<Document> action)
         {
-            CommandStart commandStart = new CommandStart();
-            // определение имени команды по вызвавему методу и иего артрибуту CommandMethod;            
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
             try
             {
                 var caller = new StackTrace().GetFrame(1).GetMethod();
-                CurrentCommand = GetCallerCommand(caller);
-                //commandStart = new CommandStart(CurrentCommand, caller.DeclaringType.Assembly);
-                commandStart.CommandName = CurrentCommand;
-                commandStart.Assembly = caller.DeclaringType.Assembly;
-                commandStart.Plugin = commandStart.Assembly.GetName().Name;
+                CommandStart commandStart = GetCallerCommand(caller);
                 Logger.Log.StartCommand(commandStart);
-                CommandCounter.CountCommand(CurrentCommand);
+                CommandCounter.CountCommand(CurrentCommand);                                
+                Logger.Log.Info($"Document={doc.Name}");
+                PluginStatisticsHelper.PluginStart(commandStart);
+
+                Inspector.Clear();
             }
             catch { }
-
-            Document doc = Application.DocumentManager.MdiActiveDocument;            
-            if (doc == null) return;
-            commandStart.Doc = doc.Name;
-            Logger.Log.Info($"Document={doc.Name}");
-            PluginStatisticsHelper.PluginStart(commandStart);
-
-            Inspector.Clear();
             try
             {
                 action(doc);
@@ -87,20 +80,30 @@ namespace AcadLib
             Inspector.Show();
         }
 
-        private static string GetCallerCommand(MethodBase caller)
+        internal static CommandStart GetCallerCommand(MethodBase caller)
         {            
-            if (caller == null) return "nullCallerMethod!?";
-            string name = string.Empty;
-            var atrCom = (CommandMethodAttribute)caller.GetCustomAttribute(typeof(CommandMethodAttribute));            
-            if (atrCom != null)
-            {
-                name = atrCom.GlobalName;
+            Assembly assm = null;
+            try
+            {                
+                CurrentCommand = GetCallerCommandName(caller);
+                assm = caller?.DeclaringType.Assembly;
             }
-            else
+            catch { }
+            var com = new CommandStart()
             {
-                name = caller.Name;
-            }
-            return name;
+                CommandName = CurrentCommand,
+                Assembly = assm,
+                Plugin = assm?.GetName().Name,
+                Doc = Application.DocumentManager.MdiActiveDocument?.Name
+            };
+            return com;
+        }
+
+        private static string GetCallerCommandName(MethodBase caller)
+        {            
+            if (caller == null) return "nullCallerMethod!?";            
+            var atrCom = (CommandMethodAttribute)caller.GetCustomAttribute(typeof(CommandMethodAttribute));
+            return atrCom?.GlobalName ?? caller.Name;                        
         }
     }
 }

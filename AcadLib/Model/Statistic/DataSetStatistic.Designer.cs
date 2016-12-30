@@ -10,7 +10,7 @@
 
 #pragma warning disable 1591
 
-namespace AcadLib.Model.Statistic {
+namespace AcadLib.Statistic {
     
     
     /// <summary>
@@ -789,7 +789,7 @@ namespace AcadLib.Model.Statistic {
         }
     }
 }
-namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
+namespace AcadLib.Statistic.DataSetStatisticTableAdapters {
     
     
     /// <summary>
