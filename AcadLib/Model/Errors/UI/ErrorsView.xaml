@@ -10,7 +10,10 @@
         Title="Инфо" Height="300" Width="300">
     <Window.Resources>
         <DataTemplate x:Key="ErrorTemplate">
-            <TextBlock Text="{Binding Message}"/>
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <Image Source="{Binding Image}" Margin="2"/>
+                <TextBlock Text="{Binding Message}" Margin="2"/>
+            </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ErrorsItemsTemplate">
             <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}">
