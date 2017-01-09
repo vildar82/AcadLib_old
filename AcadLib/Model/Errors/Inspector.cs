@@ -51,6 +51,10 @@ namespace AcadLib.Errors
         {            
             Errors.Add(err);
         }
+        public static void AddError(Error err)
+        {
+            Errors.Add(err);
+        }
 
         public static void AddError(string msg, Icon icon = null)
         {

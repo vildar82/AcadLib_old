@@ -36,7 +36,8 @@
             <StackPanel Orientation="Horizontal" Margin="1" VerticalAlignment="Center" Height="45" Background="WhiteSmoke">
                 <Image Source="{Binding Image}" Margin="1" VerticalAlignment="Center" Height="25"/>
                 <TextBlock Text="{Binding Message}" Margin="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" 
-                           Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"/>
+                           Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"
+                           ToolTip="{Binding Message}"/>
                 <StackPanel.InputBindings>
                     <MouseBinding Gesture="LeftClick" Command="{Binding Show}"/>
                 </StackPanel.InputBindings>
