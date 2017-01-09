@@ -15,7 +15,7 @@ namespace AcadLib.Errors
         private static Database _db;
         private static Document _doc;
         private static Editor _ed;
-        public static List<Error> Errors { get; private set; }
+        public static List<IError> Errors { get; private set; }
 
         public static bool HasErrors { get { return Errors.Count > 0; } }
 
@@ -29,7 +29,7 @@ namespace AcadLib.Errors
             _doc = Application.DocumentManager.MdiActiveDocument;
             _db = _doc.Database;
             _ed = _doc.Editor;
-            Errors = new List<Error>();
+            Errors = new List<IError>();
         }
 
         ///// <summary>
@@ -47,7 +47,7 @@ namespace AcadLib.Errors
         //   return errCounts.ToList();
         //}
 
-        public static void AddError(Error err)
+        public static void AddError(IError err)
         {            
             Errors.Add(err);
         }
@@ -147,7 +147,7 @@ namespace AcadLib.Errors
             }
         }
 
-        private static List<Error> SortErrors(List<Error> errors)
+        private static List<IError> SortErrors(List<IError> errors)
         {
             var comparer = Comparers.AlphanumComparator.New;
             return errors.OrderBy(o=>o.Message, comparer).ToList();

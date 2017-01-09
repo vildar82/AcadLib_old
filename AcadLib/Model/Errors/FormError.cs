@@ -26,8 +26,8 @@ namespace AcadLib.Errors
         private System.Windows.Forms.ListBox listBoxError;
         private ToolTip toolTip1;
         private System.Windows.Forms.Button buttonAllErrors;
-        private List<Error> collapsedErrors;
-        private List<Error> _errors;
+        private List<IError> collapsedErrors;
+        private List<IError> _errors;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonDel;
@@ -43,7 +43,7 @@ namespace AcadLib.Errors
         {            
         }
 
-        public FormError(List<Error> errors, bool modal)
+        public FormError(List<IError> errors, bool modal)
         {
             this.KeyPreview = true;
             this._errors = errors;
@@ -68,7 +68,7 @@ namespace AcadLib.Errors
             buttonOk.Visible = modal;
         }
 
-        private void bindingErrors(List<Error> errors)
+        private void bindingErrors(List<IError> errors)
         {
             _binding.DataSource = errors;
             _binding.ResetBindings(false);
@@ -77,7 +77,7 @@ namespace AcadLib.Errors
         private void buttonShow_Click(object sender, EventArgs e)
         {
             errorProvider1.Clear();
-            Error err = (Error)listBoxError.SelectedItem;
+            IError err = (IError)listBoxError.SelectedItem;
             if (err != null && err.Extents.Diagonal()!=0 && ed.Document != null)
             {
                 Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -106,7 +106,7 @@ namespace AcadLib.Errors
 
         private void listBoxError_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Error err = (Error)listBoxError.SelectedItem;
+            IError err = (IError)listBoxError.SelectedItem;
             buttonShow.Visible = err.Extents.Diagonal()>1;            
         }
 
@@ -388,7 +388,7 @@ namespace AcadLib.Errors
                 row++;
                 foreach (var item in listBoxError.Items)
                 {
-                    var error = item as Error;
+                    var error = item as IError;
                     if (error == null)
                     {
                         continue;
@@ -411,7 +411,7 @@ namespace AcadLib.Errors
             {
                 e.DrawBackground();
                 e.DrawFocusRectangle();
-                Error error = list.Items[e.Index] as Error;
+                IError error = list.Items[e.Index] as IError;
                 if (error != null)
                 {
                     if (error.Icon != null)
@@ -480,17 +480,17 @@ namespace AcadLib.Errors
 
         private void buttonDel_Click(object sender, EventArgs e)
         {
-            var errors = listBoxError.SelectedItems.Cast<Error>().ToList();
+            var errors = listBoxError.SelectedItems.Cast<IError>().ToList();
             DeleteDublicates(errors);
         }
 
         private void buttonDelAll_Click(object sender, EventArgs e)
         {
-            var errors = listBoxError.Items.Cast<Error>().ToList();
+            var errors = listBoxError.Items.Cast<IError>().ToList();
             DeleteDublicates(errors);
         }
 
-        private void DeleteDublicates(List<Error> errors)
+        private void DeleteDublicates(List<IError> errors)
         {
             if (errors == null || errors.Count == 0)
             {
@@ -525,7 +525,7 @@ namespace AcadLib.Errors
             {
                 foreach (var item in listBoxError.SelectedItems)
                 {
-                    _errors.Remove((Error)item);
+                    _errors.Remove((IError)item);
                 }
                 UpdateBinding();
             }

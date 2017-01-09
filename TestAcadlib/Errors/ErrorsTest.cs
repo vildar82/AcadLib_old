@@ -19,6 +19,6 @@ namespace TestAcadlib.Errors
                 Inspector.AddError("Сообщение об ошибке" + i, System.Drawing.SystemIcons.Error);
             }
             Inspector.ShowDialog();
-        }
+        }        
     }
 }

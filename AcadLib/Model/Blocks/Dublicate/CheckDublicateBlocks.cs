@@ -25,7 +25,7 @@ namespace AcadLib.Blocks.Dublicate
         private static HashSet<string> _ignoreBlocks;
         private static List<BlockRefDublicateInfo> AllDublicBlRefInfos;
         private static Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>> dictBlRefInfos;
-        private static List<Error> _errors;
+        private static List<IError> _errors;
 
         public static void Check()
         {
@@ -47,7 +47,7 @@ namespace AcadLib.Blocks.Dublicate
             curDepth = 0;
             _ignoreBlocks = ignoreBlocks;
             Database db = HostApplicationServices.WorkingDatabase;
-            _errors = new List<Error>();
+            _errors = new List<IError>();
             attemptedblocks = new HashSet<ObjectId>();
             AllDublicBlRefInfos = new List<BlockRefDublicateInfo>();
             dictBlRefInfos = new Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>>();
@@ -183,7 +183,7 @@ namespace AcadLib.Blocks.Dublicate
         //   AllDublicBlRefInfos.AddRange(trancDublicBlRefInfos);
         //}
 
-        public static void DeleteDublicates(List<Error> errors)
+        public static void DeleteDublicates(List<IError> errors)
         {
             if (errors == null || errors.Count == 0)
             {

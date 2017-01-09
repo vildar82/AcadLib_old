@@ -10,19 +10,20 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AcadLib.Errors
+namespace WpfApplication1
 {
     /// <summary>
-    /// Логика взаимодействия для WindowErrors.xaml
+    /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class ErrorsView : Window
+    public partial class MainWindow : Window
     {
-        public ErrorsView(ErrorsViewModel errVM)
-        {                        
+        public MainWindow()
+        {
             InitializeComponent();
-            DataContext = errVM;
-        }
+            Errors.TestErrors.TestShowErrors();
+        }        
     }
 }

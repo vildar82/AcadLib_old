@@ -131,6 +131,7 @@
     <Compile Include="Model\Errors\FormReport.Designer.cs">
       <DependentUpon>FormReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Errors\IError.cs" />
     <Compile Include="Model\Errors\UI\ErrorModel.cs" />
     <Compile Include="Model\Errors\UI\ErrorsView.xaml.cs">
       <DependentUpon>ErrorsView.xaml</DependentUpon>

@@ -3,28 +3,68 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AcadLib.Errors"
+        xmlns:local="clr-namespace:AcadLib.Errors"  
+        ContextMenu="{DynamicResource cmErrors}"
         d:DataContext="{d:DesignInstance local:ErrorsViewModel,
                                      IsDesignTimeCreatable=True}"
         mc:Ignorable="d"
-        Title="Инфо" Height="300" Width="300">
+        Title="Инфо" Height="300" Width="300">    
     <Window.Resources>
-        <DataTemplate x:Key="ErrorTemplate">
-            <StackPanel Orientation="Horizontal" Margin="2">
-                <Image Source="{Binding Image}" Margin="2"/>
-                <TextBlock Text="{Binding Message}" Margin="2"/>
+        <ControlTemplate x:Key="WithoutToggleButton" TargetType="{x:Type Expander}">
+            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="3" SnapsToDevicePixels="True">
+                <DockPanel>
+                    <ToggleButton x:Name="HeaderSite" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" DockPanel.Dock="Top" Foreground="{TemplateBinding Foreground}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}" FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" MinWidth="0" MinHeight="0" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                        <ToggleButton.Style>
+                            <Style TargetType="{x:Type ToggleButton}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                            <Border Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="1" ContentStringFormat="{TemplateBinding ContentStringFormat}" HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
+                    <ContentPresenter x:Name="ExpandSite" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" DockPanel.Dock="Bottom" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Visibility="Collapsed" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                </DockPanel>
+            </Border>
+        </ControlTemplate>        
+        <DataTemplate x:Key="ErrorTemplate">            
+            <StackPanel Orientation="Horizontal" Margin="1" VerticalAlignment="Center" Height="45" Background="WhiteSmoke">
+                <Image Source="{Binding Image}" Margin="1" VerticalAlignment="Center" Height="25"/>
+                <TextBlock Text="{Binding Message}" Margin="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" 
+                           Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"/>
+                <StackPanel.InputBindings>
+                    <MouseBinding Gesture="LeftClick" Command="{Binding Show}"/>
+                </StackPanel.InputBindings>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="ErrorsItemsTemplate">
-            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}">
-                <ItemsControl ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}">                    
-                </ItemsControl>
+        <DataTemplate x:Key="ErrorsItemsTemplate">            
+            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}" IsExpanded="{Binding IsExpanded}">
+                <ItemsControl ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"/>
+                <Expander.Style>
+                    <Style TargetType="Expander">                        
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SameErrors}" Value="{x:Null}">
+                                <Setter Property="Template" Value="{StaticResource WithoutToggleButton}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Expander.Style>
             </Expander>
-        </DataTemplate>        
-    </Window.Resources>
+        </DataTemplate>
+        <ContextMenu x:Key="cmErrors">
+            <MenuItem Header="Свернуть все" Command="{Binding CollapseAll}"/>
+            <MenuItem Header="Развернуть все" Command="{Binding ExpandeAll}"/>
+            <MenuItem Header="Сохранить" Command="{Binding ExportToExcel}"/>
+        </ContextMenu>        
+    </Window.Resources>    
     <Grid>
-        <ItemsControl ItemsSource="{Binding Errors}" ItemTemplate="{StaticResource ErrorsItemsTemplate}">
-            
-        </ItemsControl>
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Errors}" ItemTemplate="{StaticResource ErrorsItemsTemplate}"/>
+        </ScrollViewer>
     </Grid>
 </Window>

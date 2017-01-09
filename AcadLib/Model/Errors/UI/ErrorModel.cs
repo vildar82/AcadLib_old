@@ -14,13 +14,13 @@ namespace AcadLib.Errors
 {
     public class ErrorModel : ModelBase
     {
-        private Error firstErr;
+        private IError firstErr;
 
-        public ErrorModel(Error err) : this(err.Yield())
+        public ErrorModel(IError err) : this(err.Yield())
         {            
         }
 
-        public ErrorModel(IEnumerable<Error> sameErrors)
+        public ErrorModel(IEnumerable<IError> sameErrors)
         {
             firstErr = sameErrors.First();
             Message = firstErr.Message;
@@ -30,17 +30,21 @@ namespace AcadLib.Errors
                     firstErr.Icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             }
             Show = new RelayCommand(OnShowExecute);
-            SameErrors = new ObservableCollection<ErrorModel>(sameErrors.Skip(1).Select(s=>new ErrorModel(s)));
+            if (sameErrors.Skip(1).Any())
+                SameErrors = new ObservableCollection<ErrorModel>(sameErrors.Skip(1).Select(s=>new ErrorModel(s)));
         }        
 
         public ObservableCollection<ErrorModel> SameErrors { get; set; }        
         public string Message { get; set; }
         public BitmapSource Image { get; set; }
         public RelayCommand Show { get; set; }
+        public bool IsExpanded { get { return isExpanded; } set { isExpanded = value; RaisePropertyChanged(); } }
+        bool isExpanded;
 
         private void OnShowExecute()
-        {
+        {            
             firstErr.Show();
+            IsExpanded = !IsExpanded;
         }
     }
 }

@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace AcadLib.Errors
 {
-    public class Error : IComparable<Error>, IEquatable<Error>
+    public class Error : IError
     {
         private string _msg;
         private string _shortMsg;
@@ -206,12 +206,12 @@ namespace AcadLib.Errors
             return resVal.Replace("\n", " ");
         }
 
-        public int CompareTo(Error other)
+        public int CompareTo(IError other)
         {
             return string.Compare(Message,other.Message);
         }
 
-        public bool Equals(Error other)
+        public bool Equals(IError other)
         {
             return string.Equals(Message,other.Message);
         }
@@ -221,9 +221,9 @@ namespace AcadLib.Errors
            return Message.GetHashCode();
         }
 
-        public Error GetCopy()
+        public IError GetCopy()
         {
-            Error errCopy = new Error(this);
+            var errCopy = new Error(this);
             return errCopy;
         }
 
@@ -237,12 +237,13 @@ namespace AcadLib.Errors
         /// Сгруппированные ошибки по одинаковым сообщениям.
         /// </summary>
         /// <returns></returns>
-        public static List<Error> GetCollapsedErrors(List<Error> errors)
+        public static List<IError> GetCollapsedErrors(List<IError> errors)
         {
             var errCounts = errors.GroupBy(e => e.Message).Select(g =>
             {
                 var e = g.First().GetCopy();
-                e.SetCount(g.Count());
+                var err = e as Error;
+                err?.SetCount(g.Count());
                 return e;
             });
             return errCounts.ToList();
