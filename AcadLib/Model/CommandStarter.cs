@@ -10,7 +10,6 @@ using AcadLib.Errors;
 using AcadLib.Statistic;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
-using AcadLib.Statistic;
 
 namespace AcadLib
 {

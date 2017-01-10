@@ -25,9 +25,9 @@
                             Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                         <Image Margin="2" Source="{Binding Image}" />
                         <ToolTipService.ToolTip>
-                            <StackPanel>
-                                <TextBlock Margin="1" Text="{Binding Name}" />
-                                <TextBlock Margin="1" Text="{Binding Description}" />
+                            <StackPanel MaxWidth="500">
+                                <TextBlock Margin="1" Text="{Binding Name}" TextWrapping="Wrap"/>
+                                <TextBlock Margin="1" Text="{Binding Description}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </ToolTipService.ToolTip>
                         <Button.ContextMenu>

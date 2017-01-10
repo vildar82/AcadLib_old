@@ -138,7 +138,7 @@ namespace AcadLib
         /// <summary>
         /// Преобразование радиан в градусы (180.0*angleDegrees/Math.PI)
         /// </summary>
-        /// <param name="angleRadian">Угол в радианах</param>
+        /// <param name="radian">Угол в радианах</param>
         /// <returns>Угол в градусах</returns>
         public static double ToDegrees(this double radian)
         {

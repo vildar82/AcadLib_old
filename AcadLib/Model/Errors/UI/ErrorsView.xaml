@@ -81,12 +81,12 @@
                     <Image Source="{StaticResource expand}" Width="10"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Сохранить в Excel" Command="{Binding ExportToExcel}">
+            <MenuItem Header="Открыть в Excel" Command="{Binding ExportToExcel}" ToolTip="Открыть список сообщений в Excel.">
                 <MenuItem.Icon>
                     <Image Source="{StaticResource exel}" Width="22"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Сохранить в txt" Command="{Binding ExportToTxt}">
+            <MenuItem Header="Открыть в txt" Command="{Binding ExportToTxt}" ToolTip="Открыть список сообщений в текстовом редакторе.">
                 <MenuItem.Icon>
                     <Image Source="{StaticResource txt}" Width="22"/>
                 </MenuItem.Icon>

@@ -60,7 +60,7 @@ namespace AcadLib
         public static void Init()
         {            
             // загрузка из файла
-            FileXml =General.GetUserDataFile("","CommandCounter.xml");
+            FileXml =IO.Path.GetUserPluginFile("","CommandCounter.xml");
             if (File.Exists(FileXml))
             {
                 SerializerXml xmlSer = new SerializerXml(FileXml);

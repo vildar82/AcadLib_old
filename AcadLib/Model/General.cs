@@ -10,8 +10,6 @@ namespace AcadLib
 {
     public static class General
     {
-        private static string userDataFolder;
-
         /// <summary>
         /// Отменено пользователем.
         /// Сообщение для исключения при отмене команды пользователем.
@@ -51,18 +49,7 @@ namespace AcadLib
         [Obsolete("Используй Path.GetUserPluginFolder()")]
         public static string GetUserDataFile (string pluginName, string fileName)
         {
-            return IO.Path.GetUserPluginFile(pluginName, fileName);
-            //if (userDataFolder == null)
-            //{
-            //    userDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create), @"PIK\AutoCAD");
-            //    if (!Directory.Exists(userDataFolder))
-            //        Directory.CreateDirectory(userDataFolder);
-            //}
-            //var folder = Path.Combine(userDataFolder, folderName);
-            //if (!Directory.Exists(folder))            
-            //    Directory.CreateDirectory(folder);            
-            //var file = Path.Combine(folder, fileName);
-            //return file;
+            return IO.Path.GetUserPluginFile(pluginName, fileName);            
         }        
 
         public static bool IsCadManager()
