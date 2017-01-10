@@ -7,6 +7,8 @@ using AcadLib.PaletteCommands;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
+using Autodesk.AutoCAD.ApplicationServices;
+using System.Windows;
 
 [assembly: CommandClass(typeof(AcadLib.Commands))]
 [assembly: ExtensionApplication(typeof(AcadLib.Commands))]
@@ -211,11 +213,11 @@ namespace AcadLib
             LoadService.LoadFromTry(fileDll);
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\ALDBConnector.dll");
             LoadService.LoadFromTry(fileDll);
-            // Удаление старых коннекторов
-            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDBCToLISP.dll");
-            LoadService.DeleteTry(fileDll);
-            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
-            LoadService.DeleteTry(fileDll);
+            //// Удаление старых коннекторов
+            //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDBCToLISP.dll");
+            //LoadService.DeleteTry(fileDll);
+            //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
+            //LoadService.DeleteTry(fileDll);
 
             // Очистка локальных логов - временно!                   
             try
@@ -223,6 +225,18 @@ namespace AcadLib
                 ClearLogs();
             }
             catch { }
+
+            //ResourceDictionary appRD;
+            //if (System.Windows.Application.Current == null)
+            //{
+            //    appRD = new Autodesk.AutoCAD.Windows.AcResourceDictionary();
+            //}
+            //else
+            //{
+            //    appRD = System.Windows.Application.Current.Resources;
+            //}
+            //appRD.MergedDictionaries.Add(System.Windows.Application.LoadComponent(
+            //    new Uri("AcadLib;component/Model/WPF/Images.xaml", UriKind.Relative)) as ResourceDictionary);
         }
 
         private void ClearLogs()

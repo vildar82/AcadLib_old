@@ -31,15 +31,27 @@ namespace AcadLib.Errors
             }
             Show = new RelayCommand(OnShowExecute);
             if (sameErrors.Skip(1).Any())
-                SameErrors = new ObservableCollection<ErrorModel>(sameErrors.Skip(1).Select(s=>new ErrorModel(s)));
+                SameErrors = new ObservableCollection<ErrorModel>(sameErrors.Select(s=>new ErrorModel(s)));
+            HasShow = firstErr.CanShow;
         }        
 
         public ObservableCollection<ErrorModel> SameErrors { get; set; }        
         public string Message { get; set; }
         public BitmapSource Image { get; set; }
         public RelayCommand Show { get; set; }
-        public bool IsExpanded { get { return isExpanded; } set { isExpanded = value; RaisePropertyChanged(); } }
+        public bool IsExpanded {
+            get { return isExpanded; }
+            set {
+                if (SameErrors != null)
+                {
+                    isExpanded = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
         bool isExpanded;
+
+        public bool HasShow { get; set; }
 
         private void OnShowExecute()
         {            

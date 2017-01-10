@@ -70,6 +70,10 @@
       <HintPath>..\..\Package\AutoCAD\2015\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AcWindows">
+      <HintPath>..\..\ObjectARX\ObjectARX2015\AcWindows.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AutoCAD_PIK_Manager">
       <HintPath>..\..\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\bin\Release\AutoCAD_PIK_Manager.dll</HintPath>
       <Private>False</Private>
@@ -355,6 +359,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\txt.png" />
     <Resource Include="Resources\update.png" />
     <None Include="app.config" />
     <None Include="Model\Statistic\DataSetStatistic.xsc">
@@ -382,10 +387,10 @@
     <None Include="Resources\unknown.png" />
     <None Include="AutoCADNetLoad.scr" />
     <None Include="Resources\Collapse.ico" />
-    <None Include="Resources\Collapse.png" />
-    <None Include="Resources\Expand.png" />
-    <None Include="Resources\Show.png" />
-    <None Include="Resources\excel.png" />
+    <Resource Include="Resources\Collapse.png" />
+    <Resource Include="Resources\Expand.png" />
+    <Resource Include="Resources\Show.png" />
+    <Resource Include="Resources\excel.png" />
     <None Include="Resources\Delete.png" />
     <None Include="Resources\DeleteAll.png" />
     <Content Include="Model\RTree\LICENSE.txt" />

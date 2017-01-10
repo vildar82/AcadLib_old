@@ -9,6 +9,7 @@ namespace AcadLib.Errors
     {
         Extents3d Extents { get; }
         bool HasEntity { get; }
+        bool CanShow { get; }
         Icon Icon { get; set; }
         ObjectId IdEnt { get; }
         string Message { get; }

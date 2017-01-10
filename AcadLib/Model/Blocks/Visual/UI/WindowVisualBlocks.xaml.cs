@@ -24,12 +24,20 @@ namespace AcadLib.Blocks.Visual.UI
         public WindowVisualBlocks(VisualBlocksViewModel vm)
         {
             InitializeComponent();
-            DataContext = vm;            
+            DataContext = vm;
 
             //lbVisuals.MouseLeftButtonUp += ListBoxVisuals_MouseLeftButtonUp;
-            //lvwBlocks.MouseLeftButtonUp += ListBoxVisuals_MouseLeftButtonUp;            
+            //lvwBlocks.MouseLeftButtonUp += ListBoxVisuals_MouseLeftButtonUp;      
+            KeyDown += WindowVisualBlocks_KeyDown;      
         }
-       
+
+        private void WindowVisualBlocks_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                Hide();
+            }
+        }
 
         private void ButtonInsert_Click(object sender, RoutedEventArgs e)
         {

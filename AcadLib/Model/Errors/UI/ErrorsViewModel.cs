@@ -3,6 +3,8 @@ using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,9 +24,11 @@ namespace AcadLib.Errors
             // Группировка ошибок
             Errors = new ObservableCollection<ErrorModel>(errors.Where(w=>!string.IsNullOrEmpty(w.Message)).
                 GroupBy(g=>g).Select(s=> new ErrorModel(s.ToList())).ToList());
-            CollapseAll = new RelayCommand(OnCollapseExecute);
-            ExpandeAll = new RelayCommand(OnExpandedExecute);
+            CollapseAll = new RelayCommand(OnCollapseExecute, CanCollapseExecute);
+            ExpandeAll = new RelayCommand(OnExpandedExecute, CanExpandExecute);
             ExportToExcel = new RelayCommand(OnExportToExcelExecute);
+            ExportToTxt = new RelayCommand(OnExportToTxtExecute);
+            ErrorsCountInfo = errors.Count.ToString();
         }        
 
         public ObservableCollection<ErrorModel> Errors { get; set; }
@@ -34,13 +38,23 @@ namespace AcadLib.Errors
         public RelayCommand CollapseAll { get; set; }
         public RelayCommand ExpandeAll { get; set; }
         public RelayCommand ExportToExcel { get; set; }
+        public RelayCommand ExportToTxt { get; set; }
+        public string ErrorsCountInfo { get; set; }
 
+        private bool CanCollapseExecute()
+        {
+            return Errors.Any(a => a.IsExpanded);
+        }
         private void OnCollapseExecute()
         {
             foreach (var item in Errors)
             {
                 item.IsExpanded = false;
             }
+        }
+        private bool CanExpandExecute()
+        {
+            return Errors.Any(a=>a.SameErrors!= null) && Errors.Any(a=>!a.IsExpanded);
         }
         private void OnExpandedExecute()
         {
@@ -92,6 +106,28 @@ namespace AcadLib.Errors
                 MessageBox.Show(ex.Message);
                 Logger.Log.Error(ex, "Сохранение ошибок в Excel");
             }
+        }
+
+        private void OnExportToTxtExecute ()
+        {
+            var sbText = new StringBuilder("Список ошибок:").AppendLine();            
+            foreach (var err in Errors)
+            {
+                if (err.SameErrors == null)
+                {
+                    sbText.AppendLine(err.Message);
+                }
+                else
+                {
+                    foreach (var item in err.SameErrors)
+                    {
+                        sbText.AppendLine(err.Message);
+                    }
+                }
+            }            
+            var fileTxt = Path.GetTempPath() + Guid.NewGuid().ToString() + ".txt";
+            File.WriteAllText(fileTxt, sbText.ToString());
+            Process.Start(fileTxt);
         }
     }
 }

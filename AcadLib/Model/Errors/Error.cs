@@ -64,6 +64,7 @@ namespace AcadLib.Errors
                 return _extents;
             }
         }
+        public bool CanShow { get; set; }
 
         public void Show()
         {
@@ -98,6 +99,7 @@ namespace AcadLib.Errors
             this.Icon = err.Icon;
             this.Trans = err.Trans;
             this.Tag = err.Tag;
+            this.CanShow = err.CanShow;
         }
 
         public Error(string message, Icon icon = null)
@@ -125,6 +127,7 @@ namespace AcadLib.Errors
             _hasEntity = true;
             Icon = icon;
             Trans = Matrix3d.Identity;
+            CanShow = true;
         }
 
         public Error(string message, Entity ent, Matrix3d trans, Icon icon = null)
@@ -135,6 +138,7 @@ namespace AcadLib.Errors
             _hasEntity = true;
             Icon = icon;
             Trans = trans;
+            CanShow = true;
         }
 
         public Error(string message, Extents3d ext, Entity ent, Icon icon = null)
@@ -147,6 +151,7 @@ namespace AcadLib.Errors
             _hasEntity = true;
             Icon = icon;
             Trans = Matrix3d.Identity;
+            CanShow = true;
         }
 
         public Error(string message, Extents3d ext, ObjectId idEnt, Icon icon = null)
@@ -159,6 +164,7 @@ namespace AcadLib.Errors
             _hasEntity = true;
             Icon = icon;
             Trans = Matrix3d.Identity;
+            CanShow = true;
         }
 
         public Error(string message, Extents3d ext, Matrix3d trans, Icon icon = null)
@@ -170,6 +176,7 @@ namespace AcadLib.Errors
             _hasEntity = false;
             Icon = icon;
             Trans = trans;
+            CanShow = true;
         }
 
         public Error(string message, ObjectId idEnt, Icon icon = null)
@@ -180,6 +187,7 @@ namespace AcadLib.Errors
             _hasEntity = true;
             Icon = icon;
             Trans = Matrix3d.Identity;
+            CanShow = true;
         }
 
         public Error(string message, ObjectId idEnt, Matrix3d trans, Icon icon = null)
@@ -190,6 +198,7 @@ namespace AcadLib.Errors
             _hasEntity = true;
             Icon = icon;
             Trans = trans;
+            CanShow = true;
         }
 
         private string getShortMsg(string msg)
