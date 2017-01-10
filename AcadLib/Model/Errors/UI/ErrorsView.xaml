@@ -97,12 +97,18 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <ScrollViewer Grid.Row="0">
             <ItemsControl ItemsSource="{Binding Errors}" ItemTemplate="{StaticResource ErrorsItemsTemplate}"/>
         </ScrollViewer>
         <StackPanel Grid.Row="1" Margin="1">
             <TextBlock Text="{Binding ErrorsCountInfo}" ToolTip="Общее количество сообщений" Margin="3,0,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" 
+                    Visibility="{Binding IsDialog, Converter={converters:BooleanToHidingVisibilityConverter}}">
+            <Button Content="Продолжить" Command="{Binding Ok}" Margin="5"/>
+            <Button Content="Прервать" IsCancel="True" Margin="5"/>
         </StackPanel>
     </Grid>
 </Window>
