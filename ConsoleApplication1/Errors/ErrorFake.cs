@@ -24,6 +24,7 @@ namespace ConsoleApplication1.Errors
         public Extents3d Extents { get; set; }
 
         public bool HasEntity { get; set; }
+        public bool CanShow { get; set; }
 
         public Icon Icon { get; set; }
 

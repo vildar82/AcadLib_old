@@ -26,7 +26,7 @@ namespace AcadLib.Comparers
             else if (null2)
             {
                 return null1 ? 0 : 1;
-            }
+            }            
 
             try
             {
@@ -82,16 +82,22 @@ namespace AcadLib.Comparers
 
                     // If we have collected numbers, compare them numerically.
                     // Otherwise, if we have strings, compare them alphabetically.
-                    string str1 = new string(space1);
-                    string str2 = new string(space2);
-
+                    string str1 = new string(space1).Trim('\0');
+                    string str2 = new string(space2).Trim('\0');                    
                     int result;
 
                     if (char.IsDigit(space1[0]) && char.IsDigit(space2[0]))
                     {
-                        int thisNumericChunk = int.Parse(str1);
-                        int thatNumericChunk = int.Parse(str2);
-                        result = thisNumericChunk.CompareTo(thatNumericChunk);
+                        try
+                        {
+                            int thisNumericChunk = int.Parse(str1);
+                            int thatNumericChunk = int.Parse(str2);
+                            result = thisNumericChunk.CompareTo(thatNumericChunk);
+                        }
+                        catch
+                        {
+                            result = string.Compare(str1, str2, true);
+                        }
                     }
                     else
                     {
