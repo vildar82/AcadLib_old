@@ -144,11 +144,15 @@ namespace AcadLib.Errors
                 //Application.ShowModelessDialog(new FormError(false));
 
                 // WPF
-                var errVM = new ErrorsViewModel(Errors);
-                errVM.IsDialog = false;
-                var errView = new ErrorsView(errVM);
-                Application.ShowModelessWindow(errView);
+                Show(Errors);
             }
+        }
+        public static void Show (List<IError> errors)
+        {
+            var errVM = new ErrorsViewModel(errors);
+            errVM.IsDialog = false;
+            var errView = new ErrorsView(errVM);
+            Application.ShowModelessWindow(errView);
         }
 
         private static List<IError> SortErrors(List<IError> errors)
@@ -180,10 +184,7 @@ namespace AcadLib.Errors
                 //return res;
 
                 // WPF
-                var errVM = new ErrorsViewModel(Errors);
-                errVM.IsDialog = true;
-                var errView = new ErrorsView(errVM);
-                if (Application.ShowModalWindow(errView) == true)
+                if (ShowDialog(Errors) == true)
                 {
                     return System.Windows.Forms.DialogResult.OK;
                 }
@@ -196,6 +197,13 @@ namespace AcadLib.Errors
             {
                 return System.Windows.Forms.DialogResult.OK;
             }
+        }
+        public static bool? ShowDialog(List<IError> errors)
+        {
+            var errVM = new ErrorsViewModel(errors);
+            errVM.IsDialog = true;
+            var errView = new ErrorsView(errVM);
+            return Application.ShowModalWindow(errView);            
         }
 
         public static void LogErrors()

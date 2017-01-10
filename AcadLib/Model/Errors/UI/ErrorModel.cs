@@ -52,11 +52,14 @@ namespace AcadLib.Errors
         bool isExpanded;
 
         public bool HasShow { get; set; }
+        public bool IsSelected { get { return isSelected; } set { isSelected = value; RaisePropertyChanged(); } }
+        bool isSelected;
 
         private void OnShowExecute()
         {            
             firstErr.Show();
             IsExpanded = !IsExpanded;
+            IsSelected = true;
         }
     }
 }
