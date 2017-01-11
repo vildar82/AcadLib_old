@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:AcadLib.WPF.Converters"
         xmlns:local="clr-namespace:AcadLib.Errors"  
-        
+        ContextMenu="{DynamicResource cmErrors}"
         d:DataContext="{d:DesignInstance local:ErrorsViewModel,
                                      IsDesignTimeCreatable=True}"
         mc:Ignorable="d"
