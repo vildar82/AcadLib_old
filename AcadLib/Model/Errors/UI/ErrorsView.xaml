@@ -40,18 +40,20 @@
             </Border>
         </ControlTemplate>        
         <DataTemplate x:Key="ErrorTemplate">
-            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="60" Background="WhiteSmoke">
+            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="80" Background="WhiteSmoke" HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Image Grid.Column="0" Source="{Binding Image}" Margin="5" VerticalAlignment="Center" Height="25"/>
-                <Image Grid.Column="1" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
+                <TextBlock Grid.Column="0" Text="{Binding Count}" Visibility="{Binding ShowCount, Converter={converters:BooleanToHidingVisibilityConverter}}" VerticalAlignment="Center"/>
+                <Image Grid.Column="1" Source="{Binding Image}" Margin="5" VerticalAlignment="Center" Height="25"/>
+                <Image Grid.Column="2" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
                        Visibility="{Binding HasShow, Converter={converters:BooleanToHidingVisibilityConverter}}"
                        ToolTip="Показать на чертеже"/>
-                <TextBlock Grid.Column="2" Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 
-                           MaxHeight="60">
+                <TextBlock Grid.Column="3" Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 
+                           FontSize="14">
                     <ToolTipService.ToolTip>
                         <TextBlock Text="{Binding Message}" MaxWidth="500" TextWrapping="Wrap"/>
                     </ToolTipService.ToolTip>
@@ -61,16 +63,20 @@
                 </Grid.InputBindings>
             </Grid>
         </DataTemplate>
-        <DataTemplate x:Key="ErrorsItemsTemplate">            
-            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}">
-                <ListBox ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"
-                         SelectionMode="Single">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+        <DataTemplate x:Key="ErrorsItemsTemplate">
+            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}" IsExpanded="{Binding IsExpanded}">
+                <ScrollViewer MaxHeight="400" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto"
+                              IsDeferredScrollingEnabled="True" PreviewMouseWheel="HandlePreviewMouseWheel">
+                    <ListBox ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"
+                         BorderThickness="0">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                <Setter Property="Focusable" Value="false"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </ScrollViewer>
                 <Expander.Style>
                     <Style TargetType="Expander">                        
                         <Style.Triggers>
@@ -111,10 +117,11 @@
             <RowDefinition Height="Auto"/>            
         </Grid.RowDefinitions>
         <ListBox Grid.Row="0" ItemsSource="{Binding Errors}" ItemTemplate="{StaticResource ErrorsItemsTemplate}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single">
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                    <Setter Property="Focusable" Value="false"/>
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>

@@ -24,5 +24,17 @@ namespace AcadLib.Errors
             InitializeComponent();
             DataContext = errVM;
         }
+
+        private void HandlePreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is ScrollViewer && !e.Handled)
+            {
+                e.Handled = true;
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.Source = sender;
+                ((Control)sender).RaiseEvent(eventArg);                
+            }
+        }
     }
 }

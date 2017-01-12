@@ -16,12 +16,13 @@ namespace AcadLib.Errors
     {
         private IError firstErr;
 
-        public ErrorModel(IError err) : this(err.Yield())
+        public ErrorModel(IError err) : this(err.Yield().ToList())
         {            
         }
 
-        public ErrorModel(IEnumerable<IError> sameErrors)
+        public ErrorModel(List<IError> sameErrors)
         {
+            Count = sameErrors.Count();
             firstErr = sameErrors.First();
             Message = firstErr.Message;
             if (firstErr.Icon != null)
@@ -31,8 +32,14 @@ namespace AcadLib.Errors
             }
             Show = new RelayCommand(OnShowExecute);
             if (sameErrors.Skip(1).Any())
-                SameErrors = new ObservableCollection<ErrorModel>(sameErrors.Select(s=>new ErrorModel(s)));
-            HasShow = firstErr.CanShow;
+            {
+                SameErrors = new ObservableCollection<ErrorModel>();
+                for (int i =0; i<sameErrors.Count; i++)
+                {
+                    SameErrors.Add(new ErrorModel(sameErrors[i]));
+                }                
+            }
+            HasShow = firstErr.CanShow;                        
         }        
 
         public ObservableCollection<ErrorModel> SameErrors { get; set; }        
@@ -52,8 +59,12 @@ namespace AcadLib.Errors
         bool isExpanded;
 
         public bool HasShow { get; set; }
-        public bool IsSelected { get { return isSelected; } set { isSelected = value; RaisePropertyChanged(); } }
+        public bool ShowCount { get { return Count != 1; } }
+        public bool IsSelected { get { return isSelected; }
+            set { isSelected = value; RaisePropertyChanged(); } }
         bool isSelected;
+
+        public int Count { get; set; }
 
         private void OnShowExecute()
         {            
