@@ -35,6 +35,11 @@ namespace AcadLib.Errors
                 eventArg.Source = sender;
                 ((Control)sender).RaiseEvent(eventArg);                
             }
+        }        
+
+        private void Button_Ok_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
         }
     }
 }

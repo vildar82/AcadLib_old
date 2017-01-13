@@ -242,7 +242,9 @@ namespace AcadLib
         private void ClearLogs()
         {
             var dirDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, "Dll");
-            var fileLogs = Directory.GetFiles(dirDll, "*.log");
+            //var fileLogs = Directory.GetFiles(dirDll, "*.log;Лог*.txt");
+            var fileLogs = Directory.EnumerateFiles(dirDll, "*.*", SearchOption.TopDirectoryOnly)
+            .Where(s => s.EndsWith(".log") || s.EndsWith(".txt"));
             foreach (var item in fileLogs)
             {                
                 try

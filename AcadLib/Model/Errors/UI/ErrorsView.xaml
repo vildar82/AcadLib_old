@@ -40,7 +40,7 @@
             </Border>
         </ControlTemplate>        
         <DataTemplate x:Key="ErrorTemplate">
-            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="80" Background="WhiteSmoke" HorizontalAlignment="Left">
+            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="WhiteSmoke" HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -64,7 +64,7 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="ErrorsItemsTemplate">
-            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}" IsExpanded="{Binding IsExpanded}">
+            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}" IsExpanded="{Binding IsExpanded}" Focusable="False">
                 <ScrollViewer MaxHeight="400" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto"
                               IsDeferredScrollingEnabled="True" PreviewMouseWheel="HandlePreviewMouseWheel">
                     <ListBox ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"
@@ -133,7 +133,7 @@
             <TextBlock Grid.Column="0" Text="{Binding ErrorsCountInfo}" ToolTip="Общее количество сообщений" Margin="1" VerticalAlignment="Center"/>            
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" 
                     Visibility="{Binding IsDialog, Converter={converters:BooleanToHidingVisibilityConverter}}">
-                <Button Content="Продолжить" Command="{Binding Ok}" Margin="5"/>
+                <Button Content="Продолжить" Click="Button_Ok_Click" Margin="5"/>
                 <Button Content="Прервать" IsCancel="True" Margin="5"/>
             </StackPanel>
         </Grid>
