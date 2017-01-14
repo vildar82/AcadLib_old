@@ -155,6 +155,7 @@ namespace AcadLib
 
         public void Initialize()
         {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             // MicroMvvm            
             var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
             LoadService.LoadFromTry(fileDll);
@@ -237,6 +238,14 @@ namespace AcadLib
             //}
             //appRD.MergedDictionaries.Add(System.Windows.Application.LoadComponent(
             //    new Uri("AcadLib;component/Model/WPF/Images.xaml", UriKind.Relative)) as ResourceDictionary);
+        }
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            // Нужно для правильной работы GenericDictionaryEditor (Model.UI.Properties.DictionaryEditor)
+            if (args.Name.StartsWith("AcadLib"))
+                return Assembly.GetExecutingAssembly();
+            return null;
         }
 
         private void ClearLogs()

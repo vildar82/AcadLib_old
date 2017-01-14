@@ -19,6 +19,14 @@ namespace AcadLib.UI.Properties
         {
         }
 
+        public XmlSerializableDictionary(Dictionary<string, TValue> dict) : base(StringComparer.OrdinalIgnoreCase)
+        {
+            foreach (var item in dict)
+            {
+                Add(item.Key, item.Value);
+            }
+        }
+
         public System.Xml.Schema.XmlSchema GetSchema ()
         {
             return null;
