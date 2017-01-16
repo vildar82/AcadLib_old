@@ -203,7 +203,7 @@ namespace AcadLib.Errors
 
         private string PrepareMessage(string message)
         {
-            return message.ClearString();
+            return message;//.ClearString(); // делать очистку в момент создания ошибки при необходимости
         }
 
         private string GetShortMsg(string msg)
