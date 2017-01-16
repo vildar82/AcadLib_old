@@ -381,25 +381,25 @@
       <DependentUpon>DataSetStatistic.xsd</DependentUpon>
     </None>
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
+    <EmbeddedResource Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Resources\send.png" />
-    <None Include="Resources\report.png" />
-    <None Include="Resources\logo.png" />
-    <None Include="Resources\house.ico" />
-    <None Include="Resources\pik.ico" />
-    <None Include="Resources\PIK_XDataView.png" />
-    <None Include="Resources\unknown.png" />
+    </EmbeddedResource>
+    <Resource Include="Resources\send.png" />
+    <Resource Include="Resources\report.png" />
+    <Resource Include="Resources\logo.png" />
+    <Resource Include="Resources\house.ico" />
+    <Resource Include="Resources\pik.ico" />
+    <Resource Include="Resources\PIK_XDataView.png" />
+    <Resource Include="Resources\unknown.png" />
     <None Include="AutoCADNetLoad.scr" />
-    <None Include="Resources\Collapse.ico" />
+    <Resource Include="Resources\Collapse.ico" />
     <Resource Include="Resources\Collapse.png" />
     <Resource Include="Resources\Expand.png" />
     <Resource Include="Resources\Show.png" />
     <Resource Include="Resources\excel.png" />
-    <None Include="Resources\Delete.png" />
-    <None Include="Resources\DeleteAll.png" />
+    <Resource Include="Resources\Delete.png" />
+    <Resource Include="Resources\DeleteAll.png" />
     <Content Include="Model\RTree\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>

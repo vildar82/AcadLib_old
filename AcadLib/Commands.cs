@@ -146,11 +146,19 @@ namespace AcadLib
         /// </summary>
         internal static void AllCommandsCommon()
         {
-            CommandsPalette = new List<IPaletteCommand>()
+            try
             {
-                new PaletteInsertBlock("PIK_Logo", fileCommonBlocks, "Блок логотипа", Properties.Resources.logo, "Вставка блока логотипа ПИК."),
-                new PaletteCommand("Просмотр расширенных данных примитива", Properties.Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива."),
-            };
+                CommandsPalette = new List<IPaletteCommand>()
+                {
+                    new PaletteInsertBlock("PIK_Logo", fileCommonBlocks, "Блок логотипа", Properties.Resources.logo, "Вставка блока логотипа ПИК."),
+                    new PaletteCommand("Просмотр расширенных данных примитива", Properties.Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива."),
+                };
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, "AcadLib.AllCommandsCommon()");
+                CommandsPalette = new List<IPaletteCommand>();
+            }
         }
 
         public void Initialize()
@@ -170,22 +178,18 @@ namespace AcadLib
             {
                 fileGroups.Add(@"Script\NET\СС\PIK_SS_Acad.dll");
             }
-            else if (groups.Any(g => g == "ГП"))
+            if (groups.Any(g => g == "ГП"))
             {
                 fileGroups.Add(@"Script\NET\ГП\PIK_GP_Acad.dll");
             }
-            else if (groups.Any(g => g == "КР-СБ-ГК"))
+            if (groups.Any(g => g == "КР-СБ-ГК"))
             {
                 fileGroups.Add(@"Script\NET\КР-СБ-ГК\Autocad_ConcerteList.dll");
             }
-            else if (groups.Any(g => g == "КР-МН"))
+            if (groups.Any(g => g == "КР-МН"))
             {
                 fileGroups.Add(@"Script\NET\КР-МН\KR_MN_Acad.dll");
-            }
-            else if (groups.Any(g => g == "ВК"))
-            {
-                fileGroups.Add(@"Script\NET\ВК\PIK_VK_Acad.dll");
-            }
+            }            
             foreach (var fileGroup in fileGroups)
             {
                 fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
@@ -220,12 +224,8 @@ namespace AcadLib
             //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
             //LoadService.DeleteTry(fileDll);
 
-            // Очистка локальных логов - временно!                   
-            try
-            {
-                ClearLogs();
-            }
-            catch { }
+            // Очистка локальных логов - временно!                               
+            //ClearLogs();            
 
             //ResourceDictionary appRD;
             //if (System.Windows.Application.Current == null)
@@ -243,25 +243,29 @@ namespace AcadLib
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             // Нужно для правильной работы GenericDictionaryEditor (Model.UI.Properties.DictionaryEditor)
-            if (args.Name.StartsWith("AcadLib"))
+            if (args.Name.StartsWith("AcadLib,"))
                 return Assembly.GetExecutingAssembly();
             return null;
         }
 
         private void ClearLogs()
         {
-            var dirDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, "Dll");
-            //var fileLogs = Directory.GetFiles(dirDll, "*.log;Лог*.txt");
-            var fileLogs = Directory.EnumerateFiles(dirDll, "*.*", SearchOption.TopDirectoryOnly)
-            .Where(s => s.EndsWith(".log") || s.EndsWith(".txt"));
-            foreach (var item in fileLogs)
-            {                
-                try
+            try
+            {
+                var dirDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, "Dll");
+                //var fileLogs = Directory.GetFiles(dirDll, "*.log;Лог*.txt");
+                var fileLogs = Directory.EnumerateFiles(dirDll, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(s => s.EndsWith(".log") || s.EndsWith(".txt"));
+                foreach (var item in fileLogs)
                 {
-                    File.Delete(item);
+                    try
+                    {
+                        File.Delete(item);
+                    }
+                    catch { }
                 }
-                catch { }
             }
+            catch { }
         }
     }
 }

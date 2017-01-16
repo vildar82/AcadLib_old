@@ -29,6 +29,10 @@ namespace AcadLib.Blocks
         ObjectId IdBlRef { get; set; }
         ObjectId IdBtr { get; set; }
         /// <summary>
+        /// Определение анонимного блока для динамического блока
+        /// </summary>
+        ObjectId IdBtrAnonym { get; set; }
+        /// <summary>
         /// Пространство в который вставлен этот блок (определение блока)
         /// </summary>
         ObjectId IdBtrOwner { get; }

@@ -53,10 +53,17 @@ namespace AcadLib.PaletteCommands
         /// <param name="commandStartPalette">Имя команды для старта палитры</param>
         public static void InitPalette(List<IPaletteCommand> commands, string commandStartPalette)
         {
-            PaletteSetCommands.commandStartPalette = commandStartPalette;
-            CommandsAddin = commands;
-            Commands.AllCommandsCommon();
-            SetTrayIcon();
+            try
+            {
+                PaletteSetCommands.commandStartPalette = commandStartPalette;
+                CommandsAddin = commands;
+                Commands.AllCommandsCommon();
+                SetTrayIcon();
+            }
+            catch(System.Exception ex)
+            {
+                Logger.Log.Error(ex, $"AcadLib.PaletteCommands.InitPalette() - {commandStartPalette}.");
+            }
         }
 
         /// <summary>
@@ -64,11 +71,18 @@ namespace AcadLib.PaletteCommands
         /// </summary>
         public static void Start()
         {
-            if (_paletteSet == null)
+            try
             {
-                _paletteSet = Create();
+                if (_paletteSet == null)
+                {
+                    _paletteSet = Create();
+                }
+                _paletteSet.Visible = true;
             }
-            _paletteSet.Visible = true;
+            catch(System.Exception ex)
+            {
+                Logger.Log.Error(ex, "PaletteSetCommands.Start().");
+            }
         }
 
         private void loadPalettes()
@@ -129,7 +143,7 @@ namespace AcadLib.PaletteCommands
             // Добавление иконки в трей    
             try
             {
-                TrayItem ti = new TrayItem();
+                var ti = new TrayItem();
                 ti.ToolTipText = "Палитра ПИК";
                 ti.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
                 ti.MouseDown += PikTray_MouseDown;
@@ -142,7 +156,10 @@ namespace AcadLib.PaletteCommands
                 //pane.MouseDown += PikTray_MouseDown;
                 //Application.StatusBar.Panes.Add(pane);
             }
-            catch { }
+            catch(System.Exception ex)
+            {
+                Logger.Log.Error(ex, "PaletteSetCommands.SetTrayIcon().");
+            }
         }
 
         private static void PikTray_MouseDown(object sender, StatusBarMouseDownEventArgs e)

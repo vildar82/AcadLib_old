@@ -43,9 +43,13 @@ namespace AcadLib.Blocks
         /// </summary>
         public ObjectId IdBlRef { get; set; }
         /// <summary>
-        /// Id определения блока - BklockTableRecord (для анонимных - анонимное).
+        /// Id определения блока - BklockTableRecord (для анонимных - DynamicBlockTableRecord).
         /// </summary>
         public ObjectId IdBtr { get; set; }
+        /// <summary>
+        /// Для динамических блоков - анонимное определение блока
+        /// </summary>
+        public ObjectId IdBtrAnonym { get; set; }
         /// <summary>
         /// Пространство в который вставлен этот блок (определение блока)
         /// </summary>
@@ -231,7 +235,8 @@ namespace AcadLib.Blocks
         /// </summary>        
         public List<Polyline> FindPolylineInLayer (string layer)
         {
-            var btr = this.IdBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
+            var idBtr = IdBtrAnonym.IsNull ? IdBtr : IdBtrAnonym;
+            var btr = idBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
             var allPls = btr.GetObjects<Polyline>(OpenMode.ForRead);
             var pls = allPls.Where(p =>p.Visible && p.Layer.Equals(layer, StringComparison.OrdinalIgnoreCase)).ToList();
             return pls;
@@ -283,8 +288,15 @@ namespace AcadLib.Blocks
                 Db = blRef.Database;
                 IdBtrOwner = blRef.OwnerId;
                 IdBlRef = blRef.Id;
-                IdBtr = blRef.IsDynamicBlock? blRef.DynamicBlockTableRecord : blRef.BlockTableRecord;
-                //BlName = blName;
+                if (blRef.IsDynamicBlock)
+                {
+                    IdBtr = blRef.DynamicBlockTableRecord;
+                    IdBtrAnonym = blRef.AnonymousBlockTableRecord;
+                }
+                else
+                {
+                    IdBtr = blRef.BlockTableRecord;
+                }
                 BlLayer = blRef.Layer;
                 LayerId = blRef.LayerId;
                 Properties = Property.GetAllProperties(blRef);
