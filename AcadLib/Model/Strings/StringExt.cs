@@ -21,12 +21,12 @@ namespace System
         /// <summary>
         /// Удаление разделителей строк и др. \r\n?|\n
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
+        /// <param name="input"></param>        
+        [Obsolete("Используй NetLib")]
         public static string ClearString(this string input)
         {
             //return Regex.Replace(input, @"\r\n?|\n", "");
-            return input.Trim().Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
+            return NetLib.StringExt.ClearString(input);
         }
 
         public static bool IsValidDbSymbolName(this string input)
