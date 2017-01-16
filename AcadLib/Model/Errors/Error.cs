@@ -104,12 +104,12 @@ namespace AcadLib.Errors
 
         public Error(string message, Icon icon = null)
         {
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);
+            _msg = PrepareMessage(message);
+            _shortMsg = GetShortMsg(_msg);
             _hasEntity = false;
             Icon = icon;
             Trans = Matrix3d.Identity;
-        }
+        }        
 
         internal void SetCount(int v)
         {
@@ -121,8 +121,8 @@ namespace AcadLib.Errors
 
         public Error(string message, Entity ent, Icon icon = null)
         {
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);
+            _msg = PrepareMessage(message);
+            _shortMsg = GetShortMsg(_msg);
             _idEnt = ent.Id;
             _hasEntity = true;
             Icon = icon;
@@ -132,8 +132,8 @@ namespace AcadLib.Errors
 
         public Error(string message, Entity ent, Matrix3d trans, Icon icon = null)
         {
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);
+            _msg = PrepareMessage(message);
+            _shortMsg = GetShortMsg(_msg);
             _idEnt = ent.Id;
             _hasEntity = true;
             Icon = icon;
@@ -143,8 +143,8 @@ namespace AcadLib.Errors
 
         public Error(string message, Extents3d ext, Entity ent, Icon icon = null)
         {
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);
+            _msg = PrepareMessage(message);
+            _shortMsg = GetShortMsg(_msg);
             _idEnt = ent.Id;
             _extents = ext;
             _alreadyCalcExtents = true;
@@ -156,8 +156,8 @@ namespace AcadLib.Errors
 
         public Error(string message, Extents3d ext, ObjectId idEnt, Icon icon = null)
         {
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);
+            _msg = PrepareMessage(message);
+            _shortMsg = GetShortMsg(_msg);
             _idEnt = idEnt;
             _extents = ext;
             _alreadyCalcExtents = true;
@@ -169,8 +169,8 @@ namespace AcadLib.Errors
 
         public Error(string message, Extents3d ext, Matrix3d trans, Icon icon = null)
         {
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);            
+            _msg = PrepareMessage(message);
+            _shortMsg = GetShortMsg(_msg);            
             _extents = ext;
             _alreadyCalcExtents = true;
             _hasEntity = false;
@@ -181,8 +181,8 @@ namespace AcadLib.Errors
 
         public Error(string message, ObjectId idEnt, Icon icon = null)
         {
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);
+            _msg = PrepareMessage(message);
+            _shortMsg = GetShortMsg(_msg);
             _idEnt = idEnt;
             _hasEntity = true;
             Icon = icon;
@@ -192,8 +192,8 @@ namespace AcadLib.Errors
 
         public Error(string message, ObjectId idEnt, Matrix3d trans, Icon icon = null)
         {
-            _msg = message;
-            _shortMsg = getShortMsg(_msg);
+            _msg = PrepareMessage(message);
+            _shortMsg = GetShortMsg(_msg);
             _idEnt = idEnt;
             _hasEntity = true;
             Icon = icon;
@@ -201,7 +201,12 @@ namespace AcadLib.Errors
             CanShow = true;
         }
 
-        private string getShortMsg(string msg)
+        private string PrepareMessage(string message)
+        {
+            return message.ClearString();
+        }
+
+        private string GetShortMsg(string msg)
         {
             string resVal = string.Empty;
             if (msg.Length > 200)
@@ -239,7 +244,7 @@ namespace AcadLib.Errors
         public void AdditionToMessage(string addMsg)
         {
             _msg += addMsg;
-            _shortMsg = getShortMsg(_msg);
+            _shortMsg = GetShortMsg(_msg);
         }
 
         /// <summary>
