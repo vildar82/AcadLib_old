@@ -196,10 +196,7 @@ namespace AcadLib
                 LoadService.LoadFromTry(fileDll);
                 //Assembly.LoadFrom(fileDll);
             }
-
-            // Загрузка базы MDM
-            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll");
-            LoadService.LoadFromTry(fileDll);
+            
             try
             {
                 LoadService.LoadEntityFramework();
@@ -208,6 +205,10 @@ namespace AcadLib
             {
                 Logger.Log.Error(ex, "LoadEntityFramework");
             }
+
+            // Загрузка базы MDM
+            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll");
+            LoadService.LoadFromTry(fileDll);
 
             // Загрузка общей библмотеки NetLib
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\NetLib.dll");
