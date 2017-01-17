@@ -139,14 +139,13 @@ namespace AcadLib.Blocks
             blRef.Erase();
         }
 
-        /// <summary>
-        /// преобразование object value свойства Property в указанный тип
-        /// Тип T должен точно соответствовать типу object value Property
-        /// </summary>        
-        /// <param name="propMatch">Имя параметрв или соответствие</param>
-        /// <param name="isRequired">Добавлять ли ошибку если нет этого параметра.</param>
-        /// <param name="exactMatch">Точное соответствие имени параметра, или заданному паттерну.</param>
-        public T GetPropValue<T> (string propMatch, bool isRequired = true, bool exactMatch = true)
+        public T GetPropValue<T>(string propMatch, bool isRequired = true, bool exactMatch = true)
+        {
+            bool hasProperty;
+            return GetPropValue<T>(propMatch, out hasProperty, isRequired, exactMatch);
+        }
+        
+        public T GetPropValue<T> (string propMatch, out bool hasProperty, bool isRequired = true, bool exactMatch = true)
         {            
             T resVal = default(T);
             if (exactMatch)
@@ -156,6 +155,7 @@ namespace AcadLib.Blocks
             Property prop = GetProperty(propMatch, isRequired);
             if (prop != null)
             {
+                hasProperty = true;
                 try
                 {                    
                     resVal = prop.Value.GetValue<T>();                      
@@ -169,8 +169,12 @@ namespace AcadLib.Blocks
                         Logger.Log.Error(ex, err);
                 }
             }
+            else
+            {
+                hasProperty = false;
+            }
             return resVal;
-        }        
+        }                
 
         protected Property GetProperty (string nameMatch, bool isRequired = true)
         {
