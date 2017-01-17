@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AcadLib.Statistic.DataSetStatisticTableAdapters;
+using PluginStatistic;
 
 namespace AcadLib.Statistic
 {
@@ -14,15 +14,12 @@ namespace AcadLib.Statistic
         {
             Task.Run(() =>
             {
-                if (General.IsCadManager()) return;
                 try
-                {
-                    using (var pg = new C_PluginStatisticTableAdapter())
-                    {
-                        pg.Insert("AutoCAD", command.Plugin, command.CommandName,
-                            FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion,
-                            command.Doc, Environment.UserName, DateTime.Now);
-                    }
+                {                    
+                    Writer.WriteRunToDB("AutoCAD",
+                                command.Plugin, command.CommandName,
+                                FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion,
+                                command.Doc);
                 }
                 catch (Exception ex)
                 {

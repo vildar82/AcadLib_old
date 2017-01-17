@@ -24,7 +24,7 @@ namespace AcadLib.Blocks
         /// </summary>      
         public AttributeInfo(DBText attr)
         {
-            AttributeDefinition attdef = attr as AttributeDefinition;
+            var attdef = attr as AttributeDefinition;
             if (attdef != null)
             {
                 Tag = attdef.Tag;
@@ -32,7 +32,7 @@ namespace AcadLib.Blocks
             }
             else
             {
-                AttributeReference attref = attr as AttributeReference;
+                var attref = attr as AttributeReference;
                 if (attref != null)
                 {
                     Tag = attref.Tag;
@@ -46,9 +46,16 @@ namespace AcadLib.Blocks
             IdAtr = attr.Id;
         }
 
+        public AttributeInfo(AttributeReference atrRef)
+        {
+            Tag = atrRef.Tag;
+            Text = atrRef.TextString;
+            IdAtr = atrRef.Id;
+        }
+
         public static List<AttributeInfo> GetAttrDefs(ObjectId idBtr)
         {
-            List<AttributeInfo> resVal = new List<AttributeInfo>();
+            var resVal = new List<AttributeInfo>();
 
             if (!idBtr.IsNull)
             {
@@ -72,12 +79,12 @@ namespace AcadLib.Blocks
 
         public static List<AttributeInfo> GetAttrRefs(BlockReference blRef)
         {
-            List<AttributeInfo> resVal = new List<AttributeInfo>();
+            var resVal = new List<AttributeInfo>();
             if (blRef?.AttributeCollection != null)
             {
                 foreach (ObjectId idAttrRef in blRef.AttributeCollection)
                 {
-                    if (idAttrRef.IsErased) continue;
+                    if (!idAttrRef.IsValidEx()) continue;
                     using (var atrRef = idAttrRef.Open(OpenMode.ForRead, false, true) as AttributeReference)
                     {
                         if (atrRef.Visible)
@@ -89,6 +96,6 @@ namespace AcadLib.Blocks
                 }
             }
             return resVal;
-        }
+        }        
     }
 }

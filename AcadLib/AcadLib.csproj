@@ -93,6 +93,9 @@
     <Reference Include="PIK_DB_Projects">
       <HintPath>..\..\ОБЩЕЕ\DBMDM\PIK_DB_Projects\PIK_DB_Projects\bin\Release\PIK_DB_Projects.dll</HintPath>
     </Reference>
+    <Reference Include="PluginStatistic">
+      <HintPath>Z:\Revit_server\10. Dll's\Dll\PIK\Libraries\PluginStatistic.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -206,11 +209,6 @@
     <Compile Include="Model\Regexes\RegexExt.cs" />
     <Compile Include="Model\Registry\RegExt.cs" />
     <Compile Include="Model\Scale\ScaleHelper.cs" />
-    <Compile Include="Model\Statistic\DataSetStatistic.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataSetStatistic.xsd</DependentUpon>
-    </Compile>
     <Compile Include="Model\Statistic\PluginStatisticsHelper.cs" />
     <Compile Include="Model\Strings\StringHelper.cs" />
     <Compile Include="Model\Tables\CreateTable.cs" />
@@ -369,17 +367,6 @@
     <Resource Include="Resources\txt.png" />
     <Resource Include="Resources\update.png" />
     <None Include="app.config" />
-    <None Include="Model\Statistic\DataSetStatistic.xsc">
-      <DependentUpon>DataSetStatistic.xsd</DependentUpon>
-    </None>
-    <None Include="Model\Statistic\DataSetStatistic.xsd">
-      <SubType>Designer</SubType>
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DataSetStatistic.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Model\Statistic\DataSetStatistic.xss">
-      <DependentUpon>DataSetStatistic.xsd</DependentUpon>
-    </None>
     <None Include="packages.config" />
     <EmbeddedResource Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
