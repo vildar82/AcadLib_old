@@ -9,8 +9,8 @@
         d:DataContext="{d:DesignInstance local:ErrorsViewModel,
                                      IsDesignTimeCreatable=True}"
         mc:Ignorable="d"
-        Title="Инфо" Height="300" Width="300"
-        MinHeight="150">    
+        Title="Инфо" Height="300" Width="300"        
+        MinHeight="150" Topmost="True">    
     <Window.Resources>
         <BitmapImage x:Key="exel" UriSource="/AcadLib;component/Resources/excel.png" />
         <BitmapImage x:Key="txt" UriSource="/AcadLib;component/Resources/txt.png" />

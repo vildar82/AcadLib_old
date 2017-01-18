@@ -23,6 +23,13 @@ namespace AcadLib.Errors
         {                        
             InitializeComponent();
             DataContext = errVM;
+            KeyDown += ErrorsView_KeyDown;
+        }
+
+        private void ErrorsView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+                Close();
         }
 
         private void HandlePreviewMouseWheel(object sender, MouseWheelEventArgs e)

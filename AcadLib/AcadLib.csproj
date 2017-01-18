@@ -133,6 +133,7 @@
     <Compile Include="Model\DB\ManagedSystemVariable.cs" />
     <Compile Include="Model\Draw\DrawParameters.cs" />
     <Compile Include="Model\Draw\Draw.cs" />
+    <Compile Include="Model\Errors\ErrorStatus.cs" />
     <Compile Include="Model\Errors\FormReport.cs">
       <SubType>Form</SubType>
     </Compile>

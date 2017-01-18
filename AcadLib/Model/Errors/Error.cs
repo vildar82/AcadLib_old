@@ -14,22 +14,29 @@ namespace AcadLib.Errors
 {
     public class Error : IError
     {
-        private string _msg;
-        private string _shortMsg;
-        private ObjectId _idEnt;
-        private Extents3d _extents;
-        private bool _alreadyCalcExtents;
-        private bool _isNullExtents;
-        private bool _hasEntity;
+        private Dictionary<Icon, ErrorStatus> dictErrorIcons = new Dictionary<Icon, ErrorStatus>() {
+            { SystemIcons.Error, ErrorStatus.Error },
+            { SystemIcons.Exclamation, ErrorStatus.Exclamation },
+            { SystemIcons.Hand, ErrorStatus.Exclamation },
+            { SystemIcons.Information, ErrorStatus.Info },
+            { SystemIcons.Warning, ErrorStatus.Error }
+        };
+        protected string _msg;
+        protected string _shortMsg;
+        protected ObjectId _idEnt;
+        protected Extents3d _extents;
+        protected bool _alreadyCalcExtents;
+        protected bool _isNullExtents;
+        protected bool _hasEntity;
 
         public object Tag { get; set; }
         public Matrix3d Trans { get; set; }       
-
         public string Message { get { return _msg; } }
         public string ShortMsg { get { return _shortMsg; } }
         public ObjectId IdEnt { get { return _idEnt; } }
         public bool HasEntity { get { return _hasEntity; } }
         public Icon Icon { get; set; }
+        public ErrorStatus Status { get; set; }
         public Extents3d Extents
         {
             get
@@ -66,7 +73,7 @@ namespace AcadLib.Errors
         }
         public bool CanShow { get; set; }
 
-        public void Show()
+        public virtual void Show()
         {
             try
             {
@@ -87,6 +94,11 @@ namespace AcadLib.Errors
             catch { }
         }
 
+        public Error()
+        {
+
+        }
+
         private Error(Error err)
         {            
             this._msg = err._msg;
@@ -100,7 +112,8 @@ namespace AcadLib.Errors
             this.Trans = err.Trans;
             this.Tag = err.Tag;
             this.CanShow = err.CanShow;
-        }
+            this.Status = err.Status;            
+        }               
 
         public Error(string message, Icon icon = null)
         {
@@ -109,15 +122,8 @@ namespace AcadLib.Errors
             _hasEntity = false;
             Icon = icon;
             Trans = Matrix3d.Identity;
-        }        
-
-        internal void SetCount(int v)
-        {
-            if (v > 1)
-            {
-                _shortMsg = $"{v}...{_shortMsg}";
-            }
-        }
+            DefineStatus();
+        }               
 
         public Error(string message, Entity ent, Icon icon = null)
         {
@@ -128,6 +134,7 @@ namespace AcadLib.Errors
             Icon = icon;
             Trans = Matrix3d.Identity;
             CanShow = true;
+            DefineStatus();
         }
 
         public Error(string message, Entity ent, Matrix3d trans, Icon icon = null)
@@ -139,6 +146,7 @@ namespace AcadLib.Errors
             Icon = icon;
             Trans = trans;
             CanShow = true;
+            DefineStatus();
         }
 
         public Error(string message, Extents3d ext, Entity ent, Icon icon = null)
@@ -152,6 +160,7 @@ namespace AcadLib.Errors
             Icon = icon;
             Trans = Matrix3d.Identity;
             CanShow = true;
+            DefineStatus();
         }
 
         public Error(string message, Extents3d ext, ObjectId idEnt, Icon icon = null)
@@ -165,6 +174,7 @@ namespace AcadLib.Errors
             Icon = icon;
             Trans = Matrix3d.Identity;
             CanShow = true;
+            DefineStatus();
         }
 
         public Error(string message, Extents3d ext, Matrix3d trans, Icon icon = null)
@@ -177,6 +187,7 @@ namespace AcadLib.Errors
             Icon = icon;
             Trans = trans;
             CanShow = true;
+            DefineStatus();
         }
 
         public Error(string message, ObjectId idEnt, Icon icon = null)
@@ -188,6 +199,7 @@ namespace AcadLib.Errors
             Icon = icon;
             Trans = Matrix3d.Identity;
             CanShow = true;
+            DefineStatus();
         }
 
         public Error(string message, ObjectId idEnt, Matrix3d trans, Icon icon = null)
@@ -199,14 +211,15 @@ namespace AcadLib.Errors
             Icon = icon;
             Trans = trans;
             CanShow = true;
+            DefineStatus();
         }
 
-        private string PrepareMessage(string message)
+        protected string PrepareMessage(string message)
         {
             return message;//.ClearString(); // делать очистку в момент создания ошибки при необходимости
         }
 
-        private string GetShortMsg(string msg)
+        protected string GetShortMsg(string msg)
         {
             string resVal = string.Empty;
             if (msg.Length > 200)
@@ -222,6 +235,8 @@ namespace AcadLib.Errors
 
         public int CompareTo(IError other)
         {
+            var res = Status.CompareTo(other.Status);
+            if (res != 0) return res;
             return string.Compare(Message,other.Message);
         }
 
@@ -237,8 +252,9 @@ namespace AcadLib.Errors
 
         public IError GetCopy()
         {
-            var errCopy = new Error(this);
-            return errCopy;
+            //var errCopy = new Error(this);
+            //return errCopy;
+            return (IError)MemberwiseClone();
         }
 
         public void AdditionToMessage(string addMsg)
@@ -261,6 +277,20 @@ namespace AcadLib.Errors
                 return e;
             });
             return errCounts.ToList();
+        }
+        internal void SetCount(int v)
+        {
+            if (v > 1)
+            {
+                _shortMsg = $"{v}...{_shortMsg}";
+            }
+        }
+
+        protected void DefineStatus()
+        {
+            ErrorStatus status;
+            dictErrorIcons.TryGetValue(Icon, out status);
+            Status = status;
         }
     }
 }

@@ -11,6 +11,7 @@ namespace AcadLib.Errors
         bool HasEntity { get; }
         bool CanShow { get; }
         Icon Icon { get; set; }
+        ErrorStatus Status { get; set; }
         ObjectId IdEnt { get; }
         string Message { get; }
         string ShortMsg { get; }
