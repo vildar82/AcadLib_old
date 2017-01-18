@@ -59,7 +59,7 @@
             </Border>
         </ControlTemplate>
         <DataTemplate x:Key="ErrorTemplate">
-            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="LightGray" HorizontalAlignment="Left" Opacity="1">
+            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="LightGray" HorizontalAlignment="Left" Opacity="0.8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -90,11 +90,11 @@
                 <ScrollViewer MaxHeight="400" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto"
                               IsDeferredScrollingEnabled="True" PreviewMouseWheel="HandlePreviewMouseWheel">
                     <ListBox ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"
-                         BorderThickness="0" Background="Transparent">
+                         BorderThickness="0" Background="Transparent" SelectionMode="Extended">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
-                                <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                                <Setter Property="Focusable" Value="false"/>
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                                <!--<Setter Property="Focusable" Value="false"/>-->
                             </Style>
                         </ListBox.ItemContainerStyle>
                     </ListBox>
@@ -131,6 +131,9 @@
                     <Image Source="{StaticResource txt}" Width="22"/>
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Удалить дубликаты" Command="{Binding DeleteSelectedDublicateBlocks}" ToolTip="Удаление дублирующихся блоков в выделенных ошибках."
+                      Visibility="{Binding IsDublicateBlocksEnabled, Converter={converters:BooleanToHidingVisibilityConverter}}">                
+            </MenuItem>
         </ContextMenu>
     </Window.Resources>
     <Border Background="#0fffffff" CornerRadius="5"
@@ -154,11 +157,12 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ListBox Grid.Row="0" ItemsSource="{Binding Errors}" ItemTemplate="{StaticResource ErrorsItemsTemplate}"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="Transparent">
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="Transparent"
+                         SelectionMode="Extended">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
-                            <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                            <Setter Property="Focusable" Value="false"/>
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                            <!--<Setter Property="Focusable" Value="false"/>-->
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
@@ -167,7 +171,10 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="{Binding ErrorsCountInfo}" ToolTip="Общее количество сообщений" Margin="1" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock Text="{Binding ErrorsCountInfo}" ToolTip="Общее количество сообщений" Margin="1" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding CountSelectedErrors, StringFormat=Выделено ошибок: {0}}" Margin="5,1,1,1"/>
+                    </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" 
                     Visibility="{Binding IsDialog, Converter={converters:BooleanToHidingVisibilityConverter}}">
                         <Button Content="Продолжить" Click="Button_Ok_Click" Margin="5"/>

@@ -34,7 +34,14 @@ namespace AcadLib.Errors
         private void ErrorsView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
+            {
                 Close();
+            }
+            else if (e.Key ==  Key.Delete)
+            {
+                var model = DataContext as ErrorsViewModel;
+                model.DeleteSelectedErrors();
+            }
         }
 
         private void HandlePreviewMouseWheel(object sender, MouseWheelEventArgs e)

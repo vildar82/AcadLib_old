@@ -15,9 +15,12 @@ namespace AcadLib.Errors
     public class ErrorModel : ModelBase
     {
         private IError firstErr;
+        public ErrorModel parentErr;
+        public event EventHandler<bool> SelectionChanged;
 
-        public ErrorModel(IError err) : this(err.Yield().ToList())
-        {            
+        public ErrorModel(IError err, ErrorModel parentErr) : this(err.Yield().ToList())
+        {
+            this.parentErr = parentErr;
         }
 
         public ErrorModel(List<IError> sameErrors)
@@ -36,12 +39,13 @@ namespace AcadLib.Errors
                 SameErrors = new ObservableCollection<ErrorModel>();
                 for (int i =0; i<sameErrors.Count; i++)
                 {
-                    SameErrors.Add(new ErrorModel(sameErrors[i]));
+                    SameErrors.Add(new ErrorModel(sameErrors[i], this));
                 }                
             }
             HasShow = firstErr.CanShow;                        
         }        
 
+        public IError Error { get { return firstErr; } }
         public ObservableCollection<ErrorModel> SameErrors { get; set; }        
         public string Message { get; set; }
         public BitmapSource Image { get; set; }
@@ -61,7 +65,7 @@ namespace AcadLib.Errors
         public bool HasShow { get; set; }
         public bool ShowCount { get { return Count != 1; } }
         public bool IsSelected { get { return isSelected; }
-            set { isSelected = value; RaisePropertyChanged(); } }
+            set { isSelected = value; RaisePropertyChanged(); SelectionChanged?.Invoke(this, value); } }
         bool isSelected;
 
         public int Count { get; set; }

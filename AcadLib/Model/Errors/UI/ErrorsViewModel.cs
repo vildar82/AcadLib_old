@@ -22,24 +22,47 @@ namespace AcadLib.Errors
         public ErrorsViewModel(List<IError> errors)
         {
             // Группировка ошибок
-            Errors = new ObservableCollection<ErrorModel>(errors.Where(w=>!string.IsNullOrEmpty(w.Message)).
-                GroupBy(g=>g).Select(s=> new ErrorModel(s.ToList())).ToList());
+            //"Дублирование блоков"                        
+            Errors = new ObservableCollection<ErrorModel>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).
+                GroupBy(g => g).Select(s =>
+                {
+                    var errModel = new ErrorModel(s.ToList());
+                    errModel.SelectionChanged += ErrModel_SelectionChanged;
+                    errModel.SameErrors?.Iterate(e => e.SelectionChanged += ErrModel_SelectionChanged);
+                    return errModel;
+                }).ToList());
+            IsDublicateBlocksEnabled = errors.Any(e => e.Message?.StartsWith("Дублирование блоков") ?? false);
             CollapseAll = new RelayCommand(OnCollapseExecute, CanCollapseExecute);
             ExpandeAll = new RelayCommand(OnExpandedExecute, CanExpandExecute);
             ExportToExcel = new RelayCommand(OnExportToExcelExecute);
             ExportToTxt = new RelayCommand(OnExportToTxtExecute);
-            ErrorsCountInfo = errors.Count.ToString();
-        }        
+            DeleteSelectedDublicateBlocks = new RelayCommand(OnDeleteSelectedDublicateBlocksExecute);
+            ErrorsCountInfo = errors.Count;
+        }
+
+        private void ErrModel_SelectionChanged(object sender, bool e)
+        {
+            CountSelectedErrors += e ? 1 : -1;
+        }
 
         public ObservableCollection<ErrorModel> Errors { get; set; }
-        public bool IsDialog { get { return isDialog; } set { isDialog = value; RaisePropertyChanged(); } }
+        public bool IsDialog { get { return isDialog; } set { isDialog = value; RaisePropertyChanged(); } }  
         bool isDialog;
 
         public RelayCommand CollapseAll { get; set; }
         public RelayCommand ExpandeAll { get; set; }
         public RelayCommand ExportToExcel { get; set; }
         public RelayCommand ExportToTxt { get; set; }
-        public string ErrorsCountInfo { get; set; }
+        public RelayCommand DeleteSelectedDublicateBlocks { get; set; }
+        
+        public int ErrorsCountInfo { get { return errorsCountInfo; } set { errorsCountInfo = value; RaisePropertyChanged(); } }
+        int errorsCountInfo;
+
+        public bool IsDublicateBlocksEnabled { get { return isDublicateBlocksEnabled; } set { isDublicateBlocksEnabled = value; RaisePropertyChanged(); } }
+        bool isDublicateBlocksEnabled;
+
+        public int CountSelectedErrors { get { return countSelectedErrors; } set { countSelectedErrors = value; RaisePropertyChanged(); } }
+        int countSelectedErrors;
 
         private bool CanCollapseExecute()
         {
@@ -128,6 +151,76 @@ namespace AcadLib.Errors
             var fileTxt = Path.GetTempPath() + Guid.NewGuid().ToString() + ".txt";
             File.WriteAllText(fileTxt, sbText.ToString());
             Process.Start(fileTxt);
+        }
+
+        private void OnDeleteSelectedDublicateBlocksExecute()
+        {
+            List<IError> errors;
+            var selectedErrors = GetSelectedErrors(out errors);
+            try
+            {
+                Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
+                RemoveErrors(selectedErrors);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Ошибка удаления дубликатов блоков - {ex.Message}");   
+            }            
+        }    
+
+        /// <summary>
+        /// Удаление выделенных ошибок
+        /// </summary>
+        public void DeleteSelectedErrors()
+        {
+            List<IError> errors;
+            var selectedErrors = GetSelectedErrors(out errors);
+            RemoveErrors(selectedErrors);
+        }
+
+        private void RemoveErrors(List<ErrorModel> selectedErrors)
+        {
+            int countIsSelectedErr = 0;
+            foreach (var item in selectedErrors)
+            {
+                if (item.parentErr == null)
+                {
+                    Errors.Remove(item);                    
+                }
+                else
+                {
+                    item.parentErr.SameErrors.Remove(item);                    
+                }
+                if (item.IsSelected) countIsSelectedErr++;
+            }
+            ErrorsCountInfo -= selectedErrors.Count;
+            CountSelectedErrors -= countIsSelectedErr;
+        }
+
+        private List<ErrorModel> GetSelectedErrors(out List<IError> errors)
+        {
+            errors = new List<IError>();
+            var selectedErrors = new List<ErrorModel>();            
+            foreach (var err in Errors)
+            {
+                if (err.IsSelected)
+                {
+                    selectedErrors.Add(err);
+                    errors.Add(err.Error);
+                }
+                else if (err.SameErrors != null)
+                {
+                    foreach (var innerErr in err.SameErrors)
+                    {
+                        if (innerErr.IsSelected)
+                        {
+                            selectedErrors.Add(innerErr);
+                            errors.Add(innerErr.Error);
+                        }
+                    }
+                }
+            }
+            return selectedErrors;
         }
     }
 }
