@@ -20,8 +20,9 @@ namespace WpfApplication1.Errors
             {
                 errors.Add(new ErrorFake("Сообщение об ошибке", System.Drawing.SystemIcons.Exclamation));
                 errors.Add(new ErrorFake( string.Concat(Enumerable.Repeat("Сообщение об ошибке", i)), System.Drawing.SystemIcons.Exclamation));              
-            }
+            }            
             var errVM = new ErrorsViewModel(errors);
+            errVM.IsDialog = true;
             var errView = new ErrorsView(errVM);            
             errView.Show();
         }
