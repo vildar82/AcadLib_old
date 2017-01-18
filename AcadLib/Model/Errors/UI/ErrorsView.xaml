@@ -9,9 +9,28 @@
         d:DataContext="{d:DesignInstance local:ErrorsViewModel,
                                      IsDesignTimeCreatable=True}"
         mc:Ignorable="d"
-        Title="Инфо" Height="300" Width="300"        
-        MinHeight="150" Topmost="True">    
+        Title="Инфо"
+        MinHeight="150" Topmost="True"
+        MinWidth="150"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent">
+    <Window.Style>
+        <Style TargetType="{x:Type Window}">
+            <Setter Property="WindowChrome.WindowChrome">
+                <Setter.Value>
+                    <WindowChrome CaptionHeight="1"  
+                                  CornerRadius ="1"
+                                  ResizeBorderThickness="4"         
+                                  GlassFrameThickness="0"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Style>
     <Window.Resources>
+        <LinearGradientBrush x:Key="WindowFrameBrush" StartPoint="0,0.5" EndPoint="1,0.5">
+            <GradientStop Color="CadetBlue" Offset="0.4"/>
+            <GradientStop Color="Gray" Offset="1"/>
+        </LinearGradientBrush>
         <BitmapImage x:Key="exel" UriSource="/AcadLib;component/Resources/excel.png" />
         <BitmapImage x:Key="txt" UriSource="/AcadLib;component/Resources/txt.png" />
         <BitmapImage x:Key="collapse" UriSource="/AcadLib;component/Resources/Collapse.png" />
@@ -38,16 +57,18 @@
                     <ContentPresenter x:Name="ExpandSite" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" DockPanel.Dock="Bottom" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Visibility="Collapsed" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                 </DockPanel>
             </Border>
-        </ControlTemplate>        
+        </ControlTemplate>
         <DataTemplate x:Key="ErrorTemplate">
-            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="WhiteSmoke" HorizontalAlignment="Left">
+            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="LightGray" HorizontalAlignment="Left" Opacity="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{Binding Count}" Visibility="{Binding ShowCount, Converter={converters:BooleanToHidingVisibilityConverter}}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Text="{Binding Count}" 
+                           Visibility="{Binding ShowCount, Converter={converters:BooleanToHidingVisibilityConverter}}" 
+                           VerticalAlignment="Center"/>
                 <Image Grid.Column="1" Source="{Binding Image}" Margin="5" VerticalAlignment="Center" Height="25"/>
                 <Image Grid.Column="2" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
                        Visibility="{Binding HasShow, Converter={converters:BooleanToHidingVisibilityConverter}}"
@@ -64,11 +85,12 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="ErrorsItemsTemplate">
-            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}" IsExpanded="{Binding IsExpanded}" Focusable="False">
+            <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}" IsExpanded="{Binding IsExpanded}" 
+                      Focusable="False">
                 <ScrollViewer MaxHeight="400" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto"
                               IsDeferredScrollingEnabled="True" PreviewMouseWheel="HandlePreviewMouseWheel">
                     <ListBox ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"
-                         BorderThickness="0">
+                         BorderThickness="0" Background="Transparent">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
@@ -78,7 +100,7 @@
                     </ListBox>
                 </ScrollViewer>
                 <Expander.Style>
-                    <Style TargetType="Expander">                        
+                    <Style TargetType="Expander">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SameErrors}" Value="{x:Null}">
                                 <Setter Property="Template" Value="{StaticResource WithoutToggleButton}"/>
@@ -109,33 +131,50 @@
                     <Image Source="{StaticResource txt}" Width="22"/>
                 </MenuItem.Icon>
             </MenuItem>
-        </ContextMenu>        
-    </Window.Resources>    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>            
-        </Grid.RowDefinitions>
-        <ListBox Grid.Row="0" ItemsSource="{Binding Errors}" ItemTemplate="{StaticResource ErrorsItemsTemplate}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                    <Setter Property="Focusable" Value="false"/>
-                </Style>
-            </ListBox.ItemContainerStyle>
-        </ListBox>
-        <Grid Grid.Row="1" Margin="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="{Binding ErrorsCountInfo}" ToolTip="Общее количество сообщений" Margin="1" VerticalAlignment="Center"/>            
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" 
+        </ContextMenu>
+    </Window.Resources>
+    <Border Background="#0fffffff" CornerRadius="5"
+            BorderThickness="2,0,2,2">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Border Background="#0fffffff" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+               Margin="-1,0,-1,0" MouseLeftButtonDown="DragWindow">
+                <DockPanel MouseLeftButtonDown="DragWindow">
+                    <TextBlock Text="Инфо" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="10,1,1,1"/>
+                    <Button Content="X" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" FontSize="7" 
+                                Width="18" Height="18" Padding="0" IsCancel="True" Click="Button_Close_Click"/>
+                </DockPanel>
+            </Border>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ListBox Grid.Row="0" ItemsSource="{Binding Errors}" ItemTemplate="{StaticResource ErrorsItemsTemplate}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="Transparent">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                            <Setter Property="Focusable" Value="false"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+                <Grid Grid.Row="1" Margin="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding ErrorsCountInfo}" ToolTip="Общее количество сообщений" Margin="1" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" 
                     Visibility="{Binding IsDialog, Converter={converters:BooleanToHidingVisibilityConverter}}">
-                <Button Content="Продолжить" Click="Button_Ok_Click" Margin="5"/>
-                <Button Content="Прервать" IsCancel="True" Margin="5"/>
-            </StackPanel>
+                        <Button Content="Продолжить" Click="Button_Ok_Click" Margin="5"/>
+                        <Button Content="Прервать" IsCancel="True" Margin="5"/>
+                    </StackPanel>                    
+                </Grid>
+            </Grid>
         </Grid>
-    </Grid>
+    </Border>
 </Window>

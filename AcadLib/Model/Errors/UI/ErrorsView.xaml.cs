@@ -26,6 +26,11 @@ namespace AcadLib.Errors
             KeyDown += ErrorsView_KeyDown;
         }
 
+        public void DragWindow(object sender, MouseButtonEventArgs args)
+        {
+            DragMove();
+        }
+
         private void ErrorsView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -47,6 +52,11 @@ namespace AcadLib.Errors
         private void Button_Ok_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
+        }        
+
+        private void Button_Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }
