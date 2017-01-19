@@ -365,6 +365,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\send2.png" />
     <Resource Include="Resources\txt.png" />
     <Resource Include="Resources\update.png" />
     <None Include="app.config" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,6 +65,12 @@ namespace AcadLib.Errors
         private void Button_Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }        
+
+        private void Button_Send_Click(object sender, RoutedEventArgs e)
+        {
+            string subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";            
+            Process.Start($"mailto:khisyametdinovvt@pik.ru?subject={subject}");
         }
     }
 }

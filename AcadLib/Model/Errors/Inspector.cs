@@ -64,7 +64,7 @@ namespace AcadLib.Errors
 
         public static void AddError(string msg)
         {
-            var err = new Error(msg);
+            var err = new Error(msg, SystemIcons.Error);
             Errors.Add(err);
         }
 
