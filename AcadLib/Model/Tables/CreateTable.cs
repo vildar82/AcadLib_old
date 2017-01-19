@@ -94,12 +94,12 @@ namespace AcadLib.Tables
         {
             using (var t = doc.TransactionManager.StartTransaction())
             {
-                TableJig jigTable = new TableJig(table, scale, "Вставка таблицы");
+                var jigTable = new TableJig(table, scale, "Вставка таблицы");
                 if (doc.Editor.Drag(jigTable).Status == PromptStatus.OK)
                 {
                     var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
                     cs.AppendEntity(table);
-                    db.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(table, true);
+                    t.AddNewlyCreatedDBObject(table, true);
                 }
                 t.Commit();
             }
