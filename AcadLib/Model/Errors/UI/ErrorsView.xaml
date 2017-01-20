@@ -67,19 +67,23 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{Binding Count}" 
+                <TextBlock Grid.Column="0" Text="{Binding Count, Mode=OneWay}" 
                            Visibility="{Binding ShowCount, Converter={converters:BooleanToHidingVisibilityConverter}}" 
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           />
                 <Image Grid.Column="1" Source="{Binding Image}" Margin="5" VerticalAlignment="Center" Height="25"/>
                 <Image Grid.Column="2" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
                        Visibility="{Binding HasShow, Converter={converters:BooleanToHidingVisibilityConverter}}"
                        ToolTip="Показать на чертеже"/>
-                <TextBlock Grid.Column="3" Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 
-                           FontSize="14">
+                <TextBox Grid.Column="3" Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 
+                         FontSize="14"
+                         Background="Transparent"
+                         BorderThickness="0"                         
+                         IsReadOnly="True">
                     <ToolTipService.ToolTip>
                         <TextBlock Text="{Binding Message}" MaxWidth="500" TextWrapping="Wrap"/>
                     </ToolTipService.ToolTip>
-                </TextBlock>
+                </TextBox>
                 <Grid.InputBindings>
                     <MouseBinding Gesture="LeftClick" Command="{Binding Show}"/>
                 </Grid.InputBindings>
