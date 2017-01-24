@@ -74,7 +74,7 @@ namespace AcadLib.XData
                 AddInner(dic);
             }
         }
-
+        
         public RecXD GetRec(string name)
         {            
             return Recs?.Find(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));            

@@ -34,9 +34,14 @@ namespace AcadLib
         /// EntityFramework
         /// </summary>
         public static void LoadEntityFramework()
+        {            
+            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.dll"));
+            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.SqlServer.dll"));            
+        }
+
+        public static void LoadMDM()
         {
-            LoadPackages("EntityFramework.dll");
-            LoadPackages("EntityFramework.SqlServer.dll");
+            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll"));                        
         }
 
         /// <summary>
@@ -106,5 +111,7 @@ namespace AcadLib
                 catch { }
             }
         }
+
+        
     }
 }

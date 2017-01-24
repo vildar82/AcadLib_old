@@ -27,7 +27,7 @@ namespace AcadLib.Geometry
                 return (Polyline)pls[0].Clone();
             }
 
-            var plsList = pls.ToList();
+            var plsList = pls.ToList(); // Копирование списка
             // Сортировка полилиний по расстоянию между центрами
             plsList = SortByNearestCenterExtents(plsList);
 
