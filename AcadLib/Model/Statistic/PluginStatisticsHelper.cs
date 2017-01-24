@@ -30,8 +30,15 @@ namespace AcadLib.Statistic
 
         public static void AddStatistic ()
         {
-            var caller = new StackTrace().GetFrame(1).GetMethod();
-            PluginStart(CommandStart.GetCallerCommand(caller));
+            try
+            {
+                var caller = new StackTrace().GetFrame(1).GetMethod();
+                PluginStart(CommandStart.GetCallerCommand(caller));
+            }
+            catch(Exception ex)
+            {
+                Logger.Log.Error(ex, "PluginStatisticsHelper.AddStatistic");
+            }
         }
     }
 }
