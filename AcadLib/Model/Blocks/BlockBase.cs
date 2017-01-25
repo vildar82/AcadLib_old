@@ -174,7 +174,39 @@ namespace AcadLib.Blocks
                 hasProperty = false;
             }
             return resVal;
-        }                
+        }             
+        
+        /// <summary>
+        /// Получение значения свойства (атрибута, динамического свойства)
+        /// </summary>
+        /// <typeparam name="T">Тип значения</typeparam>
+        /// <param name="propName">Имя свойства</param>
+        /// <param name="defaultValue">Значение поумолчанию</param>
+        /// <param name="isrequired">Обязательное свойство</param>
+        /// <param name="exactMatch">Точное соответствие имени свойства</param>
+        /// <param name="writeDefaultValue">Требуется транзакция! Записывать ли значение поумолчанию в свойство, если оно есть и если его значение является дефолтным для данного типа (например:0 для чисел)</param>
+        /// <returns>Значение свойства</returns>
+        public T GetPropValue<T> (string propName, T defaultValue, bool isrequired = false, bool exactMatch = true, bool writeDefaultValue = false)
+        {
+            bool hasProp;
+            var res = GetPropValue<T>(propName, out hasProp, isrequired, exactMatch);
+            if (EqualityComparer<T>.Default.Equals(res, default(T)))
+            {
+                if (writeDefaultValue && hasProp)
+                {
+                    try
+                    {
+                        FillPropValue(propName, defaultValue);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log.Error(ex, $"BlockBase.GetPropValue - FillPropValue - '{propName}', блок {BlName}");
+                    }
+                }
+                return defaultValue;
+            }
+            return res;
+        }
 
         protected Property GetProperty (string nameMatch, bool isRequired = true)
         {
