@@ -136,6 +136,14 @@ namespace AcadLib.Geometry
             return points;
         }
 
+        public static IEnumerable<Point2d> EnumeratePoints(this Polyline pl)
+        {            
+            for (int i = 0; i < pl.NumberOfVertices; i++)
+            {
+                yield return pl.GetPoint2dAt(i);
+            }            
+        }        
+
         /// <summary>
         /// Breaks the polyline at specified point.
         /// </summary>
