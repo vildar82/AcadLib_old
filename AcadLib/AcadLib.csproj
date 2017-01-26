@@ -217,7 +217,6 @@
     <Compile Include="Model\Entitys\EntityHelper.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteInsertBlock.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteVisualInsertBlocks.cs" />
-    <Compile Include="Model\UI\PaletteCommands\CommandCounter.cs" />
     <Compile Include="Model\UI\PaletteCommands\CommandInfo.cs" />
     <Compile Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml.cs">
       <DependentUpon>CommandsControl.xaml</DependentUpon>

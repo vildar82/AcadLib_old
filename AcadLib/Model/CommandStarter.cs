@@ -47,8 +47,7 @@ namespace AcadLib
             {
                 var caller = new StackTrace().GetFrame(1).GetMethod();
                 CommandStart commandStart = GetCallerCommand(caller);
-                Logger.Log.StartCommand(commandStart);
-                CommandCounter.CountCommand(CurrentCommand);                                
+                Logger.Log.StartCommand(commandStart);                
                 Logger.Log.Info($"Document={doc.Name}");
                 PluginStatisticsHelper.PluginStart(commandStart);
 

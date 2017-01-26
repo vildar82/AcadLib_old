@@ -106,9 +106,7 @@ namespace AcadLib
         }        
 
         public void Terminate()
-        {
-            // Сохранение счетчика команд пользователя
-            CommandCounter.Counter?.Save();
+        {            
         }
 
         [CommandMethod(Group, CommandXDataView, CommandFlags.Modal)]

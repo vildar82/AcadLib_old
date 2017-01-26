@@ -31,7 +31,7 @@ namespace TestAcadlib.Geometry.Polylines
                 var pl1 = selPl1.ObjectId.GetObject(OpenMode.ForWrite) as Polyline;
                 var pl2 = selPl2.ObjectId.GetObject(OpenMode.ForWrite) as Polyline;
 
-                pl1.AverageVertexes(ref pl2, new Autodesk.AutoCAD.Geometry.Tolerance(1, 1));
+                pl1.AverageVertexes(ref pl2, new Autodesk.AutoCAD.Geometry.Tolerance(1, 1), true);
 
                 var pls = new List<Polyline> { pl1, pl2 };
 
