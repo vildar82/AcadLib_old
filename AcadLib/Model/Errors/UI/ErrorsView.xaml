@@ -60,7 +60,7 @@
             </Border>
         </ControlTemplate>
         <DataTemplate x:Key="ErrorTemplate">
-            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="LightGray" HorizontalAlignment="Left" Opacity="0.8">
+            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="LightGray" HorizontalAlignment="Left" Opacity="0.85">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>

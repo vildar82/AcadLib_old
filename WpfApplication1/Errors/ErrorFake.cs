@@ -16,11 +16,11 @@ namespace WpfApplication1.Errors
         public ErrorFake(string msg, Icon icon)
         {
             _msg = PrepareMessage(msg);
-            _shortMsg = GetShortMsg(_msg);
-            _hasEntity = false;
+            _shortMsg = GetShortMsg(_msg);            
             Icon = icon;            
             DefineStatus();
             _hasEntity = true;
+            CanShow = _hasEntity;
         }        
 
         public override int GetHashCode()

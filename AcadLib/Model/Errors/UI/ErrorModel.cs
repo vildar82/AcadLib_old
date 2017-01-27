@@ -74,7 +74,7 @@ namespace AcadLib.Errors
         {            
             firstErr.Show();
             IsExpanded = !IsExpanded;
-            IsSelected = true;
+            //IsSelected = true;
         }
     }
 }

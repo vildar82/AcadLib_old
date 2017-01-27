@@ -15,7 +15,7 @@ namespace AcadLib
 {
     public class CommandStart
     {
-        public static string CurrentCommand { get; private set; }
+        public static string CurrentCommand { get; set; }
         public string CommandName { get; private set; }
         public string Plugin { get; set; }
         public string Doc { get; set; }
