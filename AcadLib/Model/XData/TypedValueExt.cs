@@ -84,6 +84,7 @@ namespace AcadLib
         /// </summary>        
         public static TypedValue GetTvExtData(object value)
         {
+            if (value == null) return new TypedValue();
             var typeObj = value.GetType();
 
             int code = 0;

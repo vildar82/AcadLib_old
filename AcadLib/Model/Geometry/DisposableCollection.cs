@@ -27,11 +27,11 @@ namespace AcadLib
 
         public void Dispose ()
         {
-            if (base.Count > 0)
+            if (Count > 0)
             {
-                System.Exception last = null;
+                Exception last = null;
                 var list = this.ToList();
-                this.Clear();
+                Clear();
                 foreach (T item in list)
                 {
                     if (item != null)
@@ -40,7 +40,7 @@ namespace AcadLib
                         {
                             item.Dispose();
                         }
-                        catch (System.Exception ex)
+                        catch (Exception ex)
                         {
                             last = last ?? ex;
                         }
