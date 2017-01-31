@@ -7,15 +7,18 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Windows.Data;
 using AcadLib.Blocks.Visual.UI;
+using AcadLib.Layers;
 
 namespace AcadLib.Blocks.Visual
 {
     public static class VisualInsertBlock
     {
-        private static Dictionary<Predicate<string>, List<IVisualBlock>> dictFiles = new Dictionary<Predicate<string>, List<IVisualBlock>>();        
+        private static Dictionary<Predicate<string>, List<IVisualBlock>> dictFiles = new Dictionary<Predicate<string>, List<IVisualBlock>>();
+        private static LayerInfo _layer;
 
-        public static void InsertBlock(string fileBlocks, Predicate<string> filter, Layers.LayerInfo layer = null)
+        public static void InsertBlock(string fileBlocks, Predicate<string> filter, LayerInfo layer = null)
         {
+            _layer = layer;
             List<IVisualBlock> visuals;
             if (!dictFiles.TryGetValue(filter, out visuals))
             {                
@@ -69,13 +72,13 @@ namespace AcadLib.Blocks.Visual
             }
         }
 
-        public static void Insert(IVisualBlock block, Layers.LayerInfo layer = null)
+        public static void Insert(IVisualBlock block)
         {
             if (block == null) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
             var idBtr = GetInsertBtr(block.Name, block.File, db);
-            BlockInsert.Insert(block.Name, layer);
+            BlockInsert.Insert(block.Name, _layer);
         }
 
         private static ObjectId GetInsertBtr(string name, string fileBlocks, Database dbdest)

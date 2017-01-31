@@ -11,38 +11,40 @@
     mc:Ignorable="d"
     x:Name="win">
     <Grid>
-        <ItemsControl
+        <ScrollViewer>
+            <ItemsControl
             Name="lbVisuals"
             Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
             Grid.ColumnSpan="3"
             ItemsSource="{Binding Visuals}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button
                         Margin="2"
                         Background="Transparent"
                         Click="ButtonInsert_Click"
                         Command="{Binding ElementName=lbVisuals, Path=DataContext.Insert}"
                         CommandParameter="{Binding}">
-                        <StackPanel>
-                            <Image Width="190" Margin="2" Source="{Binding Image}" />
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" />
-                        </StackPanel>
-                        <Button.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Command="{Binding Redefine}"
+                            <StackPanel>
+                                <Image Width="190" Margin="2" Source="{Binding Image}" />
+                                <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" />
+                            </StackPanel>
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Command="{Binding Redefine}"
                                           Header="Переопределить" />
-                            </ContextMenu>
-                        </Button.ContextMenu>
-                    </Button>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Window>

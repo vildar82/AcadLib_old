@@ -9,6 +9,8 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using System.Windows;
+using System.Text.RegularExpressions;
+using AcadLib.Layers;
 
 [assembly: CommandClass(typeof(AcadLib.Commands))]
 [assembly: ExtensionApplication(typeof(AcadLib.Commands))]
@@ -103,7 +105,31 @@ namespace AcadLib
             {
                 Logger.Log.InfoLisp(tvs[0].Value.ToString());
             }
-        }        
+        }
+
+        /// <summary>
+        /// Визуальное окно для вставки блока из файла
+        /// </summary>
+        /// <param name="rb">Парметры: Имя файла, имя слоя, соответствия имен блоков</param>
+        [LispFunction(nameof(PIK_LispInsertBlockFromFbDwg))]
+        public void PIK_LispInsertBlockFromFbDwg(ResultBuffer rb)
+        {
+            try
+            {
+                if (rb == null) return;
+                var tvs = rb.AsArray();
+                if (!tvs.Any()) return;
+                var fileName = tvs[0].Value.ToString();
+                var layerName = tvs[1].Value.ToString();
+                var layer = new LayerInfo(layerName);
+                var matchs = tvs.Skip(2).ToList();
+                var file = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"flexBrics\dwg\", fileName);
+                Blocks.Visual.VisualInsertBlock.InsertBlock(file, 
+                    n => matchs.Any(r => Regex.IsMatch(n, r.Value.ToString(), RegexOptions.IgnoreCase)),
+                    layer);
+            }
+            catch { }
+        }
 
         public void Terminate()
         {            
