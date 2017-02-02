@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.ApplicationServices;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
@@ -210,6 +211,34 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return idStyle;
         }
 
+        /// <summary>
+        /// Получение углового размерного стиля ПИК
+        /// </summary>        
+        public static ObjectId GetDimAngularStylePIK(this Database db)
+        {
+            // Загрузка простого стиля ПИК
+            db.GetDimStylePIK();
+            // Загрузка углового стиля ПИК
+            var angStyle = PIK + "$2";
+            ObjectId idStyle = getDimStylePik(db, angStyle);
+
+            if (idStyle.IsNull)
+            {
+                // Копирование размерного стиля из шаблона
+                try
+                {
+                    idStyle = copyObjectFromTemplate(db, getDimStylePik, angStyle, db.DimStyleTableId);
+                }
+                catch
+                { }
+                if (idStyle.IsNull)
+                {
+                    idStyle = db.Dimstyle;
+                }
+            }
+            return idStyle;
+        }
+
         private static ObjectId getDimStylePik(Database db, string styleName)
         {
             ObjectId idStyle = ObjectId.Null;
@@ -270,7 +299,10 @@ namespace Autodesk.AutoCAD.DatabaseServices
                         {
                             using (var ids = (new ObjectIdCollection(new ObjectId[] { idStyleInTemplate })))
                             {
-                                db.WblockCloneObjects(ids, ownerIdTable, map, DuplicateRecordCloning.Replace, false);
+                                using (Application.DocumentManager.MdiActiveDocument?.LockDocument())
+                                {
+                                    db.WblockCloneObjects(ids, ownerIdTable, map, DuplicateRecordCloning.Replace, false);
+                                }
                                 idStyleDest = map[idStyleInTemplate].Value;
                             }
                         }
