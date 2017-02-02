@@ -26,10 +26,13 @@ namespace AcadLib.Errors
 
         public static void Clear()
         {
-            _doc = Application.DocumentManager.MdiActiveDocument;
-            _db = _doc.Database;
-            _ed = _doc.Editor;
             Errors = new List<IError>();
+            _doc = Application.DocumentManager.MdiActiveDocument;
+            if (_doc != null)
+            {
+                _db = _doc.Database;
+                _ed = _doc.Editor;
+            }
         }
 
         ///// <summary>

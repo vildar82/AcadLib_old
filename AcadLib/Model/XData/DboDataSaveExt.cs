@@ -12,19 +12,25 @@ namespace AcadLib.XData
         public static void SaveDboDict(this IDboDataSave dboSave)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            using (var entDic = new EntDictExt(dboSave.GetDBObject(), dboSave.PluginName))
+            using (var dbo = dboSave.GetDBObject())
             {
-                entDic.Save(dboSave.GetExtDic(doc));
+                using (var entDic = new EntDictExt(dbo, dboSave.PluginName))
+                {
+                    entDic.Save(dboSave.GetExtDic(doc));
+                }
             }
         }
 
         public static void LoadDboDict(this IDboDataSave dboSave)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            using (var entDic = new EntDictExt(dboSave.GetDBObject(), dboSave.PluginName))
+            using (var dbo = dboSave.GetDBObject())
             {
-                var dicED = entDic.Load();
-                dboSave.SetExtDic(dicED, doc);
+                using (var entDic = new EntDictExt(dbo, dboSave.PluginName))
+                {
+                    var dicED = entDic.Load();
+                    dboSave.SetExtDic(dicED, doc);
+                }
             }
         }
 
@@ -36,9 +42,12 @@ namespace AcadLib.XData
         public static void DeleteDboDict (this IDboDataSave dboSave, string dicName = null)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            using (var entDic = new EntDictExt(dboSave.GetDBObject(), dboSave.PluginName))
+            using (var dbo = dboSave.GetDBObject())
             {
-                entDic.Delete(dicName);                
+                using (var entDic = new EntDictExt(dbo, dboSave.PluginName))
+                {
+                    entDic.Delete(dicName);
+                }
             }
         }
     }
