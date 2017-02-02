@@ -227,6 +227,9 @@ namespace AcadLib
             {
                 res.Add((Region)item);
             }
+#if DEBUG
+            //EntityHelper.AddEntityToCurrentSpace(res);
+#endif
             return res;
         }
 
