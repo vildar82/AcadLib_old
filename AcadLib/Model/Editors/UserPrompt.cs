@@ -7,6 +7,7 @@ using AcadLib.Jigs;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using AcadLib;
 
 namespace Autodesk.AutoCAD.EditorInput
 {
@@ -26,12 +27,12 @@ namespace Autodesk.AutoCAD.EditorInput
                 }
                 else
                 {
-                    throw new Exception("Отменено пользователем.");
+                    throw new CancelByUserException();
                 }
             }
             else
             {
-                throw new Exception("Отменено пользователем.");
+                throw new CancelByUserException();
             }
             return extentsPrompted;
         }
@@ -51,7 +52,7 @@ namespace Autodesk.AutoCAD.EditorInput
             }
             else
             {
-                throw new Exception("Отменено пользователем.");
+                throw new CancelByUserException();
             }
         }
 
@@ -73,7 +74,7 @@ namespace Autodesk.AutoCAD.EditorInput
             }
             else
             {
-                throw new Exception("Отменено пользователем.");
+                throw new CancelByUserException();
             }
         }
 
@@ -94,7 +95,7 @@ namespace Autodesk.AutoCAD.EditorInput
             }
             else
             {
-                throw new Exception("\nОтменено пользователем");
+                throw new CancelByUserException();
             }
         }
 
@@ -117,7 +118,7 @@ namespace Autodesk.AutoCAD.EditorInput
             }
             else
             {
-                throw new Exception("\nОтменено пользователем");
+                throw new CancelByUserException();
             }
         }
 
