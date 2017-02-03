@@ -62,19 +62,21 @@ namespace AcadLib.Geometry
         public static void Wedding (this Polyline pl, Tolerance tolerance)
         {
             //var count = pl.NumberOfVertices;
+            int iPrew = pl.NextVertexIndex(0, -1);
+            var prew = pl.GetPoint2dAt(iPrew);
             for (int i = 0; i < pl.NumberOfVertices; i++)
             {
-                int iPrew;
+                //int iPrew;
                 //int iCur;
                 //int iNext;
-                iPrew = pl.NextVertexIndex(i, -1);
+                //iPrew = pl.NextVertexIndex(i, -1);
                 //iCur = i;
                 //iNext = i + 1;
                 //if (iNext == count)
                 //{
                 //    break;
                 //}
-                var prew = pl.GetPoint2dAt(iPrew);
+                //var prew = pl.GetPoint2dAt(iPrew);
                 var cur = pl.GetPoint2dAt(i);
                 if (prew.IsEqualTo(cur, tolerance))
                 {
@@ -87,6 +89,7 @@ namespace AcadLib.Geometry
                 //    i--;
                 //    count--;
                 //}
+                prew = cur;
             }
             if (!pl.Closed) pl.Closed = true;
             
