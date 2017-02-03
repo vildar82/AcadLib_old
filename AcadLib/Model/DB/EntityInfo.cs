@@ -37,12 +37,29 @@ namespace AcadLib.DB
         {
             if (Object.ReferenceEquals(other, null)) return false;
             if (Object.ReferenceEquals(this, other)) return true;
-            return Extents.Equals(other.Extents) &&
+            var res = Extents.Equals(other.Extents) &&
                ClassId.Equals(other.ClassId) &&
                Color.Equals(other.Color) &&
                Layer.Equals(other.Layer) &&
                Linetype.Equals(other.Linetype) &&
                Lineweight.Equals(other.Lineweight);
-        }        
+#if DEBUG
+            if (!res)
+            {
+
+            }
+#endif
+            return res;
+        }
+
+        public override string ToString()
+        {
+            return $"{ClassName},{Layer}";
+        }
+
+        public override int GetHashCode()
+        {
+            return Extents.GetHashCode();
+        }
     }
 }
