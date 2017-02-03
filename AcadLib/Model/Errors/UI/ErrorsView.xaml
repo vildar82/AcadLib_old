@@ -91,20 +91,17 @@
         </DataTemplate>
         <DataTemplate x:Key="ErrorsItemsTemplate">
             <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}" IsExpanded="{Binding IsExpanded}" 
-                      Focusable="False">
-                <ScrollViewer MaxHeight="400" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto"
-                              IsDeferredScrollingEnabled="True" PreviewMouseWheel="HandlePreviewMouseWheel">
-                    <ListBox ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"
+                      Focusable="False" MaxHeight="500">
+                <ListBox ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"
                              BorderThickness="0" Background="Transparent" SelectionMode="Extended"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
-                                <!--<Setter Property="Focusable" Value="false"/>-->
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                    </ListBox>
-                </ScrollViewer>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                            <!--<Setter Property="Focusable" Value="false"/>-->
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
                 <Expander.Style>
                     <Style TargetType="Expander">
                         <Style.Triggers>
