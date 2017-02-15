@@ -486,7 +486,7 @@ namespace AcadLib.Geometry
                                 isPtOnPolyline = true;
                                 return true;
                             }
-                            var param = pl.GetParameterAtPoint(p);
+                            var param = pl.GetParameterAtPointTry(p);
                             return param % 1 == 0;
                         });
 

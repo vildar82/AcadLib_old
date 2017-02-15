@@ -54,14 +54,13 @@ namespace AcadLib
         public void AddRange (IEnumerable<T> items)
         {
             if (items == null)
-                throw new ArgumentNullException("items");
+                return;
             base.UnionWith(items);
         }
 
         public IEnumerable<T> RemoveRange (IEnumerable<T> items)
         {
-            if (items == null)
-                throw new ArgumentNullException("items");
+            if (items == null) return null;
             base.ExceptWith(items);
             return items;
         }
