@@ -17,13 +17,16 @@ namespace AcadLib.Strings
         /// <returns></returns>
         public static Result<int> GetStartInteger (string input)
         {
-            int value =0;
-            var match = Regex.Match(input, @"^\d*");
-            if (match.Success)
+            if (input != null)
             {
-                if (int.TryParse(match.Value, out value))
+                int value = 0;
+                var match = Regex.Match(input, @"^\d*");
+                if (match.Success)
                 {
-                    return Result.Ok(value);
+                    if (int.TryParse(match.Value, out value))
+                    {
+                        return Result.Ok(value);
+                    }
                 }
             }
             return Result.Fail<int>($"Не определено целое число из строки - {input}");
