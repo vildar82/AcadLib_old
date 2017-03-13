@@ -1,10 +1,10 @@
-﻿using System;
+﻿using AcadLib.Model.Statistic.DataSetStatisticTableAdapters;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PluginStatistic;
 
 namespace AcadLib.Statistic
 {
@@ -15,11 +15,13 @@ namespace AcadLib.Statistic
             Task.Run(() =>
             {
                 try
-                {                    
-                    Writer.WriteRunToDB("AutoCAD",
-                                command.Plugin, command.CommandName,
-                                FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion,
-                                command.Doc);
+                {   
+                    using (var pg = new C_PluginStatisticTableAdapter())
+                    {
+                        pg.Insert("AutoCAD", command.Plugin, command.CommandName, 
+                            FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion,
+                            command.Doc, Environment.UserName, DateTime.Now, null);
+                    }                    
                 }
                 catch (Exception ex)
                 {
