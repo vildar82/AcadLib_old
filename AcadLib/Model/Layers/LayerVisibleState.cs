@@ -53,6 +53,6 @@ namespace AcadLib.Layers
                 layerVisibleDict.TryGetValue(ent.Layer, out res);
             }
             return res;
-        }
+        }        
     }
 }

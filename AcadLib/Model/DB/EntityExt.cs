@@ -40,5 +40,17 @@ namespace AcadLib.Extensions
             ent.AddContext(contextAnnoScale);
             ent.RemoveContext(ent.Database.Cannoscale);
         }
+
+        /// <summary>
+        /// Видим на чертеже, слой включен и разморожен
+        /// </summary>
+        /// <param name="ent">Объект чертежа</param>
+        /// <returns>Да - видим, Нет - не видим, слой выключен или заморожен</returns>
+        public static bool IsVisibleLayerOnAndUnfrozen(this Entity ent)
+        {
+            var lt = ent.Database.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
+            var lay = lt[ent.Layer].GetObject(OpenMode.ForRead) as LayerTableRecord;
+            return !lay.IsOff && !lay.IsFrozen && ent.Visible; // Слой включен и разморожен  и объект видимый
+        }
     }
 }

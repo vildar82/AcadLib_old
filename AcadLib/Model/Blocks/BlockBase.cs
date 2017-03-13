@@ -354,7 +354,7 @@ namespace AcadLib.Blocks
             {
                 using (var lay = blRef.LayerId.Open(OpenMode.ForRead) as LayerTableRecord)
                 {
-                    if (lay.IsFrozen || lay.IsOff)
+                    if (lay.IsFrozen || !blRef.Visible)
                     {
                         IsVisible = false;
                     }
