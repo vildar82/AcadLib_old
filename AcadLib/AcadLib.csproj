@@ -238,6 +238,7 @@
     <Compile Include="Model\UI\Properties\DictionaryEditor\KeyValueDescriptor.cs" />
     <Compile Include="Model\UI\Properties\XmlSerializableDictionary.cs" />
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
+    <Compile Include="Model\Units\UnitsNetExt.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToHidingVisibilityConverter.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToOppositeBooleanConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />
