@@ -17,15 +17,32 @@ namespace AcadLib.Units
         public static Area Sum(this IEnumerable<Area> source)
         {
             Area area = Area.Zero;
-            if (source == null)
+            if (source != null)
             {
-                return Area.Zero;
-            }
-            foreach (Area current in source)
-            {
-                area += current;
+                foreach (Area current in source)
+                {
+                    area += current;
+                }
             }
             return area;
+        }
+
+        public static Length Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, Length> selector)
+        {
+            return source.Select(selector).Sum();
+        }
+
+        public static Length Sum(this IEnumerable<Length> source)
+        {
+            Length length = Length.Zero;
+            if (source != null)
+            {
+                foreach (Length current in source)
+                {
+                    length += current;
+                }
+            }
+            return length;
         }
     }
 }
