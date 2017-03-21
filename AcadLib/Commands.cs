@@ -187,6 +187,9 @@ namespace AcadLib
 
         public void Initialize()
         {
+            // Инициализация сборки UnitsNet
+            var area = UnitsNet.Area.Zero;
+
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             // MicroMvvm            
             var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
