@@ -13,6 +13,27 @@ namespace Autodesk.AutoCAD.EditorInput
 {
     public static class UserPrompt
     {
+        /// <summary>
+        /// Выбор объекта на чертеже заданного типа
+        /// </summary>
+        /// <typeparam name="T">Тип выбираемого объекта</typeparam>
+        /// <param name="ed">Editor</param>
+        /// <param name="prompt">Строка запроса</param>
+        /// <param name="rejectMsg">Сообщение при выбора неправильного типа объекта</param>
+        /// <returns>Выбранный объект</returns>
+        public static ObjectId SelectEntity<T>(this Editor ed, string prompt, string rejectMsg) where T : Entity
+        {
+            var selOpt = new PromptEntityOptions(prompt);
+            selOpt.AddAllowedClass(typeof(T), true);
+            selOpt.SetRejectMessage(rejectMsg);
+            var selRes = ed.GetEntity(selOpt);
+            if (selRes.Status != PromptStatus.OK)
+            {
+                throw new CancelByUserException();
+            }
+            return selRes.ObjectId;
+        }
+
         public static Extents3d PromptExtents(this Editor ed, string msgPromptFirstPoint, string msgPromptsecondPoint)
         {
             Extents3d extentsPrompted = new Extents3d();
@@ -65,8 +86,10 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <returns>Результат успешного запроса.</returns>
         public static int GetNumber(this Editor ed, int defaultNumber, string msg)
         {
-            var opt = new PromptIntegerOptions(msg);
-            opt.DefaultValue = defaultNumber;
+            var opt = new PromptIntegerOptions(msg)
+            {
+                DefaultValue = defaultNumber
+            };
             var res = ed.GetInteger(opt);
             if (res.Status == PromptStatus.OK)
             {
@@ -86,8 +109,10 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <returns>Список выбранных объектов</returns>
         public static List<ObjectId> Select(this Editor ed, string msg)
         {
-            var selOpt = new PromptSelectionOptions();
-            selOpt.MessageForAdding = msg;
+            var selOpt = new PromptSelectionOptions()
+            {
+                MessageForAdding = msg
+            };
             var selRes = ed.GetSelection(selOpt);
             if (selRes.Status == PromptStatus.OK)
             {
@@ -109,8 +134,10 @@ namespace Autodesk.AutoCAD.EditorInput
         {
             var filList = new TypedValue[1] { new TypedValue((int)DxfCode.Start, "INSERT") };
             SelectionFilter filter = new SelectionFilter(filList);
-            var selOpt = new PromptSelectionOptions();
-            selOpt.MessageForAdding = msg;
+            var selOpt = new PromptSelectionOptions()
+            {
+                MessageForAdding = msg
+            };
             var selRes = ed.GetSelection(selOpt, filter);
             if (selRes.Status == PromptStatus.OK)
             {
@@ -129,7 +156,7 @@ namespace Autodesk.AutoCAD.EditorInput
         /// </summary>                
         public static Point3d GetRectanglePoint(this Editor ed, double len, double height)
         {
-            RectangleJig jigRect = new RectangleJig(len, height);            
+            var jigRect = new RectangleJig(len, height);            
             var res = ed.Drag(jigRect);
             if (res.Status != PromptStatus.OK)
                 throw new Exception(AcadLib.General.CanceledByUser);
