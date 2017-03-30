@@ -13,6 +13,33 @@ namespace AcadLib.Hatches
     public static class HatchExt
     {
         /// <summary>
+        /// Полилинии в штриховке
+        /// </summary>
+        /// <param name="ht">Штриховка</param>
+        /// <param name="loopType">Из каких типов островков</param>        
+        public static DisposableSet<Polyline> GetPolylines(this Hatch ht, HatchLoopTypes loopType = HatchLoopTypes.External)
+        {
+            var polylines = new DisposableSet<Polyline>();
+            int nloops = ht.NumberOfLoops;
+            for (int i = 0; i < nloops; i++)
+            {
+                var loop = ht.GetLoopAt(i);                
+                if (loop.LoopType.HasFlag(loopType) &&
+                    loop.IsPolyline)
+                {
+                    var poly = new Polyline();
+                    int iVertex = 0;
+                    foreach (BulgeVertex bv in loop.Polyline)
+                    {
+                        poly.AddVertexAt(iVertex++, bv.Vertex, bv.Bulge, 0.0, 0.0);
+                    }
+                    polylines.Add(poly);
+                }                   
+            }
+            return polylines;
+        }    
+
+        /// <summary>
         /// Создание ассоциативной штриховки по полилинии
         /// Полилиния должна быть в базе чертежа
         /// </summary>        
