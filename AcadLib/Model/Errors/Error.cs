@@ -131,7 +131,7 @@ namespace AcadLib.Errors
             _shortMsg = GetShortMsg(_msg);
             _idEnt = ent.Id;
             _hasEntity = true;
-            Icon = icon;
+            Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             CanShow = true;
             DefineStatus();
@@ -143,7 +143,7 @@ namespace AcadLib.Errors
             _shortMsg = GetShortMsg(_msg);
             _idEnt = ent.Id;
             _hasEntity = true;
-            Icon = icon;
+            Icon = icon ?? SystemIcons.Error;
             Trans = trans;
             CanShow = true;
             DefineStatus();
@@ -157,7 +157,7 @@ namespace AcadLib.Errors
             _extents = ext;
             _alreadyCalcExtents = true;
             _hasEntity = true;
-            Icon = icon;
+            Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             CanShow = true;
             DefineStatus();
@@ -171,7 +171,7 @@ namespace AcadLib.Errors
             _extents = ext;
             _alreadyCalcExtents = true;
             _hasEntity = true;
-            Icon = icon;
+            Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             CanShow = true;
             DefineStatus();
@@ -184,7 +184,7 @@ namespace AcadLib.Errors
             _extents = ext;
             _alreadyCalcExtents = true;
             _hasEntity = false;
-            Icon = icon;
+            Icon = icon ?? SystemIcons.Error;
             Trans = trans;
             CanShow = true;
             DefineStatus();
@@ -196,7 +196,7 @@ namespace AcadLib.Errors
             _shortMsg = GetShortMsg(_msg);
             _idEnt = idEnt;
             _hasEntity = true;
-            Icon = icon;
+            Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             CanShow = true;
             DefineStatus();
@@ -208,7 +208,7 @@ namespace AcadLib.Errors
             _shortMsg = GetShortMsg(_msg);
             _idEnt = idEnt;
             _hasEntity = true;
-            Icon = icon;
+            Icon = icon ?? SystemIcons.Error;
             Trans = trans;
             CanShow = true;
             DefineStatus();
@@ -288,8 +288,8 @@ namespace AcadLib.Errors
 
         protected void DefineStatus()
         {
-            ErrorStatus status;
-            dictErrorIcons.TryGetValue(Icon, out status);
+            if (Icon == null) Icon = SystemIcons.Error;
+            dictErrorIcons.TryGetValue(Icon, out ErrorStatus status);
             Status = status;
         }
     }
