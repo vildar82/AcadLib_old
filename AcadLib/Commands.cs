@@ -201,22 +201,31 @@ namespace AcadLib
             // Загрузка сбороки для данного раздела
             var groups = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined;
             var fileGroups = new List<string>();
-            if (groups.Any(g => g == "СС"))
+            foreach (var group in groups)
             {
-                fileGroups.Add(@"Script\NET\СС\PIK_SS_Acad.dll");
-            }
-            if (groups.Any(g => g == "ГП"))
-            {
-                fileGroups.Add(@"Script\NET\ГП\PIK_GP_Acad.dll");
-            }
-            if (groups.Any(g => g == "КР-СБ-ГК"))
-            {
-                fileGroups.Add(@"Script\NET\КР-СБ-ГК\Autocad_ConcerteList.dll");
-            }
-            if (groups.Any(g => g == "КР-МН"))
-            {
-                fileGroups.Add(@"Script\NET\КР-МН\KR_MN_Acad.dll");
-            }            
+                string groupDll = string.Empty;
+                if (group.IndexOf("СС", StringComparison.OrdinalIgnoreCase)!=-1)
+                {
+                    groupDll = "PIK_SS_Acad.dll";
+                    
+                }
+                if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
+                {
+                    groupDll = "PIK_GP_Civil.dll";                    
+                }
+                if (group.IndexOf("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase) != -1)
+                {
+                    groupDll = "Autocad_ConcerteList.dll";
+                }
+                if (group.IndexOf("КР-МН", StringComparison.OrdinalIgnoreCase) != -1)
+                {
+                    groupDll = "KR_MN_Acad.dll";
+                }
+                if (!string.IsNullOrEmpty(groupDll))
+                {
+                    fileGroups.Add($@"Script\NET\{group}\{groupDll}");
+                }
+            }                  
             foreach (var fileGroup in fileGroups)
             {
                 fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
