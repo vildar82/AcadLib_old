@@ -141,8 +141,7 @@ namespace AcadLib.Blocks
 
         public T GetPropValue<T>(string propMatch, bool isRequired = true, bool exactMatch = true)
         {
-            bool hasProperty;
-            return GetPropValue<T>(propMatch, out hasProperty, isRequired, exactMatch);
+            return GetPropValue<T>(propMatch, out bool hasProperty, isRequired, exactMatch);
         }
         
         public T GetPropValue<T> (string propMatch, out bool hasProperty, bool isRequired = true, bool exactMatch = true)
@@ -188,8 +187,7 @@ namespace AcadLib.Blocks
         /// <returns>Значение свойства</returns>
         public T GetPropValue<T> (string propName, T defaultValue, bool isrequired = false, bool exactMatch = true, bool writeDefaultValue = false)
         {
-            bool hasProp;
-            var res = GetPropValue<T>(propName, out hasProp, isrequired, exactMatch);
+            var res = GetPropValue<T>(propName, out bool hasProp, isrequired, exactMatch);
             if (EqualityComparer<T>.Default.Equals(res, default(T)))
             {
                 if (writeDefaultValue && hasProp)

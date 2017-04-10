@@ -211,7 +211,7 @@ namespace AcadLib
                 }
                 if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
                 {
-                    groupDll = "PIK_GP_Civil.dll";                    
+                    groupDll = "PIK_GP_Acad.dll";                    
                 }
                 if (group.IndexOf("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase) != -1)
                 {

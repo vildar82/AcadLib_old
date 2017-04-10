@@ -59,6 +59,8 @@ namespace AcadLib.Blocks
         /// <param name="isRequired">Обязательное свойство. Будет добалена ошибка в Error.</param>
         /// <param name="exactMatch">точное соответствие имени свойства</param>        
         T GetPropValue<T> (string propMatch, bool isRequired = true, bool exactMatch = true);
+        T GetPropValue<T>(string propMatch, out bool hasProperty, bool isRequired = true, bool exactMatch = true);
+        T GetPropValue<T>(string propName, T defaultValue, bool isrequired = false, bool exactMatch = true, bool writeDefaultValue = false);
         /// <summary>
         /// Запись свойства
         /// </summary>
