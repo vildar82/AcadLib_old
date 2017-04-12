@@ -12,6 +12,7 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoCAD.Publishing;
 using AutoCAD_PIK_Manager.Settings;
+using AcadLib.Layouts;
 
 namespace AcadLib.Plot
 {
@@ -94,35 +95,25 @@ namespace AcadLib.Plot
                         dbTemp.CloseInput(true);
                         using (var t = dbTemp.TransactionManager.StartTransaction())
                         {
-                            DBDictionary layoutDict = (DBDictionary)dbTemp.LayoutDictionaryId.GetObject(OpenMode.ForRead);
-
-                            List<Layout> layouts = new List<Layout>();
-                            foreach (DBDictionaryEntry entry in layoutDict)
-                            {
-                                if (entry.Key != "Model")
-                                {
-                                    if (!entry.Value.IsErased)
-                                    {
-                                        var layout = entry.Value.GetObject(OpenMode.ForRead) as Layout;
-                                        layouts.Add(layout);
-                                    }
-                                }
-                            }
+                            var layoutDict = (DBDictionary)dbTemp.LayoutDictionaryId.GetObject(OpenMode.ForRead);
+                            var layouts = dbTemp.GetLayouts();
                             // Фильтр листов 
                             if (Options.FilterState)
                             {
                                 layouts = FilterLayouts(layouts, Options);
                             }
 
-                            List<Tuple<Layout, DsdEntry>> layoutsDsd = new List<Tuple<Layout, DsdEntry>>();
+                            var layoutsDsd = new List<Tuple<Layout, DsdEntry>>();
                             foreach (var layout in layouts)
                             {
-                                DsdEntry dsdEntry = new DsdEntry();
-                                dsdEntry.Layout = layout.LayoutName;
-                                dsdEntry.DwgName = fileDwg;
-                                //dsdEntry.Nps = "Setup1";
-                                dsdEntry.NpsSourceDwg = fileDwg;                                
-                                dsdEntry.Title = indexfile + "-" + layout.LayoutName;
+                                var dsdEntry = new DsdEntry()
+                                {
+                                    Layout = layout.LayoutName,
+                                    DwgName = fileDwg,
+                                    //dsdEntry.Nps = "Setup1";
+                                    NpsSourceDwg = fileDwg,
+                                    Title = indexfile + "-" + layout.LayoutName
+                                };
                                 layoutsDsd.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
                                 //dsdCol.Add(dsdEntry);
                             }
@@ -146,8 +137,8 @@ namespace AcadLib.Plot
 
         public static void PromptAndPlot (Document doc)
         {
-            Editor ed = doc.Editor;
-            PlotOptions plotOpt = new PlotOptions();
+            var ed = doc.Editor;
+            var plotOpt = new PlotOptions();
             bool repeat = false;
             do
             {
@@ -169,8 +160,10 @@ namespace AcadLib.Plot
                             throw new Exception("Нужно сохранить текущий чертеж.");
                         }
                         string filePdfName = Path.Combine(Path.GetDirectoryName(doc.Name), Path.GetFileNameWithoutExtension(doc.Name) + ".pdf");
-                        PlotDirToPdf plotter = new PlotDirToPdf(new string[] { doc.Name }, filePdfName);
-                        plotter.Options = plotOpt;
+                        var plotter = new PlotDirToPdf(new string[] { doc.Name }, filePdfName)
+                        {
+                            Options = plotOpt
+                        };
                         plotter.Plot();
                     }
                     else if (resPrompt.StringResult == "Папки")
@@ -221,10 +214,8 @@ namespace AcadLib.Plot
 
         private List<Layout> FilterLayouts (List<Layout> layouts, PlotOptions options)
         {
-            List<Layout> resLayouts = new List<Layout>();
-
+            var resLayouts = new List<Layout>();
             var filterNums = GetFilterNumbers(layouts.Count, options.FilterByNumbers);
-
             foreach (var layout in layouts)
             {
                 // Номер вкладки
@@ -253,10 +244,9 @@ namespace AcadLib.Plot
             return resLayouts;
         }
 
-
         public List<int> GetFilterNumbers (int countTabs, string filter)
         {
-            List<int> resNums = new List<int>();            
+            var resNums = new List<int>();            
             if (Options.FilterState && !string.IsNullOrWhiteSpace(filter))
             {                
                 string clearStr = string.Empty;
@@ -350,7 +340,7 @@ namespace AcadLib.Plot
 
                     progressDlg.IsVisible = true;
 
-                    Publisher publisher = Autodesk.AutoCAD.ApplicationServices.Application.Publisher;
+                    var publisher = Autodesk.AutoCAD.ApplicationServices.Application.Publisher;
                     PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
 
                     //Application.Publisher.AboutToBeginPublishing += new Autodesk.AutoCAD.Publishing.AboutToBeginPublishingEventHandler(Publisher_AboutToBeginPublishing);

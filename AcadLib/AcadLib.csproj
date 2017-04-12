@@ -159,6 +159,7 @@
     <Compile Include="Model\Jokes\Joke.cs" />
     <Compile Include="Model\Jokes\JokeHelper.cs" />
     <Compile Include="Model\Layers\LayerVisibleState.cs" />
+    <Compile Include="Model\Layouts\LayoutsExt.cs" />
     <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\Blocks\AttributeExt.cs" />
     <Compile Include="Model\Blocks\AttributeInfo.cs" />

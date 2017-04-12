@@ -165,8 +165,7 @@ namespace AcadLib
 
         public static bool IsValidEx (this ObjectId id)
         {
-            var res = id.IsValid && !id.IsNull && !id.IsErased;
-            return res;
+            return id.IsValid && !id.IsNull && !id.IsErased;            
         }
     }
 }
