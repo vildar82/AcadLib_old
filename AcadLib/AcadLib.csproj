@@ -86,6 +86,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Package\MVVM\MicroMvvm.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDblib">
+      <HintPath>\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\packages\Mongo\MongoDblib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="NetLib">
       <HintPath>..\..\NetLib\NetLib\NetLib\bin\Release\NetLib.dll</HintPath>
       <Private>False</Private>
@@ -240,6 +244,7 @@
     <Compile Include="Model\UI\Properties\XmlSerializableDictionary.cs" />
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\Units\UnitsNetExt.cs" />
+    <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToHidingVisibilityConverter.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToOppositeBooleanConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />

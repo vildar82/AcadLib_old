@@ -11,6 +11,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using System.Windows;
 using System.Text.RegularExpressions;
 using AcadLib.Layers;
+using System.Threading.Tasks;
 
 [assembly: CommandClass(typeof(AcadLib.Commands))]
 [assembly: ExtensionApplication(typeof(AcadLib.Commands))]
@@ -19,7 +20,7 @@ namespace AcadLib
 {
     public class Commands : IExtensionApplication
     {
-        internal static string fileCommonBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
+        internal static string fileCommonBlocks = System.IO.Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
@@ -31,6 +32,8 @@ namespace AcadLib
         /// Общие команды для всех отделов определенные в этой сборке
         /// </summary>
         public static List<IPaletteCommand> CommandsPalette { get; set; }
+        List<NetLib.IO.DllResolve> dllsResolve;
+        public static string CurDllDir =Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         [CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]
         public void About()
@@ -190,6 +193,12 @@ namespace AcadLib
             // Инициализация сборки UnitsNet
             var area = UnitsNet.Area.Zero;
 
+            // Копирование вспомогательных сборок локально из шаровой папки packages
+            var task = Task.Run(()=> {
+                LoadService.CopyPackagesLocal();
+            });
+            task.Wait(1000);
+
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             // MicroMvvm            
             var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
@@ -258,7 +267,7 @@ namespace AcadLib
             //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDBCToLISP.dll");
             //LoadService.DeleteTry(fileDll);
             //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
-            //LoadService.DeleteTry(fileDll);
+            //LoadService.DeleteTry(fileDll);            
 
             // Очистка локальных логов - временно!                               
             //ClearLogs();            
@@ -278,10 +287,30 @@ namespace AcadLib
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            // Нужно для правильной работы GenericDictionaryEditor (Model.UI.Properties.DictionaryEditor)
-            if (args.Name.StartsWith("AcadLib,"))
-                return Assembly.GetExecutingAssembly();
-            return null;
+            if (dllsResolve == null)
+            {
+                // Сборки в основной папке dll
+                dllsResolve = NetLib.IO.DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
+                // Все сборки из папки Script\NET
+                dllsResolve.AddRange(NetLib.IO.DllResolve.GetDllResolve(
+                    Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET"), 
+                    SearchOption.AllDirectories));
+                // Все сборки из локальной папки packages
+                dllsResolve.AddRange(NetLib.IO.DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
+            }
+            var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
+            if (dllResolver != null)
+            {
+                try
+                {
+                    return dllResolver.LoadAssembly();
+                }
+                catch (System.Exception ex)
+                {
+                    Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
+                }
+            }
+            return null;            
         }
 
         private void ClearLogs()

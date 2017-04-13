@@ -10,6 +10,31 @@ namespace AcadLib
     /// </summary>
     public static class LoadService
     {
+        public static string dllLocalPackages = IO.Path.GetUserPluginFolder("packages");
+
+        public static void LoadScreenshotToSlack()
+        {            
+            LoadMongoDb();            
+            LoadPackages("CloudinaryDotNet.dll");
+            LoadPackages("ScreenshotToSlack.dll");            
+        }
+
+        public static void LoadMongoDb()
+        {
+            LoadMetro();
+            LoadNewtonJson();
+            LoadPackages(@"Mongo\MongoDB.Driver.dll");
+            LoadPackages(@"Mongo\MongoDB.Driver.Core.dll");
+            LoadPackages(@"Mongo\MongoDB.Bson.dll");
+            LoadPackages(@"Mongo\MongoDblib.dll");            
+        }
+
+        public static void LoadNewtonJson()
+        {
+            LoadPackages(@"Newtonsoft.Json\Newtonsoft.Json.dll");
+            LoadPackages(@"Newtonsoft.Json\4.5\Newtonsoft.Json.dll");
+        }
+
         /// <summary>
         /// Загрузка сборки SpecBlocks.dll - для создания спецификация блоков, в соответствии с настройками.
         /// </summary>
@@ -69,22 +94,16 @@ namespace AcadLib
 
         public static void LoadMetro()
         {
-            try
-            {
-                LoadPackages("System.Windows.Interactivity.dll");
-            }
-            catch
-            {
-            }
+            LoadPackages("System.Windows.Interactivity.dll");            
             LoadPackages(@"Metro\MahApps.Metro.dll");            
         }
 
         public static void LoadPackages(string name)
         {
-            var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, @"packages\" + name);
+            //var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, @"packages\" + name);
             var dllLocal = Path.Combine(IO.Path.GetUserPluginFolder("packages"), name);
-            CopyPackage(dllServer, dllLocal);
-            LoadFrom(dllLocal);
+            //CopyPackage(dllServer, dllLocal);
+            LoadFromTry(dllLocal);
         }        
 
         public static void LoadFrom(string dll)
@@ -123,24 +142,36 @@ namespace AcadLib
             }
         }
 
-        private static void CopyPackage(string dllServer, string dllLocal)
-        {
-            var task = Task.Run(() =>
-            {
-                try
-                {
-                    var dllLocalDir = Path.GetDirectoryName(dllLocal);
-                    if (!Directory.Exists(dllLocalDir))
-                    {
-                        Directory.CreateDirectory(dllLocalDir);
-                    }
-                    File.Copy(dllServer, dllLocal, true);
-                }
-                catch
-                {
-                }
-            });
-            task.Wait(2000);
+        //private static void CopyPackage(string dllServer, string dllLocal)
+        //{
+        //    var task = Task.Run(() =>
+        //    {
+        //        try
+        //        {
+        //            var dllLocalDir = Path.GetDirectoryName(dllLocal);
+        //            if (!Directory.Exists(dllLocalDir))
+        //            {
+        //                Directory.CreateDirectory(dllLocalDir);
+        //            }
+        //            var dllServerDir = Path.GetDirectoryName(dllServer);
+
+        //            foreach (var itemSrv in Directory.EnumerateFiles(dllServerDir, $"{Path.GetFileNameWithoutExtension(dllServer)}.*"))
+        //            {
+        //                var itemLocal = Path.Combine(dllLocalDir, Path.GetFileName(itemSrv));
+        //                File.Copy(itemSrv, itemLocal, true);
+        //            }
+        //        }
+        //        catch
+        //        {
+        //        }
+        //    });
+        //    task.Wait(20000);
+        //}
+
+        public static void CopyPackagesLocal()
+        {            
+            var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, "packages");
+            NetLib.IO.Path.CopyDirectory(dllServer, dllLocalPackages);
         }
     }
 }

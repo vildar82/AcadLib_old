@@ -14,9 +14,7 @@ namespace AcadLib
         /// Отменено пользователем.
         /// Сообщение для исключения при отмене команды пользователем.
         /// </summary>
-        public const string CanceledByUser = "Отменено пользователем";
-
-        
+        public const string CanceledByUser = "Отменено пользователем";        
 
         /// <summary>
         /// Символы строковые
