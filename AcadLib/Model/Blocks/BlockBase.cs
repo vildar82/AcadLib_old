@@ -231,7 +231,18 @@ namespace AcadLib.Blocks
             if (prop.Type == PropertyType.Attribute && !prop.IdAtrRef.IsNull)
             {
                 var atr = prop.IdAtrRef.GetObject(OpenMode.ForWrite, false, true) as AttributeReference;
-                atr.TextString = value?.ToString() ?? "";
+                var text = value?.ToString() ?? "";
+                if (atr.IsMTextAttribute)
+                {
+                    var mt = atr.MTextAttribute;
+                    mt.Contents = text;
+                    atr.MTextAttribute = mt;
+                    atr.UpdateMTextAttribute();
+                }
+                else
+                {
+                    atr.TextString = text;
+                }
             }
             else if (prop.Type == PropertyType.Dynamic)
             {
