@@ -215,8 +215,7 @@ namespace AcadLib
                 string groupDll = string.Empty;
                 if (group.IndexOf("СС", StringComparison.OrdinalIgnoreCase)!=-1)
                 {
-                    groupDll = "PIK_SS_Acad.dll";
-                    
+                    groupDll = "PIK_SS_Acad.dll";                    
                 }
                 if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
                 {

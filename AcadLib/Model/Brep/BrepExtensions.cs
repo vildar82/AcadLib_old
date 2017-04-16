@@ -41,7 +41,7 @@ namespace AcadLib
             }
 
             // Объединение регионов
-            Region r1 = colReg.First();
+            Region r1 = colReg.First();            
             foreach (var iReg in colReg.Skip(1))
             {
                 r1.BooleanOperation(BooleanOperationType.BoolUnite, iReg);

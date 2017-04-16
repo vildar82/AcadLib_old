@@ -26,10 +26,7 @@ namespace AcadLib.RTree.SpatialIndex
     /// version 1.0b2p1
     /// </summary>
     public class Point
-    {
-      
-      
-      
+    { 
         /// <summary>
         /// Number of dimensions in a point. In theory this
         /// could be exended to three or more dimensions.
@@ -39,7 +36,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <summary>
         /// The (x, y) coordinates of the point.
         /// </summary>
-        internal double[] coordinates;
+        public double[] coordinates;
 
 
         /// <summary>

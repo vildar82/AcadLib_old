@@ -90,6 +90,12 @@ namespace AcadLib.RTree.SpatialIndex
 
         }
 
+        public Rectangle(Extents2d extents) : this(extents.MinPoint.X, extents.MinPoint.Y,
+            extents.MaxPoint.X, extents.MaxPoint.Y, 0, 0)
+        {
+
+        }
+
         /**
           * Sets the size of the rectangle.
           * 
