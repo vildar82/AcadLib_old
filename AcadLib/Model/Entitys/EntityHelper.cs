@@ -12,7 +12,7 @@ namespace AcadLib
 {
     public static class EntityHelper
     {
-        public static void AddEntityToCurrentSpace(this IEnumerable<Entity> ents)
+        public static void AddEntityToCurrentSpace(this IEnumerable<Entity> ents, EntityOptions entityOptions)
         {
             if (ents == null || !ents.Any()) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -25,16 +25,27 @@ namespace AcadLib
                 {
                     if (ent.Id != ObjectId.Null || ent.IsDisposed) continue;
                     if (!ent.IsWriteEnabled) ent.UpgradeOpen();
+                    ent.SetOptions(entityOptions);
                     cs.AppendEntity(ent);
-                    db.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(ent, true);
-                }                
+                    t.AddNewlyCreatedDBObject(ent, true);
+                }
                 t.Commit();
             }
         }
 
+        public static void AddEntityToCurrentSpace(this IEnumerable<Entity> ents)
+        {
+            AddEntityToCurrentSpace(ents, null);
+        }
+
         public static void AddEntityToCurrentSpace (this Entity ent)
         {            
-            AddEntityToCurrentSpace(ent?.Yield());            
+            AddEntityToCurrentSpace(ent?.Yield(), null);            
+        }
+
+        public static void AddEntityToCurrentSpace(this Entity ent, EntityOptions entityOptions)
+        {
+            AddEntityToCurrentSpace(ent?.Yield(), entityOptions);
         }
 
         public static DBText CreateText (string text, Point3d pos, EntityOptions entityOptions= null)

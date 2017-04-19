@@ -46,10 +46,9 @@ namespace AcadLib
         {
             if (!LineTypeId.IsNull)
             {
-                ent.LinetypeId = LineTypeId;
-                return;
+                ent.LinetypeId = LineTypeId;                
             }
-            if (string.IsNullOrEmpty(LineType))
+            else if (!string.IsNullOrEmpty(LineType))
             {
                 ent.Linetype = LineType;
             }
@@ -68,12 +67,10 @@ namespace AcadLib
             if (isColorIndex)
             {
                 ent.ColorIndex = ColorIndex;
-                return;
             }
-            if (Color != null)
+            else if (Color != null)
             {
-                ent.Color = Autodesk.AutoCAD.Colors.Color.FromColor(Color);
-                return;
+                ent.Color = Autodesk.AutoCAD.Colors.Color.FromColor(Color);                
             }
         }
 
@@ -81,10 +78,9 @@ namespace AcadLib
         {
             if (!LayerId.IsNull)
             {
-                ent.LayerId = LayerId;
-                return;
+                ent.LayerId = LayerId;                
             }
-            if (!string.IsNullOrEmpty(Layer))
+            else if (!string.IsNullOrEmpty(Layer))
             {
                 ent.Layer = Layer;
             }
