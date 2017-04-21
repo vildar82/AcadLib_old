@@ -126,6 +126,7 @@
     <Compile Include="Model\Blocks\PropertyType.cs" />
     <Compile Include="Model\Blocks\Visual\UI\VisualBlocksViewModel.cs" />
     <Compile Include="Model\Brep\BrepLoopType.cs" />
+    <Compile Include="Model\Colors\ColorExt.cs" />
     <Compile Include="Model\Comparers\Extents3dComparer.cs" />
     <Compile Include="Model\Comparers\IntEqualityComparer.cs" />
     <Compile Include="Model\Comparers\Point2dComparer.cs" />
