@@ -200,11 +200,16 @@ namespace AcadLib
             task.Wait(1000);
 
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            // MicroMvvm            
-            var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
-            LoadService.LoadFromTry(fileDll);
+            // Загрузка сборок из текущей папки
+            foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
+            {
+                LoadService.LoadFromTry(item);
+            }
+            //// MicroMvvm            
+            //var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
+            //LoadService.LoadFromTry(fileDll);
             // Загрузка общей сборки - для всех специальностей             
-            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_Acad_Common.dll");
+            var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_Acad_Common.dll");
             LoadService.LoadFromTry(fileDll);
 
             // Загрузка сбороки для данного раздела
@@ -253,9 +258,9 @@ namespace AcadLib
             // Загрузка базы MDM            
             //LoadService.LoadMDM();
 
-            // Загрузка общей библмотеки NetLib
-            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\NetLib.dll");
-            LoadService.LoadFromTry(fileDll);
+            //// Загрузка общей библмотеки NetLib
+            //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\NetLib.dll");
+            //LoadService.LoadFromTry(fileDll);
 
             // Коннекторы к базе MDM
             fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\ASPADBConnector.dll");
