@@ -70,7 +70,7 @@ namespace AcadLib.XData
                 }
             }
             // Проверить. Если больше нет словарей в объекте, то очистить словарь объекта.
-            var dboExtDicId = ExtDicHelper.GetDboExtDic(dbo, false);
+            var dboExtDicId = GetDboExtDic(dbo, false);
             if (dboExtDicId.IsNull) return;
             using (var dboExtDic = dboExtDicId.Open(OpenMode.ForRead) as DBDictionary)
             {

@@ -12,6 +12,7 @@ namespace AcadLib.XData
         public static void SaveDboDict(this IDboDataSave dboSave)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
+            using (doc.LockDocument())
             using (var dbo = dboSave.GetDBObject())
             {
                 using (var entDic = new EntDictExt(dbo, dboSave.PluginName))
@@ -24,6 +25,7 @@ namespace AcadLib.XData
         public static void LoadDboDict(this IDboDataSave dboSave)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
+            using (doc.LockDocument())
             using (var dbo = dboSave.GetDBObject())
             {
                 using (var entDic = new EntDictExt(dbo, dboSave.PluginName))
@@ -42,6 +44,7 @@ namespace AcadLib.XData
         public static void DeleteDboDict (this IDboDataSave dboSave, string dicName = null)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
+            using (doc.LockDocument())
             using (var dbo = dboSave.GetDBObject())
             {
                 using (var entDic = new EntDictExt(dbo, dboSave.PluginName))
