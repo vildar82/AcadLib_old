@@ -87,8 +87,7 @@
       <HintPath>..\..\Package\MVVM\MicroMvvm.dll</HintPath>
     </Reference>
     <Reference Include="MongoDblib">
-      <HintPath>\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\packages\Mongo\MongoDblib.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>\\dsk2.picompany.ru\project\CAD_Settings\Revit_server\10. Dll's\Dll\PIK\Dll\MongoDblib.dll</HintPath>
     </Reference>
     <Reference Include="NetLib">
       <HintPath>..\..\NetLib\NetLib\NetLib\bin\Release\NetLib.dll</HintPath>
@@ -118,6 +117,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Layers\AutoLayers\AutoLayer.cs" />
+    <Compile Include="Model\Layers\AutoLayers\AutoLayerDim.cs" />
+    <Compile Include="Model\Layers\AutoLayers\AutoLayersService.cs" />
     <Compile Include="Model\Blocks\AttSyncExt.cs" />
     <Compile Include="Model\Blocks\BlockBase.cs" />
     <Compile Include="Model\Blocks\CommonBlocks\Leader.cs" />

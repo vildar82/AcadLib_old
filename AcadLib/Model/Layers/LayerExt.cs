@@ -9,6 +9,22 @@ namespace AcadLib.Layers
 {
     public static class LayerExt
     {
+        static string groupLayerPrefix;
+
+        /// <summary>
+        /// Префикс слоев - группа пользователя
+        /// </summary>
+        public static string GroupLayerPrefix
+        {
+            get {
+                if (groupLayerPrefix == null)
+                {
+                    groupLayerPrefix = GetGroupLayerPrefix();
+                }
+                return groupLayerPrefix;
+            }
+        }
+
         /// <summary>
         /// Получение слоя.
         /// Если его нет в базе, то создается.      
@@ -149,6 +165,36 @@ namespace AcadLib.Layers
                 layersInfo.Add(li);
             }
             return CheckLayerState(layersInfo);
-        }        
+        }
+
+        private static string GetGroupLayerPrefix()
+        {
+            var usergroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
+            if (usergroup == "КР-МН")
+            {
+                return "КР";
+            }
+            if (usergroup == "КР-СБ")
+            {
+                return "СБ";
+            }
+            if (usergroup == "КР-СБ-ГК")
+            {
+                return string.Empty;
+            }
+            if (usergroup.StartsWith("ГП"))
+            {
+                return "ГП";
+            }
+            if (usergroup.Contains(","))
+            {
+                return string.Empty;
+            }
+            if (usergroup == "ЖБК-ТО")
+            {
+                return "ОЗЖБК";
+            }
+            return usergroup;
+        }
     }
 }

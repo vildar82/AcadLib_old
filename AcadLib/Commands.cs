@@ -188,6 +188,41 @@ namespace AcadLib
             }
         }
 
+        [CommandMethod(Group, nameof(PIK_AutoLayersStart), CommandFlags.Modal)]
+        public void PIK_AutoLayersStart()
+        {
+            CommandStart.Start(doc =>
+            {
+                Layers.AutoLayers.AutoLayersService.Start();
+                doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");                
+            });
+        }
+        [CommandMethod(Group, nameof(PIK_AutoLayersStop), CommandFlags.Modal)]
+        public void PIK_AutoLayersStop()
+        {
+            CommandStart.Start(doc =>
+            {                
+                Layers.AutoLayers.AutoLayersService.Stop();
+                doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");
+            });
+        }
+        [CommandMethod(Group, nameof(PIK_AutoLayersStatus), CommandFlags.Modal)]
+        public void PIK_AutoLayersStatus()
+        {
+            CommandStart.Start(doc =>
+            {
+                doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");                
+            });
+        }
+        [CommandMethod(Group, nameof(PIK_AutoLayersAll), CommandFlags.Modal)]
+        public void PIK_AutoLayersAll()
+        {
+            CommandStart.Start(doc =>
+            {
+                Layers.AutoLayers.AutoLayersService.AutoLayersAll();                
+            });
+        }
+
         public void Initialize()
         {
             // Инициализация сборки UnitsNet
@@ -287,6 +322,9 @@ namespace AcadLib
             //}
             //appRD.MergedDictionaries.Add(System.Windows.Application.LoadComponent(
             //    new Uri("AcadLib;component/Model/WPF/Images.xaml", UriKind.Relative)) as ResourceDictionary);
+
+            // Автослои
+            Layers.AutoLayers.AutoLayersService.Start();
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
