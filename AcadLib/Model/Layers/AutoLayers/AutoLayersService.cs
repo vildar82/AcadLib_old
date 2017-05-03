@@ -60,9 +60,12 @@ namespace AcadLib.Layers.AutoLayers
                 doc.CommandCancelled -= Doc_CommandCancelled;
             }
             doc = document;
-            // Подписка на события команды нового документа
-            doc.CommandWillStart -= Doc_CommandWillStart;
-            doc.CommandWillStart += Doc_CommandWillStart;            
+            if (document != null)
+            {
+                // Подписка на события команды нового документа
+                doc.CommandWillStart -= Doc_CommandWillStart;
+                doc.CommandWillStart += Doc_CommandWillStart;
+            }
         }
 
         static void Doc_CommandWillStart(object sender, CommandEventArgs e)
@@ -196,10 +199,13 @@ namespace AcadLib.Layers.AutoLayers
             else
             {
                 info += IsStarted ? "Автослои включены" : "Автослои выключены";
-                info += Environment.NewLine;
-                foreach (var autoLayer in autoLayers)
+                if (IsStarted && autoLayers!= null)
                 {
-                    info += autoLayer.GetInfo() + Environment.NewLine;
+                    info += Environment.NewLine;
+                    foreach (var autoLayer in autoLayers)
+                    {
+                        info += autoLayer.GetInfo() + Environment.NewLine;
+                    }
                 }
             }
             return info;
