@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.ApplicationServices;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks
 {
@@ -64,7 +63,7 @@ namespace AcadLib.Blocks
                     }
                 }
             }
-            List<string> blNames = new List<string> { blName };
+            var blNames = new List<string> { blName };
             var resCopy = CopyBlockFromExternalDrawing(blNames, fileDrawing, destDb, mode);
             if (!resCopy.TryGetValue(blName, out idRes))
             {
@@ -119,7 +118,7 @@ namespace AcadLib.Blocks
                 if (valToCopy.Count > 0)
                 {
                     // Получаем текущую базу чертежа
-                    using (IdMapping map = new IdMapping())
+                    using (var map = new IdMapping())
                     {
                         using (var ids = new ObjectIdCollection(valToCopy.Keys.ToArray()))
                         {
@@ -172,7 +171,7 @@ namespace AcadLib.Blocks
                 if (valToCopy.Count > 0)
                 {
                     // Получаем текущую базу чертежа
-                    using (IdMapping map = new IdMapping())
+                    using (var map = new IdMapping())
                     {
                         using (var ids = new ObjectIdCollection(valToCopy.Keys.ToArray()))
                         {
@@ -223,8 +222,8 @@ namespace AcadLib.Blocks
         /// <returns>ID скопированного блока, или существующего в чертеже с таким именем.</returns>
         public static ObjectId CopyBtr(ObjectId idBtrSource, string name)
         {
-            ObjectId idBtrCopy = ObjectId.Null;
-            Database db = idBtrSource.Database;
+            var idBtrCopy = ObjectId.Null;
+            var db = idBtrSource.Database;
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var btrSource = t.GetObject(idBtrSource, OpenMode.ForRead) as BlockTableRecord;
@@ -242,12 +241,12 @@ namespace AcadLib.Blocks
                     idBtrCopy = bt.Add(btrCopy);
                     t.AddNewlyCreatedDBObject(btrCopy, true);
                     // Копирование объектов блока
-                    ObjectIdCollection ids = new ObjectIdCollection();
-                    foreach (ObjectId idEnt in btrSource)
+                    var ids = new ObjectIdCollection();
+                    foreach (var idEnt in btrSource)
                     {
                         ids.Add(idEnt);
                     }
-                    IdMapping map = new IdMapping();
+                    var map = new IdMapping();
                     db.DeepCloneObjects(ids, idBtrCopy, map, false);
                 }
                 t.Commit();
@@ -261,10 +260,10 @@ namespace AcadLib.Blocks
         /// <returns>ID Layout</returns>
         public static ObjectId CopyLayout(Database db, string layerSource, string layerCopy)
         {
-            ObjectId idLayoutCopy = ObjectId.Null;
-            Database dbOrig = HostApplicationServices.WorkingDatabase;
+            var idLayoutCopy = ObjectId.Null;
+            var dbOrig = HostApplicationServices.WorkingDatabase;
             HostApplicationServices.WorkingDatabase = db;
-            LayoutManager lm = LayoutManager.Current;
+            var lm = LayoutManager.Current;
             // Нужно проверить имена. Вдруг нет листа источника, или уже есть копируемый лист.
             lm.CopyLayout(layerSource, layerCopy);
             idLayoutCopy = lm.GetLayoutId(layerCopy);
@@ -285,28 +284,28 @@ namespace AcadLib.Blocks
         {
             ObjectId newLayoutId;
             ObjectId existLayoutId;
-            using (WorkingDatabaseSwitcher sw = new WorkingDatabaseSwitcher(db))
+            using (var sw = new WorkingDatabaseSwitcher(db))
             {
-                LayoutManager lm = LayoutManager.Current;
+                var lm = LayoutManager.Current;
                 newLayoutId = lm.CreateLayout(newLayoutName);
                 existLayoutId = lm.GetLayoutId(existLayoutName);
             }
-            ObjectIdCollection objIdCol = new ObjectIdCollection();
-            ObjectId idBtrNewLayout = ObjectId.Null;
-            using (Layout newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout)
+            var objIdCol = new ObjectIdCollection();
+            var idBtrNewLayout = ObjectId.Null;
+            using (var newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout)
             {
-                Layout curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
+                var curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
                 newLayout.CopyFrom(curLayout);
                 idBtrNewLayout = newLayout.BlockTableRecordId;
                 using (var btrCurLayout = curLayout.BlockTableRecordId.Open(OpenMode.ForRead) as BlockTableRecord)
                 {
-                    foreach (ObjectId objId in btrCurLayout)
+                    foreach (var objId in btrCurLayout)
                     {
                         objIdCol.Add(objId);
                     }
                 }
             }
-            IdMapping idMap = new IdMapping();
+            var idMap = new IdMapping();
             db.DeepCloneObjects(objIdCol, idBtrNewLayout, idMap, false);
             return newLayoutId;
         }
@@ -336,7 +335,7 @@ namespace AcadLib.Blocks
         /// <returns></returns>
         public static bool IsDuplicate(this BlockReference blk1, BlockReference blk2)
         {
-            Tolerance tol = new Tolerance(1, 1);
+            var tol = new Tolerance(1, 1);
             return
                 blk1.OwnerId == blk2.OwnerId &&
                 blk1.Name == blk2.Name &&
@@ -352,7 +351,7 @@ namespace AcadLib.Blocks
         /// <param name="btr"></param>
         public static void ClearEntity(this BlockTableRecord btr)
         {
-            foreach (ObjectId idEnt in btr)
+            foreach (var idEnt in btr)
             {
                 using (var ent = idEnt.Open(OpenMode.ForWrite) as Entity)
                 {

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.ApplicationServices;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
@@ -15,7 +11,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         public const string PIK = "PIK";
         public static ObjectId GetLineTypeIdByName(this Database db, string name)
         {
-            ObjectId resVal = ObjectId.Null;
+            var resVal = ObjectId.Null;
 
             using (var ltTable = db.LinetypeTableId.Open(OpenMode.ForRead) as LinetypeTable)
             {
@@ -42,7 +38,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>      
         public static ObjectId GetTableStylePIK(this Database db)
         {
-            ObjectId idStyle = getTableStylePik(db,PIK);
+            var idStyle = getTableStylePik(db,PIK);
             if (idStyle.IsNull)
             {
                 // Копирование стиля таблиц из шаблона
@@ -66,7 +62,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>      
         public static ObjectId GetTableStylePIK(this Database db, bool update)
         {
-            ObjectId idStyle = ObjectId.Null;
+            var idStyle = ObjectId.Null;
             if (!update)
             {
                 idStyle = getTableStylePik(db, PIK);
@@ -93,7 +89,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>      
         public static ObjectId GetTableStylePIK(this Database db, string styleName)
         {
-            ObjectId idStyle = getTableStylePik(db, styleName);
+            var idStyle = getTableStylePik(db, styleName);
             if (idStyle.IsNull)
             {
                 // Копирование стиля таблиц из шаблона
@@ -116,7 +112,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>      
         public static ObjectId GetTableStylePIK(this Database db, string styleName, bool update)
         {
-            ObjectId idStyle = ObjectId.Null;
+            var idStyle = ObjectId.Null;
             if (!update)
             {
                 idStyle = getTableStylePik(db, styleName);
@@ -143,7 +139,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>  
         public static ObjectId GetTextStylePIK(this Database db)
         {
-            ObjectId idStyle = getTextStylePik(db, PIK);
+            var idStyle = getTextStylePik(db, PIK);
 
             if (idStyle.IsNull)
             {
@@ -167,7 +163,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>      
         public static ObjectId GetTextStylePIK (this Database db, string styleName)
         {
-            ObjectId idStyle = getTextStylePik(db, styleName);
+            var idStyle = getTextStylePik(db, styleName);
             if (idStyle.IsNull)
             {
                 // Копирование стиля таблиц из шаблона
@@ -192,7 +188,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <returns></returns>
         public static ObjectId GetDimStylePIK(this Database db)
         {
-            ObjectId idStyle = getDimStylePik(db, PIK);
+            var idStyle = getDimStylePik(db, PIK);
 
             if (idStyle.IsNull)
             {
@@ -220,7 +216,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             db.GetDimStylePIK();
             // Загрузка углового стиля ПИК
             var angStyle = PIK + "$2";
-            ObjectId idStyle = getDimStylePik(db, angStyle);
+            var idStyle = getDimStylePik(db, angStyle);
 
             if (idStyle.IsNull)
             {
@@ -241,7 +237,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         private static ObjectId getDimStylePik(Database db, string styleName)
         {
-            ObjectId idStyle = ObjectId.Null;
+            var idStyle = ObjectId.Null;
             using (var dimStylesTable = db.DimStyleTableId.Open(OpenMode.ForRead) as DimStyleTable)
             {
                 if (dimStylesTable.Has(styleName))
@@ -254,7 +250,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         private static ObjectId getTableStylePik(Database db, string styleName)
         {
-            ObjectId idStyle = ObjectId.Null;
+            var idStyle = ObjectId.Null;
             using (var dictTableStyles = db.TableStyleDictionaryId.Open(OpenMode.ForRead) as DBDictionary)
             {
                 if (dictTableStyles.Contains(styleName))
@@ -267,7 +263,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         private static ObjectId getTextStylePik(Database db, string styleName)
         {
-            ObjectId idStyle = ObjectId.Null;
+            var idStyle = ObjectId.Null;
             using (var textStyles = db.TextStyleTableId.Open(OpenMode.ForRead) as TextStyleTable)
             {
                 if (textStyles.Has(styleName))
@@ -281,21 +277,21 @@ namespace Autodesk.AutoCAD.DatabaseServices
         // Копирование стиля таблиц ПИК из файла шаблона
         private static ObjectId copyObjectFromTemplate(Database db, Func<Database, string, ObjectId> getObjectId, string styleName, ObjectId ownerIdTable)
         {
-            ObjectId idStyleDest = ObjectId.Null;
+            var idStyleDest = ObjectId.Null;
             // файл шаблона
             var userGroup = PikSettings.UserGroupsCombined.First();
-            string fileTemplate = Path.Combine(PikSettings.LocalSettingsFolder, "Template", userGroup,
+            var fileTemplate = Path.Combine(PikSettings.LocalSettingsFolder, "Template", userGroup,
                 userGroup + ".dwt");
             if (File.Exists(fileTemplate))
             {
-                using (Database dbTemplate = new Database(false, true))
+                using (var dbTemplate = new Database(false, true))
                 {
                     dbTemplate.ReadDwgFile(fileTemplate, FileOpenMode.OpenForReadAndAllShare, false, "");
                     dbTemplate.CloseInput(true);
-                    ObjectId idStyleInTemplate = getObjectId(dbTemplate, styleName);
+                    var idStyleInTemplate = getObjectId(dbTemplate, styleName);
                     if (!idStyleInTemplate.IsNull)
                     {
-                        using (IdMapping map = new IdMapping())
+                        using (var map = new IdMapping())
                         {
                             using (var ids = (new ObjectIdCollection(new ObjectId[] { idStyleInTemplate })))
                             {

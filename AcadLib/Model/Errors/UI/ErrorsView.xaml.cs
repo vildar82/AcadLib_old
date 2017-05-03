@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace AcadLib.Errors
 {
@@ -51,7 +41,7 @@ namespace AcadLib.Errors
             {
                 e.Handled = true;
                 var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.RoutedEvent = MouseWheelEvent;
                 eventArg.Source = sender;
                 ((Control)sender).RaiseEvent(eventArg);                
             }
@@ -69,7 +59,7 @@ namespace AcadLib.Errors
 
         private void Button_Send_Click(object sender, RoutedEventArgs e)
         {
-            string subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";            
+            var subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";            
             Process.Start($"mailto:khisyametdinovvt@pik.ru?subject={subject}");
         }
     }

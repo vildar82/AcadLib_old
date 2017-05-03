@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace System
@@ -44,9 +39,9 @@ namespace System
 
         public static string GetValidDbSymbolName(this string name)
         {
-            string res = name.ClearString();
+            var res = name.ClearString();
             //string testString = "<>/?\";:*|,='";
-            Regex pattern = new Regex("[<>/?\";:*|,=']");
+            var pattern = new Regex("[<>/?\";:*|,=']");
             res = pattern.Replace(name, ".");
             res = res.Replace('\\', '.');
             SymbolUtilityServices.ValidateSymbolName(res, false);

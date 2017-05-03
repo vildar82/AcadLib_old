@@ -95,7 +95,7 @@ namespace AcadLib.Geometry
                 if (i > 2 || i < 0)
                     throw new IndexOutOfRangeException("Index out of range");
                 _pts[i] = value;
-                this.Set(_pts);
+                Set(_pts);
             }
         }
 
@@ -110,10 +110,10 @@ namespace AcadLib.Geometry
         /// <returns>true if every corresponding element in both Triangle&lt;T&gt; are considered equal; otherwise, nil.</returns>
         public override bool Equals(object obj)
         {
-            Triangle<T> trgl = obj as Triangle<T>;
+            var trgl = obj as Triangle<T>;
             return
                 trgl != null &&
-                trgl.GetHashCode() == this.GetHashCode() &&
+                trgl.GetHashCode() == GetHashCode() &&
                 trgl[0].Equals(_pt0) &&
                 trgl[1].Equals(_pt1) &&
                 trgl[2].Equals(_pt2);
@@ -133,7 +133,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public void Inverse()
         {
-            this.Set(_pt0, _pt2, _pt1);
+            Set(_pt0, _pt2, _pt1);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace AcadLib.Geometry
         /// <returns>An IEnumerable&lt;T&gt; enumerator for the Triangle&lt;T&gt;.</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (T item in _pts) yield return item;
+            foreach (var item in _pts) yield return item;
         }
 
         #endregion
@@ -205,7 +205,7 @@ namespace AcadLib.Geometry
         /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         #endregion

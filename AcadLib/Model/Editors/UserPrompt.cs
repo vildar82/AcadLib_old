@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AcadLib.Jigs;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using AcadLib;
 
@@ -36,7 +33,7 @@ namespace Autodesk.AutoCAD.EditorInput
 
         public static Extents3d PromptExtents(this Editor ed, string msgPromptFirstPoint, string msgPromptsecondPoint)
         {
-            Extents3d extentsPrompted = new Extents3d();
+            var extentsPrompted = new Extents3d();
             var prPtRes = ed.GetPoint(msgPromptFirstPoint);
             if (prPtRes.Status == PromptStatus.OK)
             {
@@ -133,7 +130,7 @@ namespace Autodesk.AutoCAD.EditorInput
         public static List<ObjectId> SelectBlRefs(this Editor ed, string msg)
         {
             var filList = new TypedValue[1] { new TypedValue((int)DxfCode.Start, "INSERT") };
-            SelectionFilter filter = new SelectionFilter(filList);
+            var filter = new SelectionFilter(filList);
             var selOpt = new PromptSelectionOptions()
             {
                 MessageForAdding = msg
@@ -159,7 +156,7 @@ namespace Autodesk.AutoCAD.EditorInput
             var jigRect = new RectangleJig(len, height);            
             var res = ed.Drag(jigRect);
             if (res.Status != PromptStatus.OK)
-                throw new Exception(AcadLib.General.CanceledByUser);
+                throw new Exception(General.CanceledByUser);
             return jigRect.Position;
         }
     }

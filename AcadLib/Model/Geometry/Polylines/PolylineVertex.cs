@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -24,7 +20,7 @@ namespace AcadLib.Geometry
         public static List<PolylineVertex> GetVertexes (Polyline pl, string name)
         {
             var res = new List<PolylineVertex>();
-            for (int i = 0; i < pl.NumberOfVertices; i++)
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 var pt = pl.GetPoint2dAt(i);
                 res.Add(new PolylineVertex(name, i, pt));

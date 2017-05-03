@@ -1,13 +1,8 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using AcadLib.Geometry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib.Geometry.Polylines
 {
@@ -16,9 +11,9 @@ namespace TestAcadlib.Geometry.Polylines
         [CommandMethod(nameof(TestPointInsidePolyline))]
         public void TestPointInsidePolyline()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;
+            var ed = doc.Editor;
 
             var selOpt = new PromptEntityOptions("\nВыбери полилинию");
             selOpt.SetRejectMessage("\nТолько полилинию");
@@ -41,9 +36,9 @@ namespace TestAcadlib.Geometry.Polylines
         [CommandMethod(nameof(TestPointOnPolyline))]
         public void TestPointOnPolyline()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;
+            var ed = doc.Editor;
 
             var selOpt = new PromptEntityOptions("\nВыбери полилинию");
             selOpt.SetRejectMessage("\nТолько полилинию");

@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace AcadLib.Errors
@@ -96,13 +95,13 @@ namespace AcadLib.Errors
                     return;
 
                 // Открываем книгу
-                Workbook workBook = excelApp.Workbooks.Add();
+                var workBook = excelApp.Workbooks.Add();
 
                 // Получаем активную таблицу
-                Worksheet worksheet = workBook.ActiveSheet as Worksheet;
+                var worksheet = workBook.ActiveSheet as Worksheet;
                 worksheet.Name = "Ошибки";
 
-                int row = 1;
+                var row = 1;
                 // Название
                 worksheet.Cells[row, 1].Value = "Список ошибок";
                 row++;
@@ -180,7 +179,7 @@ namespace AcadLib.Errors
 
         private void RemoveErrors(List<ErrorModel> selectedErrors)
         {
-            int countIsSelectedErr = 0;
+            var countIsSelectedErr = 0;
             foreach (var item in selectedErrors)
             {
                 if (item.parentErr == null)

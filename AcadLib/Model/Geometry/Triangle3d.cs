@@ -75,10 +75,10 @@ namespace AcadLib.Geometry
         {
             get
             {
-                CircularArc2d ca2d = this.Convert2d().CircumscribedCircle;
+                var ca2d = Convert2d().CircumscribedCircle;
                 if (ca2d == null)
                     return null;
-                return new CircularArc3d(ca2d.Center.Convert3d(this.GetPlane()), this.Normal, ca2d.Radius);
+                return new CircularArc3d(ca2d.Center.Convert3d(GetPlane()), Normal, ca2d.Radius);
             }
         }
 
@@ -87,7 +87,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public double Elevation
         {
-            get { return _pt0.TransformBy(Matrix3d.WorldToPlane(this.Normal)).Z; }
+            get { return _pt0.TransformBy(Matrix3d.WorldToPlane(Normal)).Z; }
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace AcadLib.Geometry
         {
             get
             {
-                Vector3d norm = this.Normal;
+                var norm = Normal;
                 if (norm.IsParallelTo(Vector3d.ZAxis))
                     return new Vector3d(0.0, 0.0, 0.0);
                 if (norm.Z == 0.0)
@@ -113,7 +113,7 @@ namespace AcadLib.Geometry
         {
             get
             {
-                Vector3d norm = this.Normal;
+                var norm = Normal;
                 if (norm.IsParallelTo(Vector3d.ZAxis))
                     return Vector3d.XAxis;
                 return new Vector3d(-norm.Y, norm.X, 0.0).GetNormal();
@@ -127,10 +127,10 @@ namespace AcadLib.Geometry
         {
             get
             {
-                CircularArc2d ca2d = this.Convert2d().InscribedCircle;
+                var ca2d = Convert2d().InscribedCircle;
                 if (ca2d == null)
                     return null;
-                return new CircularArc3d(ca2d.Center.Convert3d(this.GetPlane()), this.Normal, ca2d.Radius);
+                return new CircularArc3d(ca2d.Center.Convert3d(GetPlane()), Normal, ca2d.Radius);
             }
         }
 
@@ -157,7 +157,7 @@ namespace AcadLib.Geometry
         {
             get
             {
-                Vector3d norm = this.Normal;
+                var norm = Normal;
                 if (norm.Z == 0.0)
                     return Double.PositiveInfinity;
                 return Math.Abs(100.0 * (Math.Sqrt(Math.Pow(norm.X, 2.0) + Math.Pow(norm.Y, 2.0))) / norm.Z);
@@ -172,10 +172,10 @@ namespace AcadLib.Geometry
         {
             get
             {
-                Point3d origin = this.Centroid;
-                Vector3d zaxis = this.Normal;
-                Vector3d xaxis = this.Horizontal;
-                Vector3d yaxis = zaxis.CrossProduct(xaxis).GetNormal();
+                var origin = Centroid;
+                var zaxis = Normal;
+                var xaxis = Horizontal;
+                var yaxis = zaxis.CrossProduct(xaxis).GetNormal();
                 return new Matrix3d(new double[]{
                     xaxis.X, yaxis.X, zaxis.X, origin.X,
                     xaxis.Y, yaxis.Y, zaxis.Y, origin.Y,
@@ -194,7 +194,7 @@ namespace AcadLib.Geometry
         /// <returns>The resulting Triangle2d.</returns>
         public Triangle2d Convert2d()
         {
-            Plane plane = this.GetPlane();
+            var plane = GetPlane();
             return new Triangle2d(
                 Array.ConvertAll<Point3d, Point2d>(_pts, x => x.Convert2d(plane)));
         }
@@ -237,9 +237,9 @@ namespace AcadLib.Geometry
         /// <returns>The unbouned plane.</returns>
         public Plane GetPlane()
         {
-            Vector3d normal = this.Normal;
-            Point3d origin =
-                new Point3d(0.0, 0.0, this.Elevation).TransformBy(Matrix3d.PlaneToWorld(normal));
+            var normal = Normal;
+            var origin =
+                new Point3d(0.0, 0.0, Elevation).TransformBy(Matrix3d.PlaneToWorld(normal));
             return new Plane(origin, normal);
         }
 
@@ -264,7 +264,7 @@ namespace AcadLib.Geometry
         /// <returns>true if the condition is met; otherwise, false.</returns>
         public bool IsEqualTo(Triangle3d t3d)
         {
-            return this.IsEqualTo(t3d, Tolerance.Global);
+            return IsEqualTo(t3d, Tolerance.Global);
         }
 
         /// <summary>
@@ -285,10 +285,10 @@ namespace AcadLib.Geometry
         /// <returns>true if the point is inside; otherwise, false.</returns>
         public bool IsPointInside(Point3d pt)
         {
-            Tolerance tol = new Tolerance(1e-9, 1e-9);
-            Vector3d v1 = pt.GetVectorTo(_pt0).CrossProduct(pt.GetVectorTo(_pt1)).GetNormal();
-            Vector3d v2 = pt.GetVectorTo(_pt1).CrossProduct(pt.GetVectorTo(_pt2)).GetNormal();
-            Vector3d v3 = pt.GetVectorTo(_pt2).CrossProduct(pt.GetVectorTo(_pt0)).GetNormal();
+            var tol = new Tolerance(1e-9, 1e-9);
+            var v1 = pt.GetVectorTo(_pt0).CrossProduct(pt.GetVectorTo(_pt1)).GetNormal();
+            var v2 = pt.GetVectorTo(_pt1).CrossProduct(pt.GetVectorTo(_pt2)).GetNormal();
+            var v3 = pt.GetVectorTo(_pt2).CrossProduct(pt.GetVectorTo(_pt0)).GetNormal();
             return (v1.IsEqualTo(v2, tol) && v2.IsEqualTo(v3, tol));
         }
 
@@ -299,11 +299,11 @@ namespace AcadLib.Geometry
         /// <returns>true if the point is on a segment; otherwise, false.</returns>
         public bool IsPointOn(Point3d pt)
         {
-            Tolerance tol = new Tolerance(1e-9, 1e-9);
-            Vector3d v0 = new Vector3d(0.0, 0.0, 0.0);
-            Vector3d v1 = pt.GetVectorTo(_pt0).CrossProduct(pt.GetVectorTo(_pt1));
-            Vector3d v2 = pt.GetVectorTo(_pt1).CrossProduct(pt.GetVectorTo(_pt2));
-            Vector3d v3 = pt.GetVectorTo(_pt2).CrossProduct(pt.GetVectorTo(_pt0));
+            var tol = new Tolerance(1e-9, 1e-9);
+            var v0 = new Vector3d(0.0, 0.0, 0.0);
+            var v1 = pt.GetVectorTo(_pt0).CrossProduct(pt.GetVectorTo(_pt1));
+            var v2 = pt.GetVectorTo(_pt1).CrossProduct(pt.GetVectorTo(_pt2));
+            var v3 = pt.GetVectorTo(_pt2).CrossProduct(pt.GetVectorTo(_pt0));
             return (v1.IsEqualTo(v0, tol) || v2.IsEqualTo(v0, tol) || v3.IsEqualTo(v0, tol));
         }
 

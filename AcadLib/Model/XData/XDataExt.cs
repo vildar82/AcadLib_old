@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AcadLib.XData;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
 {
+    /// <summary>
+    /// Расширенные данные объекта
+    /// </summary>
     public static class XDataExt
     {
         private static Dictionary<Type, int> dictXDataTypedValues = new Dictionary<Type, int> {            
@@ -21,12 +21,12 @@ namespace AcadLib
         /// </summary>        
         public static void RegApp(this Database db, string regAppName)
         {
-            using (RegAppTable rat = db.RegAppTableId.Open(OpenMode.ForRead, false) as RegAppTable)
+            using (var rat = db.RegAppTableId.Open(OpenMode.ForRead, false) as RegAppTable)
             {
                 if (!rat.Has(regAppName))
                 {
                     rat.UpgradeOpen();
-                    using (RegAppTableRecord ratr = new RegAppTableRecord())
+                    using (var ratr = new RegAppTableRecord())
                     {
                         ratr.Name = regAppName;
                         rat.Add(ratr);

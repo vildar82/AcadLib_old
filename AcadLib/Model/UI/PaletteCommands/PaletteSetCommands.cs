@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Media;
 using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.Windows;
 
 namespace AcadLib.PaletteCommands
@@ -32,13 +25,13 @@ namespace AcadLib.PaletteCommands
         public static List<IPaletteCommand> CommandsAddin { get; set; } 
 
         public PaletteSetCommands() : 
-            base(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, PaletteSetCommands.commandStartPalette, PaletteGuid)
+            base(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, commandStartPalette, PaletteGuid)
         {
             Icon = Properties.Resources.pik;
             loadPalettes();           
             // Установка фона контрола на палитре - в зависимости от цветовой темы автокада.            
             CheckTheme();
-            Application.SystemVariableChanged += (s, e) =>
+            Autodesk.AutoCAD.ApplicationServices.Core.Application.SystemVariableChanged += (s, e) =>
             {
                 if (e.Name == "COLORTHEME" && e.Changed)
                     CheckTheme();
@@ -90,8 +83,8 @@ namespace AcadLib.PaletteCommands
             models = new List<PaletteModel>();
             var commands = CommandsAddin;
             // Группировка команд
-            string groupCommon = "Общие";
-            List<IPaletteCommand> commonCommands = Commands.CommandsPalette;
+            var groupCommon = "Общие";
+            var commonCommands = Commands.CommandsPalette;
             var groupCommands = commands.GroupBy(c => c.Group).OrderBy(g=>g.Key);
             foreach (var group in groupCommands)
             {
@@ -104,9 +97,9 @@ namespace AcadLib.PaletteCommands
                     var model = new PaletteModel(group);
                     if (model.PaletteCommands.Any())
                     {
-                        UI.CommandsControl commControl = new UI.CommandsControl();
+                        var commControl = new UI.CommandsControl();
                         commControl.DataContext = model;
-                        string name = group.Key;
+                        var name = group.Key;
                         if (string.IsNullOrEmpty(name)) name = "Главная";
                         AddVisual(name, commControl);
                         models.Add(model);
@@ -129,7 +122,7 @@ namespace AcadLib.PaletteCommands
 
         private void CheckTheme()
         {
-            var isDarkTheme = (short)Application.GetSystemVariable("COLORTHEME") == 0;
+            var isDarkTheme = (short)Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("COLORTHEME") == 0;
             System.Windows.Media.Brush colorBkg;
             if (isDarkTheme)
                 colorBkg = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 92, 92, 92));

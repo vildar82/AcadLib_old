@@ -1,23 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using System.Collections.Generic;
 using AcAp = Autodesk.AutoCAD.ApplicationServices.Application;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using AcadLib.Blocks;
-using Autodesk.AutoCAD.Geometry;
-using AcadLib.Extensions;
-using AcadLib.Errors;
-using AcadLib.Blocks.Dublicate;
-using AcadLib.Blocks.Visual;
-using AcadLib;
-using AcadLib.Layers;
 using AcadLib.Jigs;
-using Autodesk.AutoCAD.Colors;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib
 {
@@ -26,12 +12,12 @@ namespace TestAcadlib
         [CommandMethod("Test")]
         public void Test()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Editor ed = doc.Editor;
-            Database db = doc.Database;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var ed = doc.Editor;
+            var db = doc.Database;
 
             var tables = new List<Entity>();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 var table = new Table();
                 table.SetSize(i, i * 2);

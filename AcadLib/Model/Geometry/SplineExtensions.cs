@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using AcRx = Autodesk.AutoCAD.Runtime;
 
@@ -28,10 +24,10 @@ namespace AcadLib.Geometry
                 throw new AcRx.Exception(AcRx.ErrorStatus.NonPlanarEntity);
             if (spl.Closed != true)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NotApplicable);
-            using (DBObjectCollection curves = new DBObjectCollection())
+            using (var curves = new DBObjectCollection())
             {
                 curves.Add(spl);
-                using (DBObjectCollection dboc = Region.CreateFromCurves(curves))
+                using (var dboc = Region.CreateFromCurves(curves))
                 {
                     return ((Region)dboc[0]).Centroid();
                 }

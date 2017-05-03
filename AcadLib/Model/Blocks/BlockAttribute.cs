@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using AcAp = Autodesk.AutoCAD.ApplicationServices.Application;
 
@@ -36,8 +35,8 @@ namespace AcadLib.Blocks
 
       public BlockAttribute(ObjectId idBlRef)
       {
-         Database db = idBlRef.Database;
-         using (Transaction tr = db.TransactionManager.StartTransaction())
+         var db = idBlRef.Database;
+         using (var tr = db.TransactionManager.StartTransaction())
          {
             SetProperties(tr.GetObject(idBlRef, OpenMode.ForRead) as BlockReference);
          }

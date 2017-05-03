@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AcadLib.Blocks
 {
@@ -41,7 +38,7 @@ namespace AcadLib.Blocks
 
       public static string Report()
       {
-         StringBuilder report = new StringBuilder("Обработано блоков:");
+         var report = new StringBuilder("Обработано блоков:");
          foreach (var counter in _counter)
          {
             report.AppendLine(string.Format("\n{0} - {1} блоков.", counter.Key, counter.Value));

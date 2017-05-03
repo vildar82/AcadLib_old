@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.XData
@@ -88,7 +86,7 @@ namespace AcadLib.XData
             using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
             {
                 if (xRec == null) return;
-                using (ResultBuffer rb = new ResultBuffer(values.ToArray()))
+                using (var rb = new ResultBuffer(values.ToArray()))
                 {
                     xRec.Data = rb;
                 }
@@ -102,9 +100,9 @@ namespace AcadLib.XData
         [Obsolete("Используй `DicED`")]
         public T Load<T> (string rec)
         {
-            T res = default(T);
+            var res = default(T);
             var typeT = typeof(T);            
-            int type = GetExtendetDataType (typeT);
+            var type = GetExtendetDataType (typeT);
             
             var xRecId = GetXRecord(rec, false);
             if (!xRecId.IsNull)
@@ -156,7 +154,7 @@ namespace AcadLib.XData
 
         private ObjectId GetXRecord(string key, bool create)
         {
-            ObjectId res = ObjectId.Null;
+            var res = ObjectId.Null;
             // Словарь плагина
             var idDicPlugin = GetDicPlugin(create);
             // Запись key
@@ -167,7 +165,7 @@ namespace AcadLib.XData
 
         private ObjectId GetDicPlugin (bool create)
         {
-            ObjectId res = ObjectId.Null;
+            var res = ObjectId.Null;
             // Словарь объекта
             var idDboDic = ExtDicHelper.GetDboExtDic(dbo, create);
             // Словарь ПИК

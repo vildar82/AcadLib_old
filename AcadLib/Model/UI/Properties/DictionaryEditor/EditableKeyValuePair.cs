@@ -12,8 +12,8 @@ namespace AcadLib.UI.Designer
   
         public EditableKeyValuePair(TKey key, TValue value, GenericDictionaryEditorAttribute editorAttribute)
         {
-            this.Key = key;
-            this.Value = value;
+            Key = key;
+            Value = value;
 
             if (editorAttribute == null)
                 throw new ArgumentNullException("editorAttribute");
@@ -35,12 +35,12 @@ namespace AcadLib.UI.Designer
 
         public override PropertyDescriptorCollection GetProperties()
         {
-            List<PropertyDescriptor> properties = new List<PropertyDescriptor>();
+            var properties = new List<PropertyDescriptor>();
 
-            KeyValueDescriptor KeyDescriptor = new KeyValueDescriptor(TypeDescriptor.CreateProperty(this.GetType(), "Key", typeof(TKey)),  this.EditorAttribute.KeyConverterType, this.EditorAttribute.KeyEditorType, this.EditorAttribute.KeyAttributeProviderType, this.EditorAttribute.KeyDisplayName);
+            var KeyDescriptor = new KeyValueDescriptor(TypeDescriptor.CreateProperty(GetType(), "Key", typeof(TKey)),  EditorAttribute.KeyConverterType, EditorAttribute.KeyEditorType, EditorAttribute.KeyAttributeProviderType, EditorAttribute.KeyDisplayName);
             properties.Add(KeyDescriptor);
 
-            KeyValueDescriptor ValueDescriptor = new KeyValueDescriptor(TypeDescriptor.CreateProperty(this.GetType(), "Value", typeof(TValue)), this.EditorAttribute.ValueConverterType, this.EditorAttribute.ValueEditorType, this.EditorAttribute.ValueAttributeProviderType, this.EditorAttribute.ValueDisplayName);
+            var ValueDescriptor = new KeyValueDescriptor(TypeDescriptor.CreateProperty(GetType(), "Value", typeof(TValue)), EditorAttribute.ValueConverterType, EditorAttribute.ValueEditorType, EditorAttribute.ValueAttributeProviderType, EditorAttribute.ValueDisplayName);
             properties.Add(ValueDescriptor);
 
             return new PropertyDescriptorCollection(properties.ToArray());

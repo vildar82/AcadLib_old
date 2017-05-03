@@ -10,8 +10,8 @@ namespace AcadLib.UI.Designer
     {
         public GenericDictionaryEditorAttribute()
         {
-            this.KeyDisplayName = "Key";
-            this.ValueDisplayName = "Value";
+            KeyDisplayName = "Key";
+            ValueDisplayName = "Value";
         }
 
         /// <summary>

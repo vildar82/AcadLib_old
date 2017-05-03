@@ -1,5 +1,4 @@
 ﻿using AcadLib.Geometry;
-using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
 namespace Autodesk.AutoCAD.DatabaseServices
@@ -16,7 +15,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <returns>A new Polyline instance</returns>
         public static Polyline ToPolyline(this Ellipse ellipse)
         {
-            Polyline pline = new PolylineSegmentCollection(ellipse).ToPolyline();
+            var pline = new PolylineSegmentCollection(ellipse).ToPolyline();
             pline.Closed = ellipse.Closed;
             pline.Normal = ellipse.Normal;
             pline.Elevation = ellipse.Center.TransformBy(Matrix3d.WorldToPlane(new Plane(Point3d.Origin, ellipse.Normal))).Z;

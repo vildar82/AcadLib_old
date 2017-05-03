@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
     public static class BlockExtents
     {
-        public static RXClass DbTextRXClass = RXClass.GetClass(typeof(DBText));
-        public static RXClass MTextRXClass = RXClass.GetClass(typeof(MText));
-        public static RXClass MLeaderRXClass = RXClass.GetClass(typeof(MLeader));
-        public static RXClass DimensionRXClass = RXClass.GetClass(typeof(Dimension));
+        public static RXClass DbTextRXClass = RXObject.GetClass(typeof(DBText));
+        public static RXClass MTextRXClass = RXObject.GetClass(typeof(MText));
+        public static RXClass MLeaderRXClass = RXObject.GetClass(typeof(MLeader));
+        public static RXClass DimensionRXClass = RXObject.GetClass(typeof(Dimension));
 
         /// <summary>
         /// Обновление графики во вхождениях блока для данного определения блока
@@ -37,8 +31,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <returns></returns>
         public static Extents3d GeometricExtentsСlean(this BlockReference blRef)
         {
-            Matrix3d mat = Matrix3d.Identity;
-            Extents3d blockExt = BlockExtents.GetBlockExtents(blRef, ref mat, new Extents3d());
+            var mat = Matrix3d.Identity;
+            var blockExt = GetBlockExtents(blRef, ref mat, new Extents3d());
             return blockExt;
         }
 
@@ -53,10 +47,10 @@ namespace Autodesk.AutoCAD.DatabaseServices
             if (en is BlockReference)
             {
                 var bref = en as BlockReference;
-                Matrix3d matIns = mat * bref.BlockTransform;
+                var matIns = mat * bref.BlockTransform;
                 using (var btr = bref.BlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
                 {
-                    foreach (ObjectId id in btr)
+                    foreach (var id in btr)
                     {
                         // Пропускаем все тексты.
                         if (id.ObjectClass.IsDerivedFrom(DbTextRXClass) ||
@@ -66,9 +60,9 @@ namespace Autodesk.AutoCAD.DatabaseServices
                         {
                             continue;
                         }
-                        using (DBObject obj = id.Open(OpenMode.ForRead) as DBObject)
+                        using (var obj = id.Open(OpenMode.ForRead) as DBObject)
                         {
-                            Entity enCur = obj as Entity;
+                            var enCur = obj as Entity;
                             if (enCur == null || enCur.Visible != true)
                                 continue;
                             if (IsEmptyExt(ref ext))
@@ -87,7 +81,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             {
                 if (mat.IsUniscaledOrtho())
                 {
-                    using (Entity enTr = en.GetTransformedCopy(mat))
+                    using (var enTr = en.GetTransformedCopy(mat))
                     {
                         if (enTr is Dimension)
                             (enTr as Dimension).RecomputeDimensionBlock(true);
@@ -109,7 +103,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 {
                     try
                     {
-                        Extents3d curExt = en.GeometricExtents;
+                        var curExt = en.GeometricExtents;
                         curExt.TransformBy(mat);
                         if (IsEmptyExt(ref ext))
                             ext = curExt;

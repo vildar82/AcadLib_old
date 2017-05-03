@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Runtime;
 
@@ -26,10 +23,10 @@ namespace AcadLib.Layers.AutoLayers
 
         public override List<ObjectId> GetAutoLayerEnts(List<ObjectId> idAddedEnts)
         {
-            return idAddedEnts.Where(w => IsDimEnt(w)).ToList();
+            return idAddedEnts?.Where(IsDimEnt).ToList();
         }       
 
-        private bool IsDimEnt(ObjectId idEnt)
+        private static bool IsDimEnt(ObjectId idEnt)
         {
             return idEnt.ObjectClass.IsDerivedFrom(RXObject.GetClass(typeof(Dimension)));
         }

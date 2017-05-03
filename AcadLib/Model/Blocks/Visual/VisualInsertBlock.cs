@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Windows.Data;
 using AcadLib.Blocks.Visual.UI;
 using AcadLib.Layers;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks.Visual
 {
@@ -28,7 +24,7 @@ namespace AcadLib.Blocks.Visual
 
             var vm = new VisualBlocksViewModel(visuals);
             var winVisual = new WindowVisualBlocks(vm);
-            Application.ShowModalWindow(winVisual);            
+            Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowModalWindow(winVisual);            
         }        
 
         public static List<IVisualBlock> LoadVisuals(string file, Predicate<string> filter)
@@ -64,7 +60,7 @@ namespace AcadLib.Blocks.Visual
         public static void Redefine(IVisualBlock block)
         {
             if (block == null) return;
-            var doc = Application.DocumentManager.MdiActiveDocument;
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
             using (doc.LockDocument())
             {

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AcadLib;
-using AcadLib.Geometry;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using AcadLib.Geometry;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.Colors;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib.Geometry.Polylines
 {
@@ -18,9 +12,9 @@ namespace TestAcadlib.Geometry.Polylines
         [CommandMethod(nameof(TestWEdding))]
         public void TestWEdding()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;
+            var ed = doc.Editor;
 
             var selOpt = new PromptEntityOptions("\nВыбери полилинию для прополки");
             selOpt.SetRejectMessage("\nТолько полилинию");

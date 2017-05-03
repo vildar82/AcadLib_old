@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
-using Autodesk.AutoCAD.Publishing;
-using AcadLib;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace Gile.Publish
 {
@@ -22,13 +19,13 @@ namespace Gile.Publish
         // Base constructor
         public PlotToFileConfig(string outputFile, IEnumerable<Layout> layouts, string plotType)
         {
-            Database db = HostApplicationServices.WorkingDatabase;
+            var db = HostApplicationServices.WorkingDatabase;
             dwgFile = db.Filename;
             outputDir = Path.GetDirectoryName(outputFile);
             dsdFile = Path.ChangeExtension(outputFile, "dsd");
             this.layouts = layouts;
             this.plotType = plotType;
-            string ext = plotType == "0" || plotType == "1" ? "dwf" : "pdf";
+            var ext = plotType == "0" || plotType == "1" ? "dwf" : "pdf";
             this.outputFile = Path.Combine(outputDir, Path.ChangeExtension(Path.GetFileName(outputFile), ext));
         }
 
@@ -37,26 +34,26 @@ namespace Gile.Publish
         {
             if (TryCreateDSD())
             {
-                object bgp = Application.GetSystemVariable("BACKGROUNDPLOT");
-                object ctab = Application.GetSystemVariable("CTAB");
+                var bgp = Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("BACKGROUNDPLOT");
+                var ctab = Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("CTAB");
                 try
                 {
-                    Application.SetSystemVariable("BACKGROUNDPLOT", 0);
+                    Autodesk.AutoCAD.ApplicationServices.Core.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
 
-                    var publisher = Application.Publisher;
+                    var publisher = Autodesk.AutoCAD.ApplicationServices.Core.Application.Publisher;
                     var plotDlg = new PlotProgressDialog(false, sheetNum, false);
                     publisher.PublishDsd(dsdFile, plotDlg);
                     plotDlg.Destroy();
                 }
                 catch (System.Exception exn)
                 {
-                    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;                    
+                    var ed = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor;                    
                     ed.WriteMessage("\nError: {0}\n{1}", exn.Message, exn.StackTrace);
                     throw;
                 }
                 finally
                 {
-                    Application.SetSystemVariable("BACKGROUNDPLOT", bgp);
+                    Autodesk.AutoCAD.ApplicationServices.Core.Application.SetSystemVariable("BACKGROUNDPLOT", bgp);
                     Application.SetSystemVariable("CTAB", ctab);
                     File.Delete(dsdFile);
                 }
@@ -96,7 +93,7 @@ namespace Gile.Publish
         private DsdEntryCollection CreateDsdEntryCollection(IEnumerable<Layout> layouts)
         {
             var entries = new DsdEntryCollection();
-            foreach (Layout layout in layouts)
+            foreach (var layout in layouts)
             {
                 var dsdEntry = new DsdEntry()
                 {
@@ -114,7 +111,7 @@ namespace Gile.Publish
         private void PostProcessDSD(DsdData dsd)
         {
             string str, newStr;
-            string tmpFile = Path.Combine(outputDir, "temp.dsd");
+            var tmpFile = Path.Combine(outputDir, "temp.dsd");
 
             try
             {

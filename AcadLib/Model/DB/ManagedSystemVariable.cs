@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
@@ -19,7 +15,7 @@ namespace AcadLib
         public ManagedSystemVariable (string name, object value)
            : this(name)
         {
-            Application.SetSystemVariable(name, value);
+            Autodesk.AutoCAD.ApplicationServices.Core.Application.SetSystemVariable(name, value);
         }
 
         public ManagedSystemVariable (string name)
@@ -27,14 +23,14 @@ namespace AcadLib
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(name);
             this.name = name;
-            this.oldval = Application.GetSystemVariable(name);
+            oldval = Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable(name);
         }
 
         public void Dispose ()
         {
             if (oldval != null)
             {
-                object temp = oldval;
+                var temp = oldval;
                 oldval = null;
                 Application.SetSystemVariable(name, temp);
             }

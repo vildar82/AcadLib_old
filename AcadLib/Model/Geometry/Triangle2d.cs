@@ -74,12 +74,12 @@ namespace AcadLib.Geometry
         {
             get
             {
-                Line2d l1 = this.GetSegmentAt(0).GetBisector();
-                Line2d l2 = this.GetSegmentAt(1).GetBisector();
-                Point2d[] inters = l1.IntersectWith(l2);
+                var l1 = GetSegmentAt(0).GetBisector();
+                var l2 = GetSegmentAt(1).GetBisector();
+                var inters = l1.IntersectWith(l2);
                 if (inters == null)
                     return null;
-                return new CircularArc2d(inters[0], inters[0].GetDistanceTo(this._pt0));
+                return new CircularArc2d(inters[0], inters[0].GetDistanceTo(_pt0));
             }
         }
 
@@ -90,15 +90,15 @@ namespace AcadLib.Geometry
         {
             get
             {
-                Vector2d v1 = _pt0.GetVectorTo(_pt1).GetNormal();
-                Vector2d v2 = _pt0.GetVectorTo(_pt2).GetNormal();
-                Vector2d v3 = _pt1.GetVectorTo(_pt2).GetNormal();
+                var v1 = _pt0.GetVectorTo(_pt1).GetNormal();
+                var v2 = _pt0.GetVectorTo(_pt2).GetNormal();
+                var v3 = _pt1.GetVectorTo(_pt2).GetNormal();
                 if (v1.IsEqualTo(v2) || v2.IsEqualTo(v3))
                     return null;
-                Line2d l1 = new Line2d(_pt0, v1 + v2);
-                Line2d l2 = new Line2d(_pt1, v1.Negate() + v3);
-                Point2d[] inters = l1.IntersectWith(l2);
-                return new CircularArc2d(inters[0], this.GetSegmentAt(0).GetDistanceTo(inters[0]));
+                var l1 = new Line2d(_pt0, v1 + v2);
+                var l2 = new Line2d(_pt1, v1.Negate() + v3);
+                var inters = l1.IntersectWith(l2);
+                return new CircularArc2d(inters[0], GetSegmentAt(0).GetDistanceTo(inters[0]));
             }
         }
 
@@ -107,7 +107,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public bool IsClockwise
         {
-            get { return (this.AlgebricArea < 0.0); }
+            get { return (AlgebricArea < 0.0); }
         }
 
         #endregion
@@ -144,8 +144,8 @@ namespace AcadLib.Geometry
         /// <returns>The angle expressed in radians.</returns>
         public double GetAngleAt(int index)
         {
-            double pi = 3.141592653589793;
-            double ang =
+            var pi = 3.141592653589793;
+            var ang =
                 this[index].GetVectorTo(this[(index + 1) % 3]).GetAngleTo(
                 this[index].GetVectorTo(this[(index + 2) % 3]));
             if (ang > pi * 2)
@@ -175,10 +175,10 @@ namespace AcadLib.Geometry
         /// <returns>The intersection points list (an empty list if none).</returns>
         public List<Point2d> IntersectWith(LinearEntity2d le2d)
         {
-            List<Point2d> result = new List<Point2d>();
-            for (int i = 0; i < 3; i++)
+            var result = new List<Point2d>();
+            for (var i = 0; i < 3; i++)
             {
-                Point2d[] inters = le2d.IntersectWith(this.GetSegmentAt(i));
+                var inters = le2d.IntersectWith(GetSegmentAt(i));
                 if (inters != null && inters.Length != 0 && !result.Contains(inters[0]))
                     result.Add(inters[0]);
             }
@@ -194,10 +194,10 @@ namespace AcadLib.Geometry
         /// <returns>The intersection points list (an empty list if none).</returns>
         public List<Point2d> IntersectWith(LinearEntity2d le2d, Tolerance tol)
         {
-            List<Point2d> result = new List<Point2d>();
-            for (int i = 0; i < 3; i++)
+            var result = new List<Point2d>();
+            for (var i = 0; i < 3; i++)
             {
-                Point2d[] inters = le2d.IntersectWith(this.GetSegmentAt(i), tol);
+                var inters = le2d.IntersectWith(GetSegmentAt(i), tol);
                 if (inters != null && inters.Length != 0 && !result.Contains(inters[0]))
                     result.Add(inters[0]);
             }
@@ -211,7 +211,7 @@ namespace AcadLib.Geometry
         /// <returns>true if the condition is met; otherwise, false.</returns>
         public bool IsEqualTo(Triangle2d t2d)
         {
-            return this.IsEqualTo(t2d, Tolerance.Global);
+            return IsEqualTo(t2d, Tolerance.Global);
         }
 
         /// <summary>
@@ -232,12 +232,12 @@ namespace AcadLib.Geometry
         /// <returns>true if the point is inside; otherwise, false.</returns>
         public bool IsPointInside(Point2d pt)
         {
-            if (this.IsPointOn(pt))
+            if (IsPointOn(pt))
                 return false;
-            List<Point2d> inters = this.IntersectWith(new Ray2d(pt, Vector2d.XAxis));
+            var inters = IntersectWith(new Ray2d(pt, Vector2d.XAxis));
             if (inters.Count != 1)
                 return false;
-            Point2d p = inters[0];
+            var p = inters[0];
             return !p.IsEqualTo(this[0]) && !p.IsEqualTo(this[1]) && !p.IsEqualTo(this[2]);
         }
 

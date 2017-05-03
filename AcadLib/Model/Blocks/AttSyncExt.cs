@@ -2,15 +2,12 @@
 using Autodesk.AutoCAD.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AcadLib.Blocks
 {
     public static class AttSyncExt
     {
-        static RXClass attDefClass = RXClass.GetClass(typeof(AttributeDefinition));
+        static RXClass attDefClass = RXObject.GetClass(typeof(AttributeDefinition));
 
         public static void SynchronizeAttributes(this ObjectId btrId)
         {
@@ -30,13 +27,13 @@ namespace AcadLib.Blocks
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            Transaction tr = target.Database.TransactionManager.TopTransaction;
+            var tr = target.Database.TransactionManager.TopTransaction;
             if (tr == null)
                 throw new Autodesk.AutoCAD.Runtime.Exception(ErrorStatus.NoActiveTransactions);
             List<AttributeDefinition> attDefs = target.GetAttributes(tr);
             foreach (ObjectId id in target.GetBlockReferenceIds(true, false))
             {
-                BlockReference br = (BlockReference)tr.GetObject(id, OpenMode.ForWrite);
+                var br = (BlockReference)tr.GetObject(id, OpenMode.ForWrite);
                 br.ResetAttributes(attDefs, tr);
             }
             if (target.IsDynamicBlock)
@@ -44,11 +41,11 @@ namespace AcadLib.Blocks
                 target.UpdateAnonymousBlocks();
                 foreach (ObjectId id in target.GetAnonymousBlockIds())
                 {
-                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(id, OpenMode.ForRead);
+                    var btr = (BlockTableRecord)tr.GetObject(id, OpenMode.ForRead);
                     attDefs = btr.GetAttributes(tr);
                     foreach (ObjectId brId in btr.GetBlockReferenceIds(true, false))
                     {
-                        BlockReference br = (BlockReference)tr.GetObject(brId, OpenMode.ForWrite);
+                        var br = (BlockReference)tr.GetObject(brId, OpenMode.ForWrite);
                         br.ResetAttributes(attDefs, tr);
                     }
                 }
@@ -57,12 +54,12 @@ namespace AcadLib.Blocks
 
         private static List<AttributeDefinition> GetAttributes(this BlockTableRecord target, Transaction tr)
         {
-            List<AttributeDefinition> attDefs = new List<AttributeDefinition>();
-            foreach (ObjectId id in target)
+            var attDefs = new List<AttributeDefinition>();
+            foreach (var id in target)
             {
                 if (id.ObjectClass == attDefClass)
                 {
-                    AttributeDefinition attDef = (AttributeDefinition)tr.GetObject(id, OpenMode.ForRead);
+                    var attDef = (AttributeDefinition)tr.GetObject(id, OpenMode.ForRead);
                     attDefs.Add(attDef);
                 }
             }
@@ -71,7 +68,7 @@ namespace AcadLib.Blocks
 
         private static void ResetAttributes(this BlockReference br, List<AttributeDefinition> attDefs, Transaction tr)
         {
-            Dictionary<string, string> attValues = new Dictionary<string, string>();
+            var attValues = new Dictionary<string, string>();
             foreach (ObjectId id in br.AttributeCollection)
             {
                 if (!id.IsErased)
@@ -83,9 +80,9 @@ namespace AcadLib.Blocks
                     attRef.Erase();
                 }
             }
-            foreach (AttributeDefinition attDef in attDefs)
+            foreach (var attDef in attDefs)
             {
-                AttributeReference attRef = new AttributeReference();
+                var attRef = new AttributeReference();
                 attRef.SetAttributeFromBlock(attDef, br.BlockTransform);
                 if (attDef.Constant)
                 {

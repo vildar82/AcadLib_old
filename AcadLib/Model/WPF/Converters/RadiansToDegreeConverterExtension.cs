@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
-using System.Windows.Markup;
 
 namespace AcadLib.WPF.Converters
 {
@@ -15,12 +10,12 @@ namespace AcadLib.WPF.Converters
     {        
         public override object Convert (object value, Type targetType, object parameter, CultureInfo culture)
         {
-            double date = System.Convert.ToDouble(value);
+            var date = System.Convert.ToDouble(value);
             return date.ToDegrees().ToString("N2");
         }
         public override object ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
         {
-            double date = System.Convert.ToDouble(value);
+            var date = System.Convert.ToDouble(value);
             return date.ToRadians();
         }       
     }

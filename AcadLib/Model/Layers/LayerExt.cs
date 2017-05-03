@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Layers
@@ -33,8 +29,8 @@ namespace AcadLib.Layers
         /// <returns></returns>
         public static ObjectId GetLayerOrCreateNew(this LayerInfo layerInfo)
         {
-            ObjectId idLayer = ObjectId.Null;
-            Database db = HostApplicationServices.WorkingDatabase;
+            var idLayer = ObjectId.Null;
+            var db = HostApplicationServices.WorkingDatabase;
             // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.                           
             using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
             {
@@ -58,7 +54,7 @@ namespace AcadLib.Layers
         /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
         public static ObjectId CreateLayer(this LayerInfo layerInfo, LayerTable lt)
         {
-            ObjectId idLayer = ObjectId.Null;
+            var idLayer = ObjectId.Null;
             // Если слоя нет, то он создается.            
             using (var newLayer = new LayerTableRecord())
             {
@@ -78,8 +74,8 @@ namespace AcadLib.Layers
         /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
         public static Dictionary<string, ObjectId> CheckLayerState(this List<LayerInfo> layers, bool checkProps)
         {
-            Dictionary<string, ObjectId> resVal = new Dictionary<string, ObjectId>();
-            Database db = HostApplicationServices.WorkingDatabase;
+            var resVal = new Dictionary<string, ObjectId>();
+            var db = HostApplicationServices.WorkingDatabase;
             using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
             {
                 foreach (var layer in layers)
@@ -134,7 +130,7 @@ namespace AcadLib.Layers
 
         public static ObjectId CheckLayerState(this LayerInfo layer, bool checkProps)
         {
-            List<LayerInfo> layers = new List<LayerInfo>() { layer };
+            var layers = new List<LayerInfo>() { layer };
             var dictLays = CheckLayerState(layers, checkProps);
             ObjectId res;
             dictLays.TryGetValue(layer.Name, out res);
@@ -147,8 +143,8 @@ namespace AcadLib.Layers
 
         public static ObjectId CheckLayerState(string layer)
         {            
-            LayerInfo li = new LayerInfo(layer);
-            List<LayerInfo> layersInfo = new List<LayerInfo>();
+            var li = new LayerInfo(layer);
+            var layersInfo = new List<LayerInfo>();
             layersInfo.Add(li);
             var dictLays = CheckLayerState(layersInfo);
             ObjectId res;
@@ -158,10 +154,10 @@ namespace AcadLib.Layers
 
         public static Dictionary<string, ObjectId> CheckLayerState(string[] layers)
         {
-            List<LayerInfo> layersInfo = new List<LayerInfo>();
+            var layersInfo = new List<LayerInfo>();
             foreach (var item in layers)
             {
-                LayerInfo li = new LayerInfo(item);
+                var li = new LayerInfo(item);
                 layersInfo.Add(li);
             }
             return CheckLayerState(layersInfo);

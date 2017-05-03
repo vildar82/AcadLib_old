@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
@@ -33,7 +29,7 @@ namespace AcadLib.WPF.Converters
             return this;
         }
 
-        object IValueConverter.Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        object IValueConverter.Convert (object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
@@ -45,7 +41,7 @@ namespace AcadLib.WPF.Converters
             }
         }
 
-        object IValueConverter.ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        object IValueConverter.ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using NetLib;
 
@@ -33,7 +30,7 @@ namespace AcadLib
         {            
             var dictValues = new Dictionary<string, object>();
             if (values == null) return dictValues;
-            string name = string.Empty;            
+            var name = string.Empty;            
             foreach (var item in values)
             {
                 if (!string.IsNullOrEmpty(name))
@@ -87,8 +84,8 @@ namespace AcadLib
             if (value == null) return new TypedValue();
             var typeObj = value.GetType();
 
-            int code = 0;
-            object tvValue = value;
+            var code = 0;
+            var tvValue = value;
 
             if (typeObj == typeof(bool))
             {

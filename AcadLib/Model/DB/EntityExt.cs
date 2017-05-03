@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Extensions
 {
@@ -19,13 +12,13 @@ namespace AcadLib.Extensions
         public static void SetAnnotativeScale(this Entity ent, int scale)
         {
             // Проверка, есть ли нужный масштаб в чертеже
-            string nameScale = string.Format("1:{0}", scale);
-            ObjectContextManager ocm = ent.Database.ObjectContextManager;
-            ObjectContextCollection occ = ocm.GetContextCollection("ACDB_ANNOTATIONSCALES");
+            var nameScale = string.Format("1:{0}", scale);
+            var ocm = ent.Database.ObjectContextManager;
+            var occ = ocm.GetContextCollection("ACDB_ANNOTATIONSCALES");
             ObjectContext contextAnnoScale;
             if (!occ.HasContext(nameScale))
             {
-                AnnotationScale annoScale = new AnnotationScale();
+                var annoScale = new AnnotationScale();
                 annoScale.Name = nameScale;
                 annoScale.PaperUnits = 1;
                 annoScale.DrawingUnits = scale;

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using AcadLib.Geometry;
 
@@ -20,7 +15,7 @@ namespace AcadLib
         /// </summary>        
         public static Polyline3d GetExteriorContour(this List<Polyline> idsPl)
         {
-            List<Region> colReg = new List<Region>();
+            var colReg = new List<Region>();
             foreach (var pl in idsPl)
             {                
                 if (pl == null || pl.Area == 0) continue;
@@ -31,7 +26,7 @@ namespace AcadLib
                 var dbsRegions = Region.CreateFromCurves(dbs);
                 if (dbsRegions.Count > 0)
                 {
-                    Region r = (Region)dbsRegions[0];
+                    var r = (Region)dbsRegions[0];
                     colReg.Add(r);
                     foreach (var item in dbsRegions.Cast<DBObject>().Skip(1))
                     {
@@ -41,7 +36,7 @@ namespace AcadLib
             }
 
             // Объединение регионов
-            Region r1 = colReg.First();            
+            var r1 = colReg.First();            
             foreach (var iReg in colReg.Skip(1))
             {
                 r1.BooleanOperation(BooleanOperationType.BoolUnite, iReg);
@@ -57,22 +52,22 @@ namespace AcadLib
         {
             Polyline3d resVal = null;
             double maxArea = 0;
-            Brep brep = new Brep(reg);
-            foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
+            var brep = new Brep(reg);
+            foreach (var face in brep.Faces)
             {
-                foreach (BoundaryLoop loop in face.Loops)
+                foreach (var loop in face.Loops)
                 {
                     if (loop.LoopType == LoopType.LoopExterior)
                     {
-                        List<Point3d> ptsVertex = new List<Point3d>();                                                
-                        foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)
+                        var ptsVertex = new List<Point3d>();                                                
+                        foreach (var vert in loop.Vertices)
                         {
                             if (!ptsVertex.Any(p => p.IsEqualTo(vert.Point, Tolerance.Global)))
                             {
                                 ptsVertex.Add(vert.Point);
                             }                            
                         }
-                        Point3dCollection pts = new Point3dCollection(ptsVertex.ToArray());
+                        var pts = new Point3dCollection(ptsVertex.ToArray());
                         var pl = new Polyline3d(Poly3dType.SimplePoly, pts, true);
                         if (pl.Area>maxArea)
                         {
@@ -87,13 +82,13 @@ namespace AcadLib
         public static List<KeyValuePair<Polyline, BrepLoopType>> GetPolylines (this Region reg)
         {            
             var resVal = new List<KeyValuePair<Polyline, BrepLoopType>>(); ;
-            Brep brep = new Brep(reg);
-            foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
+            var brep = new Brep(reg);
+            foreach (var face in brep.Faces)
             {
-                foreach (BoundaryLoop loop in face.Loops)
+                foreach (var loop in face.Loops)
                 {
-                    List<Point2d> ptsVertex = new List<Point2d>();
-                    foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)                    
+                    var ptsVertex = new List<Point2d>();
+                    foreach (var vert in loop.Vertices)                    
                         ptsVertex.Add(vert.Point.Convert2d());
 
                     var pl = ptsVertex.CreatePolyline();
@@ -106,13 +101,13 @@ namespace AcadLib
         public static List<KeyValuePair<Point2dCollection, BrepLoopType>> GetPoints2dByLoopType (this Region reg)
         {            
             var resVal = new List<KeyValuePair<Point2dCollection, BrepLoopType>>(); ;
-            Brep brep = new Brep(reg);
-            foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
+            var brep = new Brep(reg);
+            foreach (var face in brep.Faces)
             {
-                foreach (BoundaryLoop loop in face.Loops)
+                foreach (var loop in face.Loops)
                 {
-                    List<Point2d> ptsVertex = new List<Point2d>();
-                    foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)
+                    var ptsVertex = new List<Point2d>();
+                    foreach (var vert in loop.Vertices)
                         ptsVertex.Add(vert.Point.Convert2d());                    
                     var pts2dCol = new Point2dCollection(ptsVertex.ToArray());
                     resVal.Add(new KeyValuePair<Point2dCollection, BrepLoopType>(pts2dCol, (BrepLoopType)loop.LoopType));
@@ -124,12 +119,12 @@ namespace AcadLib
         public static List<Point3d> GetVertices (this Region reg)
         {
             var ptsVertex = new List<Point3d>();
-            Brep brep = new Brep(reg);
-            foreach (Autodesk.AutoCAD.BoundaryRepresentation.Face face in brep.Faces)
+            var brep = new Brep(reg);
+            foreach (var face in brep.Faces)
             {
-                foreach (BoundaryLoop loop in face.Loops)
+                foreach (var loop in face.Loops)
                 {                    
-                    foreach (Autodesk.AutoCAD.BoundaryRepresentation.Vertex vert in loop.Vertices)
+                    foreach (var vert in loop.Vertices)
                     {
                         ptsVertex.Add(vert.Point);
                     }
@@ -216,7 +211,7 @@ namespace AcadLib
 
         private static List<Region> createRegion (IEnumerable<Polyline> pls)
         {
-            List<Region> res = new List<Region>();
+            var res = new List<Region>();
             var dbs = new DBObjectCollection();
             foreach (var pl in pls)
             {
@@ -245,7 +240,7 @@ namespace AcadLib
         private static List<Polyline3d> createPl (List<Region> regions)
         {
             if (regions == null || regions.Count == 0) return null;
-            List<Polyline3d> res = new List<Polyline3d>();
+            var res = new List<Polyline3d>();
             foreach (var r in regions)
             {
                 var pl = GetRegionContour(r);
@@ -260,7 +255,7 @@ namespace AcadLib
             if (regions.Count == 1) return regions[0];           
 
             var union = regions[0];            
-            for (int i = 1; i < regions.Count; i++)
+            for (var i = 1; i < regions.Count; i++)
             {
                 var cr = regions[i];
                 union.BooleanOperation(BooleanOperationType.BoolUnite, cr);                

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using AcRx = Autodesk.AutoCAD.Runtime;
@@ -29,14 +28,14 @@ namespace AcadLib.Geometry
         /// eNoActiveTransactions is thrown if the method is not called form a Transaction.</exception>
         public static List<Vertex2d> GetVertices(this Polyline2d pl)
         {
-            Transaction tr = pl.Database.TransactionManager.TopTransaction;
+            var tr = pl.Database.TransactionManager.TopTransaction;
             if (tr == null)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NoActiveTransactions);
 
-            List<Vertex2d> vertices = new List<Vertex2d>();
+            var vertices = new List<Vertex2d>();
             foreach (ObjectId id in pl)
             {
-                Vertex2d vx = (Vertex2d)tr.GetObject(id, OpenMode.ForRead);
+                var vx = (Vertex2d)tr.GetObject(id, OpenMode.ForRead);
                 if (vx.VertexType != Vertex2dType.SplineControlVertex)
                     vertices.Add(vx);
             }
@@ -77,7 +76,7 @@ namespace AcadLib.Geometry
         {
             try
             {
-                Matrix3d WCS2ECS = pl.Ecs.Inverse();
+                var WCS2ECS = pl.Ecs.Inverse();
                 return new LineSegment2d(
                     pl.GetPointAtParameter(index).TransformBy(WCS2ECS).Convert2d(),
                     pl.GetPointAtParameter(index + 1.0).TransformBy(WCS2ECS).Convert2d());
@@ -123,7 +122,7 @@ namespace AcadLib.Geometry
         {
             try
             {
-                Matrix3d WCS2ECS = pl.Ecs.Inverse();
+                var WCS2ECS = pl.Ecs.Inverse();
                 return new CircularArc2d(
                     pl.GetPointAtParameter(index).TransformBy(WCS2ECS).Convert2d(),
                     pl.GetPointAtParameter(index + 0.5).TransformBy(WCS2ECS).Convert2d(),
@@ -142,18 +141,18 @@ namespace AcadLib.Geometry
         /// <returns>The centroid of the polyline 2d (WCS coordinates).</returns>
         public static Point3d Centroid(this Polyline2d pl)
         {
-            Vertex2d[] vertices = pl.GetVertices().ToArray();
-            int last = vertices.Length - 1;
-            Vertex2d vertex = vertices[0];
-            Point2d p0 = vertex.Position.Convert2d();
-            double elev = pl.Elevation;
-            Point2d cen = new Point2d(0.0, 0.0);
-            double area = 0.0;
-            double bulge = vertex.Bulge;
+            var vertices = pl.GetVertices().ToArray();
+            var last = vertices.Length - 1;
+            var vertex = vertices[0];
+            var p0 = vertex.Position.Convert2d();
+            var elev = pl.Elevation;
+            var cen = new Point2d(0.0, 0.0);
+            var area = 0.0;
+            var bulge = vertex.Bulge;
             double tmpArea;
             Point2d tmpPt;
-            Triangle2d tri = new Triangle2d();
-            CircularArc2d arc = new CircularArc2d();
+            var tri = new Triangle2d();
+            var arc = new CircularArc2d();
             if (bulge != 0.0)
             {
                 arc = pl.GetArcSegment2dAt(0);
@@ -162,10 +161,10 @@ namespace AcadLib.Geometry
                 area += tmpArea;
                 cen += ((new Point2d(tmpPt.X, tmpPt.Y)) * tmpArea).GetAsVector();
             }
-            for (int i = 1; i < last; i++)
+            for (var i = 1; i < last; i++)
             {
-                Point2d p1 = vertices[i].Position.Convert2d();
-                Point2d p2 = vertices[i + 1].Position.Convert2d();
+                var p1 = vertices[i].Position.Convert2d();
+                var p2 = vertices[i + 1].Position.Convert2d();
                 tri.Set(p0, p1, p2);
                 tmpArea = tri.AlgebricArea;
                 area += tmpArea;
@@ -202,16 +201,16 @@ namespace AcadLib.Geometry
         /// <returns>The projected Polyline.</returns>
         public static Polyline GetProjectedPolyline(this Polyline2d pline, Plane plane, Vector3d direction)
         {
-            Tolerance tol = new Tolerance(1e-9, 1e-9);
+            var tol = new Tolerance(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
                 return null;
 
             if (pline.Normal.IsPerpendicularTo(direction, tol))
             {
-                Plane dirPlane = new Plane(Point3d.Origin, direction);
+                var dirPlane = new Plane(Point3d.Origin, direction);
                 if (!pline.IsWriteEnabled) pline.UpgradeOpen();
                 pline.TransformBy(Matrix3d.WorldToPlane(dirPlane));
-                Extents3d extents = pline.GeometricExtents;
+                var extents = pline.GeometricExtents;
                 pline.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
                 return GeomExt.ProjectExtents(extents, plane, direction, dirPlane);
             }

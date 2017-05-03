@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Layers
@@ -42,7 +38,7 @@ namespace AcadLib.Layers
         /// <returns></returns>
         public bool IsVisible (Entity ent)
         {
-            bool res = true;
+            var res = true;
             if (!ent.Visible)
             {
                 res = false;

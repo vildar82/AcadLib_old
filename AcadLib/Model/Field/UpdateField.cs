@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Runtime;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Field
 {
@@ -53,7 +48,7 @@ namespace AcadLib.Field
         #endregion
         private static Int32 acdbEvaluateFields(ref ObjectId id, Int32 context)
         {
-            switch (Application.Version.Major)
+            switch (Autodesk.AutoCAD.ApplicationServices.Core.Application.Version.Major)
             {
                 case 21:
                     if (IntPtr.Size == 8)
@@ -89,9 +84,9 @@ namespace AcadLib.Field
         public static void UpdateInSelected ()
         {
             // Обновление полей в блоке
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;
+            var ed = doc.Editor;
 
             var sel = ed.Select("Выбер объектов для обновления полей: ");
             foreach (var item in sel)

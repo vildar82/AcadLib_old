@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -13,6 +12,7 @@ using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoCAD.Publishing;
 using AutoCAD_PIK_Manager.Settings;
 using AcadLib.Layouts;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Plot
 {
@@ -79,7 +79,7 @@ namespace AcadLib.Plot
         {
             using (var dsdCol = new DsdEntryCollection())
             {
-                int indexfile = 0;
+                var indexfile = 0;
 
                 title = $"Печать {filesDwg.Length} файлов dwg...";
 
@@ -139,7 +139,7 @@ namespace AcadLib.Plot
         {
             var ed = doc.Editor;
             var plotOpt = new PlotOptions();
-            bool repeat = false;
+            var repeat = false;
             do
             {
                 var optPrompt = new PromptKeywordOptions($"\nПечать листов в PDF из:");
@@ -159,7 +159,7 @@ namespace AcadLib.Plot
                         {
                             throw new Exception("Нужно сохранить текущий чертеж.");
                         }
-                        string filePdfName = Path.Combine(Path.GetDirectoryName(doc.Name), Path.GetFileNameWithoutExtension(doc.Name) + ".pdf");
+                        var filePdfName = Path.Combine(Path.GetDirectoryName(doc.Name), Path.GetFileNameWithoutExtension(doc.Name) + ".pdf");
                         var plotter = new PlotDirToPdf(new string[] { doc.Name }, filePdfName)
                         {
                             Options = plotOpt
@@ -180,7 +180,7 @@ namespace AcadLib.Plot
                         if (dialog.ShowDialog() == DialogResult.OK)
                         {
                             PlotDirToPdf plotter;
-                            string firstFileNameWoExt = Path.GetFileNameWithoutExtension(dialog.Dialog.FileNames.First());
+                            var firstFileNameWoExt = Path.GetFileNameWithoutExtension(dialog.Dialog.FileNames.First());
                             if (dialog.Dialog.FileNames.Count() > 1)
                             {
                                 plotter = new PlotDirToPdf(dialog.Dialog.FileNames, Path.GetFileName(dialog.SelectedPath));
@@ -219,8 +219,8 @@ namespace AcadLib.Plot
             foreach (var layout in layouts)
             {
                 // Номер вкладки
-                int tabIndex = layout.TabOrder;
-                string tabName = layout.LayoutName;
+                var tabIndex = layout.TabOrder;
+                var tabName = layout.LayoutName;
                 bool? filtering = null;
                 // Фильтр по именам                                        
                 if (!string.IsNullOrWhiteSpace(Options.FilterByNames))
@@ -249,10 +249,10 @@ namespace AcadLib.Plot
             var resNums = new List<int>();            
             if (Options.FilterState && !string.IsNullOrWhiteSpace(filter))
             {                
-                string clearStr = string.Empty;
+                var clearStr = string.Empty;
                 filter = filter.Trim().Replace(" ", "");
                 var negativeNumbersMatchs = Regex.Matches(filter, @"(^-\d+)|[,-](-\d+)");
-                int startIndex = 0;
+                var startIndex = 0;
                 foreach (Match negMatch in negativeNumbersMatchs)
                 {
                     // замена негативного числа на соответствующее
@@ -290,7 +290,7 @@ namespace AcadLib.Plot
         {
             try
             {                
-                string dsdFile = Path.Combine(dir, filePdfOutputName + ".dsd");
+                var dsdFile = Path.Combine(dir, filePdfOutputName + ".dsd");
                 if (!filePdfOutputName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
                 {
                     filePdfOutputName += ".pdf";
@@ -299,7 +299,7 @@ namespace AcadLib.Plot
 
                 CheckFileAccess(destFile);               
 
-                Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
+                Application.SetSystemVariable("BACKGROUNDPLOT", 0);
                 using (var dsd = new DsdData())
                 {                    
                     if (PikSettings.UserGroup == "ДО")
@@ -322,9 +322,9 @@ namespace AcadLib.Plot
                     //dsd.WriteDsd(dsdFile);
                     PostProcessDSD(dsd, dsdFile);
                 }
-                int nbSheets = collection.Count;
+                var nbSheets = collection.Count;
 
-                using (PlotProgressDialog progressDlg = new PlotProgressDialog(false, nbSheets, true))
+                using (var progressDlg = new PlotProgressDialog(false, nbSheets, true))
                 {
                     progressDlg.set_PlotMsgString(PlotMessageIndex.DialogTitle, title);
                     progressDlg.set_PlotMsgString(PlotMessageIndex.CancelJobButtonMessage, "Отмена задания");
@@ -340,7 +340,7 @@ namespace AcadLib.Plot
 
                     progressDlg.IsVisible = true;
 
-                    var publisher = Autodesk.AutoCAD.ApplicationServices.Application.Publisher;
+                    var publisher = Application.Publisher;
                     PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
 
                     //Application.Publisher.AboutToBeginPublishing += new Autodesk.AutoCAD.Publishing.AboutToBeginPublishingEventHandler(Publisher_AboutToBeginPublishing);
@@ -355,14 +355,14 @@ namespace AcadLib.Plot
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
         }
 
         private void CheckFileAccess(string destFile)
         {
             var fi = new FileInfo(destFile);
-            int countWhile = 0;
+            var countWhile = 0;
             do
             {
                 try
@@ -410,14 +410,14 @@ namespace AcadLib.Plot
         {
             string str;
             string newStr;
-            string tmpFile = Path.Combine(dir, "temp.dsd");
+            var tmpFile = Path.Combine(dir, "temp.dsd");
 
             dsd.WriteDsd(tmpFile);
 
-            using (StreamReader reader = new StreamReader(tmpFile, Encoding.Default))
-            using (StreamWriter writer = new StreamWriter(destFile, false, Encoding.Default))
+            using (var reader = new StreamReader(tmpFile, Encoding.Default))
+            using (var writer = new StreamWriter(destFile, false, Encoding.Default))
             {
-                string fileDwg = string.Empty;
+                var fileDwg = string.Empty;
                 while (!reader.EndOfStream)
                 {
                     str = reader.ReadLine();

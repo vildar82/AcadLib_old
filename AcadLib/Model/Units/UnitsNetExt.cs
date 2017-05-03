@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnitsNet;
 
 namespace AcadLib.Units
@@ -16,10 +14,10 @@ namespace AcadLib.Units
 
         public static Area Sum(this IEnumerable<Area> source)
         {
-            Area area = Area.Zero;
+            var area = Area.Zero;
             if (source != null)
             {
-                foreach (Area current in source)
+                foreach (var current in source)
                 {
                     area += current;
                 }
@@ -34,10 +32,10 @@ namespace AcadLib.Units
 
         public static Length Sum(this IEnumerable<Length> source)
         {
-            Length length = Length.Zero;
+            var length = Length.Zero;
             if (source != null)
             {
-                foreach (Length current in source)
+                foreach (var current in source)
                 {
                     length += current;
                 }

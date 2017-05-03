@@ -21,7 +21,7 @@ namespace AcadLib.Jigs
 
       protected override SamplerStatus Sampler(JigPrompts prompts)
       {
-         JigPromptPointOptions jigOpts =
+         var jigOpts =
            new JigPromptPointOptions();
          jigOpts.UserInputControls =
            (UserInputControls.Accept3dCoordinates
@@ -31,7 +31,7 @@ namespace AcadLib.Jigs
          jigOpts.Message =
            "\nУкажите точку вставки: ";
 
-         PromptPointResult dres =
+         var dres =
            prompts.AcquirePoint(jigOpts);
 
          if (mActualPoint == dres.Value)

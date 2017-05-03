@@ -33,7 +33,7 @@ namespace AcadLib.Model.Statistic {
         public DataSetStatistic() {
             this.BeginInit();
             this.InitClass();
-            global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
+            var schemaChangedHandler = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
             base.Tables.CollectionChanged += schemaChangedHandler;
             base.Relations.CollectionChanged += schemaChangedHandler;
             this.EndInit();
@@ -45,14 +45,14 @@ namespace AcadLib.Model.Statistic {
                 base(info, context, false) {
             if ((this.IsBinarySerialized(info, context) == true)) {
                 this.InitVars(false);
-                global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler1 = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
+                var schemaChangedHandler1 = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
                 this.Tables.CollectionChanged += schemaChangedHandler1;
                 this.Relations.CollectionChanged += schemaChangedHandler1;
                 return;
             }
-            string strSchema = ((string)(info.GetValue("XmlSchema", typeof(string))));
+            var strSchema = ((string)(info.GetValue("XmlSchema", typeof(string))));
             if ((this.DetermineSchemaSerializationMode(info, context) == global::System.Data.SchemaSerializationMode.IncludeSchema)) {
-                global::System.Data.DataSet ds = new global::System.Data.DataSet();
+                var ds = new global::System.Data.DataSet();
                 ds.ReadXmlSchema(new global::System.Xml.XmlTextReader(new global::System.IO.StringReader(strSchema)));
                 if ((ds.Tables["C_PluginStatistic"] != null)) {
                     base.Tables.Add(new C_PluginStatisticDataTable(ds.Tables["C_PluginStatistic"]));
@@ -70,7 +70,7 @@ namespace AcadLib.Model.Statistic {
                 this.ReadXmlSchema(new global::System.Xml.XmlTextReader(new global::System.IO.StringReader(strSchema)));
             }
             this.GetSerializationData(info, context);
-            global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
+            var schemaChangedHandler = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
             base.Tables.CollectionChanged += schemaChangedHandler;
             this.Relations.CollectionChanged += schemaChangedHandler;
         }
@@ -127,7 +127,7 @@ namespace AcadLib.Model.Statistic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public override global::System.Data.DataSet Clone() {
-            DataSetStatistic cln = ((DataSetStatistic)(base.Clone()));
+            var cln = ((DataSetStatistic)(base.Clone()));
             cln.InitVars();
             cln.SchemaSerializationMode = this.SchemaSerializationMode;
             return cln;
@@ -150,7 +150,7 @@ namespace AcadLib.Model.Statistic {
         protected override void ReadXmlSerializable(global::System.Xml.XmlReader reader) {
             if ((this.DetermineSchemaSerializationMode(reader) == global::System.Data.SchemaSerializationMode.IncludeSchema)) {
                 this.Reset();
-                global::System.Data.DataSet ds = new global::System.Data.DataSet();
+                var ds = new global::System.Data.DataSet();
                 ds.ReadXml(reader);
                 if ((ds.Tables["C_PluginStatistic"] != null)) {
                     base.Tables.Add(new C_PluginStatisticDataTable(ds.Tables["C_PluginStatistic"]));
@@ -173,7 +173,7 @@ namespace AcadLib.Model.Statistic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         protected override global::System.Xml.Schema.XmlSchema GetSchemaSerializable() {
-            global::System.IO.MemoryStream stream = new global::System.IO.MemoryStream();
+            var stream = new global::System.IO.MemoryStream();
             this.WriteXmlSchema(new global::System.Xml.XmlTextWriter(stream, null));
             stream.Position = 0;
             return global::System.Xml.Schema.XmlSchema.Read(new global::System.Xml.XmlTextReader(stream), null);
@@ -225,21 +225,21 @@ namespace AcadLib.Model.Statistic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedDataSetSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
-            DataSetStatistic ds = new DataSetStatistic();
-            global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
-            global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-            global::System.Xml.Schema.XmlSchemaAny any = new global::System.Xml.Schema.XmlSchemaAny();
+            var ds = new DataSetStatistic();
+            var type = new global::System.Xml.Schema.XmlSchemaComplexType();
+            var sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+            var any = new global::System.Xml.Schema.XmlSchemaAny();
             any.Namespace = ds.Namespace;
             sequence.Items.Add(any);
             type.Particle = sequence;
-            global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+            var dsSchema = ds.GetSchemaSerializable();
             if (xs.Contains(dsSchema.TargetNamespace)) {
-                global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
-                global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                var s1 = new global::System.IO.MemoryStream();
+                var s2 = new global::System.IO.MemoryStream();
                 try {
                     global::System.Xml.Schema.XmlSchema schema = null;
                     dsSchema.Write(s1);
-                    for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                    for (var schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
                         schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
                         s2.SetLength(0);
                         schema.Write(s2);
@@ -440,8 +440,8 @@ namespace AcadLib.Model.Statistic {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public C_PluginStatisticRow AddC_PluginStatisticRow(string Application, string Plugin, string Command, string Build, string Doc, string UserName, System.DateTime DateStart, int CommandId) {
-                C_PluginStatisticRow rowC_PluginStatisticRow = ((C_PluginStatisticRow)(this.NewRow()));
-                object[] columnValuesArray = new object[] {
+                var rowC_PluginStatisticRow = ((C_PluginStatisticRow)(this.NewRow()));
+                var columnValuesArray = new object[] {
                         null,
                         Application,
                         Plugin,
@@ -459,7 +459,7 @@ namespace AcadLib.Model.Statistic {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public override global::System.Data.DataTable Clone() {
-                C_PluginStatisticDataTable cln = ((C_PluginStatisticDataTable)(base.Clone()));
+                var cln = ((C_PluginStatisticDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
@@ -587,37 +587,37 @@ namespace AcadLib.Model.Statistic {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
-                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
-                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                DataSetStatistic ds = new DataSetStatistic();
-                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                var type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                var sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                var ds = new DataSetStatistic();
+                var any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
                 any1.MaxOccurs = decimal.MaxValue;
                 any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
                 sequence.Items.Add(any1);
-                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                var any2 = new global::System.Xml.Schema.XmlSchemaAny();
                 any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
                 any2.MinOccurs = new decimal(1);
                 any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
                 sequence.Items.Add(any2);
-                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                var attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute1.Name = "namespace";
                 attribute1.FixedValue = ds.Namespace;
                 type.Attributes.Add(attribute1);
-                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                var attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute2.Name = "tableTypeName";
                 attribute2.FixedValue = "C_PluginStatisticDataTable";
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
-                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                var dsSchema = ds.GetSchemaSerializable();
                 if (xs.Contains(dsSchema.TargetNamespace)) {
-                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
-                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    var s1 = new global::System.IO.MemoryStream();
+                    var s2 = new global::System.IO.MemoryStream();
                     try {
                         global::System.Xml.Schema.XmlSchema schema = null;
                         dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                        for (var schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
                             schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
                             s2.SetLength(0);
                             schema.Write(s2);
@@ -892,7 +892,7 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
                 if ((this.Adapter.UpdateCommand != null)) {
                     this.Adapter.UpdateCommand.Connection = value;
                 }
-                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
+                for (var i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
                     if ((this.CommandCollection[i] != null)) {
                         ((global::System.Data.SqlClient.SqlCommand)(this.CommandCollection[i])).Connection = value;
                     }
@@ -908,7 +908,7 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
             }
             set {
                 this._transaction = value;
-                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
+                for (var i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
                     this.CommandCollection[i].Transaction = this._transaction;
                 }
                 if (((this.Adapter != null) 
@@ -952,7 +952,7 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitAdapter() {
             this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
-            global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
+            var tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
             tableMapping.DataSetTable = "C_PluginStatistic";
             tableMapping.ColumnMappings.Add("ID_Statistic_Mark", "ID_Statistic_Mark");
@@ -1008,7 +1008,7 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
             }
-            int returnValue = this.Adapter.Fill(dataTable);
+            var returnValue = this.Adapter.Fill(dataTable);
             return returnValue;
         }
         
@@ -1018,7 +1018,7 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
         public virtual DataSetStatistic.C_PluginStatisticDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            DataSetStatistic.C_PluginStatisticDataTable dataTable = new DataSetStatistic.C_PluginStatisticDataTable();
+            var dataTable = new DataSetStatistic.C_PluginStatisticDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
@@ -1100,13 +1100,13 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
             else {
                 this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
+            var previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
                 this.Adapter.InsertCommand.Connection.Open();
             }
             try {
-                int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
+                var returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
                 return returnValue;
             }
             finally {
@@ -1195,7 +1195,7 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
         [global::System.ComponentModel.Browsable(false)]
         public int TableAdapterInstanceCount {
             get {
-                int count = 0;
+                var count = 0;
                 if ((this._c_PluginStatisticTableAdapter != null)) {
                     count = (count + 1);
                 }
@@ -1209,9 +1209,9 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private int UpdateUpdatedRows(DataSetStatistic dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
-            int result = 0;
+            var result = 0;
             if ((this._c_PluginStatisticTableAdapter != null)) {
-                global::System.Data.DataRow[] updatedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.ModifiedCurrent);
+                var updatedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.ModifiedCurrent);
                 updatedRows = this.GetRealUpdatedRows(updatedRows, allAddedRows);
                 if (((updatedRows != null) 
                             && (0 < updatedRows.Length))) {
@@ -1228,9 +1228,9 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private int UpdateInsertedRows(DataSetStatistic dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
-            int result = 0;
+            var result = 0;
             if ((this._c_PluginStatisticTableAdapter != null)) {
-                global::System.Data.DataRow[] addedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.Added);
+                var addedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.Added);
                 if (((addedRows != null) 
                             && (0 < addedRows.Length))) {
                     result = (result + this._c_PluginStatisticTableAdapter.Update(addedRows));
@@ -1246,9 +1246,9 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private int UpdateDeletedRows(DataSetStatistic dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows) {
-            int result = 0;
+            var result = 0;
             if ((this._c_PluginStatisticTableAdapter != null)) {
-                global::System.Data.DataRow[] deletedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.Deleted);
+                var deletedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.Deleted);
                 if (((deletedRows != null) 
                             && (0 < deletedRows.Length))) {
                     result = (result + this._c_PluginStatisticTableAdapter.Update(deletedRows));
@@ -1272,9 +1272,9 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
                         || (allAddedRows.Count < 1))) {
                 return updatedRows;
             }
-            global::System.Collections.Generic.List<global::System.Data.DataRow> realUpdatedRows = new global::System.Collections.Generic.List<global::System.Data.DataRow>();
-            for (int i = 0; (i < updatedRows.Length); i = (i + 1)) {
-                global::System.Data.DataRow row = updatedRows[i];
+            var realUpdatedRows = new global::System.Collections.Generic.List<global::System.Data.DataRow>();
+            for (var i = 0; (i < updatedRows.Length); i = (i + 1)) {
+                var row = updatedRows[i];
                 if ((allAddedRows.Contains(row) == false)) {
                     realUpdatedRows.Add(row);
                 }
@@ -1299,12 +1299,12 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
                 throw new global::System.ArgumentException("Все адаптеры таблицы, управляемые диспетчером адаптера таблицы TableAdapterManage" +
                         "r, должны использовать одинаковую строку подключения.");
             }
-            global::System.Data.IDbConnection workConnection = this.Connection;
+            var workConnection = this.Connection;
             if ((workConnection == null)) {
                 throw new global::System.ApplicationException("TableAdapterManager не содержит сведений о подключении. Укажите для каждого адапт" +
                         "ера таблицы TableAdapterManager допустимый экземпляр адаптера таблицы.");
             }
-            bool workConnOpened = false;
+            var workConnOpened = false;
             if (((workConnection.State & global::System.Data.ConnectionState.Broken) 
                         == global::System.Data.ConnectionState.Broken)) {
                 workConnection.Close();
@@ -1313,16 +1313,16 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
                 workConnection.Open();
                 workConnOpened = true;
             }
-            global::System.Data.IDbTransaction workTransaction = workConnection.BeginTransaction();
+            var workTransaction = workConnection.BeginTransaction();
             if ((workTransaction == null)) {
                 throw new global::System.ApplicationException("Не удается начать транзакцию. Текущее соединение данных не поддерживает транзакци" +
                         "и или текущее состояние не позволяет начать транзакцию.");
             }
-            global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows = new global::System.Collections.Generic.List<global::System.Data.DataRow>();
-            global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows = new global::System.Collections.Generic.List<global::System.Data.DataRow>();
-            global::System.Collections.Generic.List<global::System.Data.Common.DataAdapter> adaptersWithAcceptChangesDuringUpdate = new global::System.Collections.Generic.List<global::System.Data.Common.DataAdapter>();
-            global::System.Collections.Generic.Dictionary<object, global::System.Data.IDbConnection> revertConnections = new global::System.Collections.Generic.Dictionary<object, global::System.Data.IDbConnection>();
-            int result = 0;
+            var allChangedRows = new global::System.Collections.Generic.List<global::System.Data.DataRow>();
+            var allAddedRows = new global::System.Collections.Generic.List<global::System.Data.DataRow>();
+            var adaptersWithAcceptChangesDuringUpdate = new global::System.Collections.Generic.List<global::System.Data.Common.DataAdapter>();
+            var revertConnections = new global::System.Collections.Generic.Dictionary<object, global::System.Data.IDbConnection>();
+            var result = 0;
             global::System.Data.DataSet backupDataSet = null;
             if (this.BackupDataSetBeforeUpdate) {
                 backupDataSet = new global::System.Data.DataSet();
@@ -1357,18 +1357,18 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
                 //
                 workTransaction.Commit();
                 if ((0 < allAddedRows.Count)) {
-                    global::System.Data.DataRow[] rows = new System.Data.DataRow[allAddedRows.Count];
+                    var rows = new System.Data.DataRow[allAddedRows.Count];
                     allAddedRows.CopyTo(rows);
-                    for (int i = 0; (i < rows.Length); i = (i + 1)) {
-                        global::System.Data.DataRow row = rows[i];
+                    for (var i = 0; (i < rows.Length); i = (i + 1)) {
+                        var row = rows[i];
                         row.AcceptChanges();
                     }
                 }
                 if ((0 < allChangedRows.Count)) {
-                    global::System.Data.DataRow[] rows = new System.Data.DataRow[allChangedRows.Count];
+                    var rows = new System.Data.DataRow[allChangedRows.Count];
                     allChangedRows.CopyTo(rows);
-                    for (int i = 0; (i < rows.Length); i = (i + 1)) {
-                        global::System.Data.DataRow row = rows[i];
+                    for (var i = 0; (i < rows.Length); i = (i + 1)) {
+                        var row = rows[i];
                         row.AcceptChanges();
                     }
                 }
@@ -1383,10 +1383,10 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
                 }
                 else {
                     if ((0 < allAddedRows.Count)) {
-                        global::System.Data.DataRow[] rows = new System.Data.DataRow[allAddedRows.Count];
+                        var rows = new System.Data.DataRow[allAddedRows.Count];
                         allAddedRows.CopyTo(rows);
-                        for (int i = 0; (i < rows.Length); i = (i + 1)) {
-                            global::System.Data.DataRow row = rows[i];
+                        for (var i = 0; (i < rows.Length); i = (i + 1)) {
+                            var row = rows[i];
                             row.AcceptChanges();
                             row.SetAdded();
                         }
@@ -1403,10 +1403,10 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
                     this._c_PluginStatisticTableAdapter.Transaction = null;
                 }
                 if ((0 < adaptersWithAcceptChangesDuringUpdate.Count)) {
-                    global::System.Data.Common.DataAdapter[] adapters = new System.Data.Common.DataAdapter[adaptersWithAcceptChangesDuringUpdate.Count];
+                    var adapters = new System.Data.Common.DataAdapter[adaptersWithAcceptChangesDuringUpdate.Count];
                     adaptersWithAcceptChangesDuringUpdate.CopyTo(adapters);
-                    for (int i = 0; (i < adapters.Length); i = (i + 1)) {
-                        global::System.Data.Common.DataAdapter adapter = adapters[i];
+                    for (var i = 0; (i < adapters.Length); i = (i + 1)) {
+                        var adapter = adapters[i];
                         adapter.AcceptChangesDuringUpdate = true;
                     }
                 }
@@ -1473,13 +1473,13 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             private global::System.Data.DataRow GetRoot(global::System.Data.DataRow row, out int distance) {
                 global::System.Diagnostics.Debug.Assert((row != null));
-                global::System.Data.DataRow root = row;
+                var root = row;
                 distance = 0;
 
                 global::System.Collections.Generic.IDictionary<global::System.Data.DataRow, global::System.Data.DataRow> traversedRows = new global::System.Collections.Generic.Dictionary<global::System.Data.DataRow, global::System.Data.DataRow>();
                 traversedRows[row] = row;
 
-                global::System.Data.DataRow parent = row.GetParentRow(this._relation, global::System.Data.DataRowVersion.Default);
+                var parent = row.GetParentRow(this._relation, global::System.Data.DataRowVersion.Default);
                 for (
                 ; ((parent != null) 
                             && (traversedRows.ContainsKey(parent) == false)); 
@@ -1521,11 +1521,11 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
                     return 1;
                 }
 
-                int distance1 = 0;
-                global::System.Data.DataRow root1 = this.GetRoot(row1, out distance1);
+                var distance1 = 0;
+                var root1 = this.GetRoot(row1, out distance1);
 
-                int distance2 = 0;
-                global::System.Data.DataRow root2 = this.GetRoot(row2, out distance2);
+                var distance2 = 0;
+                var root2 = this.GetRoot(row2, out distance2);
 
                 if (object.ReferenceEquals(root1, root2)) {
                     return (this._childFirst * distance1.CompareTo(distance2));

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
@@ -17,9 +13,9 @@ namespace AcadLib
         {
             if (!dbo.ExtensionDictionary.IsNull)
             {
-                DBDictionary extDic = dbo.ExtensionDictionary.GetObject(OpenMode.ForWrite) as DBDictionary;
+                var extDic = dbo.ExtensionDictionary.GetObject(OpenMode.ForWrite) as DBDictionary;
                 dbo.UpgradeOpen();
-                foreach (DBDictionaryEntry entry in extDic)
+                foreach (var entry in extDic)
                 {
                     extDic.Remove(entry.Key);
                 }
@@ -35,9 +31,9 @@ namespace AcadLib
         {
             if (dbo.XData != null)
             {
-                IEnumerable<string> appNames = from TypedValue tv in dbo.XData.AsArray() where tv.TypeCode == 1001 select tv.Value.ToString();
+                var appNames = from TypedValue tv in dbo.XData.AsArray() where tv.TypeCode == 1001 select tv.Value.ToString();
                 dbo.UpgradeOpen();
-                foreach (string appName in appNames)
+                foreach (var appName in appNames)
                 {
                     dbo.XData = new ResultBuffer(new TypedValue(1001, appName));
                 }

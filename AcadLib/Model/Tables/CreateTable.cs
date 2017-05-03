@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using AcadLib.Jigs;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -52,7 +48,7 @@ namespace AcadLib.Tables
         /// </summary>        
         protected Table GetTable ()
         {
-            Table table = new Table();
+            var table = new Table();
             table.SetDatabaseDefaults(db);
             table.TableStyle = db.GetTableStylePIK(); // если нет стиля ПИк в этом чертеже, то он скопируетс из шаблона, если он найдется            
 

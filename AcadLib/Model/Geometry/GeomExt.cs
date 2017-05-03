@@ -65,42 +65,42 @@ namespace AcadLib.Geometry
             if (!(pline is Polyline) && !(pline is Polyline2d) && !(pline is Polyline3d))
                 return null;
             plane = new Plane(Point3d.Origin.OrthoProject(plane), direction);
-            using (DBObjectCollection oldCol = new DBObjectCollection())
-            using (DBObjectCollection newCol = new DBObjectCollection())
+            using (var oldCol = new DBObjectCollection())
+            using (var newCol = new DBObjectCollection())
             {
                 pline.Explode(oldCol);
                 foreach (DBObject obj in oldCol)
                 {
-                    Curve crv = obj as Curve;
+                    var crv = obj as Curve;
                     if (crv != null)
                     {
-                        Curve flat = crv.GetProjectedCurve(plane, direction);
+                        var flat = crv.GetProjectedCurve(plane, direction);
                         newCol.Add(flat);
                     }
                     obj.Dispose();
                 }
-                PolylineSegmentCollection psc = new PolylineSegmentCollection();
-                for (int i = 0; i < newCol.Count; i++)
+                var psc = new PolylineSegmentCollection();
+                for (var i = 0; i < newCol.Count; i++)
                 {
                     if (newCol[i] is Ellipse)
                     {
                         psc.AddRange(new PolylineSegmentCollection((Ellipse)newCol[i]));
                         continue;
                     }
-                    Curve crv = (Curve)newCol[i];
-                    Point3d start = crv.StartPoint;
-                    Point3d end = crv.EndPoint;
-                    double bulge = 0.0;
+                    var crv = (Curve)newCol[i];
+                    var start = crv.StartPoint;
+                    var end = crv.EndPoint;
+                    var bulge = 0.0;
                     if (crv is Arc)
                     {
-                        Arc arc = (Arc)crv;
-                        double angle = arc.Center.GetVectorTo(start).GetAngleTo(arc.Center.GetVectorTo(end), arc.Normal);
+                        var arc = (Arc)crv;
+                        var angle = arc.Center.GetVectorTo(start).GetAngleTo(arc.Center.GetVectorTo(end), arc.Normal);
                         bulge = Math.Tan(angle / 4.0);
                     }
                     psc.Add(new PolylineSegment(start.Convert2d(plane), end.Convert2d(plane), bulge));
                 }
                 foreach (DBObject o in newCol) o.Dispose();
-                Polyline projectedPline = psc.Join(new Tolerance(1e-9, 1e-9))[0].ToPolyline();
+                var projectedPline = psc.Join(new Tolerance(1e-9, 1e-9))[0].ToPolyline();
                 projectedPline.Normal = direction;
                 projectedPline.Elevation =
                     plane.PointOnPlane.TransformBy(Matrix3d.WorldToPlane(new Plane(Point3d.Origin, direction))).Z;
@@ -125,9 +125,9 @@ namespace AcadLib.Geometry
         /// <returns>The newly created Polyline.</returns>
         internal static Polyline ProjectExtents(Extents3d extents, Plane plane, Vector3d direction, Plane dirPlane)
         {
-            Point3d pt1 = extents.MinPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
-            Point3d pt2 = extents.MaxPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
-            Polyline projectedPline = new Polyline(2);
+            var pt1 = extents.MinPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
+            var pt2 = extents.MaxPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
+            var projectedPline = new Polyline(2);
             projectedPline.AddVertexAt(0, pt1.Project(plane, direction).Convert2d(), 0.0, 0.0, 0.0);
             projectedPline.AddVertexAt(1, pt2.Project(plane, direction).Convert2d(), 0.0, 0.0, 0.0);
             return projectedPline;

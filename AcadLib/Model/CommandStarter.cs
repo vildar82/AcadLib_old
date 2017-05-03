@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using AcadLib.Errors;
 using AcadLib.Statistic;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
@@ -41,12 +38,12 @@ namespace AcadLib
         [MethodImpl(MethodImplOptions.NoInlining)]        
         public static void Start(Action<Document> action)
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
             try
             {
                 var caller = new StackTrace().GetFrame(1).GetMethod();
-                CommandStart commandStart = GetCallerCommand(caller);
+                var commandStart = GetCallerCommand(caller);
                 Logger.Log.StartCommand(commandStart);                
                 Logger.Log.Info($"Document={doc.Name}");
                 PluginStatisticsHelper.PluginStart(commandStart);

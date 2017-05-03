@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using AcadLib.Geometry;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib.Comparers
 {
@@ -16,9 +12,9 @@ namespace TestAcadlib.Comparers
         [CommandMethod(nameof(TestPoint2dGroup))]
         public void TestPoint2dGroup()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;
+            var ed = doc.Editor;
 
             var selRes = ed.GetEntity("Выбери полилинию");
             if (selRes.Status != PromptStatus.OK) return;

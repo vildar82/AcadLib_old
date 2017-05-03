@@ -1,9 +1,8 @@
 ﻿using System;
 using AcadLib.Editors;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Editors
 {
@@ -36,7 +35,7 @@ namespace Autodesk.AutoCAD.EditorInput
             if (ed == null)
                 return;
 
-            using (ViewTableRecord view = ed.GetCurrentView())
+            using (var view = ed.GetCurrentView())
             {
                 ext.TransformBy(view.WorldToEye());
                 view.Width = ext.MaxPoint.X - ext.MinPoint.X;
@@ -53,8 +52,8 @@ namespace Autodesk.AutoCAD.EditorInput
             if (ed == null)
                 return;
 
-            Database db = ed.Document.Database;
-            Extents3d ext = (short)Application.GetSystemVariable("cvport") == 1 ?
+            var db = ed.Document.Database;
+            var ext = (short)Application.GetSystemVariable("cvport") == 1 ?
                 new Extents3d(db.Pextmin, db.Pextmax) :
                 new Extents3d(db.Extmin, db.Extmax);
             ed.Zoom(ext);

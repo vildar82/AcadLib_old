@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
@@ -35,14 +32,14 @@ namespace AcadLib.Blocks
       /// <param name="attr"></param>
       public AttributeRefInfo(DBText attr)
       {
-         AttributeDefinition attdef = attr as AttributeDefinition;
+         var attdef = attr as AttributeDefinition;
          if (attdef != null)
          {
             Tag = attdef.Tag;
          }
          else
          {
-            AttributeReference attref = attr as AttributeReference;
+            var attref = attr as AttributeReference;
             if (attref != null)
             {
                Tag = attref.Tag;
@@ -58,7 +55,7 @@ namespace AcadLib.Blocks
 
       public static List<AttributeRefInfo> GetAttrDefs(ObjectId idBtr)
       {
-         List<AttributeRefInfo> resVal = new List<AttributeRefInfo>();
+         var resVal = new List<AttributeRefInfo>();
 
          if (!idBtr.IsNull)
          {
@@ -82,14 +79,14 @@ namespace AcadLib.Blocks
 
       public static List<AttributeRefInfo> GetAttrRefs (BlockReference blRef)
       {
-         List<AttributeRefInfo> resVal = new List<AttributeRefInfo>();
+         var resVal = new List<AttributeRefInfo>();
          if (blRef?.AttributeCollection != null)
          {
             foreach (ObjectId idAttrRef in blRef.AttributeCollection)
             {
                using (var atrRef = idAttrRef.Open( OpenMode.ForRead, false, true)as AttributeReference)
                {
-                  AttributeRefInfo ai = new AttributeRefInfo(atrRef);
+                  var ai = new AttributeRefInfo(atrRef);
                   resVal.Add(ai);
                }
             }

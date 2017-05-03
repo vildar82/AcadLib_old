@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using AcadLib;
@@ -64,26 +62,26 @@ namespace System.Collections.Generic
       // Applies the given Action to each element of the collection (mimics the F# Seq.iter function).
       public static void Iterate<T>(this IEnumerable<T> collection, Action<T> action)
       {
-         foreach (T item in collection) action(item);
+         foreach (var item in collection) action(item);
       }
       // Applies the given Action to each element of the collection (mimics the F# Seq.iteri function).
       // The integer passed to the Action indicates the index of element.
       public static void Iterate<T>(this IEnumerable<T> collection, Action<T, int> action)
       {
-         int i = 0;
-         foreach (T item in collection) action(item, i++);
+         var i = 0;
+         foreach (var item in collection) action(item, i++);
       }
       // Creates a System.Data.DataTable from a BlockAttribute collection.
-      public static System.Data.DataTable ToDataTable(this IEnumerable<BlockAttribute> blockAtts, string name)
+      public static Data.DataTable ToDataTable(this IEnumerable<BlockAttribute> blockAtts, string name)
       {
-         System.Data.DataTable dTable = new System.Data.DataTable(name);
+         var dTable = new Data.DataTable(name);
          dTable.Columns.Add("Name", typeof(string));
          dTable.Columns.Add("Quantity", typeof(int));
          blockAtts
              .GroupBy(blk => blk, (blk, blks) => new { Block = blk, Count = blks.Count() }, new BlockAttributeEqualityComparer())
              .Iterate(row =>
              {
-                System.Data.DataRow dRow = dTable.Rows.Add(row.Block.Name, row.Count);
+                var dRow = dTable.Rows.Add(row.Block.Name, row.Count);
                 row.Block.Attributes.Iterate(att =>
                 {
                    if (!dTable.Columns.Contains(att.Key))
@@ -108,10 +106,10 @@ namespace System.Data
         // Writes an Excel file from the datatable (using late binding)
         public static void WriteXls(this DataTable dataTbl, string filename, string sheetName, bool visible)
         {
-            object mis = Type.Missing;
-            object xlApp = LateBinding.GetOrCreateInstance("Excel.Application");
+            var mis = Type.Missing;
+            var xlApp = LateBinding.GetOrCreateInstance("Excel.Application");
             xlApp.Set("DisplayAlerts", false);
-            object workbooks = xlApp.Get("Workbooks");
+            var workbooks = xlApp.Get("Workbooks");
             object workbook, worksheet;
             if (File.Exists(filename))
                 workbook = workbooks.Invoke("Open", filename);
@@ -121,7 +119,7 @@ namespace System.Data
                 worksheet = workbook.Get("Activesheet");
             else
             {
-                object worksheets = workbook.Get("Worksheets");
+                var worksheets = workbook.Get("Worksheets");
                 try
                 {
                     worksheet = worksheets.Get("Item", sheetName);
@@ -133,7 +131,7 @@ namespace System.Data
                     worksheet.Set("Name", sheetName);
                 }
             }
-            object range = worksheet.Get("Cells");
+            var range = worksheet.Get("Cells");
             dataTbl.GetColumnNames()
                 .Iterate((name, i) => range.Get("Item", 1, i + 1).Set("Value2", name));
             dataTbl.Rows
@@ -151,7 +149,7 @@ namespace System.Data
                     workbook.Invoke("Save");
                 else
                 {
-                    int fileFormat =
+                    var fileFormat =
                         string.Compare("11.0", (string)xlApp.Get("Version")) < 0 &&
                         filename.EndsWith(".xlsx", StringComparison.CurrentCultureIgnoreCase) ?
                         51 : -4143;
@@ -167,7 +165,7 @@ namespace System.Data
         // Writes a csv file from the datatable.
         public static void WriteCsv(this DataTable dataTbl, string filename)
         {
-            using (StreamWriter writer = new StreamWriter(filename))
+            using (var writer = new StreamWriter(filename))
             {
                 writer.WriteLine(dataTbl.GetColumnNames().Aggregate((s1, s2) => string.Format("{0},{1}", s1, s2)));
                 dataTbl.Rows
@@ -181,7 +179,7 @@ namespace System.Data
         public static Table ToAcadTable(this DataTable dataTbl, double rowHeight, double columnWidth)
         {
             //return dataTbl.Rows.Cast<DataRow>().ToAcadTable(dataTbl.TableName, dataTbl.GetColumnNames(), rowHeight, columnWidth);
-            Table tbl = new Table();
+            var tbl = new Table();
             tbl.Rows[0].Height = rowHeight;
             tbl.Columns[0].Width = columnWidth;
             tbl.InsertColumns(0, columnWidth, dataTbl.Columns.Count - 1);

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using AutoCAD_PIK_Manager;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Errors
 {
@@ -27,7 +26,7 @@ namespace AcadLib.Errors
         public static void Clear()
         {
             Errors = new List<IError>();
-            _doc = Application.DocumentManager.MdiActiveDocument;
+            _doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             if (_doc != null)
             {
                 _db = _doc.Database;
@@ -155,7 +154,7 @@ namespace AcadLib.Errors
             var errVM = new ErrorsViewModel(errors);
             errVM.IsDialog = false;
             var errView = new ErrorsView(errVM);
-            Application.ShowModelessWindow(errView);
+            Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowModelessWindow(errView);
         }
 
         private static List<IError> SortErrors(List<IError> errors)

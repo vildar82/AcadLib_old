@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -31,14 +29,14 @@ namespace AcadLib.Geometry
             // Сортировка полилиний по расстоянию между центрами
             plsList = SortByNearestCenterExtents(plsList);
 
-            int maxIteration = pls.Count * pls.Count;
-            int iterationCount = 0;    
+            var maxIteration = pls.Count * pls.Count;
+            var iterationCount = 0;    
 
             while (plsList.Count > 1)
             {                
                 var plsRemove = new List<Polyline>();
                 var fpl = plsList[0];
-                int countMergePl = 0;
+                var countMergePl = 0;
                 foreach (var item in plsList.Skip(1))
                 {
                     var plMerge = MergeTwoPl(fpl, item, tolerancePoint);
@@ -127,8 +125,8 @@ namespace AcadLib.Geometry
         private static Polyline Merge (Polyline pl1, Polyline pl2, PolylineVertex ptInPl1, PolylineVertex ptInPl2)
         {
             Polyline plMerged;
-            int indexInPl1 = ptInPl1.Index + 1;
-            int indexInPl2 = ptInPl2.Index;
+            var indexInPl1 = ptInPl1.Index + 1;
+            var indexInPl2 = ptInPl2.Index;
             var pt = ptInPl2.Pt;
             plMerged = AddVertex(pl1, pl2, indexInPl1, indexInPl2, pt, 1);
             if (!plMerged.CheckCross())
@@ -142,7 +140,7 @@ namespace AcadLib.Geometry
         private static Polyline AddVertex (Polyline pl1, Polyline pl2, int indexInPl1, int indexInPl2, Point2d ptInPl2, int dir = 1)
         {
             var plNew = (Polyline)pl1.Clone();
-            for (int i = 0; i < pl2.NumberOfVertices; i++)
+            for (var i = 0; i < pl2.NumberOfVertices; i++)
             {
                 plNew.AddVertexAt(indexInPl1++, ptInPl2, 0, 0, 0);
                 // След вершина на второй линии
@@ -172,7 +170,7 @@ namespace AcadLib.Geometry
         /// <param name="pls"></param>
         private static List<Polyline> SortByNearestCenterExtents (List<Polyline> pls)
         {
-            List<Polyline> res = new List<Polyline>();
+            var res = new List<Polyline>();
             var plsCenters = pls.Select(s => new { pl = s, center = s.GeometricExtents.Center() })
                 .OrderBy(o => o.center.X+ o.center.Y).ToList();
                 //.OrderBy(o => o.center.X).ThenBy(o => o.center.Y).ToList();
@@ -180,7 +178,7 @@ namespace AcadLib.Geometry
             res.Add(fPlC.pl);
             plsCenters.Remove(fPlC);
             var plCPrew = fPlC;
-            for (int i = 1; i < pls.Count; i++)
+            for (var i = 1; i < pls.Count; i++)
             {
                 var plCMin = plsCenters.OrderBy(m => (m.center - plCPrew.center).Length).First();
                 res.Add(plCMin.pl);

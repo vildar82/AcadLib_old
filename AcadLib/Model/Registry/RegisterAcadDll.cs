@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Runtime;
 using Microsoft.Win32;
@@ -36,19 +32,19 @@ namespace AcadLib
       {
          try
          {
-            string sProdKey = UserOrMachine ? HostApplicationServices.Current.UserRegistryProductRootKey :
+            var sProdKey = UserOrMachine ? HostApplicationServices.Current.UserRegistryProductRootKey :
                                                 HostApplicationServices.Current.MachineRegistryProductRootKey;
-            Assembly curAssembly = Assembly.GetExecutingAssembly();
-            string sAppName = curAssembly.GetName().Name;
+            var curAssembly = Assembly.GetExecutingAssembly();
+            var sAppName = curAssembly.GetName().Name;
 
-            using (Microsoft.Win32.RegistryKey regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
+            using (var regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
                                                          Microsoft.Win32.Registry.LocalMachine.OpenSubKey(sProdKey))
             {
-               using (Microsoft.Win32.RegistryKey regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
+               using (var regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
                {
                   // Check to see if the "MyApp" key exists
-                  string[] subKeys = regAcadAppKey.GetSubKeyNames();
-                  foreach (string subKey in subKeys)
+                  var subKeys = regAcadAppKey.GetSubKeyNames();
+                  foreach (var subKey in subKeys)
                   {
                      if (subKey.Equals(sAppName))
                      {
@@ -57,14 +53,14 @@ namespace AcadLib
                   }
 
                   // Register the application
-                  using (Microsoft.Win32.RegistryKey regAppAddInKey = regAcadAppKey.CreateSubKey(sAppName))
+                  using (var regAppAddInKey = regAcadAppKey.CreateSubKey(sAppName))
                   {
-                     string desc = curAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>().Description;
+                     var desc = curAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>().Description;
                      if (desc == "") desc = sAppName;
-                     regAppAddInKey.SetValue("DESCRIPTION", desc, Microsoft.Win32.RegistryValueKind.String);
-                     regAppAddInKey.SetValue("LOADCTRLS", loadctrls, Microsoft.Win32.RegistryValueKind.DWord);
-                     regAppAddInKey.SetValue("LOADER", curAssembly.Location, Microsoft.Win32.RegistryValueKind.String);
-                     regAppAddInKey.SetValue("MANAGED", 1, Microsoft.Win32.RegistryValueKind.DWord);
+                     regAppAddInKey.SetValue("DESCRIPTION", desc, RegistryValueKind.String);
+                     regAppAddInKey.SetValue("LOADCTRLS", loadctrls, RegistryValueKind.DWord);
+                     regAppAddInKey.SetValue("LOADER", curAssembly.Location, RegistryValueKind.String);
+                     regAppAddInKey.SetValue("MANAGED", 1, RegistryValueKind.DWord);
 
                      // Запись раздела Commands
                      SetCommands(regAppAddInKey, curAssembly);
@@ -107,9 +103,9 @@ namespace AcadLib
       public static void Unregistration()
       {
          // Get the AutoCAD Applications key
-         string sProdKey = HostApplicationServices.Current.UserRegistryProductRootKey;
-         Assembly curAssembly = Assembly.GetExecutingAssembly();
-         string sAppName = curAssembly.GetName().Name;
+         var sProdKey = HostApplicationServices.Current.UserRegistryProductRootKey;
+         var curAssembly = Assembly.GetExecutingAssembly();
+         var sAppName = curAssembly.GetName().Name;
 
          // HKCU
          DeleteApp(sProdKey, sAppName, true);
@@ -119,10 +115,10 @@ namespace AcadLib
 
       private static void DeleteApp(string sProdKey, string sAppName, bool UserOrMachine)
       {
-         using (Microsoft.Win32.RegistryKey regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
+         using (var regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
                                                    Microsoft.Win32.Registry.LocalMachine.OpenSubKey(sProdKey))
          {
-            using (Microsoft.Win32.RegistryKey regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
+            using (var regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
             {
                // Delete the key for the application
                try

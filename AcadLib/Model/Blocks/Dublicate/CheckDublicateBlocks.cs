@@ -2,13 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AcadLib.Blocks.Dublicate.Tree;
 using AcadLib.Errors;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks.Dublicate
 {
@@ -46,7 +44,7 @@ namespace AcadLib.Blocks.Dublicate
         {
             curDepth = 0;
             _ignoreBlocks = ignoreBlocks;
-            Database db = HostApplicationServices.WorkingDatabase;
+            var db = HostApplicationServices.WorkingDatabase;
             _errors = new List<IError>();
             attemptedblocks = new HashSet<ObjectId>();
             AllDublicBlRefInfos = new List<BlockRefDublicateInfo>();
@@ -87,13 +85,13 @@ namespace AcadLib.Blocks.Dublicate
 
             if (AllDublicBlRefInfos.Count == 0)
             {
-                Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\nДубликаты блоков не найдены.");
+                Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\nДубликаты блоков не найдены.");
             }
             else
             {
                 foreach (var dublBlRefInfo in AllDublicBlRefInfos)
                 {
-                    Error err = new Error($"Дублирование блоков '{dublBlRefInfo.Name}' - {dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
+                    var err = new Error($"Дублирование блоков '{dublBlRefInfo.Name}' - {dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
                        dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error);
                     err.Tag = dublBlRefInfo;
                     _errors.Add(err);
@@ -121,14 +119,14 @@ namespace AcadLib.Blocks.Dublicate
 
         private static void GetDublicateBlocks(IEnumerable ids, Matrix3d transToModel, double rotate)
         {            
-            List<Tuple<ObjectId, Matrix3d, double>> idsBtrNext = new List<Tuple<ObjectId, Matrix3d, double>>();
+            var idsBtrNext = new List<Tuple<ObjectId, Matrix3d, double>>();
 
-            bool isFirstDbo = true;
+            var isFirstDbo = true;
                   
             foreach (var item in ids)
             {
                 if (!(item is ObjectId)) continue;
-                ObjectId idEnt = (ObjectId)item;
+                var idEnt = (ObjectId)item;
                 if (!idEnt.IsValidEx()) continue;
                 var dbo = idEnt.GetObject(OpenMode.ForRead, false, true);
                 // Проверялся ли уже такое определение блока                            
@@ -143,7 +141,7 @@ namespace AcadLib.Blocks.Dublicate
 
                 var blRef = dbo as BlockReference;
                 if (blRef == null || !blRef.Visible) continue;
-                BlockRefDublicateInfo blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);
+                var blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);
 
                 if (_ignoreBlocks!=null && _ignoreBlocks.Contains(blRefInfo.Name, StringComparer.OrdinalIgnoreCase))
                 {
@@ -151,7 +149,7 @@ namespace AcadLib.Blocks.Dublicate
                 }
 
                 Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
-                PointTree ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
+                var ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
 
                 if (!dictBlRefInfos.TryGetValue(blRefInfo.Name, out dictPointsBlInfos))
                 {

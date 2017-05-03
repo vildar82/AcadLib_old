@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Globalization;
 using AcadLib.Geometry;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
 using AcRx = Autodesk.AutoCAD.Runtime;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace Autodesk.AutoCAD.Geometry
 {
@@ -123,7 +122,7 @@ namespace Autodesk.AutoCAD.Geometry
         /// eInvalidInput is thrown if 3 (CoordSystem.PSDCS) is used with other than 2 (CoordSystem.DCS).</exception>
         public static Point3d Trans(this Point3d pt, int from, int to)
         {
-            Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+            var ed = ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor;
             return pt.Trans(ed, (CoordSystem)from, (CoordSystem)to);
         }
 
@@ -153,7 +152,7 @@ namespace Autodesk.AutoCAD.Geometry
         /// eInvalidInput is thrown if CoordSystem.PSDCS is used with other than CoordSystem.DCS.</exception>
         public static Point3d Trans(this Point3d pt, CoordSystem from, CoordSystem to)
         {
-            Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+            var ed = Application.DocumentManager.MdiActiveDocument.Editor;
             return pt.Trans(ed, from, to);
         }
 
@@ -169,7 +168,7 @@ namespace Autodesk.AutoCAD.Geometry
         /// eInvalidInput is thrown if CoordSystem.PSDCS is used with other than CoordSystem.DCS.</exception>
         public static Point3d Trans(this Point3d pt, Editor ed, CoordSystem from, CoordSystem to)
         {
-            Matrix3d mat = new Matrix3d();
+            var mat = new Matrix3d();
             switch (from)
             {
                 case CoordSystem.WCS:

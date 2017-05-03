@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Win32;
 
 namespace AcadLib.Registry
@@ -10,7 +6,7 @@ namespace AcadLib.Registry
     public class RegExt: IDisposable
     {
         public const string REGAPPPATH = @"Software\Vildar\AutoCAD\";        
-        private RegistryKey regKey;        
+        private readonly RegistryKey regKey;        
 
         public RegExt(string key)
         {            

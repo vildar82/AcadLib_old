@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace AcadLib.Jokes
 {
@@ -25,7 +21,7 @@ namespace AcadLib.Jokes
         public static List<IJoke> Load ()
         {
             var urls = LoadUrls();
-            List<IJoke> res = new List<IJoke>();
+            var res = new List<IJoke>();
             foreach (var item in urls)
             {
                 var jokeUrl = new JokeUrl(item);

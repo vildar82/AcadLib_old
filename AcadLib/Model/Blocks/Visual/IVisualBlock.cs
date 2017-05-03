@@ -1,10 +1,4 @@
-﻿using AcadLib.Layers;
-using MicroMvvm;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MicroMvvm;
 using System.Windows.Media;
 
 namespace AcadLib.Blocks.Visual

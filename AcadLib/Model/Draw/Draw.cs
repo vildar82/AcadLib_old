@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.Colors;
+﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
@@ -15,8 +10,8 @@ namespace AcadLib
                                         string lineType = null, double? lineTypeScale = null)
         {
             // Обертка запуска команды рисования полилинии с заданными свойствами.
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;           
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;           
 
             // Вызов команды рисования полилинии
             using (new DrawParameters(db, layer, color, lineWeight, lineType, lineTypeScale))

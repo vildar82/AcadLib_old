@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AcadLib.Comparers;
 
 namespace AcadLib
@@ -43,8 +40,8 @@ namespace AcadLib
         public static string ToHours (this double min)
         {
             //return Math.Round(min *0.01667, 1);
-            TimeSpan span = TimeSpan.FromMinutes(min);
-            string label = $"{span.Hours}ч.{span.Minutes}м.";
+            var span = TimeSpan.FromMinutes(min);
+            var label = $"{span.Hours}ч.{span.Minutes}м.";
             return label;
         }
 
@@ -193,10 +190,10 @@ namespace AcadLib
         {
             // int[] paleNumbersInt = new[] { 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109 };
             // res = 1-8,10,15,16,100-107,109
-            bool isFirstEnter = true;
-            bool isWas = false;
-            string mark = string.Empty;
-            for (int i = 0; i < ints.Length; i++)
+            var isFirstEnter = true;
+            var isWas = false;
+            var mark = string.Empty;
+            for (var i = 0; i < ints.Length; i++)
             {
                 if (i == ints.Length - 1)
                 {
@@ -247,8 +244,8 @@ namespace AcadLib
         public static string IntsToStringSequence(int[] ints)
         {
             var uniqints = ints.Distinct();
-            string res = string.Empty;
-            IntSequence seq = new IntSequence(uniqints.First());
+            var res = string.Empty;
+            var seq = new IntSequence(uniqints.First());
             foreach (var n in uniqints.Skip(1))
             {
                 if (!seq.AddInt(n))
@@ -285,7 +282,7 @@ namespace AcadLib
             public IntSequence(int start)
             {
                 this.start = start;
-                this.end = start;
+                end = start;
                 has = true;
             }
 
@@ -309,7 +306,7 @@ namespace AcadLib
 
             public string GetSeq()
             {
-                string res = string.Empty;
+                var res = string.Empty;
                 has = false;
                 if (end == start)
                 {

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AcadLib
 {
@@ -47,7 +43,7 @@ namespace AcadLib
 
       public static Result Combine(params Result[] results)
       {
-         foreach (Result result in results)
+         foreach (var result in results)
          {
             if (result.Failure)
                return result;

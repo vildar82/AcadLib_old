@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using System.Collections.Generic;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using AcadLib;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib.Brep
 {
@@ -16,9 +12,9 @@ namespace TestAcadlib.Brep
         [CommandMethod("TestBrepUnion")]
         public void TestBrepUnion ()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            var db = doc.Database;
+            var ed = doc.Editor;
 
             var tvs = new TypedValue[] { new TypedValue((int)DxfCode.Start, "LWPOLYLINE") };
             var selFilter = new SelectionFilter(tvs);                                        
@@ -28,14 +24,14 @@ namespace TestAcadlib.Brep
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var idsPls = sel.Value.GetObjectIds();
-                List<Polyline> pls = new List<Polyline>();
+                var pls = new List<Polyline>();
                 foreach (var item in idsPls)
                 {
                     var pl = item.GetObject(OpenMode.ForRead) as Polyline;                    
                     pls.Add(pl);
                 }
 
-                Region union = BrepExtensions.Union(pls, null);               
+                var union = BrepExtensions.Union(pls, null);               
 
                 //var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;                
                 //if (union != null)

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
@@ -14,7 +11,7 @@ namespace AcadLib
     {
         public static void ShowEnt(this ObjectId id, int num, int delay1, int delay2)
         {
-            var doc = Application.DocumentManager.MdiActiveDocument;
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             if (doc == null || !id.IsValidEx()) return;
 
             using (doc.LockDocument())
@@ -40,10 +37,10 @@ namespace AcadLib
 
         public static void ShowEnt(this ObjectId id, Extents3d ext, Document docOrig)
         {
-            Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            var curDoc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             if (docOrig != curDoc)
             {
-                Application.ShowAlertDialog($"Должен быть активен документ {docOrig.Name}");
+                Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowAlertDialog($"Должен быть активен документ {docOrig.Name}");
             }
             else
             {
@@ -54,7 +51,7 @@ namespace AcadLib
                 }
                 else
                 {
-                    Application.ShowAlertDialog("Границы элемента не определены");
+                    Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowAlertDialog("Границы элемента не определены");
                 }
             }
         }
@@ -68,17 +65,17 @@ namespace AcadLib
         /// <param name="delay2">Длительность "неподсвеченного" состояния</param>
         static public void FlickObjectHighlight(this ObjectId id, int num, int delay1, int delay2)
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            for (int i = 0; i < num; i++)
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            for (var i = 0; i < num; i++)
             {
                 // Highlight entity
-                using (DocumentLock doclock = doc.LockDocument())
-                using (Transaction tr = doc.TransactionManager.StartTransaction())
+                using (var doclock = doc.LockDocument())
+                using (var tr = doc.TransactionManager.StartTransaction())
                 {
-                    Entity en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
-                    ObjectId[] ids = new ObjectId[1]; ids[0] = id;
-                    SubentityId index = new SubentityId(SubentityType.Null, IntPtr.Zero);
-                    FullSubentityPath path = new FullSubentityPath(ids, index);
+                    var en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
+                    var ids = new ObjectId[1]; ids[0] = id;
+                    var index = new SubentityId(SubentityType.Null, IntPtr.Zero);
+                    var path = new FullSubentityPath(ids, index);
                     en.Highlight(path, true);
                     tr.Commit();
                 }                
@@ -86,14 +83,14 @@ namespace AcadLib
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
                 // Unhighlight entity
-                using (DocumentLock doclock = doc.LockDocument())
+                using (var doclock = doc.LockDocument())
                 {
-                    using (Transaction tr = doc.TransactionManager.StartTransaction())
+                    using (var tr = doc.TransactionManager.StartTransaction())
                     {
-                        Entity en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
-                        ObjectId[] ids = new ObjectId[1]; ids[0] = id;
-                        SubentityId index = new SubentityId(SubentityType.Null, IntPtr.Zero);
-                        FullSubentityPath path = new FullSubentityPath(ids, index);
+                        var en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
+                        var ids = new ObjectId[1]; ids[0] = id;
+                        var index = new SubentityId(SubentityType.Null, IntPtr.Zero);
+                        var path = new FullSubentityPath(ids, index);
                         en.Unhighlight(path, true);
                         tr.Commit();
                     }
@@ -113,16 +110,16 @@ namespace AcadLib
         /// <param name="delay2">Длительность "неподсвеченного" состояния</param>
         static public void FlickSubentityHighlight(ObjectId[] idsPath, int num, int delay1, int delay2)
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            for (int i = 0; i < num; i++)
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            for (var i = 0; i < num; i++)
             {
                 // Highlight entity
-                using (DocumentLock doclock = doc.LockDocument())
+                using (var doclock = doc.LockDocument())
                 {
-                    using (Transaction tr = doc.TransactionManager.StartTransaction())
+                    using (var tr = doc.TransactionManager.StartTransaction())
                     {
-                        SubentityId subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
-                        FullSubentityPath path = new FullSubentityPath(idsPath, subId);
+                        var subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
+                        var path = new FullSubentityPath(idsPath, subId);
                         var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
                         ent.Highlight(path, true);
                         tr.Commit();
@@ -132,12 +129,12 @@ namespace AcadLib
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
                 // Unhighlight entity
-                using (DocumentLock doclock = doc.LockDocument())
+                using (var doclock = doc.LockDocument())
                 {
-                    using (Transaction tr = doc.TransactionManager.StartTransaction())
+                    using (var tr = doc.TransactionManager.StartTransaction())
                     {
-                        SubentityId subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
-                        FullSubentityPath path = new FullSubentityPath(idsPath, subId);
+                        var subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
+                        var path = new FullSubentityPath(idsPath, subId);
                         var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
                         ent.Unhighlight(path, true);
                         tr.Commit();
@@ -156,9 +153,9 @@ namespace AcadLib
         /// <param name="idBtrOwner">Куда копировать (контейнер - BlockTableRecord)</param>                
         public static ObjectId CopyEnt (this ObjectId idEnt, ObjectId idBtrOwner)
         {
-            Database db = idEnt.Database;
-            IdMapping map = new IdMapping();
-            ObjectIdCollection ids = new ObjectIdCollection(new[] { idEnt });
+            var db = idEnt.Database;
+            var map = new IdMapping();
+            var ids = new ObjectIdCollection(new[] { idEnt });
             db.DeepCloneObjects(ids, idBtrOwner, map, false);
             return map[idEnt].Value;
         }       

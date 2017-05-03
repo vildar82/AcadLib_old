@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.Geometry;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
@@ -68,7 +62,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <returns></returns>
         public static bool IsPointInBounds(this Extents3d ext, Point3d pt)
         {
-            bool res = false;
+            var res = false;
             if (pt.X > ext.MinPoint.X && pt.Y > ext.MinPoint.Y &&
                pt.X < ext.MaxPoint.X && pt.Y < ext.MaxPoint.Y)
             {
@@ -83,7 +77,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <returns></returns>
         public static bool IsPointInBounds(this Extents3d ext, Point3d pt, double tolerance)
         {
-            bool res = false;
+            var res = false;
             if (pt.X > (ext.MinPoint.X - tolerance) && pt.Y > (ext.MinPoint.Y - tolerance) &&
                pt.X < (ext.MaxPoint.X + tolerance) && pt.Y < (ext.MaxPoint.Y + tolerance))
             {

@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using AcAp = Autodesk.AutoCAD.ApplicationServices.Application;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks
 {
@@ -31,11 +31,11 @@ namespace AcadLib.Blocks
         /// </summary>        
         public static ObjectId Insert(string blName, Layers.LayerInfo layer, List<Property> props)
         {
-            ObjectId idBlRefInsert = ObjectId.Null;
-            Document doc = AcAp.DocumentManager.MdiActiveDocument;
+            var idBlRefInsert = ObjectId.Null;
+            var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return ObjectId.Null;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+            var db = doc.Database;
+            var ed = doc.Editor;
             using (doc.LockDocument())
             using (var t = db.TransactionManager.StartTransaction())
             {
@@ -45,9 +45,9 @@ namespace AcadLib.Blocks
                     throw new Exception("Блок не определен в чертеже " + blName);
                 }
 
-                ObjectId idBlBtr = bt[blName];
-                Point3d pt = Point3d.Origin;
-                BlockReference br = new BlockReference(pt, idBlBtr);
+                var idBlBtr = bt[blName];
+                var pt = Point3d.Origin;
+                var br = new BlockReference(pt, idBlBtr);
                 br.SetDatabaseDefaults();
                 if (layer != null)
                 {
@@ -81,7 +81,7 @@ namespace AcadLib.Blocks
                 }
 
                 // jig
-                Jigs.BlockInsertJig entJig = new Jigs.BlockInsertJig(br);
+                var entJig = new Jigs.BlockInsertJig(br);
                 var pr = ed.Drag(entJig);
                 if (pr.Status == PromptStatus.OK)
                 {
@@ -106,7 +106,7 @@ namespace AcadLib.Blocks
 
         public static ObjectId Insert(string blName, string layer)
         {
-            Layers.LayerInfo layerInfo = new Layers.LayerInfo(layer);            
+            var layerInfo = new Layers.LayerInfo(layer);            
             return Insert(blName, layerInfo);
         }
 
@@ -127,7 +127,7 @@ namespace AcadLib.Blocks
         /// <returns></returns>
         public static BlockReference InsertBlockRef (string blName, Point3d pt, BlockTableRecord owner, Transaction t, double scale = 1)
         {
-            Database db = owner.Database;
+            var db = owner.Database;
             var bt = db.BlockTableId.GetObject( OpenMode.ForRead)as BlockTable;
             var btr = bt[blName].GetObject(OpenMode.ForRead) as BlockTableRecord;
             var blRef = new BlockReference(pt, btr.Id);
@@ -155,7 +155,7 @@ namespace AcadLib.Blocks
         /// </summary>        
         public static void AddAttributes(BlockReference blRef, BlockTableRecord btrBl, Transaction t)
         {
-            foreach (ObjectId idEnt in btrBl)
+            foreach (var idEnt in btrBl)
             {
                 if (idEnt.ObjectClass.Name == "AcDbAttributeDefinition")
                 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
 {
@@ -11,7 +6,7 @@ namespace AcadLib
     {
         public static int CleanZombieBlock(this Database db)
         {
-            int countZombie = 0;
+            var countZombie = 0;
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var bt = db.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
@@ -22,7 +17,7 @@ namespace AcadLib
                     {
                         var idBlRefs = btr.GetBlockReferenceIds(true, false);
                         if (idBlRefs.Count == 0) continue;
-                        bool isZombie = true;
+                        var isZombie = true;
                         foreach (ObjectId idBlRef in idBlRefs)
                         {
                             var blRef = idBlRef.GetObject(OpenMode.ForWrite, false, true) as BlockReference;

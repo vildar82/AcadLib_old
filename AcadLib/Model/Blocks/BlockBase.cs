@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using AcadLib.Errors;
+using Autodesk.AutoCAD.ApplicationServices.Core;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
@@ -111,21 +109,21 @@ namespace AcadLib.Blocks
         /// </summary>
         public virtual void Show ()
         {
-            var doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc != null)
             {
                 if (doc.Database != IdBlRef.Database)
                 {
-                    Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog($"Переключитесь на чертеж {Path.GetFileNameWithoutExtension(IdBlRef.Database.Filename)}");
+                    Application.ShowAlertDialog($"Переключитесь на чертеж {Path.GetFileNameWithoutExtension(IdBlRef.Database.Filename)}");
                     return;
                 }
                 using (doc.LockDocument())
                 {
-                    Editor ed = doc.Editor;
+                    var ed = doc.Editor;
                     var ext = ExtentsToShow;
                     if (_isNullExtents)
                     {
-                        Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Границы объекта не определены.");
+                        Application.ShowAlertDialog("Границы объекта не определены.");
                     }
                     ed.Zoom(ext);
                     IdBlRef.FlickObjectHighlight(2, 100, 100);
@@ -146,12 +144,12 @@ namespace AcadLib.Blocks
         
         public T GetPropValue<T> (string propMatch, out bool hasProperty, bool isRequired = true, bool exactMatch = true)
         {            
-            T resVal = default(T);
+            var resVal = default(T);
             if (exactMatch)
             {
                 propMatch = $"^{propMatch}$";
             }            
-            Property prop = GetProperty(propMatch, isRequired);
+            var prop = GetProperty(propMatch, isRequired);
             if (prop != null)
             {
                 hasProperty = true;
@@ -208,7 +206,7 @@ namespace AcadLib.Blocks
 
         protected Property GetProperty (string nameMatch, bool isRequired = true)
         {
-            Property prop = Properties.Find(p=> Regex.IsMatch(p.Name, nameMatch, RegexOptions.IgnoreCase));
+            var prop = Properties.Find(p=> Regex.IsMatch(p.Name, nameMatch, RegexOptions.IgnoreCase));
             if (prop == null && isRequired)
             {
                 AddError($"Не определен параметр '{nameMatch}'.");

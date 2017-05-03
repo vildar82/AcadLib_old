@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Runtime;
+#pragma warning disable 618
 
 namespace AcadLib.XData
 {
     public static class ExtDicHelper
     {
         public const string PikApp = "PIK";
-        private static RXClass rxRecord = RXObject.GetClass(typeof(Xrecord));
-        private static RXClass rxDBDic = RXObject.GetClass(typeof(DBDictionary));
+        private static readonly RXClass rxRecord = RXObject.GetClass(typeof(Xrecord));
+        private static readonly RXClass rxDBDic = RXObject.GetClass(typeof(DBDictionary));
 
         /// <summary>
         /// Получение записи XRecord словаря по имени.
@@ -23,32 +21,28 @@ namespace AcadLib.XData
         /// </summary>        
         public static ObjectId GetRec (ObjectId dicId, string key, bool create, bool clear)
         {
-            ObjectId res = ObjectId.Null;
+            var res = ObjectId.Null;
             if (!dicId.IsValidEx() || string.IsNullOrEmpty(key)) return res;
             using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
             {
-                if (dic != null)
+                if (dic == null) return res;
+                if (dic.Contains(key))
                 {
-                    if (dic.Contains(key))
+                    res = dic.GetAt(key);
+                    if (!clear) return res;
+                    using (var xr = res.Open(OpenMode.ForWrite) as Xrecord)
                     {
-                        res = dic.GetAt(key);   
-                        if (clear)
-                        {
-                            using (var xr = res.Open(OpenMode.ForWrite) as Xrecord)
-                            {
-                                if (xr != null)
-                                    xr.Data = null;
-                            }
-                        }
+                        if (xr != null)
+                            xr.Data = null;
                     }
-                    else if (create)
+                }
+                else if (create)
+                {
+                    using (var xRec = new Xrecord())
                     {
-                        using (var xRec = new Xrecord())
-                        {
-                            if (!dic.IsWriteEnabled)
-                                dic.UpgradeOpen();
-                            res = dic.SetAt(key, xRec);
-                        }
+                        if (!dic.IsWriteEnabled)
+                            dic.UpgradeOpen();
+                        res = dic.SetAt(key, xRec);
                     }
                 }
             }
@@ -59,6 +53,7 @@ namespace AcadLib.XData
         /// Удаление словаря
         /// </summary>
         /// <param name="dicId">Словарь</param>
+        /// <param name="dbo">объект</param>
         public static void DeleteDic (ObjectId dicId, DBObject dbo)
         {
             if (!dicId.IsValidEx()) return;
@@ -94,37 +89,34 @@ namespace AcadLib.XData
         /// <returns>Id DBDictionary вложенного словаря</returns>
         public static ObjectId GetDic (ObjectId dicId, string key, bool create, bool clear)
         {
-            ObjectId res = ObjectId.Null;
+            var res = ObjectId.Null;
             if (!dicId.IsValidEx() || string.IsNullOrEmpty(key)) return res;
             using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
             {
-                if (dic != null)
+                if (dic == null) return res;
+                if (dic.Contains(key))
                 {
-                    if (dic.Contains(key))
+                    res = dic.GetAt(key);
+                    if (!clear) return res;
+                    using (var resDic = res.Open(OpenMode.ForWrite) as DBDictionary)
                     {
-                        res = dic.GetAt(key);
-                        if (clear)
+                        if (resDic == null) return res;
+                        foreach (var item in resDic)
                         {
-                            using (var resDic = res.Open(OpenMode.ForWrite) as DBDictionary)
+                            using (var entry = item.Value.Open(OpenMode.ForWrite))
                             {
-                                foreach (var item in resDic)
-                                {
-                                    using (var entry = item.Value.Open(OpenMode.ForWrite))
-                                    {
-                                        entry.Erase();
-                                    }
-                                }
+                                entry.Erase();
                             }
                         }
                     }
-                    else if (create)
+                }
+                else if (create)
+                {
+                    using (var dicInner = new DBDictionary())
                     {
-                        using (var dicInner = new DBDictionary())
-                        {
-                            if (!dic.IsWriteEnabled)
-                                dic.UpgradeOpen();
-                            res = dic.SetAt(key, dicInner);
-                        }
+                        if (!dic.IsWriteEnabled)
+                            dic.UpgradeOpen();
+                        res = dic.SetAt(key, dicInner);
                     }
                 }
             }
@@ -139,7 +131,7 @@ namespace AcadLib.XData
         /// <returns>Id словаря ExtensionDictionary</returns>
         public static ObjectId GetDboExtDic (DBObject dbo, bool create)
         {
-            ObjectId res = ObjectId.Null;
+            var res = ObjectId.Null;
             if (dbo == null) return res;
             if (dbo.ExtensionDictionary.IsNull)
             {
@@ -165,16 +157,18 @@ namespace AcadLib.XData
         /// <returns>Содержимое словаря. Имя не заполняется!</returns>
         public static DicED GetDicEd (ObjectId dicId)
         {
-            DicED res = null;
-            if (!dicId.IsValidEx()) return res;
+            DicED res;
+            if (!dicId.IsValidEx()) return null;
 
             using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
             {
-                if (dic == null) return res;
+                if (dic == null) return null;
 
-                res = new DicED();
-                res.Inners = new List<DicED>();
-                res.Recs = new List<RecXD>();
+                res = new DicED
+                {
+                    Inners = new List<DicED>(),
+                    Recs = new List<RecXD>()
+                };
 
                 foreach (var item in dic)
                 {   
@@ -182,6 +176,7 @@ namespace AcadLib.XData
                     {
                         using (var xrec = item.Value.Open(OpenMode.ForRead) as Xrecord)
                         {
+                            if (xrec == null) continue;
                             var values = xrec.Data.AsArray();
                             var rec = new RecXD { Name = item.Key, Values = values.ToList() };
                             res.Recs.Add(rec);
@@ -233,14 +228,14 @@ namespace AcadLib.XData
         /// <param name="rec">Запись XRecord</param>
         public static void SetRecXD (ObjectId dicId, RecXD rec)
         {
-            if (rec == null || rec.Values == null || rec.Values.Count==0) return;
+            if (rec?.Values == null || rec.Values.Count==0) return;
             var idXrec = GetRec(dicId, rec.Name, true, true);
             if (!idXrec.IsValidEx()) return;
             using (var xrec = idXrec.Open(OpenMode.ForWrite) as Xrecord)
             {
                 using (var rb = new ResultBuffer(rec.Values.ToArray()))
                 {
-                    xrec.Data = rb;
+                    if (xrec != null) xrec.Data = rb;
                 }
             }
         }

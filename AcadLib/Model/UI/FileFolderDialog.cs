@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace AcadLib.UI
@@ -17,7 +16,7 @@ namespace AcadLib.UI
       
       public new DialogResult ShowDialog()
       {
-         return this.ShowDialog(null);
+         return ShowDialog(null);
       }
 
       public new DialogResult ShowDialog(IWin32Window owner)

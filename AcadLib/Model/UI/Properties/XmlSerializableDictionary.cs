@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace AcadLib.UI.Properties
@@ -34,9 +31,9 @@ namespace AcadLib.UI.Properties
 
         public void ReadXml (System.Xml.XmlReader reader)
         {
-            XmlSerializer keySerializer = new XmlSerializer(typeof(string));
-            XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
-            bool wasEmpty = reader.IsEmptyElement;
+            var keySerializer = new XmlSerializer(typeof(string));
+            var valueSerializer = new XmlSerializer(typeof(TValue));
+            var wasEmpty = reader.IsEmptyElement;
             reader.Read();
             if (wasEmpty)
                 return;
@@ -44,12 +41,12 @@ namespace AcadLib.UI.Properties
             {
                 reader.ReadStartElement("item");
                 reader.ReadStartElement("key");
-                string key = (string)keySerializer.Deserialize(reader);
+                var key = (string)keySerializer.Deserialize(reader);
                 reader.ReadEndElement();
                 reader.ReadStartElement("value");
-                TValue value = (TValue)valueSerializer.Deserialize(reader);
+                var value = (TValue)valueSerializer.Deserialize(reader);
                 reader.ReadEndElement();
-                this.Add(key, value);
+                Add(key, value);
                 reader.ReadEndElement();
                 reader.MoveToContent();
             }
@@ -58,16 +55,16 @@ namespace AcadLib.UI.Properties
 
         public void WriteXml (System.Xml.XmlWriter writer)
         {
-            XmlSerializer keySerializer = new XmlSerializer(typeof(string));
-            XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
-            foreach (string key in this.Keys)
+            var keySerializer = new XmlSerializer(typeof(string));
+            var valueSerializer = new XmlSerializer(typeof(TValue));
+            foreach (var key in Keys)
             {
                 writer.WriteStartElement("item");
                 writer.WriteStartElement("key");
                 keySerializer.Serialize(writer, key);
                 writer.WriteEndElement();
                 writer.WriteStartElement("value");
-                TValue value = this[key];
+                var value = this[key];
                 valueSerializer.Serialize(writer, value);
                 writer.WriteEndElement();
                 writer.WriteEndElement();

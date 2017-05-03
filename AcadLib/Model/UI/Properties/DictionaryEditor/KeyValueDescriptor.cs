@@ -16,7 +16,7 @@ namespace AcadLib.UI.Designer
         public KeyValueDescriptor(PropertyDescriptor pd, Type converterType, Type editorType, Type attributeProviderType, string displayName)
             : base(pd)
         {
-            this._pd = pd;
+            _pd = pd;
 
             m_ConverterType = converterType;
             m_EditorType = editorType;
@@ -99,7 +99,7 @@ namespace AcadLib.UI.Designer
             {
                 if (m_AttributeProviderType != null)
                 {
-                    return (Activator.CreateInstance(m_AttributeProviderType) as AttributeProvider).GetAttributes(this.PropertyType);
+                    return (Activator.CreateInstance(m_AttributeProviderType) as AttributeProvider).GetAttributes(PropertyType);
                 }
                 else
                 {

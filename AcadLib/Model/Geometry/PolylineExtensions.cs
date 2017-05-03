@@ -44,7 +44,7 @@ namespace AcadLib.Geometry
         {
             var scale =ScaleHelper.GetCurrentAnnoScale(HostApplicationServices.WorkingDatabase);
             var texts = new List<Entity>();
-            for (int i = 0; i < pl.NumberOfVertices; i++)
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 var text = new DBText();
                 text.TextString = i.ToString();
@@ -62,9 +62,9 @@ namespace AcadLib.Geometry
         public static void Wedding (this Polyline pl, Tolerance tolerance)
         {
             //var count = pl.NumberOfVertices;
-            int iPrew = pl.NextVertexIndex(0, -1);
+            var iPrew = pl.NextVertexIndex(0, -1);
             var prew = pl.GetPoint2dAt(iPrew);
-            for (int i = 0; i < pl.NumberOfVertices; i++)
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 //int iPrew;
                 //int iCur;
@@ -136,8 +136,8 @@ namespace AcadLib.Geometry
 
         public static List<Point2d> GetPoints (this Polyline pl)
         {
-            List<Point2d> points = new List<Point2d>();
-            for (int i = 0; i < pl.NumberOfVertices; i++)
+            var points = new List<Point2d>();
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 points.Add(pl.GetPoint2dAt(i));
             }
@@ -146,7 +146,7 @@ namespace AcadLib.Geometry
 
         public static IEnumerable<Point2d> EnumeratePoints(this Polyline pl)
         {            
-            for (int i = 0; i < pl.NumberOfVertices; i++)
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 yield return pl.GetPoint2dAt(i);
             }            
@@ -170,10 +170,10 @@ namespace AcadLib.Geometry
             if (brkPt.IsEqualTo(pline.EndPoint))
                 return new Polyline[2] { (Polyline)pline.Clone(), null };
 
-            double param = pline.GetParameterAtPoint(brkPt);
-            int index = (int)param;
-            int num = pline.NumberOfVertices;
-            Polyline pl1 = (Polyline)pline.Clone();
+            var param = pline.GetParameterAtPoint(brkPt);
+            var index = (int)param;
+            var num = pline.NumberOfVertices;
+            var pl1 = (Polyline)pline.Clone();
             if (pline.Closed)
             {
                 pl1.AddVertexAt(
@@ -184,16 +184,16 @@ namespace AcadLib.Geometry
                     pline.GetBulgeAt(num - 1));
                 pl1.Closed = false;
             }
-            Polyline pl2 = (Polyline)pl1.Clone();
+            var pl2 = (Polyline)pl1.Clone();
 
             // le point spécifié est sur un sommet de la polyligne
             if (Math.Round(param, 6) == index)
             {
-                for (int i = pl1.NumberOfVertices - 1; i > index; i--)
+                for (var i = pl1.NumberOfVertices - 1; i > index; i--)
                 {
                     pl1.RemoveVertexAt(i);
                 }
-                for (int i = 0; i < index; i++)
+                for (var i = 0; i < index; i++)
                 {
                     pl2.RemoveVertexAt(0);
                 }
@@ -201,20 +201,20 @@ namespace AcadLib.Geometry
             }
 
             // le point spécifié est sur un segment
-            Point2d pt = brkPt.Convert2d(new Plane(Point3d.Origin, pline.Normal));
-            for (int i = pl1.NumberOfVertices - 1; i > index + 1; i--)
+            var pt = brkPt.Convert2d(new Plane(Point3d.Origin, pline.Normal));
+            for (var i = pl1.NumberOfVertices - 1; i > index + 1; i--)
             {
                 pl1.RemoveVertexAt(i);
             }
             pl1.SetPointAt(index + 1, pt);
-            for (int i = 0; i < index; i++)
+            for (var i = 0; i < index; i++)
             {
                 pl2.RemoveVertexAt(0);
             }
             pl2.SetPointAt(0, pt);
             if (pline.GetBulgeAt(index) != 0.0)
             {
-                double bulge = pline.GetBulgeAt(index);
+                var bulge = pline.GetBulgeAt(index);
                 pl1.SetBulgeAt(index, MultiplyBulge(bulge, param - index));
                 pl2.SetBulgeAt(0, MultiplyBulge(bulge, index + 1 - param));
             }
@@ -228,14 +228,14 @@ namespace AcadLib.Geometry
         /// <returns>The centroid of the polyline (OCS coordinates).</returns>
         public static Point2d Centroid2d (this Polyline pl)
         {
-            Point2d cen = new Point2d();
-            Triangle2d tri = new Triangle2d();
-            CircularArc2d arc = new CircularArc2d();
+            var cen = new Point2d();
+            var tri = new Triangle2d();
+            var arc = new CircularArc2d();
             double tmpArea;
-            double area = 0.0;
-            int last = pl.NumberOfVertices - 1;
-            Point2d p0 = pl.GetPoint2dAt(0);
-            double bulge = pl.GetBulgeAt(0);
+            var area = 0.0;
+            var last = pl.NumberOfVertices - 1;
+            var p0 = pl.GetPoint2dAt(0);
+            var bulge = pl.GetBulgeAt(0);
 
             if (bulge != 0.0)
             {
@@ -243,7 +243,7 @@ namespace AcadLib.Geometry
                 area = arc.AlgebricArea();
                 cen = arc.Centroid() * area;
             }
-            for (int i = 1; i < last; i++)
+            for (var i = 1; i < last; i++)
             {
                 tri.Set(p0, pl.GetPoint2dAt(i), pl.GetPoint2dAt(i + 1));
                 tmpArea = tri.AlgebricArea;
@@ -286,8 +286,8 @@ namespace AcadLib.Geometry
         /// <param name="radius">The arc radius.</param>
         public static void FilletAll (this Polyline pline, double radius)
         {
-            int n = pline.Closed ? 0 : 1;
-            for (int i = n; i < pline.NumberOfVertices - n; i += 1 + pline.FilletAt(i, radius))
+            var n = pline.Closed ? 0 : 1;
+            for (var i = n; i < pline.NumberOfVertices - n; i += 1 + pline.FilletAt(i, radius))
             { }
         }
 
@@ -300,25 +300,25 @@ namespace AcadLib.Geometry
         /// <returns>1 if the operation succeeded, 0 if it failed.</returns>
         public static int FilletAt (this Polyline pline, int index, double radius)
         {
-            int prev = index == 0 && pline.Closed ? pline.NumberOfVertices - 1 : index - 1;
+            var prev = index == 0 && pline.Closed ? pline.NumberOfVertices - 1 : index - 1;
             if (pline.GetSegmentType(prev) != SegmentType.Line ||
                 pline.GetSegmentType(index) != SegmentType.Line)
             {
                 return 0;
             }
-            LineSegment2d seg1 = pline.GetLineSegment2dAt(prev);
-            LineSegment2d seg2 = pline.GetLineSegment2dAt(index);
-            Vector2d vec1 = seg1.StartPoint - seg1.EndPoint;
-            Vector2d vec2 = seg2.EndPoint - seg2.StartPoint;
-            double angle = (Math.PI - vec1.GetAngleTo(vec2)) / 2.0;
-            double dist = radius * Math.Tan(angle);
+            var seg1 = pline.GetLineSegment2dAt(prev);
+            var seg2 = pline.GetLineSegment2dAt(index);
+            var vec1 = seg1.StartPoint - seg1.EndPoint;
+            var vec2 = seg2.EndPoint - seg2.StartPoint;
+            var angle = (Math.PI - vec1.GetAngleTo(vec2)) / 2.0;
+            var dist = radius * Math.Tan(angle);
             if (dist == 0.0 || dist > seg1.Length || dist > seg2.Length)
             {
                 return 0;
             }
-            Point2d pt1 = seg1.EndPoint + vec1.GetNormal() * dist;
-            Point2d pt2 = seg2.StartPoint + vec2.GetNormal() * dist;
-            double bulge = Math.Tan(angle / 2.0);
+            var pt1 = seg1.EndPoint + vec1.GetNormal() * dist;
+            var pt2 = seg2.StartPoint + vec2.GetNormal() * dist;
+            var bulge = Math.Tan(angle / 2.0);
             if (Clockwise(seg1.StartPoint, seg1.EndPoint, seg2.EndPoint))
             {
                 bulge = -bulge;
@@ -349,16 +349,16 @@ namespace AcadLib.Geometry
         /// <returns>The projected Polyline.</returns>
         public static Polyline GetProjectedPolyline (this Polyline pline, Plane plane, Vector3d direction)
         {
-            Tolerance tol = new Tolerance(1e-9, 1e-9);
+            var tol = new Tolerance(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
                 return null;
 
             if (pline.Normal.IsPerpendicularTo(direction, tol))
             {
-                Plane dirPlane = new Plane(Point3d.Origin, direction);
+                var dirPlane = new Plane(Point3d.Origin, direction);
                 if (!pline.IsWriteEnabled) pline.UpgradeOpen();
                 pline.TransformBy(Matrix3d.WorldToPlane(dirPlane));
-                Extents3d extents = pline.GeometricExtents;
+                var extents = pline.GeometricExtents;
                 pline.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
                 return GeomExt.ProjectExtents(extents, plane, direction, dirPlane);
             }
@@ -396,13 +396,13 @@ namespace AcadLib.Geometry
         [Obsolete("Используй новую перегрузку с параметром допуска, она работает быстрее.")]
         public static bool IsPointOnPolyline (this Polyline pl, Point3d pt)
         {
-            bool isOn = false;            
-            Point3d ptZeroZ = new Point3d(pt.X, pt.Y, pl.Elevation);
-            for (int i = 0; i < pl.NumberOfVertices; i++)
+            var isOn = false;            
+            var ptZeroZ = new Point3d(pt.X, pt.Y, pl.Elevation);
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 Curve3d seg = null;
 
-                SegmentType segType = pl.GetSegmentType(i);
+                var segType = pl.GetSegmentType(i);
                 if (segType == SegmentType.Arc)
                     seg = pl.GetArcSegmentAt(i);
                 else if (segType == SegmentType.Line)
@@ -439,10 +439,10 @@ namespace AcadLib.Geometry
         [Obsolete("Используй IsPointInsidePolyline(), подходящий для дуговых полилиний.")]
         public static bool IsPointInsidePolygon (this Polyline polygon, Point3d pt)
         {
-            int n = polygon.NumberOfVertices;
+            var n = polygon.NumberOfVertices;
             double angle = 0;
             Point pt1, pt2;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 pt1.X = polygon.GetPoint2dAt(i).X - pt.X;
                 pt1.Y = polygon.GetPoint2dAt(i).Y - pt.Y;
@@ -470,9 +470,9 @@ namespace AcadLib.Geometry
                 ray.SecondPoint = pt + vec;
                 using (var ptsIntersects = new Point3dCollection())
                 {
-                    bool isContinue = false;
-                    bool isPtOnPolyline = false;
-                    int countWhile = 0;
+                    var isContinue = false;
+                    var isPtOnPolyline = false;
+                    var countWhile = 0;
                     do
                     {
                         using (var plane = new Plane())
@@ -519,7 +519,7 @@ namespace AcadLib.Geometry
         {
             var pl = new Polyline();
             pts = pts.DistinctPoints();
-            for (int i = 0; i < pts.Count; i++)
+            for (var i = 0; i < pts.Count; i++)
             {
                 pl.AddVertexAt(i, pts[i], 0, 0, 0);
             }
@@ -551,10 +551,10 @@ namespace AcadLib.Geometry
         public static IEnumerable<Polyline> Offset (this Polyline source, double offsetDist, OffsetSide side)
         {
             offsetDist = Math.Abs(offsetDist);
-            IEnumerable<Polyline> offsetRight = source.GetOffsetCurves(offsetDist).Cast<Polyline>();
-            double areaRight = offsetRight.Select(pline => pline.Area).Sum();
-            IEnumerable<Polyline> offsetLeft = source.GetOffsetCurves(-offsetDist).Cast<Polyline>();
-            double areaLeft = offsetLeft.Select(pline => pline.Area).Sum();
+            var offsetRight = source.GetOffsetCurves(offsetDist).Cast<Polyline>();
+            var areaRight = offsetRight.Select(pline => pline.Area).Sum();
+            var offsetLeft = source.GetOffsetCurves(-offsetDist).Cast<Polyline>();
+            var areaLeft = offsetLeft.Select(pline => pline.Area).Sum();
             switch (side)
             {
                 case OffsetSide.In:
@@ -593,7 +593,7 @@ namespace AcadLib.Geometry
         }
         public static void Dispose (this IEnumerable<Polyline> plines)
         {
-            foreach (Polyline pline in plines)
+            foreach (var pline in plines)
             {
                 pline.Dispose();
             }
@@ -605,8 +605,8 @@ namespace AcadLib.Geometry
         /// </summary>        
         public static bool CheckCross (this Polyline pline)
         {
-            MPolygon mpoly = new MPolygon();
-            bool isValidBoundary = false;
+            var mpoly = new MPolygon();
+            var isValidBoundary = false;
             try
             {
                 mpoly.AppendLoopFromBoundary(pline, true, Tolerance.Global.EqualPoint);

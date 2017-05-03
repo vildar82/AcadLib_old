@@ -5,10 +5,7 @@ using System.Linq;
 using System.Reflection;
 using AcadLib.PaletteCommands;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
-using Autodesk.AutoCAD.ApplicationServices;
-using System.Windows;
 using System.Text.RegularExpressions;
 using AcadLib.Layers;
 using System.Threading.Tasks;
@@ -20,7 +17,7 @@ namespace AcadLib
 {
     public class Commands : IExtensionApplication
     {
-        internal static string fileCommonBlocks = System.IO.Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
+        internal static string fileCommonBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
@@ -40,7 +37,7 @@ namespace AcadLib
         {
             CommandStart.Start(doc =>
             {
-                Editor ed = doc.Editor;
+                var ed = doc.Editor;
                 var acadLibVer = Assembly.GetExecutingAssembly().GetName().Version;
                 ed.WriteMessage($"\nБиблиотека AcadLib версии {acadLibVer}");
             });
@@ -60,7 +57,7 @@ namespace AcadLib
         {
             CommandStart.Start(doc =>
             {
-                Database db = doc.Database;
+                var db = doc.Database;
                 var countZombie = db.CleanZombieBlock();
                 doc.Editor.WriteMessage($"\nУдалено {countZombie} зомби!☻");
             });
@@ -80,19 +77,16 @@ namespace AcadLib
         {
             CommandStart.Start(doc =>
             {
-                Database db = doc.Database;
-                Editor ed = doc.Editor;
-                Dictionary<string, int> allTypes = new Dictionary<string, int>();
-                for (long i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
+                var db = doc.Database;
+                var ed = doc.Editor;
+                var allTypes = new Dictionary<string, int>();
+                for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
                 {
-                    ObjectId id;
-                    if (db.TryGetObjectId(new Handle(i), out id))
-                    {
-                        if (allTypes.ContainsKey(id.ObjectClass.Name))
-                            allTypes[id.ObjectClass.Name]++;
-                        else
-                            allTypes.Add(id.ObjectClass.Name, 1);
-                    }
+                    if (!db.TryGetObjectId(new Handle(i), out ObjectId id)) continue;
+                    if (allTypes.ContainsKey(id.ObjectClass.Name))
+                        allTypes[id.ObjectClass.Name]++;
+                    else
+                        allTypes.Add(id.ObjectClass.Name, 1);
                 }
                 var sortedByCount = allTypes.OrderBy(i => i.Value);
                 foreach (var item in sortedByCount)
@@ -131,7 +125,10 @@ namespace AcadLib
                     n => matchs.Any(r => Regex.IsMatch(n, r.Value.ToString(), RegexOptions.IgnoreCase)),
                     layer);
             }
-            catch { }
+            catch(System.Exception ex)
+            {
+                Logger.Log.Error(ex,"PIK_LispInsertBlockFromFbDwg");
+            }
         }
 
         public void Terminate()
@@ -226,7 +223,7 @@ namespace AcadLib
         public void Initialize()
         {
             // Инициализация сборки UnitsNet
-            var area = UnitsNet.Area.Zero;
+            var unused = UnitsNet.Area.Zero;
 
             // Копирование вспомогательных сборок локально из шаровой папки packages
             var task = Task.Run(()=> {
@@ -252,7 +249,7 @@ namespace AcadLib
             var fileGroups = new List<string>();
             foreach (var group in groups)
             {
-                string groupDll = string.Empty;
+                var groupDll = string.Empty;
                 if (group.IndexOf("СС", StringComparison.OrdinalIgnoreCase)!=-1)
                 {
                     groupDll = "PIK_SS_Acad.dll";                    
@@ -324,7 +321,7 @@ namespace AcadLib
             //    new Uri("AcadLib;component/Model/WPF/Images.xaml", UriKind.Relative)) as ResourceDictionary);
 
             // Автослои
-            Layers.AutoLayers.AutoLayersService.Start();
+            Layers.AutoLayers.AutoLayersService.Init();
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -341,38 +338,16 @@ namespace AcadLib
                 dllsResolve.AddRange(NetLib.IO.DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
             }
             var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
-            if (dllResolver != null)
-            {
-                try
-                {
-                    return dllResolver.LoadAssembly();
-                }
-                catch (System.Exception ex)
-                {
-                    Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
-                }
-            }
-            return null;            
-        }
-
-        private void ClearLogs()
-        {
+            if (dllResolver == null) return null;
             try
             {
-                var dirDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, "Dll");
-                //var fileLogs = Directory.GetFiles(dirDll, "*.log;Лог*.txt");
-                var fileLogs = Directory.EnumerateFiles(dirDll, "*.*", SearchOption.TopDirectoryOnly)
-                .Where(s => s.EndsWith(".log") || s.EndsWith(".txt"));
-                foreach (var item in fileLogs)
-                {
-                    try
-                    {
-                        File.Delete(item);
-                    }
-                    catch { }
-                }
+                return dllResolver.LoadAssembly();
             }
-            catch { }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
+            }
+            return null;            
         }
     }
 }

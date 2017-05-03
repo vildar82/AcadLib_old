@@ -109,8 +109,8 @@ namespace RTreeLib
          */
         internal void set(double[] min, double[] max)
         {
-            System.Array.Copy(min, 0, this.min, 0, DIMENSIONS);
-            System.Array.Copy(max, 0, this.max, 0, DIMENSIONS);
+            Array.Copy(min, 0, this.min, 0, DIMENSIONS);
+            Array.Copy(max, 0, this.max, 0, DIMENSIONS);
         }
 
         /**
@@ -129,7 +129,7 @@ namespace RTreeLib
          */
         internal bool edgeOverlaps(Rectangle r)
         {
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
                 if (min[i] == r.min[i] || max[i] == r.max[i])
                 {
@@ -150,7 +150,7 @@ namespace RTreeLib
         {
             // Every dimension must intersect. If any dimension
             // does not intersect, return false immediately.
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
                 if (max[i] < r.min[i] || min[i] > r.max[i])
                 {
@@ -170,7 +170,7 @@ namespace RTreeLib
          */
         internal bool contains(Rectangle r)
         {
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
                 if (max[i] < r.max[i] || min[i] > r.min[i])
                 {
@@ -190,7 +190,7 @@ namespace RTreeLib
          */
         internal bool containedBy(Rectangle r)
         {
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
                 if (max[i] > r.max[i] || min[i] < r.min[i])
                 {
@@ -211,10 +211,10 @@ namespace RTreeLib
         internal double distance(Point p)
         {
             double distanceSquared = 0;
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
-               double greatestMin = Math.Max(min[i], p.coordinates[i]);
-                double leastMax = Math.Min(max[i], p.coordinates[i]);
+               var greatestMin = Math.Max(min[i], p.coordinates[i]);
+                var leastMax = Math.Min(max[i], p.coordinates[i]);
                 if (greatestMin > leastMax)
                 {
                     distanceSquared += ((greatestMin - leastMax) * (greatestMin - leastMax));
@@ -235,10 +235,10 @@ namespace RTreeLib
         internal double distance(Rectangle r)
         {
             double distanceSquared = 0;
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
-            double greatestMin = Math.Max(min[i], r.min[i]);
-            double leastMax = Math.Min(max[i], r.max[i]);
+            var greatestMin = Math.Max(min[i], r.min[i]);
+            var leastMax = Math.Min(max[i], r.max[i]);
                 if (greatestMin > leastMax)
                 {
                     distanceSquared += ((greatestMin - leastMax) * (greatestMin - leastMax));
@@ -253,8 +253,8 @@ namespace RTreeLib
         internal double distanceSquared(int dimension, double point)
         {
          double distanceSquared = 0;
-         double tempDistance = point - max[dimension];
-            for (int i = 0; i < 2; i++)
+         var tempDistance = point - max[dimension];
+            for (var i = 0; i < 2; i++)
             {
                 if (tempDistance > 0)
                 {
@@ -278,7 +278,7 @@ namespace RTreeLib
         {
          double distanceSquared = 0;
 
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
                 distanceSquared += Math.Max(r.min[i], r.max[i]);
 #warning possible didn't convert properly
@@ -298,7 +298,7 @@ namespace RTreeLib
          */
         internal double enlargement(Rectangle r)
         {
-         double enlargedArea = (Math.Max(max[0], r.max[0]) - Math.Min(min[0], r.min[0])) *
+         var enlargedArea = (Math.Max(max[0], r.max[0]) - Math.Min(min[0], r.min[0])) *
                                  (Math.Max(max[1], r.max[1]) - Math.Min(min[1], r.min[1]));
 
             return enlargedArea - area();
@@ -322,7 +322,7 @@ namespace RTreeLib
          */
         internal void add(Rectangle r)
         {
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
                 if (r.min[i] < min[i])
                 {
@@ -343,7 +343,7 @@ namespace RTreeLib
          */
         internal Rectangle union(Rectangle r)
         {
-            Rectangle union = this.copy();
+            var union = copy();
             union.add(r);
             return union;
         }
@@ -355,7 +355,7 @@ namespace RTreeLib
             if (a1.Length != a2.Length)
                 return false;
 
-            for (int i = 0; i < a1.Length; i++)
+            for (var i = 0; i < a1.Length; i++)
                 if (a1[i] != a2[i])
                     return false;
             return true;
@@ -369,10 +369,10 @@ namespace RTreeLib
          */
         public override bool Equals(object obj)
         {
-            bool equals = false;
+            var equals = false;
             if (obj.GetType() == typeof(Rectangle))
             {
-                Rectangle r = (Rectangle)obj;
+                var r = (Rectangle)obj;
 #warning possible didn't convert properly
                 if (CompareArrays(r.min, min) && CompareArrays(r.max, max))
                 {
@@ -404,11 +404,11 @@ namespace RTreeLib
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             // min coordinates
             sb.Append('(');
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
                 if (i > 0)
                 {
@@ -419,7 +419,7 @@ namespace RTreeLib
             sb.Append("), (");
 
             // max coordinates
-            for (int i = 0; i < DIMENSIONS; i++)
+            for (var i = 0; i < DIMENSIONS; i++)
             {
                 if (i > 0)
                 {

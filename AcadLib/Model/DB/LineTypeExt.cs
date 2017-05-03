@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
@@ -20,7 +15,7 @@ namespace AcadLib
             var id = db.GetLayerId(lineTypeName);
             if (!id.IsNull) return id;
             
-            string file = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+            var file = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
                         "Support\\" + fileName);
             if (File.Exists(file))
             {

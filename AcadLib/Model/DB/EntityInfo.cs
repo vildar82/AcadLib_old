@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.DB
@@ -35,8 +31,8 @@ namespace AcadLib.DB
 
         public bool Equals(EntityInfo other)
         {
-            if (Object.ReferenceEquals(other, null)) return false;
-            if (Object.ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(other, null)) return false;
+            if (ReferenceEquals(this, other)) return true;
             var res = Extents.Equals(other.Extents) &&
                ClassId.Equals(other.ClassId) &&
                Color.Equals(other.Color) &&

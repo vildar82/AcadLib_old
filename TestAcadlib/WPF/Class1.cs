@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using System.ComponentModel;
 using Autodesk.AutoCAD.Runtime;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib.WPF
 {
@@ -14,7 +9,7 @@ namespace TestAcadlib.WPF
         [CommandMethod("TestWpf")]
         public void Test ()
         {
-            Window1 w = new WPF.Window1();
+            var w = new Window1();
             Application.ShowModalWindow(w);
         }
     }

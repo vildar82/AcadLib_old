@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using AcadLib.Blocks;
 
@@ -48,7 +46,7 @@ namespace AcadLib.Extensions
             var btr = (BlockTableRecord)blRef.BlockTableRecord.GetObject(OpenMode.ForRead);
             if (btr.HasAttributeDefinitions)
             {
-                foreach (ObjectId id in btr)
+                foreach (var id in btr)
                 {
                     if (!id.IsValidEx()) continue;
                     var attdef = id.GetObject(OpenMode.ForRead) as AttributeDefinition;
@@ -78,7 +76,7 @@ namespace AcadLib.Extensions
             }
             if (btr.HasAttributeDefinitions)
             {
-                foreach (ObjectId id in btr)
+                foreach (var id in btr)
                 {
                     if (!id.IsValidEx()) continue;
                     var attdef = tr.GetObject(id, OpenMode.ForRead) as AttributeDefinition;
@@ -102,7 +100,7 @@ namespace AcadLib.Extensions
         {
             if (obj.Database == null)
                 throw new ArgumentException("No database");
-            Transaction tr = obj.Database.TransactionManager.TopTransaction;
+            var tr = obj.Database.TransactionManager.TopTransaction;
             if (tr == null)
                 throw new InvalidOperationException("No active transaction");
             return tr;
@@ -110,10 +108,10 @@ namespace AcadLib.Extensions
 
         static string GetTag(DBText dbtext)
         {
-            AttributeDefinition attdef = dbtext as AttributeDefinition;
+            var attdef = dbtext as AttributeDefinition;
             if (attdef != null)
                 return attdef.Tag;
-            AttributeReference attref = dbtext as AttributeReference;
+            var attref = dbtext as AttributeReference;
             if (attref != null)
                 return attref.Tag;
             throw new ArgumentException("requires an AttributeDefintion or AttributeReference");

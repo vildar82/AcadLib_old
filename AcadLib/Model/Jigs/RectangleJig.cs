@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
@@ -34,7 +30,7 @@ namespace AcadLib.Jigs
             if (res.Status != PromptStatus.OK)            
                 throw new Exception(General.CanceledByUser);
 
-            SamplerStatus status = SamplerStatus.NoChange;
+            var status = SamplerStatus.NoChange;
             if (!Position.IsEqualTo(res.Value, Tolerance.Global))
             {
                 status = SamplerStatus.OK;
@@ -50,7 +46,7 @@ namespace AcadLib.Jigs
                 var pl = (Polyline)Entity;
                 var plPt1 = pl.GetPoint2dAt(0).Convert3d();
                 var vec = Position - plPt1;
-                Matrix3d trans = Matrix3d.Displacement(vec);
+                var trans = Matrix3d.Displacement(vec);
                 pl.TransformBy(trans);
                 return true;
             }

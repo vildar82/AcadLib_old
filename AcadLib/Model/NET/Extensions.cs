@@ -17,11 +17,11 @@ namespace Extensions
       /// </summary>
       public static T Include<T>(this Enum value, T append)
       {
-         Type type = value.GetType();
+         var type = value.GetType();
 
          //determine the values
          object result = value;
-         _Value parsed = new _Value(append, type);
+         var parsed = new _Value(append, type);
          if (parsed.Signed is long)
          {
             result = Convert.ToInt64(value) | (long)parsed.Signed;
@@ -40,11 +40,11 @@ namespace Extensions
       /// </summary>
       public static T Remove<T>(this Enum value, T remove)
       {
-         Type type = value.GetType();
+         var type = value.GetType();
 
          //determine the values
          object result = value;
-         _Value parsed = new _Value(remove, type);
+         var parsed = new _Value(remove, type);
          if (parsed.Signed is long)
          {
             result = Convert.ToInt64(value) & ~(long)parsed.Signed;
@@ -63,11 +63,11 @@ namespace Extensions
       /// </summary>
       public static bool Has<T>(this Enum value, T check)
       {
-         Type type = value.GetType();
+         var type = value.GetType();
 
          //determine the values
          object result = value;
-         _Value parsed = new _Value(check, type);
+         var parsed = new _Value(check, type);
          if (parsed.Signed is long)
          {
             return (Convert.ToInt64(value) &
@@ -89,7 +89,7 @@ namespace Extensions
       /// </summary>
       public static bool Missing<T>(this Enum obj, T value)
       {
-         return !EnumerationExtensions.Has<T>(obj, value);
+         return !Has<T>(obj, value);
       }
 
       #endregion
@@ -120,18 +120,18 @@ namespace Extensions
             }
 
             //then check for the enumerated value
-            Type compare = Enum.GetUnderlyingType(type);
+            var compare = Enum.GetUnderlyingType(type);
 
             //if this is an unsigned long then the only
             //value that can hold it would be a ulong
-            if (compare.Equals(_Value._UInt32) || compare.Equals(_Value._UInt64))
+            if (compare.Equals(_UInt32) || compare.Equals(_UInt64))
             {
-               this.Unsigned = Convert.ToUInt64(value);
+               Unsigned = Convert.ToUInt64(value);
             }
             //otherwise, a long should cover anything else
             else
             {
-               this.Signed = Convert.ToInt64(value);
+               Signed = Convert.ToInt64(value);
             }
 
          }

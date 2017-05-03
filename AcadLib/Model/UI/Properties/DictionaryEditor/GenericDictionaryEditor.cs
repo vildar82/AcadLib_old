@@ -26,20 +26,20 @@ namespace AcadLib.UI.Designer
 
         private GenericDictionaryEditorAttribute m_EditorAttribute;
 
-        private CollectionEditor.CollectionForm m_Form;
+        private CollectionForm m_Form;
 
         /// <summary>
         /// Creates a new form to display and edit the current collection.
         /// </summary>
         /// <returns>A <see cref="CollectionEditor.CollectionForm"/>  to provide as the user interface for editing the collection.</returns>
-        protected override CollectionEditor.CollectionForm CreateCollectionForm()
+        protected override CollectionForm CreateCollectionForm()
         {
             m_Form = base.CreateCollectionForm();
-            m_Form.Text = this.m_EditorAttribute.Title ?? "Редактор словаря";
+            m_Form.Text = m_EditorAttribute.Title ?? "Редактор словаря";
 
             // Die Eigenschaft "CollectionEditable" muss hier per Reflection gesetzt werden (ist protected)
-            Type formType = m_Form.GetType();
-            PropertyInfo pi = formType.GetProperty("CollectionEditable", BindingFlags.NonPublic | BindingFlags.Instance);
+            var formType = m_Form.GetType();
+            var pi = formType.GetProperty("CollectionEditable", BindingFlags.NonPublic | BindingFlags.Instance);
             pi.SetValue(m_Form, true, null);
 
             return m_Form;
@@ -57,22 +57,22 @@ namespace AcadLib.UI.Designer
             if (context == null)
                 throw new ArgumentNullException("context");
 
-            GenericDictionaryEditorAttribute attribute = context.PropertyDescriptor.Attributes[typeof(GenericDictionaryEditorAttribute)] as GenericDictionaryEditorAttribute;
+            var attribute = context.PropertyDescriptor.Attributes[typeof(GenericDictionaryEditorAttribute)] as GenericDictionaryEditorAttribute;
             if (attribute != null)
             {
-                this.m_EditorAttribute = attribute;
+                m_EditorAttribute = attribute;
 
-                if (this.m_EditorAttribute.KeyDefaultProviderType == null)
-                    this.m_EditorAttribute.KeyDefaultProviderType = typeof(DefaultProvider<TKey>);
+                if (m_EditorAttribute.KeyDefaultProviderType == null)
+                    m_EditorAttribute.KeyDefaultProviderType = typeof(DefaultProvider<TKey>);
 
-                if (this.m_EditorAttribute.ValueDefaultProviderType == null)
-                    this.m_EditorAttribute.ValueDefaultProviderType = typeof(DefaultProvider<TValue>);
+                if (m_EditorAttribute.ValueDefaultProviderType == null)
+                    m_EditorAttribute.ValueDefaultProviderType = typeof(DefaultProvider<TValue>);
             }
             else
             {
-                this.m_EditorAttribute = new GenericDictionaryEditorAttribute();
-                this.m_EditorAttribute.KeyDefaultProviderType = typeof(DefaultProvider<TKey>);
-                this.m_EditorAttribute.ValueDefaultProviderType = typeof(DefaultProvider<TValue>);
+                m_EditorAttribute = new GenericDictionaryEditorAttribute();
+                m_EditorAttribute.KeyDefaultProviderType = typeof(DefaultProvider<TKey>);
+                m_EditorAttribute.ValueDefaultProviderType = typeof(DefaultProvider<TValue>);
             }
 
             return base.EditValue(context, provider, value);
@@ -97,19 +97,19 @@ namespace AcadLib.UI.Designer
             TKey key;
             TValue value;
 
-            DefaultProvider<TKey> KeyDefaultProvider = Activator.CreateInstance(this.m_EditorAttribute.KeyDefaultProviderType) as DefaultProvider<TKey>;
+            var KeyDefaultProvider = Activator.CreateInstance(m_EditorAttribute.KeyDefaultProviderType) as DefaultProvider<TKey>;
             if (KeyDefaultProvider != null)
                 key = KeyDefaultProvider.GetDefault(DefaultUsage.Key);
             else
                 key = default(TKey);
 
-            DefaultProvider<TValue> ValueDefaultProvider = Activator.CreateInstance(this.m_EditorAttribute.ValueDefaultProviderType) as DefaultProvider<TValue>;
+            var ValueDefaultProvider = Activator.CreateInstance(m_EditorAttribute.ValueDefaultProviderType) as DefaultProvider<TValue>;
             if (ValueDefaultProvider != null)
                 value = ValueDefaultProvider.GetDefault(DefaultUsage.Value);
             else
                 value = default(TValue);
 
-            return new EditableKeyValuePair<TKey, TValue>(key, value, this.m_EditorAttribute);
+            return new EditableKeyValuePair<TKey, TValue>(key, value, m_EditorAttribute);
         }
 
         /// <summary>
@@ -123,16 +123,16 @@ namespace AcadLib.UI.Designer
             {
                 return new object[0];
             }
-            Dictionary<TKey, TValue> dictionary = editValue as Dictionary<TKey, TValue>;
+            var dictionary = editValue as Dictionary<TKey, TValue>;
             if (dictionary == null)
             {
                 throw new ArgumentNullException("editValue");
             }
-            object[] objArray = new object[dictionary.Count];
-            int num = 0;
-            foreach (KeyValuePair<TKey, TValue> entry in dictionary)
+            var objArray = new object[dictionary.Count];
+            var num = 0;
+            foreach (var entry in dictionary)
             {
-                EditableKeyValuePair<TKey, TValue> entry2 = new EditableKeyValuePair<TKey, TValue>(entry.Key, entry.Value, this.m_EditorAttribute);
+                var entry2 = new EditableKeyValuePair<TKey, TValue>(entry.Key, entry.Value, m_EditorAttribute);
                 objArray[num++] = entry2;
             }
             return objArray;
@@ -149,7 +149,7 @@ namespace AcadLib.UI.Designer
             if (value == null)
                 throw new ArgumentNullException("value");
 
-            IDictionary<TKey, TValue> dictionary = editValue as IDictionary<TKey, TValue>;
+            var dictionary = editValue as IDictionary<TKey, TValue>;
             if (dictionary == null)
             {
                 throw new ArgumentNullException("editValue");
@@ -169,7 +169,7 @@ namespace AcadLib.UI.Designer
         /// <returns>he display text for <paramref name="value"/>.</returns>
         protected override string GetDisplayText(object value)
         {
-            EditableKeyValuePair<TKey, TValue> pair = value as EditableKeyValuePair<TKey, TValue>;
+            var pair = value as EditableKeyValuePair<TKey, TValue>;
             if (pair != null)
                 return string.Format(CultureInfo.CurrentCulture, "{0}={1}", pair.Key, pair.Value);
             else

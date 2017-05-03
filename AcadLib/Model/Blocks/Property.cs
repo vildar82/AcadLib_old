@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
@@ -63,11 +60,11 @@ namespace AcadLib.Blocks
         /// </summary>        
         public static List<Property> GetAllProperties (BlockReference blRef)
         {
-            List<Property> props = new List<Property>();
+            var props = new List<Property>();
             var attrs = AttributeInfo.GetAttrRefs(blRef);
             foreach (var atr in attrs)
             {
-                Property prop = new Property(atr.Tag, atr.Text.Trim(), atr.IdAtr);                
+                var prop = new Property(atr.Tag, atr.Text.Trim(), atr.IdAtr);                
                 props.Add(prop);
             }
             props.AddRange(GetDynamicProperties(blRef));
@@ -79,7 +76,7 @@ namespace AcadLib.Blocks
         /// </summary>        
         public static List<Property> GetDynamicProperties (BlockReference blRef)
         {
-            List<Property> props = new List<Property>();
+            var props = new List<Property>();
             if (blRef.DynamicBlockReferencePropertyCollection!= null)
             {
                 foreach (DynamicBlockReferenceProperty dyn in blRef.DynamicBlockReferencePropertyCollection)
@@ -87,7 +84,7 @@ namespace AcadLib.Blocks
                     if (dyn.VisibleInCurrentVisibilityState)
                     {
                         if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase)) continue;
-                        Property prop = new Property(dyn);                        
+                        var prop = new Property(dyn);                        
                         props.Add(prop);
                     }
                 }
@@ -97,7 +94,7 @@ namespace AcadLib.Blocks
 
         private bool EqualValue(object value)
         {            
-            if (this.Value is double && value is double)
+            if (Value is double && value is double)
             {
                 return Math.Abs((double)Value - (double)value) < 0.0001;
             }

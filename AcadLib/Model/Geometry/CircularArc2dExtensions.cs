@@ -15,8 +15,8 @@ namespace AcadLib.Geometry
         /// <returns>The algebraic area.</returns>
         public static double AlgebricArea(this CircularArc2d arc)
         {
-            double rad = arc.Radius;
-            double ang = arc.IsClockWise ?
+            var rad = arc.Radius;
+            var ang = arc.IsClockWise ?
                 arc.StartAngle - arc.EndAngle :
                 arc.EndAngle - arc.StartAngle;
             return rad * rad * (ang - Math.Sin(ang)) / 2.0;
@@ -29,11 +29,11 @@ namespace AcadLib.Geometry
         /// <returns>The centroid of the arc.</returns>
         public static Point2d Centroid(this CircularArc2d arc)
         {
-            Point2d start = arc.StartPoint;
-            Point2d end = arc.EndPoint;
-            double area = arc.AlgebricArea();
-            double chord = start.GetDistanceTo(end);
-            double angle = (end - start).Angle;
+            var start = arc.StartPoint;
+            var end = arc.EndPoint;
+            var area = arc.AlgebricArea();
+            var chord = start.GetDistanceTo(end);
+            var angle = (end - start).Angle;
             return arc.Center.Polar(angle - (Math.PI / 2.0), (chord * chord * chord) / (12.0 * area));
         }
 
@@ -51,20 +51,20 @@ namespace AcadLib.Geometry
         public static LineSegment2d[] GetTangentsTo(this CircularArc2d arc, Point2d pt)
         {
             // check if the point is inside the circle
-            Point2d center = arc.Center;
+            var center = arc.Center;
             if (pt.GetDistanceTo(center) <= arc.Radius)
                 return null;
 
-            Vector2d vec = center.GetVectorTo(pt) / 2.0;
-            CircularArc2d tmp = new CircularArc2d(center + vec, vec.Length);
-            Point2d[] inters = arc.IntersectWith(tmp);
+            var vec = center.GetVectorTo(pt) / 2.0;
+            var tmp = new CircularArc2d(center + vec, vec.Length);
+            var inters = arc.IntersectWith(tmp);
             if (inters == null)
                 return null;
-            LineSegment2d[] result = new LineSegment2d[2];
-            Vector2d v1 = inters[0] - center;
-            Vector2d v2 = inters[1] - center;
-            int i = vec.X * v1.Y - vec.Y - v1.X > 0 ? 0 : 1;
-            int j = i ^ 1;
+            var result = new LineSegment2d[2];
+            var v1 = inters[0] - center;
+            var v2 = inters[1] - center;
+            var i = vec.X * v1.Y - vec.Y - v1.X > 0 ? 0 : 1;
+            var j = i ^ 1;
             result[i] = new LineSegment2d(inters[0], pt);
             result[j] = new LineSegment2d(inters[1], pt);
             return result;
@@ -85,12 +85,12 @@ namespace AcadLib.Geometry
         public static LineSegment2d[] GetTangentsTo(this CircularArc2d arc, CircularArc2d other, TangentType flags)
         {
             // check if a circle is inside the other
-            double dist = arc.Center.GetDistanceTo(other.Center);
+            var dist = arc.Center.GetDistanceTo(other.Center);
             if (dist - Math.Abs(arc.Radius - other.Radius) <= Tolerance.Global.EqualPoint)
                 return null;
 
             // check if circles overlap
-            bool overlap = arc.Radius + other.Radius >= dist;
+            var overlap = arc.Radius + other.Radius >= dist;
             if (overlap && flags == TangentType.Inner)
                 return null;
 
@@ -98,14 +98,14 @@ namespace AcadLib.Geometry
             Point2d[] inters;
             Vector2d vec1, vec2, vec = other.Center - arc.Center;
             int i, j;
-            LineSegment2d[] result = new LineSegment2d[(int)flags == 3 && !overlap ? 4 : 2];
+            var result = new LineSegment2d[(int)flags == 3 && !overlap ? 4 : 2];
 
             // outer tangents
             if ((flags & TangentType.Outer) > 0)
             {
                 if (arc.Radius == other.Radius)
                 {
-                    Line2d perp = new Line2d(arc.Center, vec.GetPerpendicularVector());
+                    var perp = new Line2d(arc.Center, vec.GetPerpendicularVector());
                     inters = arc.IntersectWith(perp);
                     if (inters == null)
                         return null;
@@ -118,7 +118,7 @@ namespace AcadLib.Geometry
                 }
                 else
                 {
-                    Point2d center = arc.Radius < other.Radius ? other.Center : arc.Center;
+                    var center = arc.Radius < other.Radius ? other.Center : arc.Center;
                     tmp1 = new CircularArc2d(center, Math.Abs(arc.Radius - other.Radius));
                     tmp2 = new CircularArc2d(arc.Center + vec / 2.0, dist / 2.0);
                     inters = tmp1.IntersectWith(tmp2);
@@ -136,7 +136,7 @@ namespace AcadLib.Geometry
             // inner tangents
             if ((flags & TangentType.Inner) > 0 && !overlap)
             {
-                double ratio = (arc.Radius / (arc.Radius + other.Radius)) / 2.0;
+                var ratio = (arc.Radius / (arc.Radius + other.Radius)) / 2.0;
                 tmp1 = new CircularArc2d(arc.Center + vec * ratio, dist * ratio);
                 inters = arc.IntersectWith(tmp1);
                 if (inters == null)

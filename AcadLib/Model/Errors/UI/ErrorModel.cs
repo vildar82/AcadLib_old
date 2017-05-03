@@ -3,12 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using NetLib;
-using AcadLib;
 
 namespace AcadLib.Errors
 {
@@ -37,7 +34,7 @@ namespace AcadLib.Errors
             if (sameErrors.Skip(1).Any())
             {
                 SameErrors = new ObservableCollection<ErrorModel>();
-                for (int i =0; i<sameErrors.Count; i++)
+                for (var i =0; i<sameErrors.Count; i++)
                 {
                     SameErrors.Add(new ErrorModel(sameErrors[i], this));
                 }                

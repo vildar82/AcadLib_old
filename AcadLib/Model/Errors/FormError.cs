@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Microsoft.Office.Interop.Excel;
 using System.Diagnostics;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Errors
 {
     public class FormError : Form
     {
-        private Editor ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
+        private Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
         private BindingSource _binding;
         private System.Windows.Forms.TextBox textBoxErr;
         private System.Windows.Forms.Button buttonShow;
@@ -45,8 +41,8 @@ namespace AcadLib.Errors
 
         public FormError(List<IError> errors, bool modal)
         {
-            this.KeyPreview = true;
-            this._errors = errors;
+            KeyPreview = true;
+            _errors = errors;
             InitializeComponent();
             EnableDialog(modal);                        
 
@@ -77,10 +73,10 @@ namespace AcadLib.Errors
         private void buttonShow_Click(object sender, EventArgs e)
         {
             errorProvider1.Clear();
-            IError err = (IError)listBoxError.SelectedItem;
+            var err = (IError)listBoxError.SelectedItem;
             if (err != null && err.Extents.Diagonal()!=0 && ed.Document != null)
             {
-                Document curDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                var curDoc = Application.DocumentManager.MdiActiveDocument;
                 if (ed.Document != curDoc)
                 {
                     errorProvider1.SetError(buttonShow, $"Должен быть активен документ {ed.Document.Name}");
@@ -106,7 +102,7 @@ namespace AcadLib.Errors
 
         private void listBoxError_SelectedIndexChanged(object sender, EventArgs e)
         {
-            IError err = (IError)listBoxError.SelectedItem;
+            var err = (IError)listBoxError.SelectedItem;
             buttonShow.Visible = err.Extents.Diagonal()>1;            
         }
 
@@ -125,7 +121,7 @@ namespace AcadLib.Errors
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -376,13 +372,13 @@ namespace AcadLib.Errors
                     return;
 
                 // Открываем книгу
-                Workbook workBook = excelApp.Workbooks.Add();
+                var workBook = excelApp.Workbooks.Add();
 
                 // Получаем активную таблицу
-                Worksheet worksheet = workBook.ActiveSheet as Worksheet;
+                var worksheet = workBook.ActiveSheet as Worksheet;
                 worksheet.Name = "Ошибки";
 
-                int row = 1;
+                var row = 1;
                 // Название
                 worksheet.Cells[row, 1].Value = "Список ошибок";
                 row++;
@@ -406,12 +402,12 @@ namespace AcadLib.Errors
 
         private void listBoxError_DrawItem(object sender, DrawItemEventArgs e)
         {
-            System.Windows.Forms.ListBox list = (System.Windows.Forms.ListBox)sender;
+            var list = (System.Windows.Forms.ListBox)sender;
             if (e.Index > -1)
             {
                 e.DrawBackground();
                 e.DrawFocusRectangle();
-                IError error = list.Items[e.Index] as IError;
+                var error = list.Items[e.Index] as IError;
                 if (error != null)
                 {
                     if (error.Icon != null)
@@ -419,8 +415,8 @@ namespace AcadLib.Errors
                         System.Drawing.Image image = new Bitmap(error.Icon.ToBitmap(), 24, 24);
                         e.Graphics.DrawImage(image, e.Bounds.X, e.Bounds.Y + 1);
                     }
-                    int xDelta = 24 + 5;
-                    SizeF size = e.Graphics.MeasureString(error.ShortMsg, e.Font);
+                    var xDelta = 24 + 5;
+                    var size = e.Graphics.MeasureString(error.ShortMsg, e.Font);
                     e.Graphics.DrawString(error.ShortMsg, e.Font, Brushes.Black, e.Bounds.Left + xDelta, e.Bounds.Top + (e.Bounds.Height / 2 - size.Height / 2));
                 }
             }
@@ -546,7 +542,7 @@ namespace AcadLib.Errors
             }
             else
             {
-                string subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";
+                var subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";
                 SendMail(subject);
                 //FormReport frmReport = new FormReport();
                 //var res = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frmReport);
@@ -563,7 +559,7 @@ namespace AcadLib.Errors
             if (e.KeyCode == Keys.Escape)
             {
                 DialogResult = DialogResult.Cancel;
-                this.Close();
+                Close();
             }
         }
 

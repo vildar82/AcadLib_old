@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
@@ -89,7 +86,7 @@ namespace AcadLib.Blocks
                     {
                         if (atrRef.Visible)
                         {
-                            AttributeInfo ai = new AttributeInfo(atrRef);
+                            var ai = new AttributeInfo(atrRef);
                             resVal.Add(ai);
                         }
                     }

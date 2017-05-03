@@ -39,7 +39,7 @@ namespace AcadLib.Properties {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AcadLib.Properties.Resources", typeof(Resources).Assembly);
+                    var temp = new global::System.Resources.ResourceManager("AcadLib.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -65,7 +65,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap Collapse {
             get {
-                object obj = ResourceManager.GetObject("Collapse", resourceCulture);
+                var obj = ResourceManager.GetObject("Collapse", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -75,7 +75,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap Delete {
             get {
-                object obj = ResourceManager.GetObject("Delete", resourceCulture);
+                var obj = ResourceManager.GetObject("Delete", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -85,7 +85,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap DeleteAll {
             get {
-                object obj = ResourceManager.GetObject("DeleteAll", resourceCulture);
+                var obj = ResourceManager.GetObject("DeleteAll", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -95,7 +95,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap excel {
             get {
-                object obj = ResourceManager.GetObject("excel", resourceCulture);
+                var obj = ResourceManager.GetObject("excel", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -105,7 +105,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap Expand {
             get {
-                object obj = ResourceManager.GetObject("Expand", resourceCulture);
+                var obj = ResourceManager.GetObject("Expand", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -115,7 +115,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Icon house {
             get {
-                object obj = ResourceManager.GetObject("house", resourceCulture);
+                var obj = ResourceManager.GetObject("house", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -125,7 +125,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap logo {
             get {
-                object obj = ResourceManager.GetObject("logo", resourceCulture);
+                var obj = ResourceManager.GetObject("logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -135,7 +135,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Icon pik {
             get {
-                object obj = ResourceManager.GetObject("pik", resourceCulture);
+                var obj = ResourceManager.GetObject("pik", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -145,7 +145,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap PIK_XDataView {
             get {
-                object obj = ResourceManager.GetObject("PIK_XDataView", resourceCulture);
+                var obj = ResourceManager.GetObject("PIK_XDataView", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -155,7 +155,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap report {
             get {
-                object obj = ResourceManager.GetObject("report", resourceCulture);
+                var obj = ResourceManager.GetObject("report", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -165,7 +165,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap send {
             get {
-                object obj = ResourceManager.GetObject("send", resourceCulture);
+                var obj = ResourceManager.GetObject("send", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -175,7 +175,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap send2 {
             get {
-                object obj = ResourceManager.GetObject("send2", resourceCulture);
+                var obj = ResourceManager.GetObject("send2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -185,7 +185,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap Show {
             get {
-                object obj = ResourceManager.GetObject("Show", resourceCulture);
+                var obj = ResourceManager.GetObject("Show", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -195,7 +195,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap txt {
             get {
-                object obj = ResourceManager.GetObject("txt", resourceCulture);
+                var obj = ResourceManager.GetObject("txt", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -205,7 +205,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap unknown {
             get {
-                object obj = ResourceManager.GetObject("unknown", resourceCulture);
+                var obj = ResourceManager.GetObject("unknown", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -215,7 +215,7 @@ namespace AcadLib.Properties {
         /// </summary>
         public static System.Drawing.Bitmap update {
             get {
-                object obj = ResourceManager.GetObject("update", resourceCulture);
+                var obj = ResourceManager.GetObject("update", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

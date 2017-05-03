@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
@@ -60,8 +59,8 @@ namespace AcadLib.Geometry
         /// <param name="pline">A Polyline instance.</param>
         public PolylineSegmentCollection(Polyline pline)
         {
-            int n = pline.NumberOfVertices - 1;
-            for (int i = 0; i < n; i++)
+            var n = pline.NumberOfVertices - 1;
+            for (var i = 0; i < n; i++)
             {
                 _contents.Add(new PolylineSegment(
                     pline.GetPoint2dAt(i),
@@ -87,11 +86,11 @@ namespace AcadLib.Geometry
         /// <param name="pline">A Polyline2d instance.</param>
         public PolylineSegmentCollection(Polyline2d pline)
         {
-            Vertex2d[] vertices = pline.GetVertices().ToArray();
-            int n = vertices.Length - 1;
-            for (int i = 0; i < n; i++)
+            var vertices = pline.GetVertices().ToArray();
+            var n = vertices.Length - 1;
+            for (var i = 0; i < n; i++)
             {
-                Vertex2d vertex = vertices[i];
+                var vertex = vertices[i];
                 _contents.Add(new PolylineSegment(
                     vertex.Position.Convert2d(),
                     vertices[i + 1].Position.Convert2d(),
@@ -101,7 +100,7 @@ namespace AcadLib.Geometry
             }
             if (pline.Closed == true)
             {
-                Vertex2d vertex = vertices[n];
+                var vertex = vertices[n];
                 _contents.Add(new PolylineSegment(
                     vertex.Position.Convert2d(),
                     vertices[0].Position.Convert2d(),
@@ -117,9 +116,9 @@ namespace AcadLib.Geometry
         /// <param name="circle">A Circle instance.</param>
         public PolylineSegmentCollection(Circle circle)
         {
-            Plane plane = new Plane(Point3d.Origin, circle.Normal);
-            Point2d cen = circle.Center.Convert2d(plane);
-            Vector2d vec = new Vector2d(circle.Radius, 0.0);
+            var plane = new Plane(Point3d.Origin, circle.Normal);
+            var cen = circle.Center.Convert2d(plane);
+            var vec = new Vector2d(circle.Radius, 0.0);
             _contents.Add(new PolylineSegment(cen + vec, cen - vec, 1.0));
             _contents.Add(new PolylineSegment(cen - vec, cen + vec, 1.0));
         }
@@ -131,39 +130,39 @@ namespace AcadLib.Geometry
         public PolylineSegmentCollection(Ellipse ellipse)
         {
             // PolylineSegmentCollection figuring the closed ellipse
-            double pi = Math.PI;
-            Plane plane = new Plane(Point3d.Origin, ellipse.Normal);
-            Point3d cen3d = ellipse.Center;
-            Point3d pt3d0 = cen3d + ellipse.MajorAxis;
-            Point3d pt3d4 = cen3d + ellipse.MinorAxis;
-            Point3d pt3d2 = ellipse.GetPointAtParameter(pi / 4.0);
-            Point2d cen = cen3d.Convert2d(plane);
-            Point2d pt0 = pt3d0.Convert2d(plane);
-            Point2d pt2 = pt3d2.Convert2d(plane);
-            Point2d pt4 = pt3d4.Convert2d(plane);
-            Line2d line01 = new Line2d(pt0, (pt4 - cen).GetNormal() + (pt2 - pt0).GetNormal());
-            Line2d line21 = new Line2d(pt2, (pt0 - pt4).GetNormal() + (pt0 - pt2).GetNormal());
-            Line2d line23 = new Line2d(pt2, (pt4 - pt0).GetNormal() + (pt4 - pt2).GetNormal());
-            Line2d line43 = new Line2d(pt4, (pt0 - cen).GetNormal() + (pt2 - pt4).GetNormal());
-            Line2d majAx = new Line2d(cen, pt0);
-            Line2d minAx = new Line2d(cen, pt4);
-            Point2d pt1 = line01.IntersectWith(line21)[0];
-            Point2d pt3 = line23.IntersectWith(line43)[0];
-            Point2d pt5 = pt3.TransformBy(Matrix2d.Mirroring(minAx));
-            Point2d pt6 = pt2.TransformBy(Matrix2d.Mirroring(minAx));
-            Point2d pt7 = pt1.TransformBy(Matrix2d.Mirroring(minAx));
-            Point2d pt8 = pt0.TransformBy(Matrix2d.Mirroring(minAx));
-            Point2d pt9 = pt7.TransformBy(Matrix2d.Mirroring(majAx));
-            Point2d pt10 = pt6.TransformBy(Matrix2d.Mirroring(majAx));
-            Point2d pt11 = pt5.TransformBy(Matrix2d.Mirroring(majAx));
-            Point2d pt12 = pt4.TransformBy(Matrix2d.Mirroring(majAx));
-            Point2d pt13 = pt3.TransformBy(Matrix2d.Mirroring(majAx));
-            Point2d pt14 = pt2.TransformBy(Matrix2d.Mirroring(majAx));
-            Point2d pt15 = pt1.TransformBy(Matrix2d.Mirroring(majAx));
-            double bulge1 = Math.Tan((pt4 - cen).GetAngleTo(pt1 - pt0) / 2.0);
-            double bulge2 = Math.Tan((pt1 - pt2).GetAngleTo(pt0 - pt4) / 2.0);
-            double bulge3 = Math.Tan((pt4 - pt0).GetAngleTo(pt3 - pt2) / 2.0);
-            double bulge4 = Math.Tan((pt3 - pt4).GetAngleTo(pt0 - cen) / 2.0);
+            var pi = Math.PI;
+            var plane = new Plane(Point3d.Origin, ellipse.Normal);
+            var cen3d = ellipse.Center;
+            var pt3d0 = cen3d + ellipse.MajorAxis;
+            var pt3d4 = cen3d + ellipse.MinorAxis;
+            var pt3d2 = ellipse.GetPointAtParameter(pi / 4.0);
+            var cen = cen3d.Convert2d(plane);
+            var pt0 = pt3d0.Convert2d(plane);
+            var pt2 = pt3d2.Convert2d(plane);
+            var pt4 = pt3d4.Convert2d(plane);
+            var line01 = new Line2d(pt0, (pt4 - cen).GetNormal() + (pt2 - pt0).GetNormal());
+            var line21 = new Line2d(pt2, (pt0 - pt4).GetNormal() + (pt0 - pt2).GetNormal());
+            var line23 = new Line2d(pt2, (pt4 - pt0).GetNormal() + (pt4 - pt2).GetNormal());
+            var line43 = new Line2d(pt4, (pt0 - cen).GetNormal() + (pt2 - pt4).GetNormal());
+            var majAx = new Line2d(cen, pt0);
+            var minAx = new Line2d(cen, pt4);
+            var pt1 = line01.IntersectWith(line21)[0];
+            var pt3 = line23.IntersectWith(line43)[0];
+            var pt5 = pt3.TransformBy(Matrix2d.Mirroring(minAx));
+            var pt6 = pt2.TransformBy(Matrix2d.Mirroring(minAx));
+            var pt7 = pt1.TransformBy(Matrix2d.Mirroring(minAx));
+            var pt8 = pt0.TransformBy(Matrix2d.Mirroring(minAx));
+            var pt9 = pt7.TransformBy(Matrix2d.Mirroring(majAx));
+            var pt10 = pt6.TransformBy(Matrix2d.Mirroring(majAx));
+            var pt11 = pt5.TransformBy(Matrix2d.Mirroring(majAx));
+            var pt12 = pt4.TransformBy(Matrix2d.Mirroring(majAx));
+            var pt13 = pt3.TransformBy(Matrix2d.Mirroring(majAx));
+            var pt14 = pt2.TransformBy(Matrix2d.Mirroring(majAx));
+            var pt15 = pt1.TransformBy(Matrix2d.Mirroring(majAx));
+            var bulge1 = Math.Tan((pt4 - cen).GetAngleTo(pt1 - pt0) / 2.0);
+            var bulge2 = Math.Tan((pt1 - pt2).GetAngleTo(pt0 - pt4) / 2.0);
+            var bulge3 = Math.Tan((pt4 - pt0).GetAngleTo(pt3 - pt2) / 2.0);
+            var bulge4 = Math.Tan((pt3 - pt4).GetAngleTo(pt0 - cen) / 2.0);
             _contents.Add(new PolylineSegment(pt0, pt1, bulge1));
             _contents.Add(new PolylineSegment(pt1, pt2, bulge2));
             _contents.Add(new PolylineSegment(pt2, pt3, bulge3));
@@ -185,13 +184,13 @@ namespace AcadLib.Geometry
             if (!ellipse.Closed)
             {
                 double startParam, endParam;
-                Point2d startPoint = ellipse.StartPoint.Convert2d(plane);
-                Point2d endPoint = ellipse.EndPoint.Convert2d(plane);
+                var startPoint = ellipse.StartPoint.Convert2d(plane);
+                var endPoint = ellipse.EndPoint.Convert2d(plane);
 
                 // index of the PolylineSegment closest to the ellipse start point
-                int startIndex = GetClosestSegmentIndexTo(startPoint);
+                var startIndex = GetClosestSegmentIndexTo(startPoint);
                 // start point on the PolylineSegment
-                Point2d pt = _contents[startIndex].ToCurve2d().GetClosestPointTo(startPoint).Point;
+                var pt = _contents[startIndex].ToCurve2d().GetClosestPointTo(startPoint).Point;
                 // if the point is equal to the PolylineSegment end point, jump the next segment in collection
                 if (pt.IsEqualTo(_contents[startIndex].EndPoint))
                 {
@@ -208,7 +207,7 @@ namespace AcadLib.Geometry
                 }
 
                 // index of the PolylineSegment closest to the ellipse end point
-                int endIndex = GetClosestSegmentIndexTo(endPoint);
+                var endIndex = GetClosestSegmentIndexTo(endPoint);
                 // end point on the PolylineSegment
                 pt = _contents[endIndex].ToCurve2d().GetClosestPointTo(endPoint).Point;
                 // if the point is equals to the PolylineSegment startPoint, jump to the previous segment
@@ -243,7 +242,7 @@ namespace AcadLib.Geometry
                 // if both points are on the same segment
                 if (startIndex == endIndex)
                 {
-                    PolylineSegment segment = _contents[startIndex];
+                    var segment = _contents[startIndex];
                     _contents.Clear();
                     _contents.Add(segment);
                 }
@@ -283,11 +282,11 @@ namespace AcadLib.Geometry
         /// <returns>The zero-based index of the segment in the PolylineSegmentCollection.</returns>
         public int GetClosestSegmentIndexTo(Point2d pt)
         {
-            int result = 0;
-            double dist = _contents[0].ToCurve2d().GetDistanceTo(pt);
-            for (int i = 1; i < Count; i++)
+            var result = 0;
+            var dist = _contents[0].ToCurve2d().GetDistanceTo(pt);
+            for (var i = 1; i < Count; i++)
             {
-                double tmpDist = _contents[i].ToCurve2d().GetDistanceTo(pt);
+                var tmpDist = _contents[i].ToCurve2d().GetDistanceTo(pt);
                 if (tmpDist < dist)
                 {
                     result = i;
@@ -325,19 +324,19 @@ namespace AcadLib.Geometry
         /// <returns>A List of PolylineSegmentCollection instances.</returns>
         public List<PolylineSegmentCollection> Join(Tolerance tol)
         {
-            List<PolylineSegmentCollection> result = new List<PolylineSegmentCollection>();
-            PolylineSegmentCollection clone = new PolylineSegmentCollection(_contents);
+            var result = new List<PolylineSegmentCollection>();
+            var clone = new PolylineSegmentCollection(_contents);
             while (clone.Count > 0)
             {
-                PolylineSegmentCollection newCol = new PolylineSegmentCollection();
-                PolylineSegment seg = clone[0];
+                var newCol = new PolylineSegmentCollection();
+                var seg = clone[0];
                 newCol.Add(seg);
-                Point2d start = seg.StartPoint;
-                Point2d end = seg.EndPoint;
+                var start = seg.StartPoint;
+                var end = seg.EndPoint;
                 clone.RemoveAt(0);
                 while (true)
                 {
-                    int i = clone.FindIndex(s => s.StartPoint.IsEqualTo(end, tol));
+                    var i = clone.FindIndex(s => s.StartPoint.IsEqualTo(end, tol));
                     if (i >= 0)
                     {
                         seg = clone[i];
@@ -397,7 +396,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public void Reverse()
         {
-            for (int i = 0; i < Count; i++)
+            for (var i = 0; i < Count; i++)
             {
                 _contents[i].Inverse();
             }
@@ -410,13 +409,13 @@ namespace AcadLib.Geometry
         /// <returns>A Polyline instance.</returns>
         public Polyline ToPolyline()
         {
-            Polyline pline = new Polyline();
-            for (int i = 0; i < _contents.Count; i++)
+            var pline = new Polyline();
+            for (var i = 0; i < _contents.Count; i++)
             {
-                PolylineSegment seg = _contents[i];
+                var seg = _contents[i];
                 pline.AddVertexAt(i, seg.StartPoint, seg.Bulge, seg.StartWidth, seg.EndWidth);
             }
-            int j = _contents.Count;
+            var j = _contents.Count;
             pline.AddVertexAt(j, this[j - 1].EndPoint, 0.0, _contents[j - 1].EndWidth, _contents[0].StartWidth);
             if (pline.GetPoint2dAt(0).IsEqualTo(pline.GetPoint2dAt(j)))
             {
@@ -556,7 +555,7 @@ namespace AcadLib.Geometry
         /// <returns>An IEnumerable&lt;PolylineSegment&gt; enumerator for the PolylineSegmentCollection.</returns>
         public IEnumerator<PolylineSegment> GetEnumerator()
         {
-            foreach (PolylineSegment seg in _contents) yield return seg;
+            foreach (var seg in _contents) yield return seg;
         }
 
         #endregion
@@ -569,7 +568,7 @@ namespace AcadLib.Geometry
         /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         #endregion

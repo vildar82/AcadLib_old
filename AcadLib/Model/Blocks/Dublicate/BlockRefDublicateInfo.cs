@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -39,7 +36,7 @@ namespace AcadLib.Blocks.Dublicate
 
         private double getRotateToModel(double rotation, double rotateToModel)
         {
-            double res = rotation + rotateToModel;
+            var res = rotation + rotateToModel;
             if (res > pi2)
             {
                 res -= pi2;
@@ -49,7 +46,7 @@ namespace AcadLib.Blocks.Dublicate
 
         public bool Equals(BlockRefDublicateInfo other)
         {
-            double rotDiff = Math.Abs(Rotation - other.Rotation);
+            var rotDiff = Math.Abs(Rotation - other.Rotation);
             return Name.Equals(other.Name) &&
                    Position.IsEqualTo(other.Position, CheckDublicateBlocks.Tolerance) &&
                    (

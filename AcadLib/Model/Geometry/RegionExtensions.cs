@@ -15,7 +15,7 @@ namespace AcadLib.Geometry
         /// <returns>The centroid of the region (WCS coordinates).</returns>
         public static Point3d Centroid(this Region reg)
         {
-            using (Solid3d sol = new Solid3d())
+            using (var sol = new Solid3d())
             {
                 sol.Extrude(reg, 2.0, 0.0);
                 return sol.MassProperties.Centroid - reg.Normal;

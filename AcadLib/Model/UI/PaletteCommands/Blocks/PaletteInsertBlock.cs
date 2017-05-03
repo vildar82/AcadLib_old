@@ -1,13 +1,9 @@
 ﻿using AcadLib.Blocks;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using MicroMvvm;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.PaletteCommands
 {
@@ -55,7 +51,7 @@ namespace AcadLib.PaletteCommands
         {
             var resCan = false;
             // Проверить, есть ли в текущем чертеже такой блок
-            var doc = Application.DocumentManager.MdiActiveDocument;
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return resCan;
             var db = doc.Database;
             using (var bt = db.BlockTableId.Open(OpenMode.ForRead) as BlockTable)

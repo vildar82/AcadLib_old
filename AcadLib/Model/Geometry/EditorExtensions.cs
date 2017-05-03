@@ -1,6 +1,4 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using AcRx = Autodesk.AutoCAD.Runtime;
 
@@ -41,11 +39,11 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <returns>The DCS to WCS transformation matrix.</returns>
         public static Matrix3d DCS2WCS(this Editor ed)
         {
-            Matrix3d retVal = new Matrix3d();
-            bool tilemode = ed.Document.Database.TileMode;
+            var retVal = new Matrix3d();
+            var tilemode = ed.Document.Database.TileMode;
             if (!tilemode)
                 ed.SwitchToModelSpace();
-            using (ViewTableRecord vtr = ed.GetCurrentView())
+            using (var vtr = ed.GetCurrentView())
             {
                 retVal =
                     Matrix3d.Rotation(-vtr.ViewTwist, vtr.ViewDirection, vtr.Target) *
@@ -80,12 +78,12 @@ namespace Autodesk.AutoCAD.EditorInput
         /// eCannotChangeActiveViewport is thrown if there is none floating viewport in the current layout.</exception>
         public static Matrix3d DCS2PSDCS(this Editor ed)
         {
-            Database db = ed.Document.Database;
+            var db = ed.Document.Database;
             if (db.TileMode)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NotInPaperspace);
-            using (Transaction tr = db.TransactionManager.StartTransaction())
+            using (var tr = db.TransactionManager.StartTransaction())
             {
-                Viewport vp =
+                var vp =
                     (Viewport)tr.GetObject(ed.CurrentViewportObjectId, OpenMode.ForRead);
                 if (vp.Number == 1)
                 {

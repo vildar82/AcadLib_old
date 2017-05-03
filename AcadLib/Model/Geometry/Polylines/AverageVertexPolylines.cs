@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AcadLib.Geometry;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -26,7 +23,7 @@ namespace AcadLib.Geometry
         public static void AverageVertexes(this Polyline pl,ref Polyline plOther, Tolerance tolerance)
         {
             var ptsOther = plOther.GetPoints();
-            for (int i = 0; i < pl.NumberOfVertices; i++)
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 var pt = pl.GetPoint2dAt(i);
                 var nearestPtOther = ptsOther.Where(p => p.IsEqualTo(pt, tolerance));
@@ -61,7 +58,7 @@ namespace AcadLib.Geometry
             var ptsOther = plOther.GetPoints();
             // Индексы вершин второй полилинии совпадающие с первой
             var averageVertexesOther = new List<int>();
-            for (int i = 0; i < pl.NumberOfVertices; i++)
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 var pt = pl.GetPoint3dAt(i);
                 var pt2d = pt.Convert2d();
@@ -88,7 +85,7 @@ namespace AcadLib.Geometry
             // Приклеивание вершин второй полилинии к сегментам первой
             if (stickToSegment)
             {
-                for (int i = 0; i < ptsOther.Count; i++)
+                for (var i = 0; i < ptsOther.Count; i++)
                 {
                     if (!averageVertexesOther.Contains(i))
                     {

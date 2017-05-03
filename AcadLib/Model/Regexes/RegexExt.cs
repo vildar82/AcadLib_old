@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace AcadLib.Regexes
 {
@@ -15,7 +10,7 @@ namespace AcadLib.Regexes
         /// </summary>        
         public static int StartInt(this string input)
         {
-            int value = 0;
+            var value = 0;
             var resRegex = Regex.Match(input, @"^\d+");
             if (resRegex.Success)
             {

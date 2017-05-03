@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using System.Windows;
 
@@ -101,18 +98,18 @@ namespace AcadLib.Errors
 
         private Error(Error err)
         {            
-            this._msg = err._msg;
-            this._shortMsg = err._shortMsg;
-            this._idEnt = err._idEnt;
-            this._alreadyCalcExtents = err._alreadyCalcExtents;
-            this._isNullExtents = err._isNullExtents;
-            this._extents = err._extents;
-            this._hasEntity = err._hasEntity;
-            this.Icon = err.Icon;
-            this.Trans = err.Trans;
-            this.Tag = err.Tag;
-            this.CanShow = err.CanShow;
-            this.Status = err.Status;            
+            _msg = err._msg;
+            _shortMsg = err._shortMsg;
+            _idEnt = err._idEnt;
+            _alreadyCalcExtents = err._alreadyCalcExtents;
+            _isNullExtents = err._isNullExtents;
+            _extents = err._extents;
+            _hasEntity = err._hasEntity;
+            Icon = err.Icon;
+            Trans = err.Trans;
+            Tag = err.Tag;
+            CanShow = err.CanShow;
+            Status = err.Status;            
         }               
 
         public Error(string message, Icon icon = null)
@@ -221,7 +218,7 @@ namespace AcadLib.Errors
 
         protected string GetShortMsg(string msg)
         {
-            string resVal = string.Empty;
+            var resVal = string.Empty;
             if (msg.Length > 200)
             {
                 resVal = msg.Substring(0, 200);

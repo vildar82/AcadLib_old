@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
@@ -13,17 +10,17 @@ namespace AcadLib.XData.Viewer
     {
         public static void View()
         {
-            var doc = Application.DocumentManager.MdiActiveDocument;
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
-            Editor ed = doc.Editor;
-            Database db = doc.Database;
+            var ed = doc.Editor;
+            var db = doc.Database;
 
             var opt = new PromptEntityOptions("\nВыбери приметив:");
             var res = ed.GetEntity(opt);
             if (res.Status == PromptStatus.OK)
             {
-                StringBuilder sbInfo = new StringBuilder();
-                string entName = string.Empty;
+                var sbInfo = new StringBuilder();
+                var entName = string.Empty;
                 using (var t = db.TransactionManager.StartTransaction())
                 {                    
                     var ent = res.ObjectId.GetObject(OpenMode.ForRead, false, true) as Entity;
@@ -49,7 +46,7 @@ namespace AcadLib.XData.Viewer
                     }
                     t.Commit();
                 }                
-                FormXDataView formXdataView = new FormXDataView(sbInfo.ToString(), entName);
+                var formXdataView = new FormXDataView(sbInfo.ToString(), entName);
                 Application.ShowModalDialog(formXdataView);
             }
         }

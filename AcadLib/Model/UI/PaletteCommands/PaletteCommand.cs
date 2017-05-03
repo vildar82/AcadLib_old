@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Autodesk.AutoCAD.ApplicationServices;
 using System.Windows.Input;
 using MicroMvvm;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.PaletteCommands
 {
@@ -45,12 +42,12 @@ namespace AcadLib.PaletteCommands
 
         public PaletteCommand(string name, Bitmap image, string command, string description, string group = "")
         {   
-            this.Image = GetSource(image);
-            this.Name = name;
-            this.CommandName = command;
+            Image = GetSource(image);
+            Name = name;
+            CommandName = command;
             Command = new RelayCommand(Execute);
-            this.Description = description;
-            this.Group = group;
+            Description = description;
+            Group = group;
             // HelpMedia
             HelpMedia = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
                 AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, "Help", command, command + ".mp4");

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Colors
 {
@@ -38,7 +34,7 @@ namespace AcadLib.Colors
                     Options.Show();
 
                     // Чтение палитры NCS
-                    ColorBook colorBookNcs = ColorBook.ReadFromFile(Options.Instance.NCSFile);
+                    var colorBookNcs = ColorBook.ReadFromFile(Options.Instance.NCSFile);
 
                     // Запрос точки начала генерации палитр цветов
                     var ptStart = ed.GetPointWCS("Точка вставки");
@@ -54,16 +50,16 @@ namespace AcadLib.Colors
 
         private static void placementColors(BlockTableRecord cs, ColorBook colorBookNcs, Point3d ptStart)
         {
-            Transaction t = db.TransactionManager.TopTransaction;
+            var t = db.TransactionManager.TopTransaction;
 
             double widthLayout = Options.Instance.Width;
             double heightLayout = Options.Instance.Height;
 
-            double widthCells = widthLayout - widthLayout * 0.1;
-            double heightCells = heightLayout - heightLayout * 0.1;
+            var widthCells = widthLayout - widthLayout * 0.1;
+            var heightCells = heightLayout - heightLayout * 0.1;
 
-            int columns = Options.Instance.Columns;
-            int rows = Options.Instance.Rows;
+            var columns = Options.Instance.Columns;
+            var rows = Options.Instance.Rows;
 
             // Определение длины и высоты для каждой ячейки цвета            
             CellWidth = widthCells / columns;
@@ -72,7 +68,7 @@ namespace AcadLib.Colors
             Margin = CellWidth * 0.1;
             TextHeight = Convert.ToInt32(CellWidth * 0.09);            
 
-            Point3d ptLayout = ptStart;
+            var ptLayout = ptStart;
 
             var progress = new ProgressMeter();
             progress.SetLimit(colorBookNcs.Colors.Count);
@@ -80,21 +76,21 @@ namespace AcadLib.Colors
 
             // Кол листов
             double cellsCount = columns * rows;
-            int layCount = Convert.ToInt32(Math.Ceiling(colorBookNcs.Colors.Count / cellsCount));
+            var layCount = Convert.ToInt32(Math.Ceiling(colorBookNcs.Colors.Count / cellsCount));
 
-            int index = 0;
-            for (int l = 1; l < layCount+1; l++)
+            var index = 0;
+            for (var l = 1; l < layCount+1; l++)
             {                
                 // создание рамки листа         
                 addLayout(ptLayout, l, widthLayout, heightLayout, cs, t);
-                Point2d ptCellFirst = new Point2d(ptLayout.X + (widthLayout - widthCells) * 0.5,
+                var ptCellFirst = new Point2d(ptLayout.X + (widthLayout - widthCells) * 0.5,
                     ptLayout.Y - (heightLayout - heightCells) * 0.5);
 
                 // Заполнение ячейками цветов
-                for (int r = 0; r < rows; r++)
+                for (var r = 0; r < rows; r++)
                 {
-                    bool isBreak = false;
-                    for (int c = 0; c < columns; c++)
+                    var isBreak = false;
+                    for (var c = 0; c < columns; c++)
                     {
                         index++;
                         if (index == colorBookNcs.Colors.Count)
@@ -102,8 +98,8 @@ namespace AcadLib.Colors
                             isBreak = true;
                             break;
                         }
-                        ColorItem colorItem = colorBookNcs.Colors[index];
-                        Point2d ptCell = new Point2d(ptCellFirst.X + c * CellWidth, ptCellFirst.Y - r * CellHeight);
+                        var colorItem = colorBookNcs.Colors[index];
+                        var ptCell = new Point2d(ptCellFirst.X + c * CellWidth, ptCellFirst.Y - r * CellHeight);
                         colorItem.Create(ptCell, cs, t);
                         progress.MeterProgress();
                     }
@@ -120,7 +116,7 @@ namespace AcadLib.Colors
         private static void  addLayout(Point3d pt,int layout ,double width, double height , BlockTableRecord cs, Transaction t)
         {
             // Полилиния контура листа
-            Polyline pl = new Polyline(4);
+            var pl = new Polyline(4);
             pl.AddVertexAt(0, new Point2d(pt.X, pt.Y), 0, 0, 0);
             pl.AddVertexAt(1, new Point2d(pt.X +width, pt.Y), 0, 0, 0);
             pl.AddVertexAt(2, new Point2d(pt.X + width, pt.Y - height), 0, 0, 0);
@@ -133,9 +129,9 @@ namespace AcadLib.Colors
 
             // Подпись номера листа
             var textHeight = height * 0.008;
-            Point3d ptText = new Point3d(pt.X+textHeight*0.5, pt.Y-textHeight*1.5, 0);
+            var ptText = new Point3d(pt.X+textHeight*0.5, pt.Y-textHeight*1.5, 0);
 
-            DBText text = new DBText();
+            var text = new DBText();
             text.SetDatabaseDefaults();
             text.Height = textHeight;
             text.TextStyleId = IdTextStylePik;
@@ -151,7 +147,7 @@ namespace AcadLib.Colors
 
         private static void createLayout(Polyline pl, int layout, double widthLay, double heightLay,  Transaction t)
         {
-            LayoutManager lm = LayoutManager.Current;
+            var lm = LayoutManager.Current;
             var idLay = lm.CreateLayout(layout.ToString());
 
             var extPl = pl.GeometricExtents;
@@ -160,7 +156,7 @@ namespace AcadLib.Colors
             {
                 var btrLay = lay.BlockTableRecordId.GetObject( OpenMode.ForWrite)as BlockTableRecord;
 
-                Viewport view = new Viewport();
+                var view = new Viewport();
                 view.SetDatabaseDefaults();
 
                 btrLay.AppendEntity(view);

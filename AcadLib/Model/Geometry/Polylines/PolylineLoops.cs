@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using AcadLib.Geometry;
 
 namespace AcadLib.Geometry
 {
@@ -109,7 +105,7 @@ namespace AcadLib.Geometry
             // Индекс стартовой точки петли (вершины) с нужной стороны от точки пересечения            
             int dir;
             var indexStart = GetStartIndex(contour, ptIntersect1, checkSeg, out dir);
-            int indexCur = indexStart;
+            var indexCur = indexStart;
 
             int dirEnd;
             var indexEnd = GetStartIndex(contour, ptIntersect2, checkSeg, out dirEnd);
@@ -169,11 +165,11 @@ namespace AcadLib.Geometry
         {
             var param = contour.GetParameterAtPointTry(ptIntersect1);            
 
-            int indexMin = (int)param;
+            var indexMin = (int)param;
             if (indexMin == contour.NumberOfVertices)
                 indexMin = 0;
 
-            int indexMax = (int)Math.Ceiling(param);            
+            var indexMax = (int)Math.Ceiling(param);            
             if (indexMax == contour.NumberOfVertices)            
                 indexMax = 0;            
             var seg = contour.GetLineSegmentAt(indexMin);

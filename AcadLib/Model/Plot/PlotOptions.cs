@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib.Plot
@@ -83,7 +78,7 @@ namespace AcadLib.Plot
         public void Load()
         {            
             // загрузка настроек из реестра
-            using (Registry.RegExt reg = new Registry.RegExt(REGKEY))
+            using (var reg = new Registry.RegExt(REGKEY))
             {
                 SortTabOrName = reg.Load(KeySortTabOrName, true);
                 OnePdfOrEachDwg = reg.Load(KeyOnePdfOrEachDwg, true);
@@ -97,7 +92,7 @@ namespace AcadLib.Plot
         public void Save()
         {
             // Сохранение в реестр
-            using (Registry.RegExt reg = new Registry.RegExt(REGKEY))
+            using (var reg = new Registry.RegExt(REGKEY))
             {
                 reg.Save(KeySortTabOrName, SortTabOrName);
                 reg.Save(KeyOnePdfOrEachDwg, OnePdfOrEachDwg);
@@ -110,8 +105,8 @@ namespace AcadLib.Plot
 
         public void Show()
         {
-            UI.FormProperties formOpt = new UI.FormProperties();
-            var copyOptions = (PlotOptions)this.MemberwiseClone();
+            var formOpt = new UI.FormProperties();
+            var copyOptions = (PlotOptions)MemberwiseClone();
             formOpt.propertyGrid1.SelectedObject = copyOptions;
             if (Application.ShowModalDialog(formOpt) == System.Windows.Forms.DialogResult.OK)
             {
@@ -194,7 +189,7 @@ namespace AcadLib.Plot
             return true;
         }
 
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             return value;
         }

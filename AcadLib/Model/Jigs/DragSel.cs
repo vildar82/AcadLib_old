@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
@@ -26,8 +23,8 @@ namespace AcadLib.Jigs
         public static bool Drag(this Editor ed, ObjectId[] ids, Point3d pt)
         {
             if (ids == null || !ids.Any()) return false;
-            SelectionSet selSet = SelectionSet.FromObjectIds(ids);
-            PromptPointResult ppr = ed.Drag(selSet, "\nТочка вставки:", (Point3d ptInput, ref Matrix3d mat) =>
+            var selSet = SelectionSet.FromObjectIds(ids);
+            var ppr = ed.Drag(selSet, "\nТочка вставки:", (Point3d ptInput, ref Matrix3d mat) =>
             {
                 if (ptInput.IsEqualTo(pt)) return SamplerStatus.NoChange;
                 mat = Matrix3d.Displacement(pt.GetVectorTo(ptInput));

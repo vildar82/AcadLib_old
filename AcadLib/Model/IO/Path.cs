@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AcadLib.IO
 {
@@ -59,7 +55,7 @@ namespace AcadLib.IO
         /// <returns>Полный путь к файлу. Наличие файла не проверяется. Папка создается</returns>
         public static string GetSharedFile (string pluginName, string fileName)
         {
-            string resFilePath = string.Empty;
+            var resFilePath = string.Empty;
             var pluginFolder = System.IO.Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
                 AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, pluginName);
             if (!Directory.Exists(pluginFolder))
@@ -79,7 +75,7 @@ namespace AcadLib.IO
         /// </summary>        
         public static string GetTemporaryDirectory ()
         {
-            string tempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+            var tempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
             Directory.CreateDirectory(tempDirectory);
             return tempDirectory;
         }

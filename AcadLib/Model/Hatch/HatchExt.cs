@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using AcadLib.Geometry;
@@ -20,15 +16,15 @@ namespace AcadLib.Hatches
         public static DisposableSet<Polyline> GetPolylines(this Hatch ht, HatchLoopTypes loopType = HatchLoopTypes.External)
         {
             var polylines = new DisposableSet<Polyline>();
-            int nloops = ht.NumberOfLoops;
-            for (int i = 0; i < nloops; i++)
+            var nloops = ht.NumberOfLoops;
+            for (var i = 0; i < nloops; i++)
             {
                 var loop = ht.GetLoopAt(i);                
                 if (loop.LoopType.HasFlag(loopType) &&
                     loop.IsPolyline)
                 {
                     var poly = new Polyline();
-                    int iVertex = 0;
+                    var iVertex = 0;
                     foreach (BulgeVertex bv in loop.Polyline)
                     {
                         poly.AddVertexAt(iVertex++, bv.Vertex, bv.Bulge, 0.0, 0.0);

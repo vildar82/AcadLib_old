@@ -78,7 +78,7 @@ namespace RTreeLib
       // Return the index of the found entry, or -1 if not found
       internal int findEntry(Rectangle r, int id)
       {
-         for (int i = 0; i < entryCount; i++)
+         for (var i = 0; i < entryCount; i++)
          {
             if (id == ids[i] && r.Equals(entries[i]))
             {
@@ -91,8 +91,8 @@ namespace RTreeLib
       // delete entry. This is done by setting it to null and copying the last entry into its space.
       internal void deleteEntry(int i, int minNodeEntries)
       {
-         int lastIndex = entryCount - 1;
-         Rectangle deletedRectangle = entries[i];
+         var lastIndex = entryCount - 1;
+         var deletedRectangle = entries[i];
          entries[i] = null;
          if (i != lastIndex)
          {
@@ -119,7 +119,7 @@ namespace RTreeLib
          {
             mbr.set(entries[0].min, entries[0].max);
 
-            for (int i = 1; i < entryCount; i++)
+            for (var i = 1; i < entryCount; i++)
             {
                mbr.add(entries[i]);
             }
@@ -154,8 +154,8 @@ namespace RTreeLib
        */
       internal void reorganize(RTree<T> rtree)
       {
-         int countdownIndex = rtree.maxNodeEntries - 1;
-         for (int index = 0; index < entryCount; index++)
+         var countdownIndex = rtree.maxNodeEntries - 1;
+         for (var index = 0; index < entryCount; index++)
          {
             if (entries[index] == null)
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Geometry
 {
@@ -174,7 +173,7 @@ namespace AcadLib.Geometry
         /// <returns>A new PolylineSegment instance which is a copy of the instance this method applies to.</returns>
         public PolylineSegment Clone()
         {
-            return new PolylineSegment(this.StartPoint, this.EndPoint, this.Bulge, this.StartWidth, this.EndWidth);
+            return new PolylineSegment(StartPoint, EndPoint, Bulge, StartWidth, EndWidth);
         }
 
         /// <summary>
@@ -186,12 +185,12 @@ namespace AcadLib.Geometry
         {
             if (IsLinear)
             {
-                LineSegment2d line = ToLineSegment();
+                var line = ToLineSegment();
                 return line.IsOn(pt) ? _startPoint.GetDistanceTo(pt) / line.Length : -1.0;
             }
             else
             {
-                CircularArc2d arc = ToCircularArc();
+                var arc = ToCircularArc();
                 return arc.IsOn(pt) ?
                     arc.GetLength(arc.GetParameterOf(_startPoint), arc.GetParameterOf(pt)) /
                     arc.GetLength(arc.GetParameterOf(_startPoint), arc.GetParameterOf(_endPoint)) :
@@ -204,12 +203,12 @@ namespace AcadLib.Geometry
         /// </summary>
         public void Inverse()
         {
-            Point2d tmpPoint = this.StartPoint;
-            double tmpWidth = this.StartWidth;
-            _startPoint = this.EndPoint;
+            var tmpPoint = StartPoint;
+            var tmpWidth = StartWidth;
+            _startPoint = EndPoint;
             _endPoint = tmpPoint;
-            _bulge = -this.Bulge;
-            _startWidth = this.EndWidth;
+            _bulge = -Bulge;
+            _startWidth = EndWidth;
             _endWidth = tmpWidth;
         }
 
@@ -249,9 +248,9 @@ namespace AcadLib.Geometry
         /// <returns>true if the objects are considered equal; otherwise, nil.</returns>
         public override bool Equals(object obj)
         {
-            PolylineSegment seg = obj as PolylineSegment;
+            var seg = obj as PolylineSegment;
             if (seg == null) return false;
-            if (seg.GetHashCode() != this.GetHashCode()) return false;
+            if (seg.GetHashCode() != GetHashCode()) return false;
             if (!_startPoint.IsEqualTo(seg.StartPoint)) return false;
             if (!_endPoint.IsEqualTo(seg.EndPoint)) return false;
             if (_bulge != seg.Bulge) return false;

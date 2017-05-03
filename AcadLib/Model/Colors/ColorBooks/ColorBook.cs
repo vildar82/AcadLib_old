@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AcadLib;
 using AcadLib.Errors;
-using Autodesk.AutoCAD.Colors;
 using OfficeOpenXml;
 
 namespace AcadLib.Colors
@@ -24,12 +18,12 @@ namespace AcadLib.Colors
 
         public static ColorBook ReadFromFile(string NcsFile)
         {
-            ColorBook colorBookNcs = new ColorBook("NCS");            
+            var colorBookNcs = new ColorBook("NCS");            
 
             using (var exlPack = new ExcelPackage(new FileInfo(NcsFile)))
             {
                 var wsNcs = exlPack.Workbook.Worksheets["NCS"];
-                int row = 1;
+                var row = 1;
                 do
                 {
                     row++;
@@ -57,7 +51,7 @@ namespace AcadLib.Colors
                         continue;
                     }
 
-                    ColorItem colorItem = new ColorItem(nameNcs, r.Value, g.Value, b.Value);
+                    var colorItem = new ColorItem(nameNcs, r.Value, g.Value, b.Value);
                     colorBookNcs.Colors.Add(colorItem);
                                         
                 } while (true);

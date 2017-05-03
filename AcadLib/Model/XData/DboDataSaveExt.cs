@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.XData
 {
@@ -11,7 +6,7 @@ namespace AcadLib.XData
     {
         public static void SaveDboDict(this IDboDataSave dboSave)
         {
-            var doc = Application.DocumentManager.MdiActiveDocument;
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             using (doc.LockDocument())
             using (var dbo = dboSave.GetDBObject())
             {
@@ -24,7 +19,7 @@ namespace AcadLib.XData
 
         public static void LoadDboDict(this IDboDataSave dboSave)
         {
-            var doc = Application.DocumentManager.MdiActiveDocument;
+            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             using (doc.LockDocument())
             using (var dbo = dboSave.GetDBObject())
             {

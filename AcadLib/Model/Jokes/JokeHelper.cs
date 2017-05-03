@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AcadLib.Jokes
 {
@@ -53,7 +51,7 @@ namespace AcadLib.Jokes
 
         private static List<IJoke> LoadJokes ()
         {
-            List<IJoke> res = new List<IJoke>();
+            var res = new List<IJoke>();
             res.AddRange(JokeUrl.Load());            
             return res;
         }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AcadLib;
-using Autodesk.AutoCAD.Colors;
+﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
@@ -28,9 +22,9 @@ namespace AcadLib.Colors
             var margin = ColorBookHelper.Margin;
             var marginHalf = margin * 0.5;
 
-            Point3d ptText = new Point3d(ptCell.X + cellWidth * 0.5, ptCell.Y - ColorBookHelper.TextHeight-margin, 0);
+            var ptText = new Point3d(ptCell.X + cellWidth * 0.5, ptCell.Y - ColorBookHelper.TextHeight-margin, 0);
 
-            Polyline pl = new Polyline(4);
+            var pl = new Polyline(4);
             pl.AddVertexAt(0, new Point2d(ptCell.X+margin, ptText.Y- marginHalf), 0, 0, 0);
             pl.AddVertexAt(1, new Point2d(ptCell.X+cellWidth- margin, ptText.Y- marginHalf), 0, 0, 0);
             pl.AddVertexAt(2, new Point2d(ptCell.X + cellWidth-margin, ptCell.Y-cellHeight+margin), 0, 0, 0);
@@ -42,7 +36,7 @@ namespace AcadLib.Colors
             cs.AppendEntity(pl);
             t.AddNewlyCreatedDBObject(pl, true);
 
-            Hatch h = new Hatch();
+            var h = new Hatch();
             h.SetDatabaseDefaults();
             h.SetHatchPattern(HatchPatternType.PreDefined, "Solid");                        
             h.Annotative = AnnotativeStates.False;
@@ -55,7 +49,7 @@ namespace AcadLib.Colors
             h.Color = Color;            
             h.EvaluateHatch(true);
                         
-            DBText text = new DBText();
+            var text = new DBText();
             text.SetDatabaseDefaults();
             text.HorizontalMode = TextHorizontalMode.TextCenter;   
             text.Annotative = AnnotativeStates.False;

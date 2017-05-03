@@ -32,7 +32,7 @@ namespace AcadLib.UI.Designer
         /// <remarks>If the default value is to be used as Key it may NOT be null (because the Dictionary doesn't allow null as Key)</remarks>
         public virtual T GetDefault(DefaultUsage usage)
         {
-            Type t = typeof(T);
+            var t = typeof(T);
             if (t.IsPrimitive || t.IsEnum)
                 return default(T);
             else if (t == typeof(string))

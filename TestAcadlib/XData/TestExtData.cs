@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using AcadLib;
 using AcadLib.XData;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -38,7 +34,7 @@ namespace TestAcadlib.XData
         private List<RecXD> GetRecs (string name, int number)
         {
             var recs = new List<RecXD>();
-            for (int i = 0; i < number; i++)
+            for (var i = 0; i < number; i++)
             {
                 recs.Add(new RecXD { Name = name + i, Values = GetTestValues(name + i, number) });
             }
@@ -51,7 +47,7 @@ namespace TestAcadlib.XData
             if (deep > 3) return res;
                 deep++;
 
-            for (int i = 0; i < number; i++)
+            for (var i = 0; i < number; i++)
             {
                 var recEd = new DicED();
                 recEd.Name = name + i;
@@ -66,7 +62,7 @@ namespace TestAcadlib.XData
         private List<TypedValue> GetTestValues (string name, int number)
         {
             var res = new List<TypedValue>();
-            for (int i = 0; i < number; i++)
+            for (var i = 0; i < number; i++)
             {
                 res.Add(new TypedValue((int)DxfCode.ExtendedDataAsciiString, name + i));
             }

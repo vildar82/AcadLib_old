@@ -24,25 +24,25 @@ namespace AcadLib.Geometry
         public static LineSegment3d[] GetTangentsTo(this CircularArc3d arc, Point3d pt)
         {
             // check if arc and point lies on the plane
-            Vector3d normal = arc.Normal;
-            Matrix3d WCS2OCS = Matrix3d.WorldToPlane(normal);
-            double elevation = arc.Center.TransformBy(WCS2OCS).Z;
+            var normal = arc.Normal;
+            var WCS2OCS = Matrix3d.WorldToPlane(normal);
+            var elevation = arc.Center.TransformBy(WCS2OCS).Z;
             if (Math.Abs(elevation - pt.TransformBy(WCS2OCS).Z) < Tolerance.Global.EqualPoint)
                 throw new Autodesk.AutoCAD.Runtime.Exception(
                     Autodesk.AutoCAD.Runtime.ErrorStatus.NonCoplanarGeometry);
 
-            Plane plane = new Plane(Point3d.Origin, normal);
-            Matrix3d OCS2WCS = Matrix3d.PlaneToWorld(plane);
-            CircularArc2d ca2d = new CircularArc2d(arc.Center.Convert2d(plane), arc.Radius);
-            LineSegment2d[] lines2d = ca2d.GetTangentsTo(pt.Convert2d(plane));
+            var plane = new Plane(Point3d.Origin, normal);
+            var OCS2WCS = Matrix3d.PlaneToWorld(plane);
+            var ca2d = new CircularArc2d(arc.Center.Convert2d(plane), arc.Radius);
+            var lines2d = ca2d.GetTangentsTo(pt.Convert2d(plane));
 
             if (lines2d == null)
                 return null;
 
-            LineSegment3d[] result = new LineSegment3d[lines2d.Length];
-            for (int i = 0; i < lines2d.Length; i++)
+            var result = new LineSegment3d[lines2d.Length];
+            for (var i = 0; i < lines2d.Length; i++)
             {
-                LineSegment2d ls2d = lines2d[i];
+                var ls2d = lines2d[i];
                 result[i] = new LineSegment3d(ls2d.StartPoint.Convert3d(normal, elevation), ls2d.EndPoint.Convert3d(normal, elevation));
             }
             return result;
@@ -65,27 +65,27 @@ namespace AcadLib.Geometry
         public static LineSegment3d[] GetTangentsTo(this CircularArc3d arc, CircularArc3d other, TangentType flags)
         {
             // check if circles lies on the same plane
-            Vector3d normal = arc.Normal;
-            Matrix3d WCS2OCS = Matrix3d.WorldToPlane(normal);
-            double elevation = arc.Center.TransformBy(WCS2OCS).Z;
+            var normal = arc.Normal;
+            var WCS2OCS = Matrix3d.WorldToPlane(normal);
+            var elevation = arc.Center.TransformBy(WCS2OCS).Z;
             if (!(normal.IsParallelTo(other.Normal) &&
                 Math.Abs(elevation - other.Center.TransformBy(WCS2OCS).Z) < Tolerance.Global.EqualPoint))
                 throw new Autodesk.AutoCAD.Runtime.Exception(
                     Autodesk.AutoCAD.Runtime.ErrorStatus.NonCoplanarGeometry);
 
-            Plane plane = new Plane(Point3d.Origin, normal);
-            Matrix3d OCS2WCS = Matrix3d.PlaneToWorld(plane);
-            CircularArc2d ca2d1 = new CircularArc2d(arc.Center.Convert2d(plane), arc.Radius);
-            CircularArc2d ca2d2 = new CircularArc2d(other.Center.Convert2d(plane), other.Radius);
-            LineSegment2d[] lines2d = ca2d1.GetTangentsTo(ca2d2, flags);
+            var plane = new Plane(Point3d.Origin, normal);
+            var OCS2WCS = Matrix3d.PlaneToWorld(plane);
+            var ca2d1 = new CircularArc2d(arc.Center.Convert2d(plane), arc.Radius);
+            var ca2d2 = new CircularArc2d(other.Center.Convert2d(plane), other.Radius);
+            var lines2d = ca2d1.GetTangentsTo(ca2d2, flags);
 
             if (lines2d == null)
                 return null;
 
-            LineSegment3d[] result = new LineSegment3d[lines2d.Length];
-            for (int i = 0; i < lines2d.Length; i++)
+            var result = new LineSegment3d[lines2d.Length];
+            for (var i = 0; i < lines2d.Length; i++)
             {
-                LineSegment2d ls2d = lines2d[i];
+                var ls2d = lines2d[i];
                 result[i] = new LineSegment3d(ls2d.StartPoint.Convert3d(normal, elevation), ls2d.EndPoint.Convert3d(normal, elevation));
             }
             return result;

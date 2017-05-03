@@ -24,15 +24,15 @@ namespace AcadLib.Geometry
         /// <param name="tol">The tolerance to use in comparisons.</param>
         public static void RemoveDuplicate(this Point2dCollection pts, Tolerance tol)
         {
-            List<Point2d> ptlst = new List<Point2d>();
-            for (int i = 0; i < pts.Count; i++)
+            var ptlst = new List<Point2d>();
+            for (var i = 0; i < pts.Count; i++)
             {
                 ptlst.Add(pts[i]);
             }
             ptlst.Sort((p1, p2) => p1.X.CompareTo(p2.X));
-            for (int i = 0; i < ptlst.Count - 1; i++)
+            for (var i = 0; i < ptlst.Count - 1; i++)
             {
-                for (int j = i + 1; j < ptlst.Count; )
+                for (var j = i + 1; j < ptlst.Count; )
                 {
                     if ((ptlst[j].X - ptlst[i].X) > tol.EqualPoint)
                         break;
@@ -67,7 +67,7 @@ namespace AcadLib.Geometry
         /// <returns>true if the point is found; otherwise, false.</returns>
         public static bool Contains(this Point2dCollection pts, Point2d pt, Tolerance tol)
         {
-            for (int i = 0; i < pts.Count; i++)
+            for (var i = 0; i < pts.Count; i++)
             {
                 if (pt.IsEqualTo(pts[i], tol))
                     return true;
