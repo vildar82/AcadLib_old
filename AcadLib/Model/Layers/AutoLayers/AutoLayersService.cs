@@ -19,8 +19,15 @@ namespace AcadLib.Layers.AutoLayers
 
         public static void Init()
         {
-            Load();
-            if (IsStarted) Start();
+            try
+            {
+                Load();
+                if (IsStarted) Start();
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, "AutoLayersService Init");
+            }
         }
 
         public static void Start()
@@ -70,7 +77,7 @@ namespace AcadLib.Layers.AutoLayers
             if (document == null) return;
             document.CommandWillStart -= Doc_CommandWillStart;
             document.CommandEnded -= Doc_CommandEnded;
-            document.Database.ObjectAppended -= Database_ObjectAppended;
+            if (document.Database != null) document.Database.ObjectAppended -= Database_ObjectAppended;
             document.CommandCancelled -= Doc_CommandCancelled;
         }
 

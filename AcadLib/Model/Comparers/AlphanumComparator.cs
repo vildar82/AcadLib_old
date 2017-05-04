@@ -9,8 +9,7 @@ namespace AcadLib.Comparers
     /// </summary>
     public class AlphanumComparator : IComparer<string>
     {
-        private static AlphanumComparator _new  = new AlphanumComparator ();
-        public static AlphanumComparator New { get { return _new; } }
+        public static AlphanumComparator New { get; } = new AlphanumComparator ();
 
         public int Compare(string s1, string s2)
         {
@@ -20,10 +19,10 @@ namespace AcadLib.Comparers
             {
                 return null2 ? 0: -1;
             }
-            else if (null2)
+            if (null2)
             {
-                return null1 ? 0 : 1;
-            }            
+                return 1;
+            }
 
             try
             {
@@ -87,18 +86,18 @@ namespace AcadLib.Comparers
                     {
                         try
                         {
-                            var thisNumericChunk = int.Parse(str1);
-                            var thatNumericChunk = int.Parse(str2);
+                            var thisNumericChunk = long.Parse(str1);
+                            var thatNumericChunk = long.Parse(str2);
                             result = thisNumericChunk.CompareTo(thatNumericChunk);
                         }
                         catch
                         {
-                            result = string.Compare(str1, str2, true);
+                            result = string.Compare(str1, str2, StringComparison.OrdinalIgnoreCase);
                         }
                     }
                     else
                     {
-                        result = string.Compare(str1, str2, true);
+                        result = string.Compare(str1, str2, StringComparison.OrdinalIgnoreCase);
                     }
 
                     if (result != 0)
@@ -106,7 +105,6 @@ namespace AcadLib.Comparers
                         return result;
                     }
                 }
-
                 return len1 - len2;
             }
             catch(Exception ex)
@@ -118,8 +116,7 @@ namespace AcadLib.Comparers
 
         public int GetHashCode(string obj)
         {
-            if (obj == null) return 0;
-            return obj.GetHashCode();
+            return obj == null ? 0 : obj.GetHashCode();
         }
     }
 }
