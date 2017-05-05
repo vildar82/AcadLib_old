@@ -5,6 +5,18 @@ namespace AcadLib
 {
     public static class General
     {
+        public const string UserGroupAR = "АР";
+        public const string UserGroupKRMN = "КР-МН";
+        public const string UserGroupKRSB = "КР-СБ";
+        public const string UserGroupKRSBGK = "КР-СБ-ГК";
+        public const string UserGroupVK = "ВК";
+        public const string UserGroupOV = "ОВ";
+        public const string UserGroupSS = "СС";
+        public const string UserGroupEO = "ЭО";
+        public const string UserGroupGBKTO = "ЖБК-ТО";
+        public const string UserGroupGP = "ГП";
+        public const string UserGroupGPTest = "ГП_Тест";
+
         /// <summary>
         /// Отменено пользователем.
         /// Сообщение для исключения при отмене команды пользователем.

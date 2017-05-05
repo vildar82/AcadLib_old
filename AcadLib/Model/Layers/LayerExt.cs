@@ -5,21 +5,12 @@ namespace AcadLib.Layers
 {
     public static class LayerExt
     {
-        static string groupLayerPrefix;
+        private static string groupLayerPrefix;
 
         /// <summary>
         /// Префикс слоев - группа пользователя
         /// </summary>
-        public static string GroupLayerPrefix
-        {
-            get {
-                if (groupLayerPrefix == null)
-                {
-                    groupLayerPrefix = GetGroupLayerPrefix();
-                }
-                return groupLayerPrefix;
-            }
-        }
+        public static string GroupLayerPrefix => groupLayerPrefix ?? (groupLayerPrefix = GetGroupLayerPrefix());
 
         /// <summary>
         /// Получение слоя.
@@ -166,31 +157,24 @@ namespace AcadLib.Layers
         private static string GetGroupLayerPrefix()
         {
             var usergroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
-            if (usergroup == "КР-МН")
+            switch (usergroup)
             {
-                return "КР";
-            }
-            if (usergroup == "КР-СБ")
-            {
-                return "СБ";
-            }
-            if (usergroup == "КР-СБ-ГК")
-            {
-                return string.Empty;
+                case "КР-МН":
+                    return "КР";
+                case "КР-СБ":
+                    return "СБ";
+                case "КР-СБ-ГК":
+                    return string.Empty;
             }
             if (usergroup.StartsWith("ГП"))
             {
-                return "ГП";
+                return string.Empty;
             }
             if (usergroup.Contains(","))
             {
                 return string.Empty;
             }
-            if (usergroup == "ЖБК-ТО")
-            {
-                return "ОЗЖБК";
-            }
-            return usergroup;
+            return usergroup == "ЖБК-ТО" ? "ОЗЖБК" : usergroup;
         }
     }
 }

@@ -32,16 +32,17 @@ namespace AcadLib.Layers.AutoLayers
 
         public static void Start()
         {
-            // Определение приставки имени группы в слоях            
-            if (string.IsNullOrEmpty(LayerExt.GroupLayerPrefix))
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            // Проверка - допустимости автослоев для группы пользователя
+            if (!IsUserGroupAutoLayersAllowed() || string.IsNullOrEmpty(LayerExt.GroupLayerPrefix))
             {
-                // Если пустая приставка, то не делать автослои.
+                doc.Editor.WriteMessage($"\nАвтослои не поддерживаются для текущей группы пользователя - {AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup}");
                 return;
             }
             Application.DocumentManager.DocumentActivated -= DocumentManager_DocumentActivated;
             Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;            
             autoLayers = GetAutoLayers();
-            SubscribeDocument(Application.DocumentManager.MdiActiveDocument);
+            SubscribeDocument(doc);
             IsStarted = true;
             Save();
         }
@@ -243,6 +244,13 @@ namespace AcadLib.Layers.AutoLayers
             {
                 reg.Save("IsStarted", IsStarted);
             }
+        }
+
+        private static bool IsUserGroupAutoLayersAllowed()
+        {
+            var userGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined.First();
+            return !userGroup.StartsWith(General.UserGroupGP) && 
+                userGroup != General.UserGroupKRSBGK;
         }
     }
 }
