@@ -150,7 +150,29 @@ namespace AcadLib.Geometry
             {
                 yield return pl.GetPoint2dAt(i);
             }            
-        }        
+        }
+
+        public static List<Point2d> GetApproximatePoints(this Polyline pl, int arcDivisionCount)
+        {
+            if (!pl.HasBulges)
+            {
+                return pl.GetPoints();
+            }
+            var points = new List<Point2d>();
+            for (var i = 0; i < pl.NumberOfVertices; i++)
+            {
+                var segType = pl.GetSegmentType(i);
+                if (segType == SegmentType.Arc)
+                {
+                    var seg = pl.GetArcSegment2dAt(i);
+                    var arcPts = seg.GetSamplePoints(arcDivisionCount).ToList();
+                    arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
+                    points.AddRange(arcPts);
+                }
+                points.Add(pl.GetPoint2dAt(i));
+            }
+            return points;
+        }
 
         /// <summary>
         /// Breaks the polyline at specified point.
