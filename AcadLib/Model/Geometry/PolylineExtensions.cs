@@ -161,15 +161,13 @@ namespace AcadLib.Geometry
             var points = new List<Point2d>();
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
-                var segType = pl.GetSegmentType(i);
-                if (segType == SegmentType.Arc)
-                {
-                    var seg = pl.GetArcSegment2dAt(i);
-                    var arcPts = seg.GetSamplePoints(arcDivisionCount).ToList();
-                    arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
-                    points.AddRange(arcPts);
-                }
                 points.Add(pl.GetPoint2dAt(i));
+                var segType = pl.GetSegmentType(i);
+                if (segType != SegmentType.Arc) continue;
+                var seg = pl.GetArcSegment2dAt(i);
+                var arcPts = seg.GetSamplePoints(arcDivisionCount).ToList();
+                arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
+                points.AddRange(arcPts);
             }
             return points;
         }
