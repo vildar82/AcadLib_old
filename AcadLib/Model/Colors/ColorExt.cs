@@ -20,7 +20,7 @@ namespace AcadLib.Colors
             var color = ent.Color;
             if (color.IsByLayer)
             {
-                var layer = ent.LayerId.GetValue<LayerTableRecord>();
+                var layer = ent.LayerId.GetObject<LayerTableRecord>();
                 color = layer.Color;
             }
             return color;
