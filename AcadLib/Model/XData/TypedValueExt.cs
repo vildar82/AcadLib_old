@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using AcadLib.Colors;
+using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using NetLib;
 
@@ -87,27 +89,28 @@ namespace AcadLib
             var code = 0;
             var tvValue = value;
 
-            if (typeObj == typeof(bool))
+            switch (value)
             {
-                code = (int)DxfCode.ExtendedDataInteger32;
-                tvValue = (bool)value ? 1 : 0;
-            }
-            else if (typeObj == typeof (int) || typeObj.IsEnum)
-            {
-                code = (int)DxfCode.ExtendedDataInteger32;
-                tvValue = (int)value;
-            }
-            else if (typeObj == typeof(byte))
-            {
-                code = (int)DxfCode.ExtendedDataInteger32;                
-            }
-            else if (typeObj == typeof(double))
-            {
-                code = (int)DxfCode.ExtendedDataReal;
-            }
-            else if (typeObj == typeof(string))
-            {
-                code = (int)DxfCode.ExtendedDataAsciiString;                
+                case bool b:
+                    code = (int)DxfCode.ExtendedDataInteger32;
+                    tvValue = b ? 1 : 0;
+                    break;
+                case Enum en:
+                    code = (int)DxfCode.ExtendedDataInteger32;
+                    tvValue = (int)value;
+                    break;
+                case int i:
+                    code = (int)DxfCode.ExtendedDataInteger32;
+                    break;
+                case byte b:
+                    code = (int)DxfCode.ExtendedDataInteger32;
+                    break;
+                case double d:
+                    code = (int)DxfCode.ExtendedDataReal;
+                    break;
+                case string s:
+                    code = (int)DxfCode.ExtendedDataAsciiString;
+                    break;
             }
 
             if (code == 0)
