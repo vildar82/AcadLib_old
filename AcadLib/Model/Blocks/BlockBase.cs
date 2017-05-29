@@ -204,7 +204,7 @@ namespace AcadLib.Blocks
             return res;
         }
 
-        protected Property GetProperty (string nameMatch, bool isRequired = true)
+        public Property GetProperty (string nameMatch, bool isRequired = true)
         {
             var prop = Properties.Find(p=> Regex.IsMatch(p.Name, nameMatch, RegexOptions.IgnoreCase));
             if (prop == null && isRequired)
