@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Media;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Windows;
+using Brush = System.Windows.Media.Brush;
 
 namespace AcadLib.PaletteCommands
 {
@@ -72,7 +73,7 @@ namespace AcadLib.PaletteCommands
                 }
                 _paletteSet.Visible = true;
             }
-            catch(System.Exception ex)
+            catch(Exception ex)
             {
                 Logger.Log.Error(ex, "PaletteSetCommands.Start().");
             }
@@ -81,11 +82,11 @@ namespace AcadLib.PaletteCommands
         private void loadPalettes()
         {
             models = new List<PaletteModel>();
-            var commands = CommandsAddin;
             // Группировка команд
             var groupCommon = "Общие";
             var commonCommands = Commands.CommandsPalette;
-            var groupCommands = commands.GroupBy(c => c.Group).OrderBy(g=>g.Key);
+            var groupCommands = CommandsAddin.GroupBy(c => c.Group).OrderBy(g=>g.Key);
+	        var ver = GetVersion(CommandsAddin.First());
             foreach (var group in groupCommands)
             {
                 if (group.Key.Equals(groupCommon, StringComparison.OrdinalIgnoreCase))
@@ -94,12 +95,11 @@ namespace AcadLib.PaletteCommands
                 }
                 else
                 {
-                    var model = new PaletteModel(group);
+                    var model = new PaletteModel(group, ver);
                     if (model.PaletteCommands.Any())
                     {
-                        var commControl = new UI.CommandsControl();
-                        commControl.DataContext = model;
-                        var name = group.Key;
+	                    var commControl = new UI.CommandsControl {DataContext = model};
+	                    var name = group.Key;
                         if (string.IsNullOrEmpty(name)) name = "Главная";
                         AddVisual(name, commControl);
                         models.Add(model);
@@ -107,14 +107,18 @@ namespace AcadLib.PaletteCommands
                 }
             }
             // Общие команды для всех отделов определенные в этой сборке            
-            var modelCommon = new PaletteModel(commonCommands);
-            var controlCommon = new UI.CommandsControl();
-            controlCommon.DataContext = modelCommon;
-            AddVisual(groupCommon, controlCommon);
+            var modelCommon = new PaletteModel(commonCommands, ver);
+	        var controlCommon = new UI.CommandsControl {DataContext = modelCommon};
+	        AddVisual(groupCommon, controlCommon);
             models.Add(modelCommon);
-        }                    
+        }
 
-        private static PaletteSetCommands Create()
+	    private static string GetVersion(IPaletteCommand command)
+	    {
+		    return command.GetType().Assembly.GetName().Version.ToString();
+	    }
+
+	    private static PaletteSetCommands Create()
         {
             var palette = new PaletteSetCommands();
             return palette;
@@ -123,11 +127,8 @@ namespace AcadLib.PaletteCommands
         private void CheckTheme()
         {
             var isDarkTheme = (short)Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("COLORTHEME") == 0;
-            System.Windows.Media.Brush colorBkg;
-            if (isDarkTheme)
-                colorBkg = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 92, 92, 92));
-            else
-                colorBkg = System.Windows.Media.Brushes.White;
+	        Brush colorBkg = isDarkTheme ? new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 92, 92, 92)) :
+		        System.Windows.Media.Brushes.White;
             models.ForEach(m => m.Background = colorBkg);
         }
 
@@ -136,10 +137,12 @@ namespace AcadLib.PaletteCommands
             // Добавление иконки в трей    
             try
             {
-                var ti = new TrayItem();
-                ti.ToolTipText = "Палитра ПИК";
-                ti.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
-                ti.MouseDown += PikTray_MouseDown;
+	            var ti = new TrayItem
+	            {
+		            ToolTipText = "Палитра ПИК",
+		            Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon())
+	            };
+	            ti.MouseDown += PikTray_MouseDown;
                 ti.Visible = true;
                 Application.StatusBar.TrayItems.Add(ti);
 
@@ -149,7 +152,7 @@ namespace AcadLib.PaletteCommands
                 //pane.MouseDown += PikTray_MouseDown;
                 //Application.StatusBar.Panes.Add(pane);
             }
-            catch(System.Exception ex)
+            catch(Exception ex)
             {
                 Logger.Log.Error(ex, "PaletteSetCommands.SetTrayIcon().");
             }

@@ -9,7 +9,11 @@
                                      IsDesignTimeCreatable=True}"
     mc:Ignorable="d">
     <Grid Background="{Binding Background}">
-        <ItemsControl
+		<Grid.RowDefinitions>
+			<RowDefinition/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+        <ItemsControl Grid.Row="0"
             Background="Transparent" BorderThickness="0"
             ItemsSource="{Binding PaletteCommands}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -45,5 +49,6 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+		<TextBlock Grid.Row="1" Text="{Binding Version}"/>
     </Grid>
 </UserControl>
