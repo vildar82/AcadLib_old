@@ -24,15 +24,19 @@ namespace AcadLib.Blocks
 			var t = dynBtr.Database.TransactionManager.TopTransaction;
 			var bpt = GetBPT(dynBtr, t);
 			var dTable = new System.Data.DataTable($"Таблица свойств блока {dynBtr.Name}");
-			dTable.Columns.AddRange(GetColumns(bpt).ToArray());
+			var columns = GetColumns(bpt);
+			dTable.Columns.AddRange(columns.ToArray());
 			foreach (BlockPropertiesTableRow bptRow in bpt.Rows)
 			{
 				var row = dTable.NewRow();
-				foreach (BlockPropertiesTableColumn bptCol in bpt.Columns)
+				for (var i = 0; i < columns.Count; i++)
 				{
+					var col = columns[i];
+					if (string.IsNullOrEmpty(col.ColumnName)) continue;
+					var bptCol = bpt.Columns[i];
 					var tv = bptRow[bptCol];
 					var val = tv.AsArray()[0].Value;
-					row[bptCol.Parameter.Name] = val;
+					row[col] = val;
 				}
 				dTable.Rows.Add(row);
 			}
@@ -45,7 +49,7 @@ namespace AcadLib.Blocks
 			foreach (BlockPropertiesTableColumn bptColumn in bpt.Columns)
 			{
 				var type = bptColumn.DefaultValue.AsArray()[0].Value.GetType();
-				var col = new System.Data.DataColumn(bptColumn.Parameter.Name, type);
+				var col = new System.Data.DataColumn(bptColumn.Parameter?.Name, type);
 				columns.Add(col);
 			}
 			return columns;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Media;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Windows;
@@ -14,6 +15,7 @@ namespace AcadLib.PaletteCommands
         private static PaletteSetCommands _paletteSet;
         private static readonly Guid PaletteGuid = new Guid("623e4502-7407-4566-9d71-3ecbda06b088");
         private static string commandStartPalette;
+	    private static string versionPalette;
 
         /// <summary>
         /// Данные для палитры
@@ -53,6 +55,8 @@ namespace AcadLib.PaletteCommands
                 CommandsAddin = commands;
                 Commands.AllCommandsCommon();
                 SetTrayIcon();
+	            versionPalette = Assembly.GetCallingAssembly().GetName().Version.ToString();
+
             }
             catch(System.Exception ex)
             {
@@ -86,7 +90,6 @@ namespace AcadLib.PaletteCommands
             var groupCommon = "Общие";
             var commonCommands = Commands.CommandsPalette;
             var groupCommands = CommandsAddin.GroupBy(c => c.Group).OrderBy(g=>g.Key);
-	        var ver = GetVersion(CommandsAddin.First());
             foreach (var group in groupCommands)
             {
                 if (group.Key.Equals(groupCommon, StringComparison.OrdinalIgnoreCase))
@@ -95,7 +98,7 @@ namespace AcadLib.PaletteCommands
                 }
                 else
                 {
-                    var model = new PaletteModel(group, ver);
+                    var model = new PaletteModel(group, versionPalette);
                     if (model.PaletteCommands.Any())
                     {
 	                    var commControl = new UI.CommandsControl {DataContext = model};
@@ -107,16 +110,11 @@ namespace AcadLib.PaletteCommands
                 }
             }
             // Общие команды для всех отделов определенные в этой сборке            
-            var modelCommon = new PaletteModel(commonCommands, ver);
+            var modelCommon = new PaletteModel(commonCommands, versionPalette);
 	        var controlCommon = new UI.CommandsControl {DataContext = modelCommon};
 	        AddVisual(groupCommon, controlCommon);
             models.Add(modelCommon);
         }
-
-	    private static string GetVersion(IPaletteCommand command)
-	    {
-		    return command.GetType().Assembly.GetName().Version.ToString();
-	    }
 
 	    private static PaletteSetCommands Create()
         {
