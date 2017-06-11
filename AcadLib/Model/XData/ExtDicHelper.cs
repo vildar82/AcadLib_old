@@ -9,9 +9,7 @@ namespace AcadLib.XData
     public static class ExtDicHelper
     {
         public const string PikApp = "PIK";
-        private static readonly RXClass rxRecord = RXObject.GetClass(typeof(Xrecord));
-        private static readonly RXClass rxDBDic = RXObject.GetClass(typeof(DBDictionary));
-
+        
         /// <summary>
         /// Получение записи XRecord словаря по имени.
         /// Если такая запись есть в словаре то возвращается ее id, а Data записи очищаются.
@@ -172,7 +170,7 @@ namespace AcadLib.XData
 
                 foreach (var item in dic)
                 {   
-                    if (item.Value.ObjectClass == rxRecord)
+                    if (item.Value.ObjectClass == General.ClassRecord)
                     {
                         using (var xrec = item.Value.Open(OpenMode.ForRead) as Xrecord)
                         {
@@ -182,7 +180,7 @@ namespace AcadLib.XData
                             res.Recs.Add(rec);
                         }
                     }
-                    else if (item.Value.ObjectClass == rxDBDic)
+                    else if (item.Value.ObjectClass == General.ClassDBDic)
                     {
                         var dicEdInner = GetDicEd(item.Value);
                         dicEdInner.Name = item.Key;

@@ -1,5 +1,7 @@
 ﻿using System;
 using AutoCAD_PIK_Manager.Settings;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Runtime;
 
 namespace AcadLib
 {
@@ -17,11 +19,21 @@ namespace AcadLib
         public const string UserGroupGP = "ГП";
         public const string UserGroupGPTest = "ГП_Тест";
 
-        /// <summary>
-        /// Отменено пользователем.
-        /// Сообщение для исключения при отмене команды пользователем.
-        /// </summary>
-        public const string CanceledByUser = "Отменено пользователем";        
+	    public static readonly RXClass ClassAttDef = RXObject.GetClass(typeof(AttributeDefinition));
+	    public static readonly RXClass ClassBlRef = RXObject.GetClass(typeof(BlockReference));
+		public static readonly RXClass ClassDbTextRX = RXObject.GetClass(typeof(DBText));
+	    public static readonly RXClass ClassMTextRX = RXObject.GetClass(typeof(MText));
+	    public static readonly RXClass ClassMLeaderRX = RXObject.GetClass(typeof(MLeader));
+	    public static readonly RXClass ClassDimension = RXObject.GetClass(typeof(Dimension));
+	    public static readonly RXClass ClassRecord = RXObject.GetClass(typeof(Xrecord));
+	    public static readonly RXClass ClassDBDic = RXObject.GetClass(typeof(DBDictionary));
+	    public static readonly RXClass ClassPolyline = RXObject.GetClass(typeof(Polyline));
+
+		/// <summary>
+		/// Отменено пользователем.
+		/// Сообщение для исключения при отмене команды пользователем.
+		/// </summary>
+		public const string CanceledByUser = "Отменено пользователем";        
 
         /// <summary>
         /// Символы строковые

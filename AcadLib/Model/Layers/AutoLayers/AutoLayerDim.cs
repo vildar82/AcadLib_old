@@ -28,7 +28,7 @@ namespace AcadLib.Layers.AutoLayers
 
         private static bool IsDimEnt(ObjectId idEnt)
         {
-            return idEnt.ObjectClass.IsDerivedFrom(RXObject.GetClass(typeof(Dimension)));
+            return idEnt.ObjectClass.IsDerivedFrom(General.ClassDimension);
         }
     }
 }

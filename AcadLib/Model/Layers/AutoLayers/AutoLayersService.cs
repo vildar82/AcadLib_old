@@ -189,7 +189,7 @@ namespace AcadLib.Layers.AutoLayers
         {
             if (btr == null) return;
             var idEnts = btr.Cast<ObjectId>().ToList();
-            var idBlRefs = idEnts.Where(w=>w.ObjectClass == RXObject.GetClass(typeof(BlockReference)));
+            var idBlRefs = idEnts.Where(w=>w.ObjectClass == General.ClassBlRef);
             idEnts = idEnts.Except(idBlRefs).ToList();
             foreach (var idBlRef in idBlRefs)
             {

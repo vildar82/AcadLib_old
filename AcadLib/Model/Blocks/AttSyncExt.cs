@@ -7,7 +7,7 @@ namespace AcadLib.Blocks
 {
     public static class AttSyncExt
     {
-        static RXClass attDefClass = RXObject.GetClass(typeof(AttributeDefinition));
+	    
 
         public static void SynchronizeAttributes(this ObjectId btrId)
         {
@@ -57,7 +57,7 @@ namespace AcadLib.Blocks
             var attDefs = new List<AttributeDefinition>();
             foreach (var id in target)
             {
-                if (id.ObjectClass == attDefClass)
+                if (id.ObjectClass == General.ClassAttDef)
                 {
                     var attDef = (AttributeDefinition)tr.GetObject(id, OpenMode.ForRead);
                     attDefs.Add(attDef);

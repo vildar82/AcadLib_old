@@ -93,7 +93,7 @@
     </Reference>
     <Reference Include="NetLib">
       <HintPath>..\..\NetLib\NetLib\NetLib\bin\Release\NetLib.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PIK_DB_Projects">
       <HintPath>..\..\ОБЩЕЕ\DBMDM\PIK_DB_Projects\PIK_DB_Projects\bin\Release\PIK_DB_Projects.dll</HintPath>

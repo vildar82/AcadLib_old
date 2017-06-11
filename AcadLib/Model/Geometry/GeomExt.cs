@@ -91,13 +91,12 @@ namespace AcadLib.Geometry
                     var start = crv.StartPoint;
                     var end = crv.EndPoint;
                     var bulge = 0.0;
-                    if (crv is Arc)
-                    {
-                        var arc = (Arc)crv;
-                        var angle = arc.Center.GetVectorTo(start).GetAngleTo(arc.Center.GetVectorTo(end), arc.Normal);
-                        bulge = Math.Tan(angle / 4.0);
-                    }
-                    psc.Add(new PolylineSegment(start.Convert2d(plane), end.Convert2d(plane), bulge));
+					if (crv is Arc arc)
+					{
+						var angle = arc.Center.GetVectorTo(start).GetAngleTo(arc.Center.GetVectorTo(end), arc.Normal);
+						bulge = Math.Tan(angle / 4.0);
+					}
+					psc.Add(new PolylineSegment(start.Convert2d(plane), end.Convert2d(plane), bulge));
                 }
                 foreach (DBObject o in newCol) o.Dispose();
                 var projectedPline = psc.Join(new Tolerance(1e-9, 1e-9))[0].ToPolyline();
