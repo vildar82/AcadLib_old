@@ -222,107 +222,119 @@ namespace AcadLib
 
         public void Initialize()
         {
-            // Инициализация сборки UnitsNet
-            var unused = UnitsNet.Area.Zero;
+	        try
+	        {
+		        // Инициализация сборки UnitsNet
+		        var unused = UnitsNet.Area.Zero;
 
-            // Копирование вспомогательных сборок локально из шаровой папки packages
-            var task = Task.Run(()=> {
-                LoadService.CopyPackagesLocal();
-            });
-            task.Wait(1000);
+		        // Копирование вспомогательных сборок локально из шаровой папки packages
+		        var task = Task.Run(() =>
+		        {
+			        LoadService.CopyPackagesLocal();
+		        });
+		        task.Wait(1000);
 
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            // Загрузка сборок из текущей папки
-            foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
-            {
-                LoadService.LoadFromTry(item);
-            }
-            //// MicroMvvm            
-            //var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
-            //LoadService.LoadFromTry(fileDll);
-            // Загрузка общей сборки - для всех специальностей             
-            var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_Acad_Common.dll");
-            LoadService.LoadFromTry(fileDll);
+		        AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+		        // Загрузка сборок из текущей папки
+		        foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
+		        {
+			        LoadService.LoadFromTry(item);
+		        }
+		        //// MicroMvvm            
+		        //var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\MicroMvvm.dll");
+		        //LoadService.LoadFromTry(fileDll);
+		        // Загрузка общей сборки - для всех специальностей             
+		        var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+			        @"Script\NET\PIK_Acad_Common.dll");
+		        LoadService.LoadFromTry(fileDll);
 
-            // Загрузка сбороки для данного раздела
-            var groups = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined;
-            var fileGroups = new List<string>();
-            foreach (var group in groups)
-            {
-                var groupDll = string.Empty;
-                if (group.IndexOf("СС", StringComparison.OrdinalIgnoreCase)!=-1)
-                {
-                    groupDll = "PIK_SS_Acad.dll";                    
-                }
-                if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
-                {
-	                groupDll = @group.IndexOf("Тест", StringComparison.OrdinalIgnoreCase) != -1 ? 
-						"PIK_GP_Civil.dll" : "PIK_GP_Acad.dll";
-                }
-                if (group.IndexOf("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase) != -1)
-                {
-                    groupDll = "Autocad_ConcerteList.dll";
-                }
-                if (group.IndexOf("КР-МН", StringComparison.OrdinalIgnoreCase) != -1)
-                {
-                    groupDll = "KR_MN_Acad.dll";
-                }
-                if (!string.IsNullOrEmpty(groupDll))
-                {
-                    fileGroups.Add($@"Script\NET\{group}\{groupDll}");
-                }
-            }                  
-            foreach (var fileGroup in fileGroups)
-            {
-                fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
-                LoadService.LoadFromTry(fileDll);
-                //Assembly.LoadFrom(fileDll);
-            }
-            
-            //try
-            //{
-            //    LoadService.LoadEntityFramework();
-            //}
-            //catch (System.Exception ex)
-            //{
-            //    Logger.Log.Error(ex, "LoadEntityFramework");
-            //}
+		        // Загрузка сбороки для данного раздела
+		        var groups = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined;
+		        var fileGroups = new List<string>();
+		        foreach (var group in groups)
+		        {
+			        var groupDll = string.Empty;
+			        if (group.IndexOf("СС", StringComparison.OrdinalIgnoreCase) != -1)
+			        {
+				        groupDll = "PIK_SS_Acad.dll";
+			        }
+			        if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
+			        {
+				        groupDll = @group.IndexOf("Тест", StringComparison.OrdinalIgnoreCase) != -1
+					        ? "PIK_GP_Civil.dll"
+					        : "PIK_GP_Acad.dll";
+			        }
+			        if (group.IndexOf("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase) != -1)
+			        {
+				        groupDll = "Autocad_ConcerteList.dll";
+			        }
+			        if (group.IndexOf("КР-МН", StringComparison.OrdinalIgnoreCase) != -1)
+			        {
+				        groupDll = "KR_MN_Acad.dll";
+			        }
+			        if (!string.IsNullOrEmpty(groupDll))
+			        {
+				        fileGroups.Add($@"Script\NET\{group}\{groupDll}");
+			        }
+		        }
+		        foreach (var fileGroup in fileGroups)
+		        {
+			        fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
+			        LoadService.LoadFromTry(fileDll);
+			        //Assembly.LoadFrom(fileDll);
+		        }
 
-            // Загрузка базы MDM            
-            //LoadService.LoadMDM();
+		        //try
+		        //{
+		        //    LoadService.LoadEntityFramework();
+		        //}
+		        //catch (System.Exception ex)
+		        //{
+		        //    Logger.Log.Error(ex, "LoadEntityFramework");
+		        //}
 
-            //// Загрузка общей библмотеки NetLib
-            //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\NetLib.dll");
-            //LoadService.LoadFromTry(fileDll);
+		        // Загрузка базы MDM            
+		        //LoadService.LoadMDM();
 
-            // Коннекторы к базе MDM
-            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\ASPADBConnector.dll");
-            LoadService.LoadFromTry(fileDll);
-            fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\ALDBConnector.dll");
-            LoadService.LoadFromTry(fileDll);
-            //// Удаление старых коннекторов
-            //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDBCToLISP.dll");
-            //LoadService.DeleteTry(fileDll);
-            //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
-            //LoadService.DeleteTry(fileDll);            
+		        //// Загрузка общей библмотеки NetLib
+		        //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\NetLib.dll");
+		        //LoadService.LoadFromTry(fileDll);
 
-            // Очистка локальных логов - временно!                               
-            //ClearLogs();            
+		        // Коннекторы к базе MDM
+		        fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+			        @"Script\NET\ASPADBConnector.dll");
+		        LoadService.LoadFromTry(fileDll);
+		        fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+			        @"Script\NET\ALDBConnector.dll");
+		        LoadService.LoadFromTry(fileDll);
+		        //// Удаление старых коннекторов
+		        //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDBCToLISP.dll");
+		        //LoadService.DeleteTry(fileDll);
+		        //fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\MDM_Connector.dll");
+		        //LoadService.DeleteTry(fileDll);            
 
-            //ResourceDictionary appRD;
-            //if (System.Windows.Application.Current == null)
-            //{
-            //    appRD = new Autodesk.AutoCAD.Windows.AcResourceDictionary();
-            //}
-            //else
-            //{
-            //    appRD = System.Windows.Application.Current.Resources;
-            //}
-            //appRD.MergedDictionaries.Add(System.Windows.Application.LoadComponent(
-            //    new Uri("AcadLib;component/Model/WPF/Images.xaml", UriKind.Relative)) as ResourceDictionary);
+		        // Очистка локальных логов - временно!                               
+		        //ClearLogs();            
 
-            // Автослои
-            Layers.AutoLayers.AutoLayersService.Init();
+		        //ResourceDictionary appRD;
+		        //if (System.Windows.Application.Current == null)
+		        //{
+		        //    appRD = new Autodesk.AutoCAD.Windows.AcResourceDictionary();
+		        //}
+		        //else
+		        //{
+		        //    appRD = System.Windows.Application.Current.Resources;
+		        //}
+		        //appRD.MergedDictionaries.Add(System.Windows.Application.LoadComponent(
+		        //    new Uri("AcadLib;component/Model/WPF/Images.xaml", UriKind.Relative)) as ResourceDictionary);
+
+		        // Автослои
+		        Layers.AutoLayers.AutoLayersService.Init();
+	        }
+	        catch (System.Exception ex)
+	        {
+		        Logger.Log.Error(ex, $"AcadLib Initialize.");
+	        }
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)

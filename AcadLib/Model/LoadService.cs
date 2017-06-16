@@ -168,9 +168,16 @@ namespace AcadLib
         //}
 
         public static void CopyPackagesLocal()
-        {            
-            var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, "packages");
-            NetLib.IO.Path.CopyDirectory(dllServer, dllLocalPackages);
+        {
+	        try
+	        {
+		        var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, "packages");
+		        NetLib.IO.Path.CopyDirectory(dllServer, dllLocalPackages);
+	        }
+	        catch (Exception ex)
+	        {
+		        Logger.Log.Error(ex, $"CopyPackagesLocal");
+	        }
         }
     }
 }
