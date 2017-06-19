@@ -30,6 +30,47 @@ namespace AcadLib
             Logger.Log.StartLisp(commandName, file);
         }
 
+	    public static void Start(string commandName, Action<Document> action)
+	    {
+			var doc = Application.DocumentManager.MdiActiveDocument;
+		    if (doc == null) return;
+		    try
+		    {
+			    var caller = new StackTrace().GetFrame(1).GetMethod();
+			    var commandStart = GetCallerCommand(caller, commandName);
+			    Logger.Log.StartCommand(commandStart);
+			    Logger.Log.Info($"Document={doc.Name}");
+			    PluginStatisticsHelper.PluginStart(commandStart);
+			    Inspector.Clear();
+		    }
+		    catch(System.Exception ex)
+		    {
+				Logger.Log.Error(ex, "CommandStart");
+		    }
+		    try
+		    {
+			    action(doc);
+		    }
+		    catch (CancelByUserException cancelByUser)
+		    {
+			    doc.Editor.WriteMessage(cancelByUser.Message);
+		    }
+		    catch (Exceptions.ErrorException error)
+		    {
+			    Inspector.AddError(error.Error);
+		    }
+		    catch (System.Exception ex)
+		    {
+			    if (!ex.Message.Contains(General.CanceledByUser))
+			    {
+				    Logger.Log.Error(ex, CurrentCommand);
+				    Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
+			    }
+			    doc.Editor.WriteMessage(ex.Message);
+		    }
+		    Inspector.Show();
+		}
+
         /// <summary>
         /// Оболочка для старта команды - try-catch, log, inspectoe.clear-show, commandcounter
         /// Условие использования: отключить оптимизацию кода (Параметры проекта -> Сборка) - т.к. используется StackTrace
@@ -38,53 +79,19 @@ namespace AcadLib
         [MethodImpl(MethodImplOptions.NoInlining)]        
         public static void Start(Action<Document> action)
         {
-            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
-            try
-            {
-                var caller = new StackTrace().GetFrame(1).GetMethod();
-                var commandStart = GetCallerCommand(caller);
-                Logger.Log.StartCommand(commandStart);                
-                Logger.Log.Info($"Document={doc.Name}");
-                PluginStatisticsHelper.PluginStart(commandStart);
-
-                Inspector.Clear();
-            }
-            catch { }
-            try
-            {
-                action(doc);
-            }
-            catch (CancelByUserException cancelByUser)
-            {
-                doc.Editor.WriteMessage(cancelByUser.Message);
-            }
-            catch (Exceptions.ErrorException error)
-            {
-                Inspector.AddError(error.Error);
-            }
-            catch (System.Exception ex)
-            {
-                if (!ex.Message.Contains(General.CanceledByUser))
-                {
-                    Logger.Log.Error(ex, CurrentCommand);
-                    Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
-                }
-                doc.Editor.WriteMessage(ex.Message);
-            }
-            Inspector.Show();
+	        Start(null, action);
         }
 
-        internal static CommandStart GetCallerCommand(MethodBase caller)
+        internal static CommandStart GetCallerCommand(MethodBase caller, string commandName = null)
         {            
             Assembly assm = null;
             try
             {                
-                CurrentCommand = GetCallerCommandName(caller);
+                CurrentCommand = commandName ?? GetCallerCommandName(caller);
                 assm = caller?.DeclaringType.Assembly;
             }
             catch { }
-            var com = new CommandStart()
+            var com = new CommandStart
             {
                 CommandName = CurrentCommand,
                 Assembly = assm,
