@@ -15,10 +15,12 @@ namespace AcadLib.Statistic
                 {
                     if (!General.IsCadManager())
                     {
+	                    var version = command.Assembly != null
+		                    ? FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion
+		                    : string.Empty;
                         using (var pg = new C_PluginStatisticTableAdapter())
                         {
-                            pg.Insert("AutoCAD", command.Plugin, command.CommandName,
-                                FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion,
+                            pg.Insert("AutoCAD", command.Plugin, command.CommandName, version,
                                 command.Doc, Environment.UserName, DateTime.Now, null);
                         }
                     }                   

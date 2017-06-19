@@ -28,7 +28,8 @@ namespace AcadLib
         public static void StartLisp (string commandName, string file)
         {
             Logger.Log.StartLisp(commandName, file);
-        }
+	        PluginStatisticsHelper.PluginStart(new CommandStart(commandName, null){ Doc = file, Plugin = "Lisp"});
+		}
 
 	    public static void Start(string commandName, Action<Document> action)
 	    {
