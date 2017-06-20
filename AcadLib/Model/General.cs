@@ -7,6 +7,8 @@ namespace AcadLib
 {
     public static class General
     {
+        public const string Company = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
+
         public const string UserGroupAR = "АР";
         public const string UserGroupKRMN = "КР-МН";
         public const string UserGroupKRSB = "КР-СБ";
@@ -66,7 +68,7 @@ namespace AcadLib
         [Obsolete("Используй Path.GetUserPluginFolder()")]
         public static string GetUserDataFile (string pluginName, string fileName)
         {
-            return IO.Path.GetUserPluginFile(pluginName, fileName);            
+            return IO.Path.GetUserPluginFile(pluginName, fileName);   
         }        
 
         public static bool IsCadManager()

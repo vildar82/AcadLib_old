@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using AcadLib;
 using AutoCAD_PIK_Manager.Settings;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
@@ -8,7 +9,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 {
     public static class DbExtensions
     {
-        public const string PIK = "PIK";
+        public const string PIK = General.Company;
         public static ObjectId GetLineTypeIdByName(this Database db, string name)
         {
             var resVal = ObjectId.Null;

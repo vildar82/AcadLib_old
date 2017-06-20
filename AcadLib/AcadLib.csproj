@@ -290,6 +290,7 @@
     <Compile Include="Model\XData\Interface\IExtDataSave.cs" />
     <Compile Include="Model\XData\Interface\ITypedDataValues.cs" />
     <Compile Include="Model\XData\RecXD.cs" />
+    <Compile Include="Model\XData\RegAppHelper.cs" />
     <Compile Include="Model\XData\TypedValueExt.cs" />
     <Compile Include="Model\XData\TypedValueKit.cs" />
     <Compile Include="Model\XData\XDataExt.cs" />

@@ -21,18 +21,7 @@ namespace AcadLib
         /// </summary>        
         public static void RegApp(this Database db, string regAppName)
         {
-            using (var rat = db.RegAppTableId.Open(OpenMode.ForRead, false) as RegAppTable)
-            {
-                if (!rat.Has(regAppName))
-                {
-                    rat.UpgradeOpen();
-                    using (var ratr = new RegAppTableRecord())
-                    {
-                        ratr.Name = regAppName;
-                        rat.Add(ratr);
-                    }
-                }
-            }
+            RegAppHelper.RegApp(db, regAppName);
         }
 
         /// <summary>
