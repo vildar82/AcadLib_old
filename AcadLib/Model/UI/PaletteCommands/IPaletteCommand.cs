@@ -12,6 +12,7 @@ namespace AcadLib.PaletteCommands
         string Group { get; }
         List<string> Access { get; }
         List<MenuItemCommand> ContexMenuItems { get; set; }
+        bool IsTest { get; }
         void Execute();
     }
 }

@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Blocks\BlockPropertiesTableExt.cs" />
+    <Compile Include="Model\Images\ImageExt.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayer.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayerDim.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayersService.cs" />
@@ -379,6 +380,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\test.png" />
     <None Include="packages.config" />
     <Resource Include="Resources\send2.png" />
     <Resource Include="Resources\txt.png" />

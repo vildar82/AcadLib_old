@@ -12,13 +12,13 @@ namespace AcadLib.PaletteCommands
     /// </summary>
     public class PaletteInsertBlock : PaletteCommand
     {
-        string blName;
-        string file;
-        List<Property> props;
+        readonly string blName;
+        readonly string file;
+        readonly List<Property> props;
 
         public PaletteInsertBlock(string blName, string file, string name, Bitmap image,
-            string description, string group = "", List<Property> props = null)
-            : base(name, image, "", description, group)
+            string description, string group = "", List<Property> props = null, bool isTest = false)
+            : base(name, image, "", description, group, isTest)
         {
             this.blName = blName;
             this.file = file;

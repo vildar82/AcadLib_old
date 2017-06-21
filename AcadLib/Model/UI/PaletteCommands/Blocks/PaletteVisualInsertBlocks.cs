@@ -8,13 +8,13 @@ namespace AcadLib.PaletteCommands
     /// Команда вставки блока из списка
     /// </summary>
     public class PaletteVisualInsertBlocks : PaletteCommand
-    {        
-        string file;
-        Predicate<string> filter;
+    {
+        private readonly string file;
+        private readonly Predicate<string> filter;
 
         public PaletteVisualInsertBlocks(Predicate<string> filter, string file, string name, Bitmap image,
-            string description, string group = "")
-            : base(name, image, "", description, group)
+            string description, string group = "", bool isTest = false)
+            : base(name, image, "", description, group, isTest)
         {            
             this.file = file;
             this.filter = filter;                                    

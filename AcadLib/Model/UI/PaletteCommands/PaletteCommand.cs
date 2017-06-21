@@ -37,17 +37,24 @@ namespace AcadLib.PaletteCommands
         public string HelpMedia { get; set; }
         public List<MenuItemCommand> ContexMenuItems { get; set; }
         public ICommand Command { get; set; }
+        public bool IsTest { get; set; }
 
         //public PaletteCommand() { }
 
-        public PaletteCommand(string name, Bitmap image, string command, string description, string group = "")
-        {   
-            Image = GetSource(image);
+        public PaletteCommand(string name, Bitmap image, string command, string description, string group = "", 
+            bool isTest = false)
+        {
+            IsTest = isTest;
+            Image = GetSource(image, isTest);
             Name = name;
             CommandName = command;
             Command = new RelayCommand(Execute);
             Description = description;
             Group = group;
+            if (isTest)
+            {
+                Name += " (Тест)";
+            }
             // HelpMedia
             HelpMedia = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
                 AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, "Help", command, command + ".mp4");
@@ -73,17 +80,34 @@ namespace AcadLib.PaletteCommands
             }
         }
 
-        public ImageSource GetSource(Bitmap image)
+        private static ImageSource GetSource(Bitmap image, bool isTest)
         {
             if (image == null)
             {
                 image = Properties.Resources.unknown;
+            }
+            if (isTest)
+            {
+                AddTestWaterMark(image);
             }
             return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
                     image.GetHbitmap(),
                     IntPtr.Zero,
                     System.Windows.Int32Rect.Empty,
                     BitmapSizeOptions.FromEmptyOptions());
+        }
+
+        private static void AddTestWaterMark(Image image)
+        {
+            using (var watermarkImage = Properties.Resources.test)
+            using (var imageGraphics = Graphics.FromImage(image))
+            using (var watermarkBrush = new TextureBrush(watermarkImage))
+            {
+                var x = image.Width / 2 - watermarkImage.Width / 2;
+                var y = image.Height / 2 - watermarkImage.Height / 2;
+                watermarkBrush.TranslateTransform(x, y);
+                imageGraphics.FillRectangle(watermarkBrush, new Rectangle(new Point(x, y), new Size(watermarkImage.Width + 1, watermarkImage.Height)));
+            }
         }
     }
 }
