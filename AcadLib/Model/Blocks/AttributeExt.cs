@@ -64,7 +64,7 @@ namespace AcadLib.Extensions
         /// </summary>      
         public static IEnumerable<DBText> GetAttributes(this BlockReference blockRef)
         {
-            Transaction tr = blockRef.GetTransaction();
+            var tr = blockRef.GetTransaction();
             var btr = (BlockTableRecord)blockRef.BlockTableRecord.GetObject(OpenMode.ForRead);
             if (blockRef.AttributeCollection != null)
             {

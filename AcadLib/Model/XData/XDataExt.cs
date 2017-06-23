@@ -10,7 +10,7 @@ namespace AcadLib
     /// </summary>
     public static class XDataExt
     {
-        private static Dictionary<Type, int> dictXDataTypedValues = new Dictionary<Type, int> {            
+        private static readonly Dictionary<Type, int> dictXDataTypedValues = new Dictionary<Type, int> {            
             { typeof(int), (int)DxfCode.ExtendedDataInteger32 },
             { typeof(double), (int)DxfCode.ExtendedDataReal },
             { typeof(string),(int)DxfCode.ExtendedDataAsciiString }
@@ -43,7 +43,7 @@ namespace AcadLib
         {
             if (dbo.GetXDataForApplication(regAppName) != null)
             {
-                ResultBuffer rb = rb = new ResultBuffer(new TypedValue(1001, regAppName));
+                var rb = new ResultBuffer(new TypedValue(1001, regAppName));
                 dbo.UpgradeOpen();
                 dbo.XData = rb;
                 dbo.DowngradeOpen();

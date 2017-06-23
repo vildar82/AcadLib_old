@@ -30,7 +30,7 @@ namespace AcadLib.Blocks
             var tr = target.Database.TransactionManager.TopTransaction;
             if (tr == null)
                 throw new Autodesk.AutoCAD.Runtime.Exception(ErrorStatus.NoActiveTransactions);
-            List<AttributeDefinition> attDefs = target.GetAttributes(tr);
+            var attDefs = target.GetAttributes(tr);
             foreach (ObjectId id in target.GetBlockReferenceIds(true, false))
             {
                 var br = (BlockReference)tr.GetObject(id, OpenMode.ForWrite);

@@ -33,43 +33,16 @@ namespace AcadLib
 
 	    public static void Start(string commandName, Action<Document> action)
 	    {
-			var doc = Application.DocumentManager.MdiActiveDocument;
-		    if (doc == null) return;
-		    try
-		    {
-			    var caller = new StackTrace().GetFrame(1).GetMethod();
-			    var commandStart = GetCallerCommand(caller, commandName);
-			    Logger.Log.StartCommand(commandStart);
-			    Logger.Log.Info($"Document={doc.Name}");
-			    PluginStatisticsHelper.PluginStart(commandStart);
-			    Inspector.Clear();
-		    }
-		    catch(System.Exception ex)
-		    {
-				Logger.Log.Error(ex, "CommandStart");
-		    }
-		    try
-		    {
-			    action(doc);
-		    }
-		    catch (CancelByUserException cancelByUser)
-		    {
-			    doc.Editor.WriteMessage(cancelByUser.Message);
-		    }
-		    catch (Exceptions.ErrorException error)
-		    {
-			    Inspector.AddError(error.Error);
-		    }
-		    catch (System.Exception ex)
-		    {
-			    if (!ex.Message.Contains(General.CanceledByUser))
-			    {
-				    Logger.Log.Error(ex, CurrentCommand);
-				    Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
-			    }
-			    doc.Editor.WriteMessage(ex.Message);
-		    }
-		    Inspector.Show();
+	        MethodBase caller = null;
+	        try
+	        {
+	            caller = new StackTrace().GetFrame(1).GetMethod();
+            }
+	        catch(System.Exception ex)
+	        {
+                Logger.Log.Error(ex, "CommandStart - StackTrace");
+	        }
+            StartCommand(action, caller, commandName);
 		}
 
         /// <summary>
@@ -80,7 +53,56 @@ namespace AcadLib
         [MethodImpl(MethodImplOptions.NoInlining)]        
         public static void Start(Action<Document> action)
         {
-	        Start(null, action);
+            MethodBase caller = null;
+            try
+            {
+                caller = new StackTrace().GetFrame(1).GetMethod();
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, "CommandStart - StackTrace");
+            }
+            StartCommand(action, caller, null);
+        }
+
+        private static void StartCommand(Action<Document> action, MethodBase caller, string commandName)
+        {
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            try
+            {
+                var commandStart = GetCallerCommand(caller, commandName);
+                Logger.Log.StartCommand(commandStart);
+                Logger.Log.Info($"Document={doc.Name}");
+                PluginStatisticsHelper.PluginStart(commandStart);
+                Inspector.Clear();
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, "CommandStart");
+            }
+            try
+            {
+                action(doc);
+            }
+            catch (CancelByUserException cancelByUser)
+            {
+                doc.Editor.WriteMessage(cancelByUser.Message);
+            }
+            catch (Exceptions.ErrorException error)
+            {
+                Inspector.AddError(error.Error);
+            }
+            catch (System.Exception ex)
+            {
+                if (!ex.Message.Contains(General.CanceledByUser))
+                {
+                    Logger.Log.Error(ex, CurrentCommand);
+                    Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
+                }
+                doc.Editor.WriteMessage(ex.Message);
+            }
+            Inspector.Show();
         }
 
         internal static CommandStart GetCallerCommand(MethodBase caller, string commandName = null)
