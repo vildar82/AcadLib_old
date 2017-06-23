@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Blocks\BlockPropertiesTableExt.cs" />
+    <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Images\ImageExt.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayer.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayerDim.cs" />
