@@ -173,6 +173,39 @@ namespace AcadLib.Geometry
         }
 
         /// <summary>
+        /// Апроксимация полилинии по высоте отступа сегментов от дуги
+        /// </summary>
+        /// <param name="pl">Полилиния</param>
+        /// <param name="chordHeight">Высота отклонения от дуги</param>
+        public static List<Point2d> GetApproximatePoints(this Polyline pl, double chordHeight)
+        {
+            if (!pl.HasBulges)
+            {
+                return pl.GetPoints();
+            }
+            var points = new List<Point2d>();
+            for (var i = 0; i < pl.NumberOfVertices; i++)
+            {
+                points.Add(pl.GetPoint2dAt(i));
+                var segType = pl.GetSegmentType(i);
+                if (segType != SegmentType.Arc) continue;
+                var seg = pl.GetArcSegment2dAt(i);
+                var chordLength = GetChordLength(seg.Radius, chordHeight);
+                var segLength = seg.GetLength(seg.GetParameterOf(seg.StartPoint),seg.GetParameterOf(seg.EndPoint));
+                var numSeg = Convert.ToInt32(segLength / chordLength);
+                var arcPts = seg.GetSamplePoints(numSeg).ToList();
+                arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
+                points.AddRange(arcPts);
+            }
+            return points;
+        }
+
+        private static double GetChordLength(double r, double h)
+        {
+            return Math.Sqrt(r * r - (r - h) * (r - h))*2;
+        }
+
+        /// <summary>
         /// Breaks the polyline at specified point.
         /// </summary>
         /// <param name="pline">The polyline this method applies to.</param>
