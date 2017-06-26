@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AcadLib;
@@ -10,6 +11,20 @@ namespace Autodesk.AutoCAD.DatabaseServices
     public static class DbExtensions
     {
         public const string PIK = General.Company;
+
+        public static IEnumerable<T> IterateDB<T>(this Database db) where T : DBObject
+        {
+            for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
+            {
+                if (!db.TryGetObjectId(new Handle(i), out ObjectId id)) continue;
+                var objT = id.GetObject<T>();
+                if (objT != null)
+                {
+                    yield return objT;
+                }
+            }
+        }
+
         public static ObjectId GetLineTypeIdByName(this Database db, string name)
         {
             var resVal = ObjectId.Null;
