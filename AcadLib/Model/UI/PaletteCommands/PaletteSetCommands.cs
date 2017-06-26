@@ -55,10 +55,11 @@ namespace AcadLib.PaletteCommands
                 CommandsAddin = commands;
                 Commands.AllCommandsCommon();
                 SetTrayIcon();
-	            versionPalette = Assembly.GetCallingAssembly().GetName().Version.ToString();
+                var userGroups = string.Join(",", AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined);
+	            versionPalette = $"{Assembly.GetCallingAssembly().GetName().Version} {userGroups}";
 
             }
-            catch(System.Exception ex)
+            catch(Exception ex)
             {
                 Logger.Log.Error(ex, $"AcadLib.PaletteCommands.InitPalette() - {commandStartPalette}.");
             }
