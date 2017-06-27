@@ -8,7 +8,7 @@ namespace AcadLib.Colors
     {
         public static string AcadColorToStrig(this Color color)
         {
-            return color.ColorValue.ColorToString();
+            return color?.ColorValue.ColorToString() ?? "";
         }
         public static Color AcadColorFeomString(this string color)
         {
