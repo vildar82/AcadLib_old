@@ -79,5 +79,30 @@ namespace AcadLib.IO
             Directory.CreateDirectory(tempDirectory);
             return tempDirectory;
         }
+
+        /// <summary>
+        /// Копирование папки - рекурсивно. Папка создается.
+        /// </summary>
+        /// <param name="source">Откуда</param>
+        /// <param name="target">Куда</param>
+        public static void CopyDirTo(this DirectoryInfo source, DirectoryInfo target)
+        {
+            Directory.CreateDirectory(target.FullName);
+            foreach (var fi in source.GetFiles())
+            {
+                Console.WriteLine($@"Copying {target.FullName}\{fi.Name}");
+                fi.CopyTo(System.IO.Path.Combine(target.FullName, fi.Name), true);
+            }
+            foreach (var diSourceSubDir in source.GetDirectories())
+            {
+                var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyDirTo(diSourceSubDir, nextTargetSubDir);
+            }
+        }
+
+        public static void CopyDirTo(string sourceDir, string targetDir)
+        {
+            CopyDirTo(new DirectoryInfo(sourceDir), new DirectoryInfo(targetDir));
+        }
     }
 }

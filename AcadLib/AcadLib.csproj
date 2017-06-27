@@ -186,7 +186,7 @@
     <Compile Include="Model\Blocks\Extensions.cs" />
     <Compile Include="Model\Blocks\BlockAttribute.cs" />
     <Compile Include="Model\Blocks\LateBinfing.cs" />
-    <Compile Include="Commands.cs" />
+    <Compile Include="Model\Commands.cs" />
     <Compile Include="Model\Blocks\Visual\BlockPreviewHelper.cs" />
     <Compile Include="Model\Blocks\Visual\IVisualBlock.cs" />
     <Compile Include="Model\Blocks\Visual\VisualBlock.cs" />
