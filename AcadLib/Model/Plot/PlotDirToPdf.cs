@@ -95,7 +95,6 @@ namespace AcadLib.Plot
                         dbTemp.CloseInput(true);
                         using (var t = dbTemp.TransactionManager.StartTransaction())
                         {
-                            var layoutDict = (DBDictionary)dbTemp.LayoutDictionaryId.GetObject(OpenMode.ForRead);
                             var layouts = dbTemp.GetLayouts();
                             // Фильтр листов 
                             if (Options.FilterState)
@@ -283,7 +282,7 @@ namespace AcadLib.Plot
 
         private bool FilterByName(string tabName)
         {
-            return Regex.IsMatch(tabName, Options.FilterByNames, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+            return Regex.IsMatch(tabName, Options.FilterByNames, RegexOptions.IgnoreCase);
         }        
 
         public void PublisherDSD(DsdEntryCollection collection)
