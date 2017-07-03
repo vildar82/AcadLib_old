@@ -49,7 +49,7 @@ namespace AcadLib.PaletteCommands
             Name = name;
             CommandName = command;
             Command = new RelayCommand(Execute);
-            Description = description;
+            Description = $"{description} {Environment.NewLine}{command}";
             Group = group;
             if (isTest)
             {
