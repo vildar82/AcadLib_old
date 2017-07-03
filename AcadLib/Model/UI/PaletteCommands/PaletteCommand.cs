@@ -64,8 +64,9 @@ namespace AcadLib.PaletteCommands
             }
         }
 
-        public PaletteCommand(List<string> access, string name, Bitmap image, string command, string description, string group = "")            
-            :this(name, image, command, description, group)
+        public PaletteCommand(List<string> access, string name, Bitmap image, 
+            string command, string description, string group = "", bool isTest = false)            
+            :this(name, image, command, description, group, isTest)
         {
             Access = access;
         }
