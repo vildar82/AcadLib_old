@@ -259,8 +259,8 @@ namespace AcadLib
 			        if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
 			        {
 				        groupDll = @group.IndexOf("Тест", StringComparison.OrdinalIgnoreCase) != -1
-					        ? GetCivilDllName() 
-					        : "PIK_GP_Acad.dll";
+					        ? "PIK_GP_Civil.dll"
+                            : "PIK_GP_Acad.dll";
 			        }
 			        if (group.IndexOf("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase) != -1)
 			        {
@@ -296,15 +296,6 @@ namespace AcadLib
 	        {
 		        Logger.Log.Error(ex, $"AcadLib Initialize.");
 	        }
-        }
-
-        private string GetCivilDllName()
-        {
-            if (HostApplicationServices.Current.releaseMarketVersion == "2017")
-            {
-                return "PIK_GP_Civil_2017.dll";
-            }
-            return "PIK_GP_Civil.dll";
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
