@@ -52,37 +52,31 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
-      <HintPath>..\..\ObjectARX\ObjectARX2015\AcCoreMgd.dll</HintPath>
+      <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AcCoreMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd">
-      <HintPath>..\..\ObjectARX\ObjectARX2015\AcDbMgd.dll</HintPath>
+      <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="acdbmgdbrep, Version=20.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Package\AutoCAD\2015\acdbmgdbrep.dll</HintPath>
+    <Reference Include="acdbmgdbrep">
+      <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\acdbmgdbrep.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMgd">
-      <HintPath>..\..\ObjectARX\ObjectARX2015\AcMgd.dll</HintPath>
+      <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AcMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMPolygonMGD">
       <HintPath>..\..\Package\AutoCAD\2015\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AcWindows">
-      <HintPath>..\..\ObjectARX\ObjectARX2015\AcWindows.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="AutoCAD_PIK_Manager">
       <HintPath>..\..\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\bin\Release\AutoCAD_PIK_Manager.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="EPPlus, Version=4.0.5.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\EPPlus.dll</HintPath>
+    <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="MicroMvvm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -112,8 +106,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnitsNet, Version=3.59.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnitsNet.3.59.0\lib\net35\UnitsNet.dll</HintPath>
+    <Reference Include="UnitsNet, Version=3.64.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnitsNet.3.64.0\lib\net35\UnitsNet.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -381,8 +375,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\test.png" />
     <None Include="packages.config" />
+    <Resource Include="Resources\test.png" />
     <Resource Include="Resources\send2.png" />
     <Resource Include="Resources\txt.png" />
     <Resource Include="Resources\update.png" />

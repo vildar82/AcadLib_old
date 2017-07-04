@@ -59,8 +59,10 @@ namespace AcadLib.Blocks
 		{
 			var extDic = dynBtr.ExtensionDictionary.GetObject<DBDictionary>();
 			var graph = extDic.GetAt("ACAD_ENHANCEDBLOCK").GetObject<EvalGraph>();
-		 	return graph.GetAllNodes()
-				.Select(f=> graph.GetNode((uint)f, OpenMode.ForRead, t) as BlockPropertiesTable)
+		    var graphDyn = (dynamic) graph;
+            // graph.GetNode - в 2017 не работает! Метод не найден! через dynamic работает.
+            return graph.GetAllNodes()
+				.Select(f=> ((dynamic)graph).GetNode((uint)f, OpenMode.ForRead, t) as BlockPropertiesTable)
 				.FirstOrDefault(w => w!=null);
 		}
 	}
