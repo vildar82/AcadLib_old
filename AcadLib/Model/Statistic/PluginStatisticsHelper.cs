@@ -19,7 +19,8 @@ namespace AcadLib.Statistic
                         var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                         using (var pg = new C_PluginStatisticTableAdapter())
                         {
-                            pg.Insert("AutoCAD Run", "AcadLib", "AutoCAD Run", version,
+                            var appRun = IsCivilGroup() ? "Civil Run" : "AutoCAD Run";
+                            pg.Insert(appRun, "AcadLib", appRun, version,
                                 "", Environment.UserName, DateTime.Now, null);
                         }
                     }
@@ -60,6 +61,11 @@ namespace AcadLib.Statistic
         private static bool IsCivilAssembly(Assembly assm)
         {
             return assm?.GetName().Name.StartsWith("PIK_GP") == true;
+        }
+
+        private static bool IsCivilGroup()
+        {
+            return AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup.StartsWith("ГП");
         }
 
         public static void AddStatistic ()
