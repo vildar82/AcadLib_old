@@ -75,7 +75,7 @@ namespace AcadLib.Layers
                     {
                         using (var lay = lt[layer.Name].Open(OpenMode.ForRead) as LayerTableRecord)
                         {
-                            if (lay.IsLocked && lay.IsOff && lay.IsFrozen)
+                            if (lay.IsLocked || lay.IsOff || lay.IsFrozen)
                             {
                                 lay.UpgradeOpen();
                                 if (lay.IsOff)
