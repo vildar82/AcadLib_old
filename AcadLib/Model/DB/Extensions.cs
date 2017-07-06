@@ -22,7 +22,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             if (!id.IsValidEx())
                 return null;
-            return id.GetObject(mode) as T;
+            return id.GetObject(mode, false, true) as T;
         }
 
         // Opens a collection of DBObject in ForRead mode (kaefer @ TheSwamp)       

@@ -177,7 +177,7 @@
     <Compile Include="Model\Blocks\Dublicate\BlockRefDublicateInfo.cs" />
     <Compile Include="Model\Blocks\Dublicate\CheckDublicateBlocks.cs" />
     <Compile Include="Model\Blocks\Dublicate\Tree\PointTree.cs" />
-    <Compile Include="Model\Blocks\Extensions.cs" />
+    <Compile Include="Model\DB\Extensions.cs" />
     <Compile Include="Model\Blocks\BlockAttribute.cs" />
     <Compile Include="Model\Blocks\LateBinfing.cs" />
     <Compile Include="Model\Commands.cs" />
