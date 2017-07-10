@@ -65,7 +65,8 @@ namespace AcadLib.Statistic
 
         private static bool IsCivilGroup()
         {
-            return AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup.StartsWith("ГП");
+            return AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup.StartsWith("ГП") ||
+                   AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup == "НС";
         }
 
         public static void AddStatistic ()

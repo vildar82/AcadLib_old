@@ -45,12 +45,26 @@ namespace AcadLib
             });
         }
 
+        [CommandMethod(Group, nameof(PIK_Start), CommandFlags.Modal)]
+        public void PIK_Start()
+        {
+            try
+            {
+                PaletteSetCommands.Start();
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, "PIK_Start");
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
         public void BlockListCommand()
         {
             CommandStart.Start(doc =>
             {
-                BlockList.List(doc.Database);
+                doc.Database.List();
             });
         }
 
@@ -256,21 +270,25 @@ namespace AcadLib
 			        {
 				        groupDll = "PIK_SS_Acad.dll";
 			        }
-			        if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
+			        else if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
 			        {
 				        groupDll = @group.IndexOf("Тест", StringComparison.OrdinalIgnoreCase) != -1
 					        ? "PIK_GP_Civil.dll"
                             : "PIK_GP_Acad.dll";
 			        }
-			        if (group.IndexOf("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase) != -1)
+			        else if (group.IndexOf("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase) != -1)
 			        {
 				        groupDll = "Autocad_ConcerteList.dll";
 			        }
-			        if (group.IndexOf("КР-МН", StringComparison.OrdinalIgnoreCase) != -1)
+			        else if (group.IndexOf("КР-МН", StringComparison.OrdinalIgnoreCase) != -1)
 			        {
 				        groupDll = "KR_MN_Acad.dll";
 			        }
-			        if (!string.IsNullOrEmpty(groupDll))
+			        else if (group.IndexOf("НС", StringComparison.OrdinalIgnoreCase) != -1)
+			        {
+			            groupDll = "PIK_NS_Civil.dll";
+			        }
+                    if (!string.IsNullOrEmpty(groupDll))
 			        {
 				        fileGroups.Add($@"Script\NET\{group}\{groupDll}");
 			        }
