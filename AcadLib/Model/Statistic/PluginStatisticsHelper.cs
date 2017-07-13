@@ -60,7 +60,7 @@ namespace AcadLib.Statistic
 
         private static bool IsCivilAssembly(Assembly assm)
         {
-            return assm?.GetName().Name.StartsWith("PIK_GP") == true;
+            return assm?.GetName().Name.Contains("Civil") == true;
         }
 
         private static bool IsCivilGroup()

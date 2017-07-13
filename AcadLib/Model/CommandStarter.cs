@@ -111,7 +111,7 @@ namespace AcadLib
             try
             {                
                 CurrentCommand = commandName ?? GetCallerCommandName(caller);
-                assm = caller?.DeclaringType.Assembly;
+                assm = caller?.DeclaringType?.Assembly;
             }
             catch { }
             var com = new CommandStart
