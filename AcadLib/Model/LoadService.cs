@@ -17,7 +17,8 @@ namespace AcadLib
             LoadPackages("CloudinaryDotNet.dll");
             LoadPackages("ScreenshotToSlack.dll");            
         }
-
+		 
+		[Obsolete("Грузится из packages по AssemblyResolve")]
         public static void LoadMongoDb()
         {
             LoadMetro();
@@ -28,6 +29,7 @@ namespace AcadLib
             LoadPackages(@"Mongo\MongoDblib.dll");            
         }
 
+		[Obsolete("Грузится по умолчанию")]
         public static void LoadNewtonJson()
         {
             LoadPackages(@"Newtonsoft.Json\Newtonsoft.Json.dll");
@@ -37,6 +39,7 @@ namespace AcadLib
         /// <summary>
         /// Загрузка сборки SpecBlocks.dll - для создания спецификация блоков, в соответствии с настройками.
         /// </summary>
+        [Obsolete("Не использовать")]
         public static void LoadSpecBlocks()
         {
             LoadPackages("SpecBlocks.dll");
@@ -45,11 +48,13 @@ namespace AcadLib
         /// <summary>
         /// Morelinq
         /// </summary>
+        [Obsolete("Нафиг")]
         public static void LoadMorelinq()
         {
             LoadPackages("MoreLinq.dll");
         }
 
+		[Obsolete("Загружется по умолчанию")]
         public static void LoadMicroMvvm ()
         {
             LoadPackages("MicroMvvm.dll");
@@ -73,6 +78,7 @@ namespace AcadLib
         /// <summary>
         /// NetTopologySuite
         /// </summary>
+        [Obsolete("Лучше не использовать. PowerCollections не грузится.")]
         public static void LoadNetTopologySuite()
         {
             LoadPackages("NetTopologySuite.dll");
@@ -80,6 +86,7 @@ namespace AcadLib
             LoadPackages("PowerCollections.dll");            
         }        
 
+		[Obsolete("Не очень")]
         public static void LoadCatel()
         {
             LoadPackages(@"Catel\Catel.Core.dll");
