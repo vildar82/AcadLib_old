@@ -81,10 +81,14 @@ namespace AcadLib
             {
                 Logger.Log.Error(ex, "CommandStart");
             }
-            try
-            {
-                action(doc);
-            }
+	        try
+	        {
+		        action(doc);
+	        }
+	        catch (OperationCanceledException ex)
+	        {
+		        doc.Editor.WriteMessage(ex.Message);
+	        }
             catch (CancelByUserException cancelByUser)
             {
                 doc.Editor.WriteMessage(cancelByUser.Message);
