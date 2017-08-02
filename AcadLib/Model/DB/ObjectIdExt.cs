@@ -17,17 +17,16 @@ namespace AcadLib
             using (doc.LockDocument())
             using (var t = id.Database.TransactionManager.StartTransaction())
             {
-                var ent = id.GetObject(OpenMode.ForRead) as Entity;
-                if (ent != null)
-                {
-                    try
-                    {
-                        doc.Editor.Zoom(ent.GeometricExtents);
-                        id.FlickObjectHighlight(num, delay1, delay2);
-                    }
-                    catch { }
-                }
-                t.Commit();
+				if (id.GetObject(OpenMode.ForRead) is Entity ent)
+				{
+					try
+					{
+						doc.Editor.Zoom(ent.GeometricExtents);
+						id.FlickObjectHighlight(num, delay1, delay2);
+					}
+					catch { }
+				}
+				t.Commit();
             }
         }
         public static void ShowEnt (this ObjectId id)
