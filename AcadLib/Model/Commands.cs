@@ -247,7 +247,7 @@ namespace AcadLib
 		        {
 			        LoadService.CopyPackagesLocal();
 		        });
-		        task.Wait(1000);
+		        task.Wait(5000);
 
 		        AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 		        // Загрузка сборок из текущей папки
@@ -266,25 +266,27 @@ namespace AcadLib
 		        foreach (var group in groups)
 		        {
 			        var groupDll = string.Empty;
-			        if (group.IndexOf("СС", StringComparison.OrdinalIgnoreCase) != -1)
+			        if (group.Equals("СС", StringComparison.OrdinalIgnoreCase))
 			        {
 				        groupDll = "PIK_SS_Acad.dll";
 			        }
-			        else if (group.IndexOf("ГП", StringComparison.OrdinalIgnoreCase) != -1)
+			        else if (group.Equals("ГП", StringComparison.OrdinalIgnoreCase))
 			        {
-				        groupDll = @group.IndexOf("Тест", StringComparison.OrdinalIgnoreCase) != -1
-					        ? "PIK_GP_Civil.dll"
-                            : "PIK_GP_Acad.dll";
+				        groupDll = "PIK_GP_Acad.dll";
 			        }
-			        else if (group.IndexOf("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase) != -1)
+			        else if (group.Equals("ГП_Тест", StringComparison.OrdinalIgnoreCase))
+			        {
+				        groupDll = "PIK_GP_Civil.dll";
+			        }
+					else if (group.Equals("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase))
 			        {
 				        groupDll = "Autocad_ConcerteList.dll";
 			        }
-			        else if (group.IndexOf("КР-МН", StringComparison.OrdinalIgnoreCase) != -1)
+			        else if (group.Equals("КР-МН", StringComparison.OrdinalIgnoreCase))
 			        {
 				        groupDll = "KR_MN_Acad.dll";
 			        }
-			        else if (group.IndexOf("НС", StringComparison.OrdinalIgnoreCase) != -1)
+			        else if (group.Equals("НС", StringComparison.OrdinalIgnoreCase))
 			        {
 			            groupDll = "PIK_NS_Civil.dll";
 			        }

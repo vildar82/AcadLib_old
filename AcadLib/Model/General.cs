@@ -10,12 +10,6 @@ namespace AcadLib
     {
         public const string Company = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
 
-        /// <summary>
-        /// Папка сетевых настроек CadSettings - \\dsk2.picompany.ru\project\CAD_Settings
-        /// </summary>
-        public static string CadSettingsFolder { get; } = Path.GetFullPath(Path.Combine(
-            AutoCAD_PIK_Manager.Settings.PikSettings.ServerSettingsFolder, @"..\..\"));
-
         public const string UserGroupAR = "АР";
         public const string UserGroupKRMN = "КР-МН";
         public const string UserGroupKRSB = "КР-СБ";

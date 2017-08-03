@@ -12,7 +12,6 @@ namespace AcadLib
             {
                 using (var adUtils = new NetLib.AD.ADUtils())
                 {
-                    LoadService.LoadMongoDb();
                     UserGroupsAd = adUtils.GetCurrentUserGroups(out string fioAd);
                     FioAD = fioAd;
                 }
