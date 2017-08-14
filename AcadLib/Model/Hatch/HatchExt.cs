@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using AcadLib.Geometry;
@@ -20,16 +21,39 @@ namespace AcadLib.Hatches
             for (var i = 0; i < nloops; i++)
             {
                 var loop = ht.GetLoopAt(i);                
-                if (loop.LoopType.HasFlag(loopType) &&
-                    loop.IsPolyline)
+                if (loopType.HasFlag(loop.LoopType))
                 {
-                    var poly = new Polyline();
-                    var iVertex = 0;
-                    foreach (BulgeVertex bv in loop.Polyline)
-                    {
-                        poly.AddVertexAt(iVertex++, bv.Vertex, bv.Bulge, 0.0, 0.0);
-                    }
-                    polylines.Add(poly);
+	                var poly = new Polyline();
+	                var vertex = 0;
+					if (loop.IsPolyline)
+	                {
+		                foreach (BulgeVertex bv in loop.Polyline)
+		                {
+			                poly.AddVertexAt(vertex++, bv.Vertex, bv.Bulge, 0.0, 0.0);
+		                }
+	                }
+					else
+					{
+						foreach (Curve2d curve in loop.Curves)
+						{
+							if (curve is LinearEntity2d l)
+							{
+								poly.AddVertexAt(vertex++, l.StartPoint, 0,0,0);
+								poly.AddVertexAt(vertex++, l.EndPoint, 0, 0, 0);
+							}
+							else if (curve is CircularArc2d arc)
+							{
+								poly.AddVertexAt(vertex++, arc.StartPoint, arc.GetBulge(arc.IsClockWise),0,0);
+								poly.AddVertexAt(vertex++, arc.EndPoint, 0, 0, 0);
+							}
+							else
+							{
+								Inspector.AddError($"Тип сегмента штриховки не поддерживается {curve}", ht);
+							}
+						}
+					}
+	                poly.Closed = true;
+	                polylines.Add(poly);
                 }                   
             }
             return polylines;

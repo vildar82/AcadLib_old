@@ -45,12 +45,24 @@ namespace AcadLib
             AddEntityToCurrentSpace(ent?.Yield(), entityOptions);
         }
 
-        public static DBText CreateText (string text, Point3d pos, EntityOptions entityOptions= null)
+	    public static void AddPointToCurrentSpace(this Point3d pt, EntityOptions opt = null)
+	    {
+		    var ptDb = new DBPoint(pt);
+		    AddEntityToCurrentSpace(ptDb, opt);
+	    }
+	    public static void AddPointToCurrentSpace(this Point2d pt, EntityOptions opt = null)
+	    {
+		    AddPointToCurrentSpace(pt.Convert3d(), opt);
+	    }
+
+		public static DBText CreateText (string text, Point3d pos, EntityOptions entityOptions= null)
         {
-            var dbText = new DBText();
-            dbText.TextString = text;
-            dbText.Position = pos;
-            dbText.SetOptions(entityOptions);
+	        var dbText = new DBText
+	        {
+		        TextString = text,
+		        Position = pos
+	        };
+	        dbText.SetOptions(entityOptions);
             return dbText;
         }
     }

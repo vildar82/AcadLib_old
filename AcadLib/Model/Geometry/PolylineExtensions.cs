@@ -17,14 +17,16 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class PolylineExtensions
     {
-        /// <summary>
-        /// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
-        /// </summary>
-        /// <param name="pl">Полилиния</param>
-        /// <param name="pt">Точка</param>
-        /// <param name="extend">Input whether or not to extend curve in search for nearest point.</param>
-        /// <returns></returns>
-        public static double GetParameterAtPointTry(this Polyline pl, Point3d pt, bool extend = false)
+	    
+
+		/// <summary>
+		/// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
+		/// </summary>
+		/// <param name="pl">Полилиния</param>
+		/// <param name="pt">Точка</param>
+		/// <param name="extend">Input whether or not to extend curve in search for nearest point.</param>
+		/// <returns></returns>
+		public static double GetParameterAtPointTry(this Polyline pl, Point3d pt, bool extend = false)
         {
             try
             {

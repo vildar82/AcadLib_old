@@ -8,20 +8,29 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class CircularArc3dExtensions
     {
-        /// <summary>
-        /// Returns the tangents between the active CircularArc3d instance complete circle and a point.
-        /// </summary>
-        /// <remarks>
-        /// Tangents start points are on the object to which this method applies, end points on the point passed as argument.
-        /// Tangents are always returned in the same order: the tangent on the left side of the line from the circular arc center
-        /// to the point before the one on the right side. 
-        /// </remarks>
-        /// <param name="arc">The instance to which this method applies.</param>
-        /// <param name="pt">The Point3d to which tangents are searched</param>
-        /// <returns>An array of LineSegement3d representing the tangents (2) or null if there is none.</returns>
-        /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
-        /// eNonCoplanarGeometry is thrown if the objects do not lies on the same plane.</exception>
-        public static LineSegment3d[] GetTangentsTo(this CircularArc3d arc, Point3d pt)
+		/// <summary>
+		/// Функция возвращает кривизну дуги (bulge) или 0.0
+		/// </summary>
+		public static double GetBulge(this CircularArc2d arc, bool clockWise = false)
+		{
+			var bulge = Math.Tan(Math.Abs(arc.StartAngle - arc.EndAngle)*0.25);
+			return clockWise ? -bulge : bulge;
+		}
+
+		/// <summary>
+		/// Returns the tangents between the active CircularArc3d instance complete circle and a point.
+		/// </summary>
+		/// <remarks>
+		/// Tangents start points are on the object to which this method applies, end points on the point passed as argument.
+		/// Tangents are always returned in the same order: the tangent on the left side of the line from the circular arc center
+		/// to the point before the one on the right side. 
+		/// </remarks>
+		/// <param name="arc">The instance to which this method applies.</param>
+		/// <param name="pt">The Point3d to which tangents are searched</param>
+		/// <returns>An array of LineSegement3d representing the tangents (2) or null if there is none.</returns>
+		/// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
+		/// eNonCoplanarGeometry is thrown if the objects do not lies on the same plane.</exception>
+		public static LineSegment3d[] GetTangentsTo(this CircularArc3d arc, Point3d pt)
         {
             // check if arc and point lies on the plane
             var normal = arc.Normal;
