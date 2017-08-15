@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Runtime;
+using NetLib;
 
 namespace AcadLib
 {
     public static class General
     {
+		private static readonly List<string> bimUsers = new List<string>{ "PrudnikovVS", "vrublevskiyba" };
         public const string Company = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
 
         public const string UserGroupAR = "АР";
@@ -31,6 +35,13 @@ namespace AcadLib
 	    public static readonly RXClass ClassRecord = RXObject.GetClass(typeof(Xrecord));
 	    public static readonly RXClass ClassDBDic = RXObject.GetClass(typeof(DBDictionary));
 	    public static readonly RXClass ClassPolyline = RXObject.GetClass(typeof(Polyline));
+
+	    static General()
+	    {
+		    IsBimUser = bimUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
+		}
+
+	    public static bool IsBimUser { get; }
 
 		/// <summary>
 		/// Отменено пользователем.

@@ -14,7 +14,7 @@ namespace AcadLib.Statistic
             {
                 try
                 {
-                    if (!General.IsCadManager())
+                    if (!General.IsCadManager() && !General.IsBimUser)
                     {
                         var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                         using (var pg = new C_PluginStatisticTableAdapter())
@@ -38,7 +38,7 @@ namespace AcadLib.Statistic
             {
                 try
                 {
-                    if (!General.IsCadManager())
+                    if (!General.IsCadManager() && !General.IsBimUser)
                     {
 	                    var version = command.Assembly != null
 		                    ? FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion

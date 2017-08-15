@@ -63,6 +63,7 @@ namespace AcadLib
             try
             {
                 LoadFrom(dll);
+				Logger.Log.Info($"LoadFromTry - {dll}");
             }
             catch (Exception ex)
             {

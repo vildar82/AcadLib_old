@@ -11,6 +11,8 @@ using AcadLib.Layers;
 using System.Threading.Tasks;
 using AcadLib.Statistic;
 using Autodesk.AutoCAD.ApplicationServices;
+using NetLib.IO;
+using Path = System.IO.Path;
 
 [assembly: CommandClass(typeof(AcadLib.Commands))]
 [assembly: ExtensionApplication(typeof(AcadLib.Commands))]
@@ -33,8 +35,8 @@ namespace AcadLib
         public static List<IPaletteCommand> CommandsPalette { get; set; }
         List<NetLib.IO.DllResolve> dllsResolve;
         public static string CurDllDir =Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        [CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]
+		
+		[CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]
         public void About()
         {
             CommandStart.Start(doc =>
@@ -45,7 +47,124 @@ namespace AcadLib
             });
         }
 
-        [CommandMethod(Group, nameof(PIK_Start), CommandFlags.Modal)]
+	    public void Initialize()
+	    {
+		    try
+		    {
+			    Logger.Log.Info($"start Initialize AcadLib");
+			    PluginStatisticsHelper.StartAutoCAD();
+
+			    // Копирование вспомогательных сборок локально из шаровой папки packages
+			    var task = Task.Run(() =>
+			    {
+				    LoadService.CopyPackagesLocal();
+			    });
+			    task.Wait(15000);
+
+			    AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+			    // Загрузка сборок из текущей папки
+			    foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
+			    {
+				    LoadService.LoadFromTry(item);
+			    }
+			    // Загрузка общей сборки - для всех специальностей             
+			    var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+				    @"Script\NET\PIK_Acad_Common.dll");
+			    LoadService.LoadFromTry(fileDll);
+
+			    // Загрузка сбороки для данного раздела
+			    var groups = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined;
+			    var fileGroups = new List<string>();
+			    foreach (var group in groups)
+			    {
+				    var groupDll = string.Empty;
+				    if (group.Equals("СС", StringComparison.OrdinalIgnoreCase))
+				    {
+					    groupDll = "PIK_SS_Acad.dll";
+				    }
+				    else if (group.Equals("ГП", StringComparison.OrdinalIgnoreCase))
+				    {
+					    groupDll = "PIK_GP_Acad.dll";
+				    }
+				    else if (group.Equals("ГП_Тест", StringComparison.OrdinalIgnoreCase))
+				    {
+					    groupDll = "PIK_GP_Civil.dll";
+				    }
+				    else if (group.Equals("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase))
+				    {
+					    groupDll = "Autocad_ConcerteList.dll";
+				    }
+				    else if (group.Equals("КР-МН", StringComparison.OrdinalIgnoreCase))
+				    {
+					    groupDll = "KR_MN_Acad.dll";
+				    }
+				    else if (group.Equals("НС", StringComparison.OrdinalIgnoreCase))
+				    {
+					    groupDll = "PIK_NS_Civil.dll";
+				    }
+				    if (!string.IsNullOrEmpty(groupDll))
+				    {
+					    fileGroups.Add($@"Script\NET\{group}\{groupDll}");
+				    }
+			    }
+			    foreach (var fileGroup in fileGroups)
+			    {
+				    fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
+				    LoadService.LoadFromTry(fileDll);
+			    }
+
+			    // Коннекторы к базе MDM
+			    fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+				    @"Script\NET\ASPADBConnector.dll");
+			    LoadService.LoadFromTry(fileDll);
+			    fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+				    @"Script\NET\ALDBConnector.dll");
+			    LoadService.LoadFromTry(fileDll);
+
+			    // Автослои
+			    Layers.AutoLayers.AutoLayersService.Init();
+
+			    Logger.Log.Info($"end Initialize AcadLib");
+		    }
+		    catch (System.Exception ex)
+		    {
+			    Logger.Log.Error(ex, $"AcadLib Initialize.");
+		    }
+	    }
+
+	    private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+	    {
+		    if (dllsResolve == null)
+		    {
+			    // Сборки в основной папке dll
+			    dllsResolve = DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
+			    // Все сборки из папки Script\NET
+			    dllsResolve.AddRange(DllResolve.GetDllResolve(
+				    Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET"),
+				    SearchOption.AllDirectories));
+			    // Все сборки из локальной папки packages
+			    dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
+		    }
+		    var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
+		    if (dllResolver == null) return null;
+		    try
+		    {
+			    Logger.Log.Info($"resolve assembly - {dllResolver.DllFile}");
+			    return dllResolver.LoadAssembly();
+		    }
+		    catch (System.Exception ex)
+		    {
+			    Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
+		    }
+		    return null;
+	    }
+
+		public void Terminate()
+	    {
+		    Logger.Log.Info($"Terminate AcadLib");
+	    }
+
+		[CommandMethod(Group, nameof(PIK_Start), CommandFlags.Modal)]
         public void PIK_Start()
         {
             try
@@ -147,9 +266,7 @@ namespace AcadLib
             }
         }
 
-        public void Terminate()
-        {            
-        }
+        
 
         [CommandMethod(Group, CommandXDataView, CommandFlags.Modal)]
         public void XDataView()
@@ -236,112 +353,6 @@ namespace AcadLib
             });
         }
 
-        public void Initialize()
-        {
-	        try
-	        {
-	            PluginStatisticsHelper.StartAutoCAD();
-
-		        // Копирование вспомогательных сборок локально из шаровой папки packages
-		        var task = Task.Run(() =>
-		        {
-			        LoadService.CopyPackagesLocal();
-		        });
-		        task.Wait(5000);
-
-		        AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-		        // Загрузка сборок из текущей папки
-		        foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
-		        {
-			        LoadService.LoadFromTry(item);
-		        }
-		        // Загрузка общей сборки - для всех специальностей             
-		        var fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-			        @"Script\NET\PIK_Acad_Common.dll");
-		        LoadService.LoadFromTry(fileDll);
-
-		        // Загрузка сбороки для данного раздела
-		        var groups = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined;
-		        var fileGroups = new List<string>();
-		        foreach (var group in groups)
-		        {
-			        var groupDll = string.Empty;
-			        if (group.Equals("СС", StringComparison.OrdinalIgnoreCase))
-			        {
-				        groupDll = "PIK_SS_Acad.dll";
-			        }
-			        else if (group.Equals("ГП", StringComparison.OrdinalIgnoreCase))
-			        {
-				        groupDll = "PIK_GP_Acad.dll";
-			        }
-			        else if (group.Equals("ГП_Тест", StringComparison.OrdinalIgnoreCase))
-			        {
-				        groupDll = "PIK_GP_Civil.dll";
-			        }
-					else if (group.Equals("КР-СБ-ГК", StringComparison.OrdinalIgnoreCase))
-			        {
-				        groupDll = "Autocad_ConcerteList.dll";
-			        }
-			        else if (group.Equals("КР-МН", StringComparison.OrdinalIgnoreCase))
-			        {
-				        groupDll = "KR_MN_Acad.dll";
-			        }
-			        else if (group.Equals("НС", StringComparison.OrdinalIgnoreCase))
-			        {
-			            groupDll = "PIK_NS_Civil.dll";
-			        }
-                    if (!string.IsNullOrEmpty(groupDll))
-			        {
-				        fileGroups.Add($@"Script\NET\{group}\{groupDll}");
-			        }
-		        }
-		        foreach (var fileGroup in fileGroups)
-		        {
-			        fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, fileGroup);
-			        LoadService.LoadFromTry(fileDll);
-		        }
-
-		        // Коннекторы к базе MDM
-		        fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-			        @"Script\NET\ASPADBConnector.dll");
-		        LoadService.LoadFromTry(fileDll);
-		        fileDll = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-			        @"Script\NET\ALDBConnector.dll");
-		        LoadService.LoadFromTry(fileDll);
-
-		        // Автослои
-		        Layers.AutoLayers.AutoLayersService.Init();
-	        }
-	        catch (System.Exception ex)
-	        {
-		        Logger.Log.Error(ex, $"AcadLib Initialize.");
-	        }
-        }
-
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            if (dllsResolve == null)
-            {
-                // Сборки в основной папке dll
-                dllsResolve = NetLib.IO.DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
-                // Все сборки из папки Script\NET
-                dllsResolve.AddRange(NetLib.IO.DllResolve.GetDllResolve(
-                    Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET"), 
-                    SearchOption.AllDirectories));
-                // Все сборки из локальной папки packages
-                dllsResolve.AddRange(NetLib.IO.DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
-            }
-            var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
-            if (dllResolver == null) return null;
-            try
-            {
-                return dllResolver.LoadAssembly();
-            }
-            catch (System.Exception ex)
-            {
-                Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
-            }
-            return null;            
-        }
+        
     }
 }
