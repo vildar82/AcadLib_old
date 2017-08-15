@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -18,12 +19,11 @@ namespace AcadLib
             var colReg = new List<Region>();
             foreach (var pl in idsPl)
             {                
-                if (pl == null || pl.Area == 0) continue;
+                if (pl == null || Math.Abs(pl.Area) < 0.0001) continue;
 
                 // Создание региона из полилинии
-                var dbs = new DBObjectCollection();
-                dbs.Add(pl);
-                var dbsRegions = Region.CreateFromCurves(dbs);
+	            var dbs = new DBObjectCollection {pl};
+	            var dbsRegions = Region.CreateFromCurves(dbs);
                 if (dbsRegions.Count > 0)
                 {
                     var r = (Region)dbsRegions[0];
@@ -69,9 +69,11 @@ namespace AcadLib
                         }
                         var pts = new Point3dCollection(ptsVertex.ToArray());
                         var pl = new Polyline3d(Poly3dType.SimplePoly, pts, true);
-                        if (pl.Area>maxArea)
+	                    var plArea = pl.Area;
+						if (plArea>maxArea)
                         {
                             resVal = pl;
+	                        maxArea = plArea;
                         }
                     }
                 }
@@ -182,11 +184,11 @@ namespace AcadLib
         public static Region Union (this IEnumerable<Polyline> pls, Region over)
         {
             if (pls == null || !pls.Any()) return null;            
-            var regions = createRegion(pls);
+            var regions = CreateRegion(pls);
             Region union = null;
             try
             {
-                union = unionRegions(regions);
+                union = UnionRegions(regions);
             }
             catch
             {
@@ -209,52 +211,45 @@ namespace AcadLib
             return union;
         }
 
-        private static List<Region> createRegion (IEnumerable<Polyline> pls)
-        {
-            var res = new List<Region>();
-            var dbs = new DBObjectCollection();
-            foreach (var pl in pls)
-            {
-                dbs.Add(pl);
-            }
-            var dbsRegions = Region.CreateFromCurves(dbs);
-            foreach (var item in dbsRegions)
-            {
-                res.Add((Region)item);
-            }
+	    public static Region CreateRegion(Polyline pl)
+	    {
+		    if (pl == null) return null;
+		    var dbs = new DBObjectCollection {pl};
+		    var dbsRegs = Region.CreateFromCurves(dbs);
+		    return (Region)dbsRegs[0];
+	    }
+
+
+		public static List<Region> CreateRegion (this IEnumerable<Polyline> pls)
+		{
+			return CreateRegion(pls.Cast<Curve>());
+        }
+
+	    public static List<Region> CreateRegion(this IEnumerable<Curve> curves)
+	    {
+		    var res = new List<Region>();
+		    var dbs = new DBObjectCollection();
+		    foreach (var curve in curves)
+		    {
+			    dbs.Add(curve);
+		    }
+		    var dbsRegions = Region.CreateFromCurves(dbs);
+		    foreach (var item in dbsRegions)
+		    {
+			    res.Add((Region)item);
+		    }
 #if DEBUG
-            //EntityHelper.AddEntityToCurrentSpace(res);
+//EntityHelper.AddEntityToCurrentSpace(res);
 #endif
-            return res;
-        }
+		    return res;
+	    }
 
-        public static Region CreateRegion (Polyline pl)
+		public static Region UnionRegions (this List<Region> regions)
         {
-            if (pl == null) return null;
-            var dbs = new DBObjectCollection();
-            dbs.Add(pl);
-            var dbsRegs = Region.CreateFromCurves(dbs);
-            return (Region)dbsRegs[0];
-        }
+            if (regions?.Any() != true) return null;
+            if (regions.Count ==1) return regions.First();           
 
-        private static List<Polyline3d> createPl (List<Region> regions)
-        {
-            if (regions == null || regions.Count == 0) return null;
-            var res = new List<Polyline3d>();
-            foreach (var r in regions)
-            {
-                var pl = GetRegionContour(r);
-                res.Add(pl);
-            }
-            return res;
-        }
-
-        private static Region unionRegions (List<Region> regions)
-        {
-            if (regions == null || regions.Count == 0) return null;
-            if (regions.Count == 1) return regions[0];           
-
-            var union = regions[0];            
+            var union = regions.First();            
             for (var i = 1; i < regions.Count; i++)
             {
                 var cr = regions[i];

@@ -71,6 +71,10 @@
       <HintPath>..\..\Package\AutoCAD\2015\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AdWindows">
+      <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AdWindows.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AutoCAD_PIK_Manager">
       <HintPath>..\..\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\bin\Release\AutoCAD_PIK_Manager.dll</HintPath>
       <Private>False</Private>
@@ -115,6 +119,7 @@
     <Compile Include="Model\Blocks\BlockPropertiesTableExt.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
+    <Compile Include="Model\Hatches\HatchLoopPl.cs" />
     <Compile Include="Model\Images\ImageExt.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayer.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayerDim.cs" />
@@ -158,7 +163,7 @@
     <Compile Include="Model\Geometry\Polylines\MergePolyline.cs" />
     <Compile Include="Model\Geometry\Polylines\PolylineLoops.cs" />
     <Compile Include="Model\Geometry\Polylines\PolylineVertex.cs" />
-    <Compile Include="Model\Hatch\HatchExt.cs" />
+    <Compile Include="Model\Hatches\HatchExt.cs" />
     <Compile Include="Model\IO\Path.cs" />
     <Compile Include="Model\Jigs\DragSel.cs" />
     <Compile Include="Model\Jokes\IJoke.cs" />
@@ -244,6 +249,9 @@
     <Compile Include="Model\UI\Properties\DictionaryEditor\GenericDictionaryEditorAttribute.cs" />
     <Compile Include="Model\UI\Properties\DictionaryEditor\KeyValueDescriptor.cs" />
     <Compile Include="Model\UI\Properties\XmlSerializableDictionary.cs" />
+    <Compile Include="Model\UI\Ribbon\Attribute\RibbonCommandAttribute.cs" />
+    <Compile Include="Model\UI\Ribbon\Elements\IRibbonElement.cs" />
+    <Compile Include="Model\UI\Ribbon\RibbonBuilder.cs" />
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\Units\UnitsNetExt.cs" />
     <Compile Include="Model\UserInfo.cs" />

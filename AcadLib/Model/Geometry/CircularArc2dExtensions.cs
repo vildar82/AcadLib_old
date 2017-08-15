@@ -1,4 +1,5 @@
 ﻿using System;
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Geometry
@@ -8,6 +9,16 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class CircularArc2dExtensions
     {
+	    public static Circle CreateCircle(this CircularArc2d arc)
+	    {
+		    return new Circle(arc.Center.Convert3d(), Vector3d.ZAxis, arc.Radius);
+	    }
+
+	    public static bool IsCircle(this CircularArc2d arc)
+	    {
+		    return Math.Abs(Math.Abs(arc.EndAngle - arc.StartAngle) - MathExt.PI2) < 0.00001;
+	    }
+
         /// <summary>
         /// Gets the algebraic (signed) area of the circular arc.
         /// </summary>
