@@ -5,19 +5,21 @@ using AcadLib.Errors;
 using Autodesk.AutoCAD.Geometry;
 using AcadLib.Geometry;
 using Autodesk.AutoCAD.DatabaseServices;
+using NetLib;
 
 namespace AcadLib.Hatches
 {
     public static class HatchExt
     {
-	    public static DisposableSet<HatchLoopPl> GetPolylines2(this Hatch ht, HatchLoopTypes loopType = HatchLoopTypes.External)
+	    public static DisposableSet<HatchLoopPl> GetPolylines2(this Hatch ht, Tolerance weddingTolerance,
+			HatchLoopTypes loopType = HatchLoopTypes.External, bool wedding = false)
 	    {
 			var loops = new DisposableSet<HatchLoopPl>();
 		    var nloops = ht.NumberOfLoops;
 		    for (var i = 0; i < nloops; i++)
 		    {
 			    var loop = ht.GetLoopAt(i);
-			    if (loopType.HasFlag(loop.LoopType))
+			    if (loopType.HasAny(loop.LoopType))
 			    {
 				    var poly = new Polyline();
 				    var vertex = 0;
@@ -55,7 +57,11 @@ namespace AcadLib.Hatches
 				    }
 				    if (poly.NumberOfVertices != 0)
 				    {
-					    poly.Closed = true;
+					    if (wedding)
+					    {
+						    poly.Wedding(weddingTolerance);
+					    }
+						if (!poly.Closed) poly.Closed = true;
 					    loops.Add(new HatchLoopPl {Loop = poly, Types = loop.LoopType});
 				    }
 			    }
@@ -70,7 +76,7 @@ namespace AcadLib.Hatches
 		/// <param name="loopType">Из каких типов островков</param>    
 		public static DisposableSet<Polyline> GetPolylines(this Hatch ht, HatchLoopTypes loopType = HatchLoopTypes.External)
 		{
-			var loops = GetPolylines2(ht, loopType);
+			var loops = GetPolylines2(ht, Tolerance.Global,loopType);
 			var res = new DisposableSet<Polyline>(loops.Select(s => s.GetPolyline()));
 			loops.Clear();
 			return res;

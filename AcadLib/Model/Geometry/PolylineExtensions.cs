@@ -48,14 +48,16 @@ namespace AcadLib.Geometry
             var texts = new List<Entity>();
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
-                var text = new DBText();
-                text.TextString = i.ToString();
-                text.Position = pl.GetPoint2dAt(i).Convert3d();
-                text.Height = 2.5 * scale;
-                text.Color = color;
-                texts.Add(text);                
+	            var text = new DBText
+	            {
+		            TextString = i.ToString(),
+		            Position = pl.GetPoint2dAt(i).Convert3d(),
+		            Height = 2.5 * scale,
+		            Color = color
+	            };
+	            texts.Add(text);                
             }
-            EntityHelper.AddEntityToCurrentSpace(texts);
+            texts.AddEntityToCurrentSpace();
         }
 
         /// <summary>
