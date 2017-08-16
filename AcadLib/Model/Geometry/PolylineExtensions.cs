@@ -84,6 +84,11 @@ namespace AcadLib.Geometry
                 var cur = pl.GetPoint2dAt(i);
                 if (prew.IsEqualTo(cur, tolerance))
                 {
+	                if (pl.HasBulges)
+	                {
+		                var bulge = pl.GetBulgeAt(i);
+						pl.SetBulgeAt(i-1, bulge);
+	                }
                     pl.RemoveVertexAt(i--);                    
                 }
                 //var next = pl.GetPoint2dAt(iNext);                                

@@ -36,7 +36,10 @@ namespace AcadLib.Hatches
 					    {
 						    if (curve is LinearEntity2d l)
 						    {
-							    poly.AddVertexAt(vertex++, l.StartPoint, 0, 0, 0);
+							    if (NeedAddVertexToPl(poly, vertex-1, l.StartPoint, weddingTolerance))
+							    {
+									poly.AddVertexAt(vertex++, l.StartPoint, 0, 0, 0);
+								}
 							    poly.AddVertexAt(vertex++, l.EndPoint, 0, 0, 0);
 						    }
 						    else if (curve is CircularArc2d arc)
@@ -46,7 +49,15 @@ namespace AcadLib.Hatches
 								    loops.Add(new HatchLoopPl {Loop = arc.CreateCircle(), Types = loop.LoopType});
 									continue;
 							    }
-							    poly.AddVertexAt(vertex++, arc.StartPoint, arc.GetBulge(arc.IsClockWise), 0, 0);
+							    var bulge = arc.GetBulge(arc.IsClockWise);
+								if (NeedAddVertexToPl(poly, vertex-1, arc.StartPoint, weddingTolerance))
+							    {
+								    poly.AddVertexAt(vertex++, arc.StartPoint, bulge, 0, 0);
+							    }
+							    else
+							    {
+								    poly.SetBulgeAt(vertex-1, bulge);
+							    }
 							    poly.AddVertexAt(vertex++, arc.EndPoint, 0, 0, 0);
 						    }
 						    else
@@ -68,6 +79,11 @@ namespace AcadLib.Hatches
 		    }
 		    return loops;
 		}
+
+	    private static bool NeedAddVertexToPl(Polyline poly, int prewVertex, Point2d vertex, Tolerance tolerance)
+	    {
+		    return prewVertex <= 0 || !poly.GetPoint2dAt(prewVertex - 1).IsEqualTo(vertex, tolerance);
+	    }
 
 		/// <summary>
 		/// Полилинии в штриховке
