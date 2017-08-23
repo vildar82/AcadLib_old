@@ -227,11 +227,11 @@ namespace AcadLib.Geometry
 
             // le point spécifié est sur le point de départ de la polyligne
             if (brkPt.IsEqualTo(pline.StartPoint))
-                return new Polyline[2] { null, (Polyline)pline.Clone() };
+                return new[] { null, (Polyline)pline.Clone() };
 
             // le point spécifié est sur le point de fin de la polyligne
             if (brkPt.IsEqualTo(pline.EndPoint))
-                return new Polyline[2] { (Polyline)pline.Clone(), null };
+                return new[] { (Polyline)pline.Clone(), null };
 
             var param = pline.GetParameterAtPoint(brkPt);
             var index = (int)param;
@@ -260,7 +260,7 @@ namespace AcadLib.Geometry
                 {
                     pl2.RemoveVertexAt(0);
                 }
-                return new Polyline[2] { pl1, pl2 };
+                return new[] { pl1, pl2 };
             }
 
             // le point spécifié est sur un segment
@@ -281,7 +281,7 @@ namespace AcadLib.Geometry
                 pl1.SetBulgeAt(index, MultiplyBulge(bulge, param - index));
                 pl2.SetBulgeAt(0, MultiplyBulge(bulge, index + 1 - param));
             }
-            return new Polyline[2] { pl1, pl2 };
+            return new[] { pl1, pl2 };
         }
 
         /// <summary>
