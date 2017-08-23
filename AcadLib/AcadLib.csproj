@@ -50,6 +50,16 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNovoros|AnyCPU'">
+    <OutputPath>bin\ReleaseNovoros\</OutputPath>
+    <DefineConstants>TRACE;Novoros</DefineConstants>
+    <DocumentationFile>bin\Release\AcadLib.XML</DocumentationFile>
+    <NoWarn>CS1561, CS1591, CS1573, CS1570</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
       <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AcCoreMgd.dll</HintPath>

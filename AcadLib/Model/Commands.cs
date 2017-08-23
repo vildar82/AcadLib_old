@@ -84,9 +84,13 @@ namespace AcadLib
 				    }
 				    else if (group.Equals("ГП", StringComparison.OrdinalIgnoreCase))
 				    {
+#if Novoros
+						groupDll = "PIK_GP_Civil.dll";
+#else
 					    groupDll = "PIK_GP_Acad.dll";
-				    }
-				    else if (group.Equals("ГП_Тест", StringComparison.OrdinalIgnoreCase))
+#endif
+					}
+					else if (group.Equals("ГП_Тест", StringComparison.OrdinalIgnoreCase))
 				    {
 					    groupDll = "PIK_GP_Civil.dll";
 				    }

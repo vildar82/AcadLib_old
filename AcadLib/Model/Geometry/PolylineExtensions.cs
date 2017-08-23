@@ -408,7 +408,7 @@ namespace AcadLib.Geometry
         /// <returns>True if points are clockwise, False otherwise.</returns>
         private static bool Clockwise (Point2d p1, Point2d p2, Point2d p3)
         {
-            return ((p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X)) < 1e-8;
+            return (p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X) < 1e-8;
         }
 
         /// <summary>
@@ -600,16 +600,14 @@ namespace AcadLib.Geometry
 
         private static double Angle2D (double x1, double y1, double x2, double y2)
         {
-            double dtheta, theta1, theta2;
-
-            theta1 = Math.Atan2(y1, x1);
-            theta2 = Math.Atan2(y2, x2);
-            dtheta = theta2 - theta1;
+	        var theta1 = Math.Atan2(y1, x1);
+            var theta2 = Math.Atan2(y2, x2);
+            var dtheta = theta2 - theta1;
             while (dtheta > Math.PI)
-                dtheta -= (Math.PI * 2);
+                dtheta -= Math.PI * 2;
             while (dtheta < -Math.PI)
-                dtheta += (Math.PI * 2);
-            return (dtheta);
+                dtheta += Math.PI * 2;
+            return dtheta;
         }        
 
         /// <summary>
