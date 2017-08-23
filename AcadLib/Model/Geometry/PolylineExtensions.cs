@@ -5,6 +5,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using AcadLib.Scale;
 using Autodesk.AutoCAD.Colors;
+using NetLib;
 
 namespace AcadLib.Geometry
 {
@@ -292,14 +293,15 @@ namespace AcadLib.Geometry
         {
             var cen = new Point2d();
             var tri = new Triangle2d();
-            var arc = new CircularArc2d();
+            CircularArc2d arc;
             double tmpArea;
             var area = 0.0;
             var last = pl.NumberOfVertices - 1;
             var p0 = pl.GetPoint2dAt(0);
             var bulge = pl.GetBulgeAt(0);
+	        var pts = new List<Point2d> {p0};
 
-            if (bulge != 0.0)
+	        if (Math.Abs(bulge) > 0.0001)
             {
                 arc = pl.GetArcSegment2dAt(0);
                 area = arc.AlgebricArea();
@@ -307,12 +309,14 @@ namespace AcadLib.Geometry
             }
             for (var i = 1; i < last; i++)
             {
-                tri.Set(p0, pl.GetPoint2dAt(i), pl.GetPoint2dAt(i + 1));
+	            var pi = pl.GetPoint2dAt(i);
+	            pi.AddTo(pts);
+				tri.Set(p0, pi, pl.GetPoint2dAt(i + 1));
                 tmpArea = tri.AlgebricArea;
                 cen += (tri.Centroid * tmpArea).GetAsVector();
                 area += tmpArea;
                 bulge = pl.GetBulgeAt(i);
-                if (bulge != 0.0)
+                if (Math.Abs(bulge) > 0.0001)
                 {
                     arc = pl.GetArcSegment2dAt(i);
                     tmpArea = arc.AlgebricArea();
@@ -321,13 +325,18 @@ namespace AcadLib.Geometry
                 }
             }
             bulge = pl.GetBulgeAt(last);
-            if ((bulge != 0.0) && (pl.Closed == true))
+            if (Math.Abs(bulge) > 0.0001 && pl.Closed)
             {
                 arc = pl.GetArcSegment2dAt(last);
                 tmpArea = arc.AlgebricArea();
                 area += tmpArea;
                 cen += (arc.Centroid() * tmpArea).GetAsVector();
             }
+	        if (Math.Abs(area) < 0.0001)
+	        {
+		        // Средняя точка из всех точек полилинии
+				return new Point2d(pts.Average(a=>a.X), pts.Average(a => a.Y));
+	        }
             return cen.DivideBy(area);
         }
 
