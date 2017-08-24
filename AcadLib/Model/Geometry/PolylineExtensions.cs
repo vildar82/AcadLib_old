@@ -69,73 +69,22 @@ namespace AcadLib.Geometry
             //var count = pl.NumberOfVertices;
             var iPrew = pl.NextVertexIndex(0, -1);
             var prew = pl.GetPoint2dAt(iPrew);
-            for (var i = 0; i < pl.NumberOfVertices; i++)
+            for (var i = 1; i < pl.NumberOfVertices; i++)
             {
-                //int iPrew;
-                //int iCur;
-                //int iNext;
-                //iPrew = pl.NextVertexIndex(i, -1);
-                //iCur = i;
-                //iNext = i + 1;
-                //if (iNext == count)
-                //{
-                //    break;
-                //}
-                //var prew = pl.GetPoint2dAt(iPrew);
                 var cur = pl.GetPoint2dAt(i);
                 if (prew.IsEqualTo(cur, tolerance))
                 {
 	                if (pl.HasBulges)
 	                {
 		                var bulge = pl.GetBulgeAt(i);
-						pl.SetBulgeAt(i-1, bulge);
+						pl.SetBulgeAt(pl.NextVertexIndex(i,-1), bulge);
 	                }
                     pl.RemoveVertexAt(i--);                    
                 }
-                //var next = pl.GetPoint2dAt(iNext);                                
-                //if (IsPointsOnSomeLine(prew, cur, next, tolerance))
-                //{
-                //    pl.RemoveVertexAt(i);
-                //    i--;
-                //    count--;
-                //}
                 prew = cur;
             }
             if (!pl.Closed) pl.Closed = true;
-            
-            //count = pl.NumberOfVertices;
-
-            //// Если начальная точка совпадает с конечной, то проверка сегменов до и после
-            //if (count > 3)
-            //{
-            //    Point2d fp = pl.GetPoint2dAt(0);
-            //    Point2d lp = pl.GetPoint2dAt(count - 1);
-            //    Point2d next = pl.GetPoint2dAt(1);                
-            //    if (fp.IsEqualTo(lp, tolerance))
-            //    {
-            //        var cur = fp;
-            //        var prew = pl.GetPoint2dAt(count - 2);                                        
-            //        if (IsPointsOnSomeLine(prew, cur, next, tolerance))
-            //        {
-            //            pl.RemoveVertexAt(count - 1);
-            //            pl.RemoveVertexAt(0);
-            //            if (!pl.Closed)
-            //            {
-            //                pl.Closed = true;
-            //            }
-            //        }
-            //    }
-            //    else if (pl.Closed)
-            //    {
-            //        var prew = lp;
-            //        var cur = fp;
-            //        if (IsPointsOnSomeLine(prew, cur, next, tolerance))
-            //        {
-            //            pl.RemoveVertexAt(0);                        
-            //        }
-            //    }
-            //}
-        }
+		}
 
         private static bool IsPointsOnSomeLine(Point2d pt1, Point2d pt2, Point2d pt3, Tolerance tolerance)
         {
