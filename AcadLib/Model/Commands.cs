@@ -69,13 +69,21 @@ namespace AcadLib
 			    {
 				    LoadService.LoadFromTry(item);
 			    }
-				// Загрузка сборок из папки ../Script/Net
-			    foreach (var item in Directory.EnumerateFiles(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), "*.dll", SearchOption.AllDirectories))
+				// Загрузка сборок из папки ../Script/Net - без вложенных папок
+			    foreach (var item in Directory.EnumerateFiles(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), "*.dll", SearchOption.TopDirectoryOnly))
 			    {
 				    LoadService.LoadFromTry(item);
 			    }
-			    // Автослои
-			    Layers.AutoLayers.AutoLayersService.Init();
+			    // Загрузка сборок из папки ../Script/Net/[UserGroup]
+				foreach (var userGroup in PikSettings.UserGroupsCombined)
+				{
+					foreach (var item in Directory.EnumerateFiles(Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}"), "*.dll", SearchOption.TopDirectoryOnly))
+					{
+						LoadService.LoadFromTry(item);
+					}
+				}
+				// Автослои
+				Layers.AutoLayers.AutoLayersService.Init();
 			    Logger.Log.Info($"end Initialize AcadLib");
 		    }
 		    catch (System.Exception ex)
