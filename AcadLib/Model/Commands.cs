@@ -79,7 +79,10 @@ namespace AcadLib
 				{
 					foreach (var item in Directory.EnumerateFiles(Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}"), "*.dll", SearchOption.TopDirectoryOnly))
 					{
-						LoadService.LoadFromTry(item);
+						if (File.Exists(item))
+						{
+							LoadService.LoadFromTry(item);
+						}
 					}
 				}
 				// Автослои

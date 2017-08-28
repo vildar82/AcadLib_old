@@ -4,7 +4,12 @@ namespace Autodesk.AutoCAD.DatabaseServices
 {
     public static class ExtentsExtension
     {
-        public static Extents3d Convert3d(this Extents2d ext)
+	    public static double GetArea(this Extents3d ext)
+	    {
+		    return (ext.MaxPoint.X - ext.MinPoint.X) * (ext.MaxPoint.Y - ext.MinPoint.Y);
+	    }
+
+		public static Extents3d Convert3d(this Extents2d ext)
         {
             return new Extents3d(ext.MinPoint.Convert3d(), ext.MaxPoint.Convert3d());
         }
