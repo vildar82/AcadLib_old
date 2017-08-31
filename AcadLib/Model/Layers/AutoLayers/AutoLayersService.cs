@@ -12,17 +12,28 @@ namespace AcadLib.Layers.AutoLayers
     public static class AutoLayersService
     {
         private static Document _doc;
-        private static List<AutoLayer> autoLayers;
-        private static AutoLayer curAutoLayer;
+	    private static AutoLayer curAutoLayer;
         private static List<ObjectId> idAddedEnts;
-        private static bool IsStarted { get; set; }
 
-        public static void Init()
+		public static bool IsStarted { get; private set; }
+	    public static List<AutoLayer> AutoLayers { get; set; }
+
+		public static void Init()
         {
             try
             {
                 Load();
-                if (IsStarted) Start();
+	            if (IsStarted)
+	            {
+		            // Проверка - допустимости автослоев для группы пользователя
+		            if (!IsUserGroupAutoLayersAllowed() || string.IsNullOrEmpty(LayerExt.GroupLayerPrefix))
+		            {
+			            var doc = Application.DocumentManager.MdiActiveDocument;
+						doc?.Editor.WriteMessage($"\nАвтослои не поддерживаются для текущей группы пользователя - {AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup}");
+			            return;
+		            }
+					Start();
+	            }
             }
             catch (System.Exception ex)
             {
@@ -33,15 +44,9 @@ namespace AcadLib.Layers.AutoLayers
         public static void Start()
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            // Проверка - допустимости автослоев для группы пользователя
-            if (!IsUserGroupAutoLayersAllowed() || string.IsNullOrEmpty(LayerExt.GroupLayerPrefix))
-            {
-                doc.Editor.WriteMessage($"\nАвтослои не поддерживаются для текущей группы пользователя - {AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup}");
-                return;
-            }
             Application.DocumentManager.DocumentActivated -= DocumentManager_DocumentActivated;
             Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;            
-            autoLayers = GetAutoLayers();
+            AutoLayers = GetAutoLayers();
             SubscribeDocument(doc);
             IsStarted = true;
             Save();
@@ -84,10 +89,10 @@ namespace AcadLib.Layers.AutoLayers
 
         private static void Doc_CommandWillStart(object sender, CommandEventArgs e)
         {
-            // Для команд автослоев - подписка на добавление объектов в чертеж
-            curAutoLayer = GetAutoLayerCommand(e.GlobalCommandName);
+	        if (!(sender is Document document)) return;
+			// Для команд автослоев - подписка на добавление объектов в чертеж
+			curAutoLayer = GetAutoLayerCommand(e.GlobalCommandName);
             if (curAutoLayer == null) return;
-            if (!(sender is Document document)) return;
             idAddedEnts = new List<ObjectId>();
             // Подписка на события добавления объектов и завершения команды
             document.Database.ObjectAppended -= Database_ObjectAppended;
@@ -140,7 +145,7 @@ namespace AcadLib.Layers.AutoLayers
 
         private static AutoLayer GetAutoLayerCommand(string globalCommandName)
         {
-            return autoLayers.Find(f=>f.IsAutoLayerCommand(globalCommandName));
+            return AutoLayers.Find(f=>f.IsAutoLayerCommand(globalCommandName));
         }
 
         private static void ProcessingAutoLayers(AutoLayer currentAutoLayerAutoLayer, List<ObjectId> idsAddedEnt)
@@ -196,7 +201,7 @@ namespace AcadLib.Layers.AutoLayers
                 var blRef = idBlRef.GetObject<BlockReference>();                
                 AutoLayersBtr(blRef.BlockTableRecord.GetObject<BlockTableRecord>());
             }
-            foreach (var autoLayer in autoLayers)
+            foreach (var autoLayer in AutoLayers)
             {
                 var autoLayerEnts = autoLayer.GetAutoLayerEnts(idEnts);
                 AutoLayerEntities(autoLayer, autoLayerEnts);
@@ -214,10 +219,9 @@ namespace AcadLib.Layers.AutoLayers
             else
             {
                 info += IsStarted ? "Автослои включены" : "Автослои выключены";
-                if (!IsStarted || autoLayers == null) return info;
+                if (!IsStarted || AutoLayers == null) return info;
                 info += Environment.NewLine;
-                // ReSharper disable once LoopCanBeConvertedToQuery
-                foreach (var autoLayer in autoLayers)
+                foreach (var autoLayer in AutoLayers)
                 {
                     info += autoLayer.GetInfo() + Environment.NewLine;
                 }
@@ -249,8 +253,9 @@ namespace AcadLib.Layers.AutoLayers
         private static bool IsUserGroupAutoLayersAllowed()
         {
             var userGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined.First();
-            return !userGroup.StartsWith(General.UserGroupGP) && 
-                userGroup != General.UserGroupKRSBGK;
+			// Кроме ГП и КР-СБ-ГК
+			// В ГП - будет настраиваться индивидуально.
+			return !userGroup.StartsWith(General.UserGroupGP) && userGroup != General.UserGroupKRSBGK;
         }
     }
 }

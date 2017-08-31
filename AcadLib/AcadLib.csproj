@@ -133,6 +133,7 @@
     <Compile Include="Model\Hatches\HatchLoopPl.cs" />
     <Compile Include="Model\Images\ImageExt.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayer.cs" />
+    <Compile Include="Model\Layers\AutoLayers\AutoLayerVport.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayerDim.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayersService.cs" />
     <Compile Include="Model\Blocks\AttSyncExt.cs" />

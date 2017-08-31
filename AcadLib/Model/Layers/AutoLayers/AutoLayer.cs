@@ -5,7 +5,8 @@ namespace AcadLib.Layers.AutoLayers
 {
     public abstract class AutoLayer
     {        
-        public List<string> Commands { get; set; }
+        protected List<string> Commands { get; set; }
+
         public LayerInfo Layer { get; set; }        
 
         public string GetInfo()
