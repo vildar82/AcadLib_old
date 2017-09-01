@@ -63,7 +63,10 @@ namespace AcadLib
 			    });
 			    task.Wait(15000);
 
-			    AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+			    // Автослои
+			    Layers.AutoLayers.AutoLayersService.Init();
+
+				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 			    // Загрузка сборок из текущей папки
 			    foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
 			    {
@@ -84,8 +87,6 @@ namespace AcadLib
 					    LoadService.LoadFromTry(item);
 				    }
 			    }
-			    // Автослои
-				Layers.AutoLayers.AutoLayersService.Init();
 			    Logger.Log.Info($"end Initialize AcadLib");
 		    }
 		    catch (System.Exception ex)
