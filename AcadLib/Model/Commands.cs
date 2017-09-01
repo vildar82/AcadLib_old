@@ -315,7 +315,5 @@ namespace AcadLib
                 Layers.AutoLayers.AutoLayersService.AutoLayersAll();                
             });
         }
-
-        
     }
 }

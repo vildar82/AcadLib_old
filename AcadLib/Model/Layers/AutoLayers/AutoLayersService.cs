@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using AcadLib.Registry;
 using Autodesk.AutoCAD.Runtime;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
@@ -91,6 +92,7 @@ namespace AcadLib.Layers.AutoLayers
         {
 	        if (!(sender is Document document)) return;
 			// Для команд автослоев - подписка на добавление объектов в чертеж
+			Debug.WriteLine(e.GlobalCommandName);
 			curAutoLayer = GetAutoLayerCommand(e.GlobalCommandName);
             if (curAutoLayer == null) return;
             idAddedEnts = new List<ObjectId>();
@@ -207,29 +209,22 @@ namespace AcadLib.Layers.AutoLayers
                 AutoLayerEntities(autoLayer, autoLayerEnts);
                 idEnts = idEnts.Except(autoLayerEnts).ToList();
             }
-        }        
-
-        public static string GetInfo()
-        {            
-            var info = string.Empty;
-            if (string.IsNullOrEmpty(LayerExt.GroupLayerPrefix))
-            {
-                info = $"\nТекущая группа пользователя '{AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup}' не поддерживает автослои.";
-            }
-            else
-            {
-                info += IsStarted ? "Автослои включены" : "Автослои выключены";
-                if (!IsStarted || AutoLayers == null) return info;
-                info += Environment.NewLine;
-                foreach (var autoLayer in AutoLayers)
-                {
-                    info += autoLayer.GetInfo() + Environment.NewLine;
-                }
-            }
-            return info;
         }
 
-        private static RegExt GetReg()
+	    public static string GetInfo()
+	    {
+		    var info = string.Empty;
+		    info += IsStarted ? "Автослои включены" : "Автослои выключены";
+		    if (!IsStarted || AutoLayers == null) return info;
+		    info += Environment.NewLine;
+		    foreach (var autoLayer in AutoLayers)
+		    {
+			    info += autoLayer.GetInfo() + Environment.NewLine;
+		    }
+		    return info;
+	    }
+
+	    private static RegExt GetReg()
         {
             return new RegExt("AutoLayers");
         }

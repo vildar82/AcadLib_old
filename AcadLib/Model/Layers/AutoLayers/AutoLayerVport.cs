@@ -14,12 +14,12 @@ namespace AcadLib.Layers.AutoLayers
         public AutoLayerVport()
         {
             Layer = new LayerInfo($"{LayerExt.GroupLayerPrefix}_Видовой экран");
-            Commands = new List<string> { "VPORTS" };
+            Commands = new List<string> { "-VPORTS", "+VPORTS", "VIEWPORTS" };
         }
 
         public override bool IsAutoLayerCommand(string globalCommandName)
         {
-            return globalCommandName.EqualsIgnoreCase("VPORTS");
+	        return Commands.Any(a => a.EqualsIgnoreCase(globalCommandName));
         }
 
         public override List<ObjectId> GetAutoLayerEnts(List<ObjectId> idAddedEnts)
