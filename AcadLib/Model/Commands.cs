@@ -37,8 +37,28 @@ namespace AcadLib
 
 	    private List<DllResolve> dllsResolve;
         public static readonly string CurDllDir =Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		
-		[CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]
+
+        /// <summary>
+        /// Список общих команд
+        /// </summary>
+        internal static void AllCommandsCommon()
+        {
+            try
+            {
+                CommandsPalette = new List<IPaletteCommand>()
+                {
+                    new PaletteInsertBlock("PIK_Logo", fileCommonBlocks, "Блок логотипа", Properties.Resources.logo, "Вставка блока логотипа ПИК."),
+                    new PaletteCommand("Просмотр расширенных данных примитива", Properties.Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива."),
+                };
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, "AcadLib.AllCommandsCommon()");
+                CommandsPalette = new List<IPaletteCommand>();
+            }
+        }
+
+        [CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]
         public void About()
         {
             CommandStart.Start(doc =>
@@ -55,9 +75,10 @@ namespace AcadLib
 		    {
 			    Logger.Log.Info($"start Initialize AcadLib");
 			    PluginStatisticsHelper.StartAutoCAD();
+		        AllCommandsCommon();
 
-			    // Копирование вспомогательных сборок локально из шаровой папки packages
-			    var task = Task.Run(() =>
+                // Копирование вспомогательных сборок локально из шаровой папки packages
+                var task = Task.Run(() =>
 			    {
 				    LoadService.CopyPackagesLocal();
 			    });
@@ -126,20 +147,6 @@ namespace AcadLib
 	    {
 		    Logger.Log.Info($"Terminate AcadLib");
 	    }
-
-		[CommandMethod(Group, nameof(PIK_Start), CommandFlags.Modal)]
-        public void PIK_Start()
-        {
-            try
-            {
-                PaletteSetCommands.Start();
-            }
-            catch (System.Exception ex)
-            {
-                Logger.Log.Error(ex, "PIK_Start");
-                System.Windows.MessageBox.Show(ex.Message);
-            }
-        }
 
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
         public void BlockListCommand()
@@ -261,25 +268,7 @@ namespace AcadLib
             });
         }
 
-        /// <summary>
-        /// Список общих команд
-        /// </summary>
-        internal static void AllCommandsCommon()
-        {
-            try
-            {
-                CommandsPalette = new List<IPaletteCommand>()
-                {
-                    new PaletteInsertBlock("PIK_Logo", fileCommonBlocks, "Блок логотипа", Properties.Resources.logo, "Вставка блока логотипа ПИК."),
-                    new PaletteCommand("Просмотр расширенных данных примитива", Properties.Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива."),
-                };
-            }
-            catch (System.Exception ex)
-            {
-                Logger.Log.Error(ex, "AcadLib.AllCommandsCommon()");
-                CommandsPalette = new List<IPaletteCommand>();
-            }
-        }
+        
 
         [CommandMethod(Group, nameof(PIK_AutoLayersStart), CommandFlags.Modal)]
         public void PIK_AutoLayersStart()

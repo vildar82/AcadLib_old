@@ -6,16 +6,25 @@ using System.Reflection;
 using System.Windows.Media;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Windows;
+using NetLib;
 using Brush = System.Windows.Media.Brush;
 
 namespace AcadLib.PaletteCommands
 {
+    class UserGroupPalette
+    {
+        public PaletteSetCommands Palette { get; set; }
+        public string Name { get; set; }
+        public Guid Guid { get; set; }
+        public string VersionPalette { get; set; }
+        public string CommandStartPalette { get; set; }
+        public List<IPaletteCommand> Commands { get; set; }
+    }
+
     public class PaletteSetCommands :PaletteSet
     {
-        private static PaletteSetCommands _paletteSet;
-        private static readonly Guid PaletteGuid = new Guid("623e4502-7407-4566-9d71-3ecbda06b088");
-        private static string commandStartPalette;
-	    private static string versionPalette;
+        private static readonly List<UserGroupPalette> _paletteSets = new List<UserGroupPalette>();
+        private string versionPalette;
 
         /// <summary>
         /// Данные для палитры
@@ -25,11 +34,14 @@ namespace AcadLib.PaletteCommands
         /// <summary>
         /// Команды переданные из сборки данного раздела
         /// </summary>
-        public static List<IPaletteCommand> CommandsAddin { get; set; } 
+        public List<IPaletteCommand> CommandsAddin { get; set; } 
 
-        public PaletteSetCommands() : 
-            base(AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, commandStartPalette, PaletteGuid)
+        public PaletteSetCommands(string paletteName, Guid paletteGuid, string commandStartPalette,
+            List<IPaletteCommand> commandsAddin, string versionPalette) : 
+            base(paletteName, commandStartPalette, paletteGuid)
         {
+            this.versionPalette = versionPalette;
+            CommandsAddin = commandsAddin;
             Icon = Properties.Resources.pik;
             loadPalettes();           
             // Установка фона контрола на палитре - в зависимости от цветовой темы автокада.            
@@ -45,19 +57,28 @@ namespace AcadLib.PaletteCommands
         /// Подготовка для определения палитры ПИК.
         /// Добавление значка ПИК в трей для запуска палитры.
         /// </summary>
-        /// <param name="commands"></param>
-        /// <param name="commandStartPalette">Имя команды для старта палитры</param>
-        public static void InitPalette(List<IPaletteCommand> commands, string commandStartPalette)
+        public static void InitPalette(List<IPaletteCommand> commands, string commandStartPalette, 
+            string paletteName, Guid paletteGuid)
         {
             try
             {
-                PaletteSetCommands.commandStartPalette = commandStartPalette;
-                CommandsAddin = commands;
-                Commands.AllCommandsCommon();
-                SetTrayIcon();
-                var userGroups = string.Join(",", AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined);
-	            versionPalette = $"{Assembly.GetCallingAssembly().GetName().Version} {userGroups}";
-
+                var palette = _paletteSets.FirstOrDefault(p => p.Guid.Equals(paletteGuid));
+                if (palette == null)
+                {
+                    _paletteSets.Add(new UserGroupPalette
+                    {
+                        Guid = paletteGuid,
+                        Name = paletteName,
+                        CommandStartPalette = commandStartPalette,
+                        Commands = commands,
+                        VersionPalette = $"{Assembly.GetCallingAssembly().GetName().Version}"
+                    });
+                    SetTrayIcon(paletteName, paletteGuid);
+                }
+                else
+                {
+                    palette.Commands.AddRange(commands);
+                }
             }
             catch(Exception ex)
             {
@@ -68,17 +89,20 @@ namespace AcadLib.PaletteCommands
         /// <summary>
         /// Создание палитры и показ
         /// </summary>
-        public static void Start()
+        public static void Start(Guid paletteGuid)
         {
             try
             {
-                if (_paletteSet == null)
+                var paletteUserGroup = _paletteSets.FirstOrDefault(p => p.Guid.Equals(paletteGuid));
+                if (paletteUserGroup == null) return;
+                if (paletteUserGroup.Palette == null)
                 {
-                    _paletteSet = Create();
+                    paletteUserGroup.Palette = new PaletteSetCommands(paletteUserGroup.Name, paletteUserGroup.Guid, 
+                        paletteUserGroup.CommandStartPalette, paletteUserGroup.Commands, paletteUserGroup.VersionPalette);
                 }
-                _paletteSet.Visible = true;
+                paletteUserGroup.Palette.Visible = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "PaletteSetCommands.Start().");
             }
@@ -117,12 +141,6 @@ namespace AcadLib.PaletteCommands
             models.Add(modelCommon);
         }
 
-	    private static PaletteSetCommands Create()
-        {
-            var palette = new PaletteSetCommands();
-            return palette;
-        }
-
         private void CheckTheme()
         {
             var isDarkTheme = (short)Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("COLORTHEME") == 0;
@@ -131,17 +149,17 @@ namespace AcadLib.PaletteCommands
             models.ForEach(m => m.Background = colorBkg);
         }
 
-        private static void SetTrayIcon()
+        private static void SetTrayIcon(string paletteName, Guid paletteGuid)
         {
             // Добавление иконки в трей    
             try
             {
 	            var ti = new TrayItem
 	            {
-		            ToolTipText = "Палитра ПИК",
+		            ToolTipText = "Палитра " + paletteName,
 		            Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon())
 	            };
-	            ti.MouseDown += PikTray_MouseDown;
+	            ti.MouseDown += (o,e) => PikTray_MouseDown(paletteGuid);
                 ti.Visible = true;
                 Application.StatusBar.TrayItems.Add(ti);
 
@@ -157,9 +175,9 @@ namespace AcadLib.PaletteCommands
             }
         }
 
-        private static void PikTray_MouseDown(object sender, StatusBarMouseDownEventArgs e)
+        private static void PikTray_MouseDown(Guid paletteGuid)
         {
-            Start();
+            Start(paletteGuid);
         }        
     }
 }
