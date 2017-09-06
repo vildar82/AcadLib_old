@@ -7,7 +7,7 @@ namespace AcadLib.Files
 {
     public class SerializerXml
     {
-        private string _settingsFile;
+        private readonly string _settingsFile;
 
         public SerializerXml (string settingsFile)
         {
@@ -23,9 +23,27 @@ namespace AcadLib.Files
             }
         }
 
+        public void SerializeList<T>(T settings, params Type[] types)
+        {
+            using (var fs = new FileStream(_settingsFile, FileMode.Create, FileAccess.Write))
+            {
+                var ser = new XmlSerializer(typeof(T), types);
+                ser.Serialize(fs, settings);
+            }
+        }
+
         public T DeserializeXmlFile<T> ()
         {
             var ser = new XmlSerializer(typeof(T));
+            using (var reader = XmlReader.Create(_settingsFile))
+            {
+                return (T)ser.Deserialize(reader);
+            }
+        }
+
+        public T DeserializeXmlFile<T>(params Type[] types)
+        {
+            var ser = new XmlSerializer(typeof(T), types);
             using (var reader = XmlReader.Create(_settingsFile))
             {
                 return (T)ser.Deserialize(reader);
@@ -54,6 +72,22 @@ namespace AcadLib.Files
             return res;                
         }
 
+        public static T Load<T>(string file, params Type[] types) where T : class, new()
+        {
+            var ser = new SerializerXml(file);
+            T res = null;
+            try
+            {
+                res = ser.DeserializeXmlFile<T>(types);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"Ошибка десирилизации объекта {typeof(T)} из файла {file}");
+                //res = new T();
+            }
+            return res;
+        }
+
         /// <summary>
         /// Сохранение объекта в файл.
         /// При ошибке записывается лог.
@@ -72,6 +106,19 @@ namespace AcadLib.Files
             {
                 Logger.Log.Error(ex, $"Ошибка сирилизации объекта {typeof(T)} в файл {file}");
             }
-        }             
+        }
+
+        public static void Save<T>(string file, T obj, params Type[] types)
+        {
+            var ser = new SerializerXml(file);
+            try
+            {
+                ser.SerializeList(obj, types);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"Ошибка сирилизации объекта {typeof(T)} в файл {file}");
+            }
+        }
     }
 }
