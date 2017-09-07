@@ -22,7 +22,7 @@ namespace AcadLib
 {
     public class Commands : IExtensionApplication
     {
-        internal static readonly string fileCommonBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
+        internal static readonly string fileCommonBlocks = Path.Combine(PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";

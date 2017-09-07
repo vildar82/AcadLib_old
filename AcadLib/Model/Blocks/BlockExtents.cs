@@ -6,7 +6,18 @@ namespace Autodesk.AutoCAD.DatabaseServices
 {
     public static class BlockExtents
     {
-        
+        private static readonly Scale3d scale1 = new Scale3d(1);
+        private static readonly Tolerance tolerance = new Tolerance(0.001, 0.001);
+
+        public static bool IsScaleEquals1(this BlockReference blref)
+        {
+            return blref.ScaleFactors.IsEqualTo(scale1, tolerance);
+        }
+
+        public static bool IsScaleEquals(this BlockReference blref, int scale)
+        {
+            return blref.ScaleFactors.IsEqualTo(new Scale3d(scale), tolerance);
+        }
 
         /// <summary>
         /// Обновление графики во вхождениях блока для данного определения блока

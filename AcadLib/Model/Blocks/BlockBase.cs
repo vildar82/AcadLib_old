@@ -59,6 +59,7 @@ namespace AcadLib.Blocks
         public Error Error { get; set; }
         public Matrix3d Transform { get; set; }
         public double Rotation { get; set; }
+        public Scale3d Scale { get; set; }
 
         /// <summary>
         /// Блок - по имени и ссылке на вхождение блока
@@ -346,6 +347,7 @@ namespace AcadLib.Blocks
                 Bounds = blRef.Bounds;
                 Position = blRef.Position;
                 Transform = blRef.BlockTransform;
+                Scale = blRef.ScaleFactors;
                 Color = GetColor(blRef);
                 Rotation = blRef.Rotation;
                 if (!blRef.Visible)
