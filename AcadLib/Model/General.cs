@@ -11,7 +11,7 @@ namespace AcadLib
 {
     public static class General
     {
-		private static readonly List<string> bimUsers = new List<string>{ "PrudnikovVS", "vrublevskiyba", "khisyametdinovvt" };
+		private static readonly List<string> bimUsers = new List<string>{ "PrudnikovVS", "vrublevskiyba", "khisyametdinovvt", "arslanovti" };
         public const string Company = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
 
         public const string UserGroupAR = "АР";
