@@ -14,6 +14,14 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
 	    private static string UserGroup { get; } = PikSettings.UserGroupsCombined.First();
 
+        /// <summary>
+        /// Текущий аннотативный масштаб чертежа. 100, 10 и т.п.
+        /// </summary>
+        public static double Scale(this Database db)
+        {
+            return AcadLib.Scale.ScaleHelper.GetCurrentAnnoScale(db);
+        }
+
 	    public static IEnumerable<T> IterateDB<T>(this Database db) where T : DBObject
         {
             for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
