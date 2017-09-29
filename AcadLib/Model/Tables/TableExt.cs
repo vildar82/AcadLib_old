@@ -17,7 +17,7 @@ namespace AcadLib
         /// Штриховка добавляется в базу.
         /// </summary>
         public static Hatch SetCellHatch(this Cell cell, int colorIndex =0, LineWeight lineWeight = LineWeight.LineWeight015,
-            double patternScale =1 , string standartPattern= "LINE")
+            double patternScale =1 , string standartPattern= "LINE", double patternAngleRad = 0)
         {
             var table = cell.ParentTable;
             table.RecomputeTableBlock(true);
@@ -26,8 +26,8 @@ namespace AcadLib
             using (var cellPl = cellExt.GetPolyline())
             {
                 var h = cellPl.GetPoints().CreateHatch();
-                h.SetHatchPattern(HatchPatternType.PreDefined, "LINE");
-                h.PatternAngle = NetLib.MathExt.PIQuart;
+                h.SetHatchPattern(HatchPatternType.PreDefined, standartPattern);
+                h.PatternAngle = patternAngleRad;
                 h.PatternScale = patternScale;
                 h.ColorIndex = colorIndex;
                 h.LineWeight = lineWeight;
