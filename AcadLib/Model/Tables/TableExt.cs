@@ -1,11 +1,51 @@
 ﻿using System.Linq;
+using AcadLib.Geometry;
+using AcadLib.Hatches;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib
 {
     public static class TableExt
     {
         public static LineWeight LwDataRow = LineWeight.LineWeight018;
+
+        /// <summary>
+        /// Вставка штриховки в ячеку таблицы.
+        /// Должна быть запущена транзакция.
+        /// Таблица должна быть в базе чертежа.
+        /// Штриховка добавляется в базу.
+        /// </summary>
+        public static Hatch SetCellHatch(this Cell cell, int colorIndex =0, LineWeight lineWeight = LineWeight.LineWeight015,
+            double patternScale =1 , string standartPattern= "LINE")
+        {
+            var table = cell.ParentTable;
+            table.RecomputeTableBlock(true);
+            var btr = table.OwnerId.GetObject<BlockTableRecord>(OpenMode.ForWrite);
+            var cellExt = OffsetExtToMarginCell(cell.GetExtents().ToExtents3d(), cell);
+            using (var cellPl = cellExt.GetPolyline())
+            {
+                var h = cellPl.GetPoints().CreateHatch();
+                h.SetHatchPattern(HatchPatternType.PreDefined, "LINE");
+                h.PatternAngle = NetLib.MathExt.PIQuart;
+                h.PatternScale = patternScale;
+                h.ColorIndex = colorIndex;
+                h.LineWeight = lineWeight;
+                h.Linetype = SymbolUtilityServices.LinetypeContinuousName;
+                var t = btr.Database.TransactionManager.TopTransaction;
+                btr.AppendEntity(h);
+                t.AddNewlyCreatedDBObject(h, true);
+                h.EvaluateHatch(true);
+                return h;
+            }
+        }
+
+        private static Extents3d OffsetExtToMarginCell(Extents3d ext, Cell cell)
+        {
+            return new Extents3d(
+                new Point3d(ext.MinPoint.X - cell.Borders.Horizontal.Margin.Value, ext.MinPoint.Y - cell.Borders.Top.Margin.Value, 0),
+                new Point3d(ext.MaxPoint.X + cell.Borders.Horizontal.Margin.Value, ext.MaxPoint.Y + cell.Borders.Top.Margin.Value, 0));
+        }
 
         public static void SetBorders(this Table table, LineWeight lw)
         {

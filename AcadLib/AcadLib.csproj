@@ -405,6 +405,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\select.ico" />
     <None Include="packages.config" />
     <Resource Include="Resources\test.png" />
     <Resource Include="Resources\send2.png" />

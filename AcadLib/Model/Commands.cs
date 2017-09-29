@@ -84,7 +84,7 @@ namespace AcadLib
 			    });
 			    task.Wait(15000);
 
-			    // Автослои
+			    // Автослоиtest
 			    Layers.AutoLayers.AutoLayersService.Init();
 
 				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
