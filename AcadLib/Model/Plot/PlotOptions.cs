@@ -16,6 +16,7 @@ namespace AcadLib.Plot
         private static string KeyFilterByNames = "FilterByNames";
         private static string KeyFilterState = "FilterState";
         private static string KeyDefaultPlotSource = "DefaultPlotSource";
+        private static string KeyIncludeSubdirs = "IncludeSubdirs";
 
         //private static PlotOptions _instance;
         //public static PlotOptions Instance
@@ -56,6 +57,13 @@ namespace AcadLib.Plot
         [TypeConverter(typeof(PlotSourceConverter))]
         public string DefaultPlotSource { get; set; }
 
+        [Category("Печать")]
+        [DisplayName("Включая подпапки")]
+        [Description("Если выбрана печать всей папки, то включать все файлы в подпапках удовлетворяющие фильтру.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool IncludeSubdirs { get; set; }
+
         [Category("Фильтр")]
         [DisplayName("Фильтр по номерам вкладок:")]
         [Description("Печатать только указанные номера вкладок. Номера через запятую и/или тире. Отрицательные числа считаются с конца вкладок.\n\r Например: 16--4 печать с 16 листа до 4 с конца; -1--3 печать трех последних листов.")]
@@ -86,6 +94,7 @@ namespace AcadLib.Plot
                 FilterByNames = reg.Load(KeyFilterByNames, "");
                 FilterState = reg.Load(KeyFilterState, false);
                 DefaultPlotSource = reg.Load(KeyDefaultPlotSource, "Текущего");
+                IncludeSubdirs = reg.Load(KeyIncludeSubdirs, false);
             }            
         }
 
@@ -100,6 +109,7 @@ namespace AcadLib.Plot
                 reg.Save(KeyFilterByNames, FilterByNames);
                 reg.Save(KeyFilterState, FilterState);
                 reg.Save(KeyDefaultPlotSource, DefaultPlotSource);
+                reg.Save(KeyIncludeSubdirs, IncludeSubdirs);
             }
         }
 
@@ -115,7 +125,8 @@ namespace AcadLib.Plot
                 FilterState = copyOptions.FilterState;
                 FilterByNames = copyOptions.FilterByNames;
                 FilterByNumbers = copyOptions.FilterByNumbers;
-                DefaultPlotSource = copyOptions.DefaultPlotSource;               
+                DefaultPlotSource = copyOptions.DefaultPlotSource;
+                IncludeSubdirs = copyOptions.IncludeSubdirs;
                 Save();
             }            
         }

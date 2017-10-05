@@ -19,7 +19,7 @@ namespace AcadLib.Plot
     // http://adndevblog.typepad.com/autocad/2012/05/how-to-use-the-autodeskautocadpublishingpublisherpublishdsd-api-in-net.html
     public class PlotDirToPdf
     {
-        private static Comparers.AlphanumComparator alphaComparer = Comparers.AlphanumComparator.New;
+        private static readonly Comparers.AlphanumComparator alphaComparer = Comparers.AlphanumComparator.New;
         private string dir;
         private string filePdfOutputName;
         private string[] filesDwg;
@@ -27,12 +27,18 @@ namespace AcadLib.Plot
 
         public PlotOptions Options { get; set; }
 
-        public PlotDirToPdf(string dir, string filePdfOutputName = "")
+        public PlotDirToPdf(string dir, bool includeSubdirs, string filePdfOutputName = "")
         {
-            filesDwg = Directory.GetFiles(dir, "*.dwg", SearchOption.TopDirectoryOnly);
+            filesDwg = Directory.GetFiles(dir, "*.dwg",
+                includeSubdirs ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             filesDwg = filesDwg.OrderBy(f => f, alphaComparer).ToArray();
             this.dir = dir;
             this.filePdfOutputName = filePdfOutputName == "" ? Path.GetFileName(dir) : filePdfOutputName;
+        }
+
+        public PlotDirToPdf(string dir, string filePdfOutputName = "") : this(dir, false, filePdfOutputName)
+        {
+            
         }
 
         public PlotDirToPdf(string[] filesDwg, string filePdfOutputName)
@@ -186,7 +192,7 @@ namespace AcadLib.Plot
                             }
                             else if (firstFileNameWoExt.Equals("п", StringComparison.OrdinalIgnoreCase))
                             {
-                                plotter = new PlotDirToPdf(dialog.SelectedPath);
+                                plotter = new PlotDirToPdf(dialog.SelectedPath, plotOpt.IncludeSubdirs);
                             }
                             else
                             {
