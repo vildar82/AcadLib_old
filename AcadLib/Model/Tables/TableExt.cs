@@ -26,9 +26,9 @@ namespace AcadLib
             using (var cellPl = cellExt.GetPolyline())
             {
                 var h = cellPl.GetPoints().CreateHatch();
-                h.SetHatchPattern(HatchPatternType.PreDefined, standartPattern);
                 h.PatternAngle = patternAngleRad;
                 h.PatternScale = patternScale;
+                h.SetHatchPattern(HatchPatternType.PreDefined, standartPattern);
                 h.ColorIndex = colorIndex;
                 h.LineWeight = lineWeight;
                 h.Linetype = SymbolUtilityServices.LinetypeContinuousName;
