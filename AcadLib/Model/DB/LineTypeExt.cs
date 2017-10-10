@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
@@ -12,7 +13,7 @@ namespace AcadLib
         /// <param name="db"></param>
         public static ObjectId LoadLineTypePIK(this Database db, string lineTypeName, string fileName = "GOST 2.303-68.lin")
         {
-            var id = db.GetLayerId(lineTypeName);
+            var id = db.GetLineTypeId(lineTypeName);
             if (!id.IsNull) return id;
             
             var file = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
@@ -22,7 +23,7 @@ namespace AcadLib
                 try
                 {
                     db.LoadLineTypeFile(lineTypeName, file);
-                    return db.GetLayerId(lineTypeName);
+                    return db.GetLineTypeId(lineTypeName);
                 }
                 catch
                 {
@@ -36,7 +37,20 @@ namespace AcadLib
             return db.Celtype;
         }
 
+        [Obsolete("Опечатка - используй GetLineTypeId")]
         public static ObjectId GetLayerId(this Database db, string lineTypeName)
+        {
+            using (var lt = db.LinetypeTableId.Open(OpenMode.ForRead) as LinetypeTable)
+            {
+                if (lt.Has(lineTypeName))
+                {
+                    return lt[lineTypeName];
+                }
+                return ObjectId.Null;
+            }
+        }
+
+        public static ObjectId GetLineTypeId(this Database db, string lineTypeName)
         {
             using (var lt = db.LinetypeTableId.Open(OpenMode.ForRead) as LinetypeTable)
             {

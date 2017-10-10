@@ -7,20 +7,33 @@ namespace AcadLib
     /// </summary>
     public class EntityOptions
     {
+        private LineWeight lineWeight;
+        private bool isLineWeight;
+        private int colorIndex;
+        private bool isColorIndex;
+
         public ObjectId LayerId { get; set; }
         public string Layer { get; set; }
         public ObjectId LineTypeId { get; set; }
         public string LineType { get; set; }
-        public LineWeight LineWeight { get { return lineWeight; } set { lineWeight = value; isLineWeight = true; } }
-        LineWeight lineWeight;
-        bool isLineWeight;
-
-        public int ColorIndex { get { return colorIndex; } set { colorIndex = value; isColorIndex = true; } }
-        int colorIndex;
-        bool isColorIndex;
-
+        public double? LinetypeScale { get; set; }
+        public LineWeight LineWeight
+        {
+            get => lineWeight;
+            set { lineWeight = value; isLineWeight = true; }
+        }
+        public int ColorIndex
+        {
+            get => colorIndex;
+            set { colorIndex = value; isColorIndex = true; }
+        }
         public System.Drawing.Color Color { get; set; }
-        
+        public Autodesk.AutoCAD.Colors.Color AcadColor { get; set; }
+        /// <summary>
+        /// Создавать или копировать из шаблона отсутствующие значения в чертеже. 
+        /// </summary>
+        public bool CheckCreateValues { get; set; }
+
         public EntityOptions()
         {   
         }
@@ -35,6 +48,15 @@ namespace AcadLib
             SetColor(ent);
             SetLineWeight(ent);
             SetLineType(ent);
+            SetLinetypeScale(ent);
+        }
+
+        private void SetLinetypeScale(Entity ent)
+        {
+            if (LinetypeScale != null && LinetypeScale.Value >0)
+            {
+                ent.LinetypeScale = LinetypeScale.Value;
+            }
         }
 
         public void SetLineType (Entity ent)
@@ -45,6 +67,10 @@ namespace AcadLib
             }
             else if (!string.IsNullOrEmpty(LineType))
             {
+                if (CheckCreateValues)
+                {
+                    ent.Database.LoadLineTypePIK(LineType);
+                }
                 ent.Linetype = LineType;
             }
         }
@@ -63,9 +89,13 @@ namespace AcadLib
             {
                 ent.ColorIndex = ColorIndex;
             }
-            else if (Color != null)
+            else if (!Color.IsEmpty)
             {
                 ent.Color = Autodesk.AutoCAD.Colors.Color.FromColor(Color);                
+            }
+            else if (AcadColor != null)
+            {
+                ent.Color = AcadColor;
             }
         }
 
@@ -77,6 +107,10 @@ namespace AcadLib
             }
             else if (!string.IsNullOrEmpty(Layer))
             {
+                if (CheckCreateValues)
+                {
+                    Layers.LayerExt.CheckLayerState(Layer);
+                }
                 ent.Layer = Layer;
             }
         }

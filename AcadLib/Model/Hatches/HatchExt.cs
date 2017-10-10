@@ -11,6 +11,23 @@ namespace AcadLib.Hatches
 {
     public static class HatchExt
     {
+        public static void SetHatchOptions(this Hatch h, HatchOptions opt)
+        {
+            if (h == null || opt == null) return;
+            if (!opt.PatternName.IsNullOrEmpty())
+            {
+                h.SetHatchPattern(opt.PatternType, opt.PatternName);
+            }
+            if (opt.PatternAngle != null && opt.PatternAngle.Value >0)
+            {
+                h.PatternAngle = opt.PatternScale.Value;
+            }
+            if (opt.PatternScale != null && opt.PatternScale.Value >0)
+            {
+                h.PatternScale = opt.PatternScale.Value;
+            }
+        }
+
 	    public static DisposableSet<HatchLoopPl> GetPolylines2(this Hatch ht, Tolerance weddingTolerance,
 			HatchLoopTypes loopType = HatchLoopTypes.External, bool wedding = false)
 	    {

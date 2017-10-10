@@ -46,7 +46,7 @@ namespace AcadLib.Colors
         /// </summary>
         public static Color AcadColorFromString2(this string color)
         {
-            if (color.IsNullOrEmpty()) return new Color();
+            if (color.IsNullOrEmpty()) return null;
             // Index
             if ( short.TryParse(color, out short colorIndex))
             {
@@ -58,7 +58,7 @@ namespace AcadLib.Colors
             {
                 return Color.FromRgb(byte.Parse(rgb[0]), byte.Parse(rgb[1]), byte.Parse(rgb[2]));
             }
-            return new Color();
+            return null;
         }
     }
 }
