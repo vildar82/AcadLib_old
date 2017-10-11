@@ -59,7 +59,7 @@ namespace AcadLib.Tables
             }
 
             table.SetSize(NumRows, NumColumns);
-            table.SetBorders(LwBold);
+            TableExt.SetBorders(table, LwBold);
             table.SetRowHeight(8);
 
             // Название таблицы
