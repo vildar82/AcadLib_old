@@ -12,6 +12,22 @@ namespace AcadLib
         private int colorIndex;
         private bool isColorIndex;
 
+        public EntityOptions()
+        {
+        }
+
+        public EntityOptions(Entity ent)
+        {
+            AcadColor = ent.Color;
+            Color = ent.Color.ColorValue;
+            ColorIndex = ent.ColorIndex;
+            Layer = ent.Layer;
+            LineTypeId = ent.LinetypeId;
+            LineType = ent.Linetype;
+            LinetypeScale = ent.LinetypeScale;
+            LineWeight = ent.LineWeight;
+        }
+
         public ObjectId LayerId { get; set; }
         public string Layer { get; set; }
         public ObjectId LineTypeId { get; set; }
@@ -33,10 +49,6 @@ namespace AcadLib
         /// Создавать или копировать из шаблона отсутствующие значения в чертеже. 
         /// </summary>
         public bool CheckCreateValues { get; set; }
-
-        public EntityOptions()
-        {   
-        }
 
         public void SetOptions(Entity ent)
         {
@@ -121,6 +133,12 @@ namespace AcadLib
         public static void SetOptions(this Entity ent, EntityOptions opt)
         {
             opt?.SetOptions(ent);
+        }
+
+        public static EntityOptions GetEntityOptions(this Entity ent)
+        {
+            if (ent == null) return null;
+            return new EntityOptions(ent);
         }
     }
 }

@@ -11,6 +11,12 @@ namespace AcadLib.Hatches
 {
     public static class HatchExt
     {
+        public static HatchOptions GetHatchOptions(this Hatch h)
+        {
+            if (h == null) return null;
+            return new HatchOptions(h);
+        }
+
         public static void SetHatchOptions(this Hatch h, HatchOptions opt)
         {
             if (h == null || opt == null) return;
