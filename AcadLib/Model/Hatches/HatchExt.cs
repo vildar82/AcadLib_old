@@ -182,6 +182,9 @@ namespace AcadLib.Hatches
             return CreateHatch(pts.ConvertAll(Point3dExtensions.Convert2d));
         }
 
+        /// <summary>
+        /// Создание штриховки по точкам полилинии
+        /// </summary>
         public static Hatch CreateHatch (this Polyline pl)
         {
             var pts = pl.GetPoints();

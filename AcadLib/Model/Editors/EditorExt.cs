@@ -12,9 +12,11 @@ namespace AcadLib.Editors
 	{
 		/// <summary>
 		/// Выбор объектов в заданных границах
+		/// В модели
 		/// </summary>
 		public static List<ObjectId> SelectInExtents(this Editor ed, Extents3d ext)
 		{
+		    ed.Document.Database.TileMode = true;
 			ed.Zoom(ext);
 			var selRes = ed.SelectCrossingWindow(ext.MinPoint, ext.MaxPoint);
 			if (selRes.Status == PromptStatus.OK)
