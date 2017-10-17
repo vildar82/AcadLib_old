@@ -161,6 +161,8 @@ namespace AcadLib.Layers
             {
                 case "КР-МН":
                     return "КР";
+                case "КР-МН_Тест":
+                    return "КР";
                 case "КР-СБ":
                     return "СБ";
                 case "КР-СБ-ГК":
