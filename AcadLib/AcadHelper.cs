@@ -13,5 +13,13 @@ namespace AcadLib
         /// Текущий документ
         /// </summary>
         public static Document Doc => Application.DocumentManager.MdiActiveDocument;
+
+        /// <summary>
+        /// Сообщение в ком.строку. автокада
+        /// </summary>
+        public static void WriteLine(string msg)
+        {
+            Doc.Editor.WriteMessage($"\n{msg}");
+        }
     }
 }
