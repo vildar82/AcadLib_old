@@ -9,6 +9,7 @@ namespace AcadLib
 {
     public static class AcadHelper
     {
+        public static int VersionMajor => Application.Version.Major;
         /// <summary>
         /// Текущий документ
         /// </summary>
@@ -19,7 +20,7 @@ namespace AcadLib
         /// </summary>
         public static void WriteLine(string msg)
         {
-            Doc.Editor.WriteMessage($"\n{msg}");
+            Doc.Editor.WriteMessage($"\n{msg}\n");
         }
     }
 }
