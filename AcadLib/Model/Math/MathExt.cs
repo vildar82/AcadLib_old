@@ -50,13 +50,7 @@ namespace AcadLib
             return h * 60;
         }
 
-        /// <summary>
-        /// Это нечетное число
-        /// </summary>        
-        public static bool IsOdd (this int value)
-        {
-            return value % 2 != 0;
-        }
+        
 
         /// <summary>
         /// Это целое число
@@ -69,6 +63,14 @@ namespace AcadLib
             var deltaInt = Math.Abs(Convert.ToInt32(value) - value);
             var res = deltaInt <= tolerance;
             return res;
+        }
+
+        /// <summary>
+        /// Это нечетное число
+        /// </summary>        
+        public static bool IsOdd(this int value)
+        {
+            return value % 2 != 0;
         }
 
         /// <summary>

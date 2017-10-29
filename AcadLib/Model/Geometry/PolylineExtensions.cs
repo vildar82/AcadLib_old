@@ -18,8 +18,6 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class PolylineExtensions
     {
-	    
-
 		/// <summary>
 		/// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
 		/// </summary>
@@ -447,8 +445,13 @@ namespace AcadLib.Geometry
         /// <param name="gap">Допуск. Если 0, то используется Tolerance.Global</param>        
         public static bool IsPointOnPolyline(this Polyline pl, Point3d pt, double gap)
         {
-            var ptPl = pl.GetClosestPointTo(pt, false);            
-            var tolerance = gap==0? Tolerance.Global: new Tolerance(gap, gap);
+            var tolerance = Math.Abs(gap) < 0.0001? Tolerance.Global: new Tolerance(gap, gap);
+            return IsPointOnPolyline(pl,pt, tolerance);
+        }
+
+        public static bool IsPointOnPolyline(this Polyline pl, Point3d pt, Tolerance tolerance)
+        {
+            var ptPl = pl.GetClosestPointTo(pt, false);
             return pt.IsEqualTo(ptPl, tolerance);
         }
 
@@ -471,6 +474,21 @@ namespace AcadLib.Geometry
                 angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
             }
             return !(Math.Abs(angle) < Math.PI);                
+        }
+
+        /// <summary>
+        /// Проверка попадания точки в полилинию, с допуском
+        /// Попвдвет - если точка внутри или на полилинии.
+        /// Способ - по нечетному кол-ву точек пересечения луча из точки с полилинией.
+        /// </summary>
+        public static bool IsPointInsidePolylineByRay(this Polyline pl, Point3d pt, Tolerance tolerance)
+        {
+            using (var ray = new Ray{ BasePoint = pt, UnitDir= Vector3d.YAxis })
+            {
+                var pts = new Point3dCollection();
+                ray.IntersectWith(pl, Intersect.OnBothOperands, new Plane(), pts, IntPtr.Zero, IntPtr.Zero);
+                return pts.Count.IsOdd() || IsPointOnPolyline(pl, pt, tolerance);
+            }
         }
 
         /// <summary>
