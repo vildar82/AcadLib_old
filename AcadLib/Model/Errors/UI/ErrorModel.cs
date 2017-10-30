@@ -13,18 +13,20 @@ namespace AcadLib.Errors
 {
     public class ErrorModel : ModelBase
     {
-        private IError firstErr;
-        public ErrorModel parentErr;
+        private readonly IError firstErr;
+        public readonly ErrorModel parentErr;
+        private readonly ErrorsViewModel errorsModel;
         public event EventHandler<bool> SelectionChanged;
 
-        public ErrorModel(IError err, ErrorModel parentErr) : this(err.Yield().ToList())
+        public ErrorModel(IError err, ErrorModel parentErr, ErrorsViewModel errorsModel) : this(err.Yield().ToList(), errorsModel)
         {
             this.parentErr = parentErr;
         }
 
-        public ErrorModel(List<IError> sameErrors)
+        public ErrorModel(List<IError> sameErrors,ErrorsViewModel errorsModel)
         {
-            Count = sameErrors.Count();
+            this.errorsModel = errorsModel;
+            Count = sameErrors.Count;
             firstErr = sameErrors.First();
             Message = firstErr.Message;
             if (firstErr.Icon != null)
@@ -38,7 +40,7 @@ namespace AcadLib.Errors
                 SameErrors = new ObservableCollection<ErrorModel>();
                 for (var i =0; i<sameErrors.Count; i++)
                 {
-                    SameErrors.Add(new ErrorModel(sameErrors[i], this));
+                    SameErrors.Add(new ErrorModel(sameErrors[i], this, errorsModel));
                 }                
             }
             HasShow = firstErr.CanShow;
@@ -80,6 +82,14 @@ namespace AcadLib.Errors
 
         private void DeleteErrorExec()
         {
+            if (parentErr != null)
+            {
+                parentErr.SameErrors.Remove(this);
+            }
+            else
+            {
+                errorsModel.Errors.Remove(this);
+            }
             if (Error == null)
             {
                 throw new ArgumentException("Ошибка не найдена.");
