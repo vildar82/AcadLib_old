@@ -3,6 +3,7 @@ using AcadLib.Jigs;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using NetLib;
 
 namespace AcadLib.Tables
 {
@@ -14,14 +15,18 @@ namespace AcadLib.Tables
     /// </summary>
     public abstract class CreateTable : ICreateTable
     {
-        protected Database db;
-        protected double scale;
+        protected readonly Database db;
+        protected readonly double scale;
 
         public LineWeight LwBold { get; set; } = LineWeight.LineWeight050;
         public string Layer { get; set; }
         public int NumRows { get; set; }
         public int NumColumns { get; set; }
         public string Title { get; set; }
+        /// <summary>
+        /// Имя стиля из шаблона. Если пусто, то ПИК
+        /// </summary>
+        public string StyleName { get; set; }
         public abstract void CalcRows ();
         protected abstract void SetColumnsAndCap (ColumnsCollection columns);
         protected abstract void FillCells (Table table);        
@@ -50,7 +55,7 @@ namespace AcadLib.Tables
         {
             var table = new Table();
             table.SetDatabaseDefaults(db);
-            table.TableStyle = db.GetTableStylePIK(); // если нет стиля ПИк в этом чертеже, то он скопируетс из шаблона, если он найдется            
+            table.TableStyle = StyleName.IsNullOrEmpty() ? db.GetTableStylePIK() : db.GetTableStylePIK(StyleName);
 
             if (!string.IsNullOrEmpty(Layer))
             {
