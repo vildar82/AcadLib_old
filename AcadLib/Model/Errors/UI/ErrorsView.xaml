@@ -59,18 +59,21 @@
                 </DockPanel>
             </Border>
         </ControlTemplate>
-        <DataTemplate x:Key="ErrorTemplate">
+        <DataTemplate x:Key="ErrorTemplate" DataType="{x:Type local:ErrorModel}">
             <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="LightGray" HorizontalAlignment="Left" Opacity="0.9">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <Grid.InputBindings>
+                    <MouseBinding Gesture="LeftClick" Command="{Binding Show}" />
+                </Grid.InputBindings>
                 <TextBlock Grid.Column="0" Text="{Binding Count, Mode=OneWay}" 
                            Visibility="{Binding ShowCount, Converter={converters:BooleanToHidingVisibilityConverter}}" 
-                           VerticalAlignment="Center"
-                           />
+                           VerticalAlignment="Center"/>
                 <Image Grid.Column="1" Source="{Binding Image}" Margin="5" VerticalAlignment="Center" Height="25"/>
                 <Image Grid.Column="2" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
                        Visibility="{Binding HasShow, Converter={converters:BooleanToHidingVisibilityConverter}}"
@@ -84,12 +87,11 @@
                         <TextBlock Text="{Binding Message}" MaxWidth="500" TextWrapping="Wrap"/>
                     </ToolTipService.ToolTip>
                 </TextBox>
-                <Grid.InputBindings>
-                    <MouseBinding Gesture="LeftClick" Command="{Binding Show}"/>
-                </Grid.InputBindings>
+                <Button Grid.Column="4" Content="x" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Command="{Binding DeleteError}" ToolTip="Удаление объекта(ов) из чертежа."/>
             </Grid>
         </DataTemplate>
-        <DataTemplate x:Key="ErrorsItemsTemplate">
+        <DataTemplate x:Key="ErrorsItemsTemplate" DataType="{x:Type local:ErrorModel}">
             <Expander Header="{Binding}" HeaderTemplate="{StaticResource ErrorTemplate}" IsExpanded="{Binding IsExpanded}" 
                       Focusable="False" MaxHeight="500">
                 <ListBox ItemsSource="{Binding SameErrors}" ItemTemplate="{StaticResource ErrorTemplate}" Margin="34,1,1,1"

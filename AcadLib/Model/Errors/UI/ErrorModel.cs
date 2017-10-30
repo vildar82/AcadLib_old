@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Autodesk.AutoCAD.DatabaseServices;
 using NetLib;
 
 namespace AcadLib.Errors
@@ -39,14 +41,16 @@ namespace AcadLib.Errors
                     SameErrors.Add(new ErrorModel(sameErrors[i], this));
                 }                
             }
-            HasShow = firstErr.CanShow;                        
-        }        
+            HasShow = firstErr.CanShow;
+            DeleteError = new RelayCommand(DeleteErrorExec, () => Error?.HasEntity == true);
+        }
 
         public IError Error { get { return firstErr; } }
         public ObservableCollection<ErrorModel> SameErrors { get; set; }        
         public string Message { get; set; }
         public BitmapSource Image { get; set; }
         public RelayCommand Show { get; set; }
+        public RelayCommand DeleteError { get; set; }
         public bool IsExpanded {
             get { return isExpanded; }
             set {
@@ -72,6 +76,39 @@ namespace AcadLib.Errors
             firstErr.Show();
             IsExpanded = !IsExpanded;
             //IsSelected = true;
+        }
+
+        private void DeleteErrorExec()
+        {
+            if (Error == null)
+            {
+                throw new ArgumentException("Ошибка не найдена.");
+            }
+            if (!Error.IdEnt.IsValidEx())
+            {
+                throw new Exception($"Элемент ошибки не валидный. Возможно был удален.");
+            }
+            var doc = AcadHelper.Doc;
+            var db = doc.Database;
+            if (Error.IdEnt.Database != db)
+            {
+                throw new Exception($"Переключитесь на чертеж '{Path.GetFileName(doc.Name)}'");
+            }
+            using (doc.LockDocument())
+            using(var t = db.TransactionManager.StartTransaction())
+            {
+                var ent = Error.IdEnt.GetObject<Entity>(OpenMode.ForWrite);
+                ent?.Erase();
+                if (SameErrors != null)
+                {
+                    foreach (var error in SameErrors)
+                    {
+                        ent = error.Error.IdEnt.GetObject<Entity>(OpenMode.ForWrite);
+                        ent?.Erase();
+                    }
+                }
+                t.Commit();
+            }
         }
     }
 }
