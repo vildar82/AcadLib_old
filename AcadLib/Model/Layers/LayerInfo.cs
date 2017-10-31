@@ -1,37 +1,75 @@
-﻿using Autodesk.AutoCAD.Colors;
+﻿using System;
+using System.Xml.Serialization;
+using AcadLib.Colors;
+using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using NetLib;
 
 namespace AcadLib.Layers
 {
+    [Serializable]
     public class LayerInfo
     {
-        public string Name { get; set; }
+        private Color color;
+        private string colorStr;
 
+        public string Name { get; set; }
         public bool IsOff { get; set; }
         public bool IsFrozen { get; set; }
-        public bool IsPlotable { get; set; }
+        public bool IsPlotable { get; set; } = true;
         public bool IsLocked { get; set; }
-        public Color Color { get; set; }
+        [XmlIgnore]
+        public Color Color
+        {
+            get => color;
+            set
+            {
+                color = value;
+                colorStr = color.AcadColorToString2();
+            }
+        }
         public LineWeight LineWeight { get; set; }
+        [XmlIgnore]
         public ObjectId LinetypeObjectId { get; set; }
         public string LineType { get; set; }
+
+        /// <summary>
+        /// Только для Serializable
+        /// </summary>
+        public string ColorStr
+        {
+            get => colorStr;
+            set
+            {
+                colorStr = value;
+                color = colorStr.AcadColorFromString2();
+            }
+        }
+
+        public LayerInfo()
+        {
+            
+        }
 
         public LayerInfo(string name)
         {
             Name = name;
             Color = Color.FromColorIndex(ColorMethod.ByAci, 7);
             LineWeight = LineWeight.ByLineWeightDefault;
-            IsPlotable = true;
         }
 
         public LayerInfo(ObjectId idLayer)
         {
-            using (var layer = idLayer.Open( OpenMode.ForRead)as LayerTableRecord)
+            using (var layer = idLayer.Open( OpenMode.ForRead) as LayerTableRecord)
             {
                 Name = layer.Name;
                 Color = layer.Color;
+                using (var lt = layer.LinetypeObjectId.Open(OpenMode.ForRead) as LinetypeTableRecord)
+                {
+                    LineType = lt.Name;
+                }
                 LineWeight = layer.LineWeight;
-                IsPlotable = true;
+                IsPlotable = layer.IsPlottable;
             }
         }
 

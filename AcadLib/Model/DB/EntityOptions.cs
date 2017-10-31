@@ -19,9 +19,10 @@ namespace AcadLib
         public EntityOptions(Entity ent)
         {
             AcadColor = ent.Color;
-            Color = ent.Color.ColorValue;
+            Color = System.Drawing.Color.FromArgb(ent.Color.Red, ent.Color.Green, ent.Color.Blue);
             ColorIndex = ent.ColorIndex;
             Layer = ent.Layer;
+            LayerId = ent.LayerId;
             LineTypeId = ent.LinetypeId;
             LineType = ent.Linetype;
             LinetypeScale = ent.LinetypeScale;
