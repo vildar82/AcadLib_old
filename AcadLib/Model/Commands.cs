@@ -94,19 +94,12 @@ namespace AcadLib
 				    LoadService.LoadFromTry(item);
 			    }
 				// Загрузка сборок из папки ../Script/Net - без вложенных папок
-			    foreach (var item in Directory.EnumerateFiles(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), "*.dll", SearchOption.TopDirectoryOnly))
-			    {
-				    LoadService.LoadFromTry(item);
-			    }
+		        LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), SearchOption.TopDirectoryOnly);
 			    // Загрузка сборок из папки ../Script/Net/[UserGroup]
 			    foreach (var userGroup in PikSettings.UserGroupsCombined)
 			    {
 				    var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
-				    if (!Directory.Exists(dirGroup)) continue;
-				    foreach (var item in Directory.EnumerateFiles(dirGroup, "*.dll", SearchOption.TopDirectoryOnly))
-				    {
-					    LoadService.LoadFromTry(item);
-				    }
+			        LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
 			    }
 			    Logger.Log.Info($"end Initialize AcadLib");
 		    }
@@ -124,7 +117,7 @@ namespace AcadLib
 			    dllsResolve = DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
 			    // Все сборки из папки Script\NET
 			    dllsResolve.AddRange(DllResolve.GetDllResolve(
-				    Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET"),
+				    Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
 				    SearchOption.AllDirectories));
 			    // Все сборки из локальной папки packages
 			    dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));

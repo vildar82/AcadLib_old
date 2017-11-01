@@ -1,6 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
+using NetLib;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
@@ -94,6 +101,73 @@ namespace AcadLib
 	        {
 		        Logger.Log.Error(ex, $"CopyPackagesLocal");
 	        }
+        }
+
+        /// <summary>
+        /// Загрузка сборок из папки.
+        /// </summary>
+        public static void LoadFromFolder(string dir, SearchOption mode)
+        {
+            if (!Directory.Exists(dir)) return;
+            var dlls = GetDllsForCurVerAcad(Directory.GetFiles(dir, "*.dll", mode).ToList());
+            foreach (var dll in dlls)
+            {
+                LoadFromTry(dll);
+            }
+        }
+
+        private static List<string> GetDllsForCurVerAcad(List<string> dlls)
+        {
+            var dllsToLoad = dlls.ToList();
+            if (int.TryParse(HostApplicationServices.Current.releaseMarketVersion, out int ver))
+            {
+                foreach (var groupDllVer in dlls.SelectNulless(DllVer.GetDllVer).GroupBy(g => g.FileWoVer))
+                {
+                    var dllVers = groupDllVer.OrderByDescending(o => o.Ver).ToList();
+                    var dllSimple = dlls.FirstOrDefault(f => f == groupDllVer.Key);
+                    var dllWin = dllVers.FirstOrDefault(f => f.Ver <= ver);
+                    if (dllWin == null && dllSimple == null)
+                    {
+                        dllWin = dllVers[0];
+                    }
+                    // Удалить лишние
+                    if (dllWin != null)
+                    {
+                        dllVers.Remove(dllWin);
+                        if (dllSimple != null)
+                        {
+                            dllsToLoad.Remove(dllSimple);
+                        }
+                    }
+                    dllVers.ForEach(d => dllsToLoad.Remove(d.Dll));
+                }
+            }
+            return dllsToLoad;
+        }
+    }
+
+    internal class DllVer
+    {
+        public string Dll { get; set; }
+        public string FileWoVer { get; set; }
+        public int Ver { get; set; }
+
+        public DllVer(string fileDll, int ver)
+        {
+            Dll = fileDll;
+            Ver = ver;
+            FileWoVer = fileDll.Substring(0, fileDll.Length - 10) + ".dll";
+        }
+
+        public static DllVer GetDllVer(string file)
+        {
+            DllVer dllVer = null;
+            var match = Regex.Match(file, @"(_v(\d{4}).dll)$");
+            if (match.Success && int.TryParse(match.Groups[2].Value, out int ver))
+            {
+                dllVer = new DllVer(file, ver);
+            }
+            return dllVer;
         }
     }
 }
