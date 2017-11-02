@@ -4,10 +4,10 @@ namespace Autodesk.AutoCAD.DatabaseServices
 {
     public static class ExtentsExtension
     {
-        public static Extents3d Offset(this Extents3d ext, double percent = 10)
+        public static Extents3d Offset(this Extents3d ext, double percent = 50)
         {
             var dX = (ext.MaxPoint.X - ext.MinPoint.X) * (percent / 100) *0.5;
-            var dY = ext.MaxPoint.Y - ext.MinPoint.Y *(percent / 100) * 0.5;
+            var dY = (ext.MaxPoint.Y - ext.MinPoint.Y) *(percent / 100) * 0.5;
             return new Extents3d(
                 new Point3d(ext.MinPoint.X - dX, ext.MinPoint.Y - dY, 0),
                 new Point3d(ext.MaxPoint.X + dX, ext.MaxPoint.Y + dY, 0)
