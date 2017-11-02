@@ -278,6 +278,7 @@
     <Compile Include="Model\Visual\VisualHelper.cs" />
     <Compile Include="Model\Visual\VisualOption.cs" />
     <Compile Include="Model\Visual\VisualTransient.cs" />
+    <Compile Include="Model\Visual\VisualTransientSimple.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToHidingVisibilityConverter.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToOppositeBooleanConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />

@@ -1,7 +1,11 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using AcadLib.Visual;
+using Autodesk.AutoCAD.ApplicationServices;
+using NetLib;
 
 namespace AcadLib.Errors
 {
@@ -10,11 +14,42 @@ namespace AcadLib.Errors
     /// </summary>
     public partial class ErrorsView : Window
     {
+        private readonly VisualTransientSimple errorsVisual;
+        private readonly Document doc;
+
         public ErrorsView(ErrorsViewModel errVM)
-        {                        
+        {
+            doc = AcadHelper.Doc;
             InitializeComponent();
             DataContext = errVM;
             KeyDown += ErrorsView_KeyDown;
+            Closed += ErrorsView_Closed;
+            var visualsEnts = errVM.ErrorsOrig.SelectManyNulless(s => s.Visuals).ToList();
+            if (visualsEnts.Any())
+            {
+                errorsVisual = new VisualTransientSimple(visualsEnts) {VisualIsOn = true};
+            }
+        }
+
+        ~ErrorsView()
+        {
+            Dispose();
+        }
+
+        private void Dispose()
+        {
+            if (AcadHelper.Doc == doc)
+            {
+                using (doc.LockDocument())
+                {
+                    errorsVisual?.Dispose();
+                }
+            }
+        }
+
+        private void ErrorsView_Closed(object sender, System.EventArgs e)
+        {
+            Dispose();
         }
 
         public void DragWindow(object sender, MouseButtonEventArgs args)
@@ -40,9 +75,11 @@ namespace AcadLib.Errors
             if (sender is ScrollViewer && !e.Handled)
             {
                 e.Handled = true;
-                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-                eventArg.RoutedEvent = MouseWheelEvent;
-                eventArg.Source = sender;
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                    {
+                        RoutedEvent = MouseWheelEvent,
+                        Source = sender
+                    };
                 ((Control)sender).RaiseEvent(eventArg);                
             }
         }        
@@ -50,6 +87,7 @@ namespace AcadLib.Errors
         private void Button_Ok_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
+            Dispose();
         }        
 
         private void Button_Close_Click(object sender, RoutedEventArgs e)

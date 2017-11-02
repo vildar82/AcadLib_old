@@ -16,7 +16,7 @@ namespace AcadLib.Errors
         private static Editor _ed;
         public static List<IError> Errors { get; private set; }
 
-        public static bool HasErrors { get { return Errors.Count > 0; } }
+        public static bool HasErrors => Errors.Count > 0;
 
         static Inspector()
         {
@@ -75,7 +75,6 @@ namespace AcadLib.Errors
             var err = new Error(string.Format(msg, args));
             Errors.Add(err);
         }
-
 
         public static void AddError(string msg, Entity ent, Icon icon = null)
         {
@@ -142,19 +141,15 @@ namespace AcadLib.Errors
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors = SortErrors(Errors);
 
-                //// WinForms
-                //Application.ShowModelessDialog(new FormError(false));
-
                 // WPF
                 Show(Errors);
             }
         }
         public static void Show (List<IError> errors)
         {
-            var errVM = new ErrorsViewModel(errors);
-            errVM.IsDialog = false;
+            var errVM = new ErrorsViewModel(errors) {IsDialog = false};
             var errView = new ErrorsView(errVM);
-            Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowModelessWindow(errView);
+            Application.ShowModelessWindow(errView);
         }
 
         private static List<IError> SortErrors(List<IError> errors)
@@ -174,36 +169,18 @@ namespace AcadLib.Errors
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors = SortErrors(Errors);
 
-                //// WinForms
-                //var formErr = new FormError(true);
-                //var res = Application.ShowModalDialog(formErr);
-                //if (res != System.Windows.Forms.DialogResult.OK)
-                //{
-                //    formErr.EnableDialog(false);
-                //    //Application.ShowModelessDialog(formErr);
-                //    throw new Exception("Отменено пользователем.");
-                //}
-                //return res;
-
                 // WPF
                 if (ShowDialog(Errors) == true)
                 {
                     return System.Windows.Forms.DialogResult.OK;
                 }
-                else
-                {
-                    throw new CancelByUserException();
-                }
+                throw new CancelByUserException();
             }
-            else
-            {
-                return System.Windows.Forms.DialogResult.OK;
-            }
+            return System.Windows.Forms.DialogResult.OK;
         }
         public static bool? ShowDialog(List<IError> errors)
         {
-            var errVM = new ErrorsViewModel(errors);
-            errVM.IsDialog = true;
+            var errVM = new ErrorsViewModel(errors) {IsDialog = true};
             var errView = new ErrorsView(errVM);
             return Application.ShowModalWindow(errView);            
         }

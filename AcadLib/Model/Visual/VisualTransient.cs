@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.GraphicsInterface;
 
@@ -14,12 +16,6 @@ namespace AcadLib.Visual
 
         public VisualTransient(string layer = null) : base(layer)
         {
-
-        }
-
-        public virtual List<Entity> GetDraws()
-        {
-            return draws;
         }
 
         /// <summary>
@@ -48,6 +44,15 @@ namespace AcadLib.Visual
                 item.Dispose();
             }
             draws = null;
+        }
+
+        private void DisposeDraws()
+        {
+            if (draws?.Any() != true) return;
+            foreach (var draw in draws)
+            {
+                draw?.Dispose();
+            }
         }
 
         public static void EraseAll()

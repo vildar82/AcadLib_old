@@ -88,7 +88,7 @@
                     </ToolTipService.ToolTip>
                 </TextBox>
                 <Button Grid.Column="4" Content="x" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Command="{Binding DeleteError}" ToolTip="Удаление объекта(ов) из чертежа."/>
+                        Command="{Binding DeleteError}" ToolTip="Удаление объекта(ов) из чертежа." Margin="2"/>
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="ErrorsItemsTemplate" DataType="{x:Type local:ErrorModel}">

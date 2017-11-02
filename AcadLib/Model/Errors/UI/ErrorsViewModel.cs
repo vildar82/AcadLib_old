@@ -20,6 +20,7 @@ namespace AcadLib.Errors
 
         public ErrorsViewModel(List<IError> errors)
         {
+            ErrorsOrig = errors;
             // Группировка ошибок
             //"Дублирование блоков"                        
             Errors = new ObservableCollection<ErrorModel>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).
@@ -44,8 +45,10 @@ namespace AcadLib.Errors
             CountSelectedErrors += e ? 1 : -1;
         }
 
+        public List<IError> ErrorsOrig { get; set; }
         public ObservableCollection<ErrorModel> Errors { get; set; }
-        public bool IsDialog { get { return isDialog; } set { isDialog = value; RaisePropertyChanged(); } }  
+        public bool IsDialog { get => isDialog;
+            set { isDialog = value; RaisePropertyChanged(); } }  
         bool isDialog;
 
         public RelayCommand CollapseAll { get; set; }

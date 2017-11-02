@@ -18,6 +18,15 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class PolylineExtensions
     {
+        /// <summary>
+        /// Минимальное расстояние от точки до полилинии
+        /// </summary>
+        public static double GetClosesLengthToPoint(this Polyline pl, Point3d pt)
+        {
+            var ptClosest = pl.GetClosestPointTo(pt, false);
+            return (pt - ptClosest).Length;
+        }
+
 		/// <summary>
 		/// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
 		/// </summary>

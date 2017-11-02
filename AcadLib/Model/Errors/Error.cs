@@ -11,7 +11,7 @@ namespace AcadLib.Errors
 {
     public class Error : IError
     {
-        private Dictionary<Icon, ErrorStatus> dictErrorIcons = new Dictionary<Icon, ErrorStatus>() {
+        private readonly Dictionary<Icon, ErrorStatus> dictErrorIcons = new Dictionary<Icon, ErrorStatus>() {
             { SystemIcons.Error, ErrorStatus.Error },
             { SystemIcons.Exclamation, ErrorStatus.Exclamation },
             { SystemIcons.Hand, ErrorStatus.Exclamation },
@@ -24,16 +24,18 @@ namespace AcadLib.Errors
         protected Extents3d _extents;
         protected bool _alreadyCalcExtents;
         protected bool _isNullExtents;
-        protected bool _hasEntity;
+        protected readonly bool _hasEntity;
 
         public object Tag { get; set; }
         public Matrix3d Trans { get; set; }       
-        public string Message { get { return _msg; } }
-        public string ShortMsg { get { return _shortMsg; } }
-        public ObjectId IdEnt { get { return _idEnt; } }
-        public bool HasEntity { get { return _hasEntity; } }
+        public string Message => _msg;
+        public string ShortMsg => _shortMsg;
+        public ObjectId IdEnt => _idEnt;
+        public bool HasEntity => _hasEntity;
         public Icon Icon { get; set; }
         public ErrorStatus Status { get; set; }
+        public bool CanShow { get; set; }
+        public List<Entity> Visuals { get; set; }
         public Extents3d Extents
         {
             get
@@ -68,7 +70,6 @@ namespace AcadLib.Errors
                 return _extents;
             }
         }
-        public bool CanShow { get; set; }
 
         public virtual void Show()
         {

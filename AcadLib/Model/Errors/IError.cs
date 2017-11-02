@@ -2,6 +2,7 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using System;
+using System.Collections.Generic;
 
 namespace AcadLib.Errors
 {
@@ -17,6 +18,7 @@ namespace AcadLib.Errors
         string ShortMsg { get; }
         object Tag { get; set; }
         Matrix3d Trans { get; set; }
+        List<Entity> Visuals { get; set; }
         void AdditionToMessage(string addMsg);        
         IError GetCopy();        
         void Show();        
