@@ -11,7 +11,7 @@ namespace AcadLib
     {
         public static void ShowEnt(this ObjectId id, int num, int delay1, int delay2)
         {
-            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null || !id.IsValidEx()) return;
 
             using (doc.LockDocument())
@@ -21,7 +21,7 @@ namespace AcadLib
 				{
 					try
 					{
-						doc.Editor.Zoom(ent.GeometricExtents);
+						doc.Editor.Zoom(ent.GeometricExtents.Offset());
 						id.FlickObjectHighlight(num, delay1, delay2);
 					}
 					catch { }
@@ -36,10 +36,10 @@ namespace AcadLib
 
         public static void ShowEnt(this ObjectId id, Extents3d ext, Document docOrig)
         {
-            var curDoc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            var curDoc = Application.DocumentManager.MdiActiveDocument;
             if (docOrig != curDoc)
             {
-                Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowAlertDialog($"Должен быть активен документ {docOrig.Name}");
+                Application.ShowAlertDialog($"Должен быть активен документ {docOrig.Name}");
             }
             else
             {
@@ -50,7 +50,7 @@ namespace AcadLib
                 }
                 else
                 {
-                    Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowAlertDialog("Границы элемента не определены");
+                    Application.ShowAlertDialog("Границы элемента не определены");
                 }
             }
         }
@@ -64,7 +64,7 @@ namespace AcadLib
         /// <param name="delay2">Длительность "неподсвеченного" состояния</param>
         static public void FlickObjectHighlight(this ObjectId id, int num, int delay1, int delay2)
         {
-            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            var doc = Application.DocumentManager.MdiActiveDocument;
             for (var i = 0; i < num; i++)
             {
                 // Highlight entity

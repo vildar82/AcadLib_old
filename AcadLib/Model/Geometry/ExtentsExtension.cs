@@ -4,6 +4,16 @@ namespace Autodesk.AutoCAD.DatabaseServices
 {
     public static class ExtentsExtension
     {
+        public static Extents3d Offset(this Extents3d ext, double percent = 10)
+        {
+            var dX = (ext.MaxPoint.X - ext.MinPoint.X) * (percent / 100) *0.5;
+            var dY = ext.MaxPoint.Y - ext.MinPoint.Y *(percent / 100) * 0.5;
+            return new Extents3d(
+                new Point3d(ext.MinPoint.X - dX, ext.MinPoint.Y - dY, 0),
+                new Point3d(ext.MaxPoint.X + dX, ext.MaxPoint.Y + dY, 0)
+            );
+        }
+
 	    public static double GetArea(this Extents3d ext)
 	    {
 		    return (ext.MaxPoint.X - ext.MinPoint.X) * (ext.MaxPoint.Y - ext.MinPoint.Y);
@@ -67,13 +77,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <returns></returns>
         public static bool IsPointInBounds(this Extents3d ext, Point3d pt)
         {
-            var res = false;
-            if (pt.X > ext.MinPoint.X && pt.Y > ext.MinPoint.Y &&
-               pt.X < ext.MaxPoint.X && pt.Y < ext.MaxPoint.Y)
-            {
-                res = true;
-            }
-            return res;
+            return pt.X > ext.MinPoint.X && pt.Y > ext.MinPoint.Y &&
+               pt.X < ext.MaxPoint.X && pt.Y < ext.MaxPoint.Y;
         }
 
         /// <summary>
@@ -82,13 +87,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <returns></returns>
         public static bool IsPointInBounds(this Extents3d ext, Point3d pt, double tolerance)
         {
-            var res = false;
-            if (pt.X > (ext.MinPoint.X - tolerance) && pt.Y > (ext.MinPoint.Y - tolerance) &&
-               pt.X < (ext.MaxPoint.X + tolerance) && pt.Y < (ext.MaxPoint.Y + tolerance))
-            {
-                res = true;
-            }
-            return res;
+            return pt.X > (ext.MinPoint.X - tolerance) && pt.Y > (ext.MinPoint.Y - tolerance) &&
+               pt.X < (ext.MaxPoint.X + tolerance) && pt.Y < (ext.MaxPoint.Y + tolerance);
         }
     }
 }
