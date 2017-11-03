@@ -24,7 +24,7 @@ namespace AcadLib.Errors
         protected Extents3d _extents;
         protected bool _alreadyCalcExtents;
         protected bool _isNullExtents;
-        protected readonly bool _hasEntity;
+        protected bool _hasEntity;
 
         public object Tag { get; set; }
         public Matrix3d Trans { get; set; }       

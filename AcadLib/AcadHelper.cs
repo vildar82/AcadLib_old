@@ -18,7 +18,11 @@ namespace AcadLib
         /// <summary>
         /// Сообщение в ком.строку. автокада
         /// </summary>
-        public static void WriteLine(string msg)
+        public static void WriteLine( string msg)
+        {
+            Doc.Editor.WriteMessage($"\n{msg}\n");
+        }
+        public static void WriteToCommandLine(this string msg)
         {
             Doc.Editor.WriteMessage($"\n{msg}\n");
         }

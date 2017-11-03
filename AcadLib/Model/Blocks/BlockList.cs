@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using Autodesk.AutoCAD.DatabaseServices;
-using Microsoft.Office.Interop.Excel;
+using OfficeOpenXml;
+using Path = NetLib.IO.Path;
 
 namespace AcadLib
 {
@@ -26,28 +29,26 @@ namespace AcadLib
             // Запись в Excel
             if (list.Count > 0)
             {
-                var excelApp = new Application { DisplayAlerts = false };
-                if (excelApp == null) return;
-
-                // Открываем книгу
-                var workBook = excelApp.Workbooks.Add();
-                var sheet = workBook.ActiveSheet as Worksheet;
-                sheet.Name = "Блоки";
-                sheet.Cells[1, 1].Value = $"{db.Filename}, {DateTime.Now}";
-
-                sheet.Cells[2, 1].Value = "№пп";
-                sheet.Cells[2, 2].Value = "Имя";
-
-                var row = 3;
-                var count = 1;
-                foreach (var name in list)
+                var tempFile = new FileInfo(Path.GetTempFile(".xlsx"));
+                using (var excel = new ExcelPackage(tempFile))
                 {
-                    sheet.Cells[row, 1].Value = count.ToString();
-                    count++;
-                    sheet.Cells[row, 2].Value = name;
-                    row++;
+                    // Открываем книгу
+                    var sheet = excel.Workbook.Worksheets.Add("Блоки");
+                    sheet.Cells[1, 1].Value = $"{db.Filename}, {DateTime.Now}";
+                    sheet.Cells[2, 1].Value = "№пп";
+                    sheet.Cells[2, 2].Value = "Имя";
+                    var row = 3;
+                    var count = 1;
+                    foreach (var name in list)
+                    {
+                        sheet.Cells[row, 1].Value = count.ToString();
+                        count++;
+                        sheet.Cells[row, 2].Value = name;
+                        row++;
+                    }
+                    excel.Save();
                 }
-                excelApp.Visible = true;
+                Process.Start(tempFile.FullName);
             }            
         }
     }

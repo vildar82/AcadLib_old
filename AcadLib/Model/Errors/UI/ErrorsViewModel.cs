@@ -1,5 +1,4 @@
 ﻿using MicroMvvm;
-using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using OfficeOpenXml;
 
 namespace AcadLib.Errors
 {
@@ -92,43 +92,39 @@ namespace AcadLib.Errors
         private void OnExportToExcelExecute()
         {
             try
-            {                
-                var excelApp = new Microsoft.Office.Interop.Excel.Application { DisplayAlerts = false };
-                if (excelApp == null)
-                    return;
-
-                // Открываем книгу
-                var workBook = excelApp.Workbooks.Add();
-
-                // Получаем активную таблицу
-                var worksheet = workBook.ActiveSheet as Worksheet;
-                worksheet.Name = "Ошибки";
-
-                var row = 1;
-                // Название
-                worksheet.Cells[row, 1].Value = "Список ошибок";
-                row++;
-                foreach (var err in Errors)
+            {
+                var tempFile = new FileInfo(NetLib.IO.Path.GetTempFile(".xlsx"));
+                using (var excel = new ExcelPackage(tempFile))
                 {
-                    if (err.SameErrors == null)
+                    // Открываем книгу
+                    var ws = excel.Workbook.Worksheets.Add("Ошибки");
+                    var row = 1;
+                    // Название
+                    ws.Cells[row, 1].Value = "Список ошибок";
+                    row++;
+                    foreach (var err in Errors)
                     {
-                        worksheet.Cells[row, 1].Value = err.Message;
-                        row++;
-                    }
-                    else
-                    {
-                        foreach (var item in err.SameErrors)
+                        if (err.SameErrors == null)
                         {
-                            worksheet.Cells[row, 1].Value = item.Message;
+                            ws.Cells[row, 1].Value = err.Message;
                             row++;
                         }
-                    }                    
+                        else
+                        {
+                            foreach (var item in err.SameErrors)
+                            {
+                                ws.Cells[row, 1].Value = item.Message;
+                                row++;
+                            }
+                        }
+                    }
+                    excel.Save();
                 }
-                excelApp.Visible = true;
+                Process.Start(tempFile.FullName);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                System.Windows.Forms.MessageBox.Show(ex.Message, "Ошибка");
                 Logger.Log.Error(ex, "Сохранение ошибок в Excel");
             }
         }

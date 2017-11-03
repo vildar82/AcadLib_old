@@ -18,6 +18,70 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class PolylineExtensions
     {
+        public enum PolygonValidateResult
+        {
+            OK = 0,
+            NotClosed = 1,
+            DuplicateVertices = 2,
+            SelfIntersection = 4,
+        }
+
+        /// <summary>
+        /// Проверка пересечения полилиний
+        /// </summary>
+        public static List<Point3d> Intersects(this Polyline pl1, Polyline pl2,
+            double tolerance = 0.01)
+        {
+            var intersections = new List<Point3d>();
+            var t = new Tolerance(tolerance, tolerance);
+            using (var curve1 = pl1.GetGeCurve(t))
+            using (var curve2 = pl2.GetGeCurve(t))
+            using (var curveInter = new CurveCurveIntersector3d(curve1, curve2, pl1.Normal, t))
+            {
+                for (var i = 0; i < curveInter.NumberOfIntersectionPoints; i++)
+                {
+                    intersections.Add(curveInter.GetIntersectionPoint(i));
+                }
+            }
+            return intersections;
+        }
+
+        /// <summary>
+        /// Проверка самопересечения полилинии
+        /// </summary>
+        public static PolygonValidateResult IsValidPolygon(this Polyline pline, out List<Point3d> intersections,
+            double tolerance = 0.01)
+        {
+            intersections = new List<Point3d>();
+            var result = PolygonValidateResult.OK;
+            if (!pline.Closed)
+            {
+                result += 1;
+            }
+            var t = new Tolerance(tolerance, tolerance);
+            using (var curve1 = pline.GetGeCurve(t))
+            using (var curve2 = pline.GetGeCurve(t))
+            using (var curveInter = new CurveCurveIntersector3d(curve1, curve2, pline.Normal, t))
+            {
+                var interCount = curveInter.NumberOfIntersectionPoints;
+                var overlaps = curveInter.OverlapCount();
+                if (!pline.Closed) overlaps += 1;
+                if (overlaps < pline.NumberOfVertices) result += 2;
+                if (interCount > overlaps)
+                {
+                    result += 4;
+                    var plPts = pline.GetPoints().DistinctPoints().Select(s => s.Convert3d()).ToList();
+                    for (var i = 0; i < interCount; i++) intersections.Add(curveInter.GetIntersectionPoint(i));
+                    var onlyIntersects = intersections.Except(plPts).ToList();
+                    if (onlyIntersects.Any())
+                    {
+                        intersections = onlyIntersects;
+                    }
+                }
+            }
+            return result;
+        }
+
         /// <summary>
         /// Минимальное расстояние от точки до полилинии
         /// </summary>

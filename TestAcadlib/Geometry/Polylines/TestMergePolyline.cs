@@ -10,8 +10,8 @@ namespace TestAcadlib.Geometry.Polylines
 {
     public class TestMergePolyline
     {
-        [CommandMethod(nameof(TestMerge))]
-        public void TestMerge()
+        [CommandMethod(nameof(TestTestMergePolyline))]
+        public void TestTestMergePolyline()
         {
             var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;

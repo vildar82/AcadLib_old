@@ -144,10 +144,7 @@ namespace AcadLib
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
         public void BlockListCommand()
         {
-            CommandStart.Start(doc =>
-            {
-                doc.Database.List();
-            });
+            CommandStart.Start(doc => doc.Database.List());
         }
 
         [CommandMethod(Group, CommandCleanZombieBlocks, CommandFlags.Modal)]
@@ -164,10 +161,7 @@ namespace AcadLib
         [CommandMethod(Group, CommandColorBookNCS, CommandFlags.Modal | CommandFlags.Session)]
         public void ColorBookNCS()
         {
-            CommandStart.Start(doc =>
-            {
-                Colors.ColorBookHelper.GenerateNCS();
-            });
+            CommandStart.Start(doc => Colors.ColorBookHelper.GenerateNCS());
         }
 
         [CommandMethod(Group, CommandDbJbjectsCountInfo, CommandFlags.Modal)]
@@ -229,24 +223,16 @@ namespace AcadLib
             }
         }
 
-        
-
         [CommandMethod(Group, CommandXDataView, CommandFlags.Modal)]
         public void XDataView()
         {
-            CommandStart.Start(doc =>
-            {
-                XData.Viewer.XDataView.View();
-            });
+            CommandStart.Start(doc =>XData.Viewer.XDataView.View());
         }
 
         [CommandMethod(Group, nameof(PIK_UpdateFieldsInObjects), CommandFlags.Modal)]
         public void PIK_UpdateFieldsInObjects()
         {
-            CommandStart.Start(doc =>
-            {
-                Field.UpdateField.UpdateInSelected();
-            });
+            CommandStart.Start(doc => Field.UpdateField.UpdateInSelected());
         }
 
         [CommandMethod(Group, nameof(PIK_PlotToPdf), CommandFlags.Session)]
@@ -260,8 +246,6 @@ namespace AcadLib
                 }
             });
         }
-
-        
 
         [CommandMethod(Group, nameof(PIK_AutoLayersStart), CommandFlags.Modal)]
         public void PIK_AutoLayersStart()
@@ -284,18 +268,13 @@ namespace AcadLib
         [CommandMethod(Group, nameof(PIK_AutoLayersStatus), CommandFlags.Modal)]
         public void PIK_AutoLayersStatus()
         {
-            CommandStart.Start(doc =>
-            {
-                doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");                
-            });
+            CommandStart.Start(doc => doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}"));
         }
+
         [CommandMethod(Group, nameof(PIK_AutoLayersAll), CommandFlags.Modal)]
         public void PIK_AutoLayersAll()
         {
-            CommandStart.Start(doc =>
-            {
-                Layers.AutoLayers.AutoLayersService.AutoLayersAll();                
-            });
+            CommandStart.Start(doc => Layers.AutoLayers.AutoLayersService.AutoLayersAll());
         }
     }
 }

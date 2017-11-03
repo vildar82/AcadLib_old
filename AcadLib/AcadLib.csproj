@@ -159,12 +159,6 @@
     <Compile Include="Model\Draw\DrawParameters.cs" />
     <Compile Include="Model\Draw\Draw.cs" />
     <Compile Include="Model\Errors\ErrorStatus.cs" />
-    <Compile Include="Model\Errors\FormReport.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Model\Errors\FormReport.Designer.cs">
-      <DependentUpon>FormReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="Model\Errors\IError.cs" />
     <Compile Include="Model\Errors\UI\ErrorModel.cs" />
     <Compile Include="Model\Errors\UI\ErrorsView.xaml.cs">
@@ -343,9 +337,6 @@
     <Compile Include="Model\Editors\UserPrompt.cs" />
     <Compile Include="Model\Editors\Zoom.cs" />
     <Compile Include="Model\Errors\Error.cs" />
-    <Compile Include="Model\Errors\FormError.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Model\Geometry\CircularArc2dExtensions.cs" />
     <Compile Include="Model\Geometry\CircularArc3dExtensions.cs" />
     <Compile Include="Model\Geometry\EditorExtensions.cs" />
@@ -389,12 +380,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Model\Colors\ColorBooks\FormOptions.resx">
       <DependentUpon>FormOptions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Model\Errors\FormError.resx">
-      <DependentUpon>FormError.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Model\Errors\FormReport.resx">
-      <DependentUpon>FormReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Model\UI\Properties\FormProperties.resx">
       <DependentUpon>FormProperties.cs</DependentUpon>
@@ -448,24 +433,6 @@
     <Content Include="Model\RTree\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="Microsoft.Office.Core">
-      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>7</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="Microsoft.Office.Interop.Excel">
-      <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>8</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
     <COMReference Include="VBIDE">
       <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>5</VersionMajor>

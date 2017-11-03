@@ -18,6 +18,12 @@ namespace AcadLib.Visual
         {
         }
 
+        public virtual List<Entity> GetDraws()
+        {
+            return draws;
+        }
+
+
         /// <summary>
         /// Включение/отключение визуализации (без перестроений)
         /// </summary>

@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestAcadlib</RootNamespace>
     <AssemblyName>TestAcadlib</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,15 +44,19 @@
   <ItemGroup>
     <Reference Include="AcCoreMgd">
       <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AcCoreMgd.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd">
       <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AcDbMgd.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AcMgd">
       <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AcMgd.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AutoCAD_PIK_Manager">
       <HintPath>..\..\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\bin\Release\AutoCAD_PIK_Manager.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -79,7 +84,6 @@
     <Compile Include="Geometry\Polylines\TestPolyline.cs" />
     <Compile Include="Geometry\Polylines\TestWeddingPolyline.cs" />
     <Compile Include="Geometry\Polylines\TestMergePolyline.cs" />
-    <Compile Include="PaletteComands\TestPalette.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WPF\Class1.cs" />
     <Compile Include="WPF\Window1.xaml.cs">
@@ -91,15 +95,13 @@
     <ProjectReference Include="..\AcadLib\AcadLib.csproj">
       <Project>{2008ae5d-550a-4478-a9b5-297832058377}</Project>
       <Name>AcadLib</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="AutoCADNetLoad.scr" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Math\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="WPF\Window1.xaml">
       <SubType>Designer</SubType>
