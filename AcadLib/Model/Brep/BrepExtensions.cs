@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AcadLib.Blocks;
+using AcadLib.Errors;
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using AcadLib.Geometry;
+using AcadLib.Hatches;
+using Extensions;
+using NetLib;
+using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
 namespace AcadLib
 {
@@ -190,10 +196,6 @@ namespace AcadLib
             {
                 union = UnionRegions(regions);
             }
-            catch
-            {
-                throw;
-            }
             finally
             {
                 regions.Remove(union);
@@ -211,16 +213,82 @@ namespace AcadLib
             return union;
         }
 
-	    public static Region CreateRegion(Polyline pl)
+	    public static Region CreateRegion(this Polyline pl)
 	    {
-		    if (pl == null) return null;
-		    var dbs = new DBObjectCollection {pl};
-		    var dbsRegs = Region.CreateFromCurves(dbs);
-		    return (Region)dbsRegs[0];
+	        return CreateRegion((Curve) pl);
 	    }
 
+        public static Region CreateRegion(this Curve curve)
+        {
+            if (curve == null) return null;
+            var dbs = new DBObjectCollection { curve };
+            var dbsRegs = Region.CreateFromCurves(dbs);
+            if (dbsRegs == null || dbsRegs.Count == 0) return null;
+            if (dbsRegs.Count == 1) return (Region)dbsRegs[0];
+            var reg = (Region)dbsRegs[0];
+            foreach (var obj in dbsRegs.Cast<Region>().Skip(1))
+            {
+                obj.Dispose();
+            }
+            return reg;
+        }
 
-		public static List<Region> CreateRegion (this IEnumerable<Polyline> pls)
+        public static Region CreateRegion(this Hatch hatch)
+        {
+            try
+            {
+                if (hatch == null) return null;
+                using (var loops = hatch.GetPolylines2(Block.Tolerance01,
+                    HatchLoopTypes.Polyline | HatchLoopTypes.Default | HatchLoopTypes.Derived
+                    | HatchLoopTypes.External | HatchLoopTypes.Outermost | HatchLoopTypes.NotClosed |
+                    HatchLoopTypes.SelfIntersecting, false))
+                {
+                    var validLoops = loops.Where(w => w.Loop.Area > 0).ToList();
+                    var externalLoops = new List<Curve>();
+                    var internalLoop = new List<Curve>();
+                    foreach (var loop in validLoops)
+                    {
+                        if (loop.Types.Has(HatchLoopTypes.External))
+                            externalLoops.Add(loop.Loop);
+                        else if (loop.Types.HasAny(HatchLoopTypes.Derived | HatchLoopTypes.Outermost))
+                            internalLoop.Add(loop.Loop);
+                        else
+                        {
+                            Inspector.AddError($"Тип контура {loop.Types} в штриховке пропущен", hatch);
+                        }
+                    }
+                    if (!externalLoops.Any())
+                    {
+                        Inspector.AddError($"Штриховка без внешних контуров - пропущена", hatch);
+                    }
+                    var externalRegion = GetRegion(externalLoops);
+                    if (internalLoop.Any())
+                    {
+                        var internalRegion = GetRegion(internalLoop);
+                        externalRegion.BooleanOperation(BooleanOperationType.BoolSubtract, internalRegion);
+                        internalRegion.Dispose();
+                    }
+                    var region = externalRegion;
+                    return region;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inspector.AddError($"ошибка определения области штриховки. Пропущена. {ex.Message}.", hatch);
+                return null;
+            }
+        }
+        private static Region GetRegion(IEnumerable<Curve> pls)
+        {
+            using (var regions = new DisposableSet<Region>(pls.CreateRegion()))
+            {
+                var reg = regions.Skip(1).Any() ? regions.ToList().UnionRegions() : regions.First();
+                regions.Remove(reg);
+                return reg;
+            }
+        }
+
+        public static List<Region> CreateRegion (this IEnumerable<Polyline> pls)
 		{
 			return CreateRegion(pls.Cast<Curve>());
         }
@@ -247,8 +315,7 @@ namespace AcadLib
 		public static Region UnionRegions (this List<Region> regions)
         {
             if (regions?.Any() != true) return null;
-            if (regions.Count ==1) return regions.First();           
-
+            if (regions.Count ==1) return regions[0];           
             var union = regions.First();            
             for (var i = 1; i < regions.Count; i++)
             {

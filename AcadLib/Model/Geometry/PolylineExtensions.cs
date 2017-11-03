@@ -27,23 +27,13 @@ namespace AcadLib.Geometry
         }
 
         /// <summary>
-        /// Проверка пересечения полилиний
+        /// Пересечение полилиний (штатный IntersectWith)
         /// </summary>
-        public static List<Point3d> Intersects(this Polyline pl1, Polyline pl2,
-            double tolerance = 0.01)
+        public static List<Point3d> Intersects(this Polyline pl1, Polyline pl2)
         {
-            var intersections = new List<Point3d>();
-            var t = new Tolerance(tolerance, tolerance);
-            using (var curve1 = pl1.GetGeCurve(t))
-            using (var curve2 = pl2.GetGeCurve(t))
-            using (var curveInter = new CurveCurveIntersector3d(curve1, curve2, pl1.Normal, t))
-            {
-                for (var i = 0; i < curveInter.NumberOfIntersectionPoints; i++)
-                {
-                    intersections.Add(curveInter.GetIntersectionPoint(i));
-                }
-            }
-            return intersections;
+            var pts = new Point3dCollection();
+            pl1.IntersectWith(pl2, Intersect.OnBothOperands, new Plane(),pts,IntPtr.Zero, IntPtr.Zero);
+            return pts.Cast<Point3d>().ToList();
         }
 
         /// <summary>

@@ -20,8 +20,8 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <returns>Выбранный объект</returns>
         public static ObjectId SelectEntity<T>(this Editor ed, string prompt, string rejectMsg) where T : Entity
         {
-            var selOpt = new PromptEntityOptions(prompt);
-            selOpt.SetRejectMessage(rejectMsg);
+            var selOpt = new PromptEntityOptions($"\n{prompt}");
+            selOpt.SetRejectMessage($"\n{rejectMsg}");
             selOpt.AddAllowedClass(typeof(T), true);            
             var selRes = ed.GetEntity(selOpt);
             if (selRes.Status != PromptStatus.OK)

@@ -15,6 +15,7 @@ namespace AcadLib.Errors
         ErrorStatus Status { get; set; }
         ObjectId IdEnt { get; }
         string Message { get; }
+        string Group { get; }
         string ShortMsg { get; }
         object Tag { get; set; }
         Matrix3d Trans { get; set; }

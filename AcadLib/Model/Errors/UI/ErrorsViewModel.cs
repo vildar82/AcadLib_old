@@ -24,7 +24,7 @@ namespace AcadLib.Errors
             // Группировка ошибок
             //"Дублирование блоков"                        
             Errors = new ObservableCollection<ErrorModel>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).
-                GroupBy(g => g).Select(s =>
+                GroupBy(g => g.Group).Select(s =>
                 {
                     var errModel = new ErrorModel(s.ToList(), this);
                     errModel.SelectionChanged += ErrModel_SelectionChanged;

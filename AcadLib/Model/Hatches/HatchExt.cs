@@ -35,7 +35,7 @@ namespace AcadLib.Hatches
         }
 
 	    public static DisposableSet<HatchLoopPl> GetPolylines2(this Hatch ht, Tolerance weddingTolerance,
-			HatchLoopTypes loopType = HatchLoopTypes.External, bool wedding = false)
+			HatchLoopTypes loopType = (HatchLoopTypes)23, bool wedding = false)
 	    {
 			var loops = new DisposableSet<HatchLoopPl>();
 		    var nloops = ht.NumberOfLoops;

@@ -28,7 +28,7 @@ namespace AcadLib.Errors
             this.errorsModel = errorsModel;
             Count = sameErrors.Count;
             firstErr = sameErrors.First();
-            Message = firstErr.Message;
+            Message = firstErr.Group;
             if (firstErr.Icon != null)
             {
                 Image = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(

@@ -9,6 +9,24 @@ namespace TestAcadlib.Brep
 {
     public class TestBrep
     {
+        [CommandMethod("TestBrepCreateRegionHatch")]
+        public void TestBrepCreateRegionHatch()
+        {
+            CommandStart.Start(doc =>
+            {
+                var ed = doc.Editor;
+                using (var t = doc.TransactionManager.StartTransaction())
+                {
+                    var h = ed.SelectEntity<Hatch>("Выбери штриховку для построения региона", "Штриховку")
+                        .GetObject<Hatch>();
+                    var region = h.CreateRegion();
+                    if (region == null) throw new System.Exception($"Пустой регион = null.");
+                    region.AddEntityToCurrentSpace();
+                    t.Commit();
+                }
+            });
+        }
+
         [CommandMethod("TestBrepUnion")]
         public void TestBrepUnion ()
         {

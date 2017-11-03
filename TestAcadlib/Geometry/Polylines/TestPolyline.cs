@@ -8,8 +8,6 @@ using AcadLib.Geometry;
 using Autodesk.AutoCAD.Geometry;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
-[assembly:CommandClass(typeof(TestAcadlib.Geometry.Polylines.TestPolyline))]
-
 namespace TestAcadlib.Geometry.Polylines
 {
     public class TestPolyline
@@ -62,7 +60,7 @@ namespace TestAcadlib.Geometry.Polylines
         [CommandMethod(nameof(TestPointInsidePolyline))]
         public void TestPointInsidePolyline()
         {
-            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
             var ed = doc.Editor;
 

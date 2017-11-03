@@ -29,6 +29,7 @@ namespace AcadLib.Errors
         public object Tag { get; set; }
         public Matrix3d Trans { get; set; }       
         public string Message => _msg;
+        public string Group { get; set; }
         public string ShortMsg => _shortMsg;
         public ObjectId IdEnt => _idEnt;
         public bool HasEntity => _hasEntity;
@@ -100,6 +101,7 @@ namespace AcadLib.Errors
         private Error(Error err)
         {            
             _msg = err._msg;
+            Group = err.Group;
             _shortMsg = err._shortMsg;
             _idEnt = err._idEnt;
             _alreadyCalcExtents = err._alreadyCalcExtents;
@@ -214,6 +216,7 @@ namespace AcadLib.Errors
 
         protected string PrepareMessage(string message)
         {
+            Group = message;
             return message;//.ClearString(); // делать очистку в момент создания ошибки при необходимости
         }
 
