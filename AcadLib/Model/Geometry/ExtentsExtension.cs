@@ -1,13 +1,41 @@
-﻿using Autodesk.AutoCAD.Geometry;
+﻿using System.Collections.Generic;
+using Autodesk.AutoCAD.Geometry;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
     public static class ExtentsExtension
     {
+        public static List<Point3d> GetRegularGridPoints(this Extents3d ext, double len)
+        {
+            var ptsGrid = new List<Point3d>();
+            var extL = ext.GetLength();
+            var extH = ext.GetHeight();
+            var iX = (int)(extL / len) + 1;
+            var iY = (int)(extH / len) + 1;
+            var dX = extL / iX;
+            var dY = extH / iY;
+            for (var x = 0; x < iX; x++)
+            {
+                for (var y = 0; y < iY; y++)
+                {
+                    ptsGrid.Add(new Point3d(ext.MinPoint.X + x * dX, ext.MinPoint.Y + y*dY,0));
+                }
+            }
+            return ptsGrid;
+        }
+
+        public static double GetLength(this Extents3d ext)
+        {
+            return ext.MaxPoint.X - ext.MinPoint.X;
+        }
+        public static double GetHeight(this Extents3d ext)
+        {
+            return ext.MaxPoint.Y - ext.MinPoint.Y;
+        }
         public static Extents3d Offset(this Extents3d ext, double percent = 50)
         {
-            var dX = (ext.MaxPoint.X - ext.MinPoint.X) * (percent / 100) *0.5;
-            var dY = (ext.MaxPoint.Y - ext.MinPoint.Y) *(percent / 100) * 0.5;
+            var dX = ext.GetLength() * (percent / 100) *0.5;
+            var dY = ext.GetHeight() * (percent / 100) * 0.5;
             return new Extents3d(
                 new Point3d(ext.MinPoint.X - dX, ext.MinPoint.Y - dY, 0),
                 new Point3d(ext.MaxPoint.X + dX, ext.MaxPoint.Y + dY, 0)

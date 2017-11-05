@@ -6,6 +6,7 @@ using Autodesk.AutoCAD.Geometry;
 using AcadLib.Scale;
 using Autodesk.AutoCAD.Colors;
 using NetLib;
+using UnitsNet.Extensions.NumberToAngle;
 
 namespace AcadLib.Geometry
 {
@@ -548,10 +549,25 @@ namespace AcadLib.Geometry
         {
             using (var ray = new Ray{ BasePoint = pt, UnitDir= Vector3d.YAxis })
             {
-                var pts = new Point3dCollection();
-                ray.IntersectWith(pl, Intersect.OnBothOperands, new Plane(), pts, IntPtr.Zero, IntPtr.Zero);
-                return pts.Count.IsOdd() || IsPointOnPolyline(pl, pt, tolerance);
+                return IsPointInsidePolylineByRay(ray, pt, pl, tolerance);
             }
+        }
+        private static bool IsPointInsidePolylineByRay(Ray ray, Point3d pt, Polyline pl, Tolerance tolerance)
+        {
+            var pts = new Point3dCollection();
+            ray.IntersectWith(pl, Intersect.OnBothOperands, new Plane(), pts, IntPtr.Zero, IntPtr.Zero);
+            if (pts.Count>0 && pts.Cast<Point3d>().All(p=>pl.IsVertex(p)))
+            {
+                // Повернуть луч и повторить
+                ray.TransformBy(Matrix3d.Rotation(5.Radians().Radians, Vector3d.ZAxis, ray.BasePoint));
+                return IsPointInsidePolylineByRay(ray, pt, pl, tolerance);
+            }
+            return pts.Count.IsOdd() || IsPointOnPolyline(pl, pt, tolerance);
+        }
+
+        public static bool IsVertex(this Polyline pl, Point3d pt, double tolerance = 0.0001)
+        {
+            return NetLib.MathExt.IsWholeNumber(pl.GetParameterAtPointTry(pt), tolerance);
         }
 
         /// <summary>

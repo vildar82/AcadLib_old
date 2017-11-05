@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using NetLib;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AcadLib.Layers
 {
@@ -20,14 +22,14 @@ namespace AcadLib.Layers
         /// <returns></returns>
         public static ObjectId GetLayerOrCreateNew(this LayerInfo layerInfo)
         {
-            var idLayer = ObjectId.Null;
+            ObjectId idLayer;
             var db = HostApplicationServices.WorkingDatabase;
             // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.                           
             using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
             {
                 if (lt.Has(layerInfo.Name))
                 {
-                    idLayer = lt[layerInfo.Name];                    
+                    idLayer = lt[layerInfo.Name];
                 }
                 else
                 {
@@ -45,7 +47,8 @@ namespace AcadLib.Layers
         /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
         public static ObjectId CreateLayer(this LayerInfo layerInfo, LayerTable lt)
         {
-            var idLayer = ObjectId.Null;
+            if (layerInfo?.Name.IsNullOrEmpty() == true) return lt.Database.Clayer;
+            ObjectId idLayer;
             // Если слоя нет, то он создается.            
             using (var newLayer = new LayerTableRecord())
             {
@@ -69,30 +72,24 @@ namespace AcadLib.Layers
             var db = HostApplicationServices.WorkingDatabase;
             using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
             {
-                foreach (var layer in layers)
+                foreach (var layer in layers.Where(w => w != null))
                 {
-                    if (lt.Has(layer.Name))
+                    ObjectId layId;
+                    var layName = layer.Name;
+                    if (layName.IsNullOrEmpty())
                     {
-                        using (var lay = lt[layer.Name].Open(OpenMode.ForRead) as LayerTableRecord)
+                        layId = db.Clayer;
+                        // Берем текущиий
+                        CheckLayerState(layId, out layName);
+                        layer.Name = layName;
+                    }
+                    else if (lt.Has(layer.Name))
+                    {
+                        layId = lt[layer.Name];
+                        CheckLayerState(layId, out _);
+                        if (checkProps)
                         {
-                            if (lay.IsLocked || lay.IsOff || lay.IsFrozen)
-                            {
-                                lay.UpgradeOpen();
-                                if (lay.IsOff)
-                                {
-                                    lay.IsOff = false;
-                                }
-                                if (lay.IsLocked)
-                                {
-                                    lay.IsLocked = false;
-                                }
-                                if (lay.IsFrozen)
-                                {
-                                    lay.IsFrozen = false;
-                                }
-                            }
-                            resVal.Add(layer.Name, lay.Id);
-                            if (checkProps)
+                            using (var lay = layId.Open(OpenMode.ForWrite) as LayerTableRecord)
                             {
                                 layer.SetProp(lay, db);
                             }
@@ -100,12 +97,38 @@ namespace AcadLib.Layers
                     }
                     else
                     {
-                        var layId = CreateLayer(layer, lt);
-                        resVal.Add(layer.Name, layId);
+                        layId = CreateLayer(layer, lt);
                     }
+                    resVal.Add(layName, layId);
                 }
             }
             return resVal;
+        }
+
+        private static void CheckLayerState(ObjectId layerId, out string layerName)
+        {
+            layerName = null;
+            if (!layerId.IsValidEx()) return;
+            using (var lay = layerId.Open(OpenMode.ForRead) as LayerTableRecord)
+            {
+                layerName = lay.Name;
+                if (lay.IsLocked || lay.IsOff || lay.IsFrozen)
+                {
+                    lay.UpgradeOpen();
+                    if (lay.IsOff)
+                    {
+                        lay.IsOff = false;
+                    }
+                    if (lay.IsLocked)
+                    {
+                        lay.IsLocked = false;
+                    }
+                    if (lay.IsFrozen)
+                    {
+                        lay.IsFrozen = false;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -121,11 +144,9 @@ namespace AcadLib.Layers
 
         public static ObjectId CheckLayerState(this LayerInfo layer, bool checkProps)
         {
-            var layers = new List<LayerInfo>() { layer };
+            var layers = new List<LayerInfo> { layer };
             var dictLays = CheckLayerState(layers, checkProps);
-            ObjectId res;
-            dictLays.TryGetValue(layer.Name, out res);
-            return res;
+            return dictLays.First().Value;
         }
         public static ObjectId CheckLayerState(this LayerInfo layer)
         {
@@ -133,13 +154,11 @@ namespace AcadLib.Layers
         }
 
         public static ObjectId CheckLayerState(string layer)
-        {            
+        {
             var li = new LayerInfo(layer);
-            var layersInfo = new List<LayerInfo>();
-            layersInfo.Add(li);
+            var layersInfo = new List<LayerInfo> { li };
             var dictLays = CheckLayerState(layersInfo);
-            ObjectId res;
-            dictLays.TryGetValue(layer, out res);
+            dictLays.TryGetValue(layer, out ObjectId res);
             return res;
         }
 

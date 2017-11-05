@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib
 {
@@ -18,13 +13,13 @@ namespace AcadLib
         /// <summary>
         /// Сообщение в ком.строку. автокада
         /// </summary>
-        public static void WriteLine( string msg)
+        public static void WriteLine(string msg)
         {
-            Doc.Editor.WriteMessage($"\n{msg}\n");
+            Doc.Editor.WriteMessage($"\n{msg}");
         }
         public static void WriteToCommandLine(this string msg)
         {
-            Doc.Editor.WriteMessage($"\n{msg}\n");
+            Doc.Editor.WriteMessage($"\n{msg}");
         }
     }
 }

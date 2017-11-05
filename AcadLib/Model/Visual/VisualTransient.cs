@@ -13,6 +13,7 @@ namespace AcadLib.Visual
     {
 	    public static readonly Autodesk.AutoCAD.Geometry.IntegerCollection vps = new Autodesk.AutoCAD.Geometry.IntegerCollection();        
         protected List<Entity> draws;
+        private Document doc = AcadHelper.Doc;
 
         public VisualTransient(string layer = null) : base(layer)
         {
@@ -22,7 +23,6 @@ namespace AcadLib.Visual
         {
             return draws;
         }
-
 
         /// <summary>
         /// Включение/отключение визуализации (без перестроений)
@@ -43,11 +43,14 @@ namespace AcadLib.Visual
         protected override void EraseDraws ()
         {
             if (draws == null || draws.Count == 0) return;
-            var tm = TransientManager.CurrentTransientManager;
-            foreach (var item in draws)
+            if (doc == AcadHelper.Doc)
             {
-                tm.EraseTransient(item, vps);
-                item.Dispose();
+                var tm = TransientManager.CurrentTransientManager;
+                foreach (var item in draws)
+                {
+                    tm?.EraseTransient(item, vps);
+                    item.Dispose();
+                }
             }
             draws = null;
         }

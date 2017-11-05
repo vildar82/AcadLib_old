@@ -12,7 +12,9 @@ namespace AcadLib.Layers
     {
         private Color color;
         private string colorStr;
+        private LineWeight? lineWeight;
 
+        public ObjectId LayerId { get; set; }
         public string Name { get; set; }
         public bool IsOff { get; set; }
         public bool IsFrozen { get; set; }
@@ -28,7 +30,13 @@ namespace AcadLib.Layers
                 colorStr = color.AcadColorToString2();
             }
         }
-        public LineWeight LineWeight { get; set; }
+
+        public LineWeight LineWeight
+        {
+            get => lineWeight ?? LineWeight.ByLayer;
+            set => lineWeight = value;
+        }
+
         [XmlIgnore]
         public ObjectId LinetypeObjectId { get; set; }
         public string LineType { get; set; }
@@ -79,23 +87,15 @@ namespace AcadLib.Layers
         /// <param name="lay"></param>
         public void SetProp(LayerTableRecord lay, Database db)
         {
-            lay.Name = Name;
-            lay.Color = Color;
+            if (!Name.IsNullOrEmpty()) lay.Name = Name;
+            if (Color != null) lay.Color = Color;
             lay.IsFrozen = IsFrozen;
             lay.IsLocked = IsLocked;
             lay.IsOff = IsOff;
             lay.IsPlottable = IsPlotable;
-            lay.LineWeight = LineWeight;
-            if (!LinetypeObjectId.IsNull)
-                lay.LinetypeObjectId = LinetypeObjectId;
-            else if (!string.IsNullOrEmpty(LineType))
-            {
-                lay.LinetypeObjectId = db.GetLineTypeIdByName(LineType);
-            }
-            else
-            {
-                lay.LinetypeObjectId = db.GetLineTypeIdContinuous();
-            }
+            if (lineWeight.HasValue) lay.LineWeight = LineWeight;
+            if (!LinetypeObjectId.IsNull) lay.LinetypeObjectId = LinetypeObjectId;
+            else if (!string.IsNullOrEmpty(LineType)) lay.LinetypeObjectId = db.GetLineTypeIdByName(LineType);
         }
     }
 }

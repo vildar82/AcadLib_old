@@ -87,6 +87,9 @@ namespace AcadLib
             return resVal;
         }
 
+        /// <summary>
+        /// Без дуговых сегментов!!!
+        /// </summary>
         public static List<KeyValuePair<Polyline, BrepLoopType>> GetPolylines (this Region reg)
         {            
             var resVal = new List<KeyValuePair<Polyline, BrepLoopType>>(); ;
@@ -108,16 +111,13 @@ namespace AcadLib
 
         public static List<KeyValuePair<Point2dCollection, BrepLoopType>> GetPoints2dByLoopType (this Region reg)
         {            
-            var resVal = new List<KeyValuePair<Point2dCollection, BrepLoopType>>(); ;
+            var resVal = new List<KeyValuePair<Point2dCollection, BrepLoopType>>();
             var brep = new Brep(reg);
             foreach (var face in brep.Faces)
             {
                 foreach (var loop in face.Loops)
                 {
-                    var ptsVertex = new List<Point2d>();
-                    foreach (var vert in loop.Vertices)
-                        ptsVertex.Add(vert.Point.Convert2d());                    
-                    var pts2dCol = new Point2dCollection(ptsVertex.ToArray());
+                    var pts2dCol = new Point2dCollection(loop.Vertices.Select(vert => vert.Point.Convert2d()).ToArray());
                     resVal.Add(new KeyValuePair<Point2dCollection, BrepLoopType>(pts2dCol, (BrepLoopType)loop.LoopType));
                 }
             }
@@ -141,13 +141,14 @@ namespace AcadLib
             return ptsVertex;
         }
 
-        public static Hatch CreateHatch (this Region region)
+        public static Hatch CreateHatch(this Region region, bool createOut, out DisposableSet<Polyline> externalLoops)
         {
+            externalLoops = createOut ? new DisposableSet<Polyline>() : null;
             var plsByLoop = region.GetPoints2dByLoopType();
-            var externalLoops = plsByLoop.Where(p => p.Value != BrepLoopType.LoopInterior).ToList();
-            var interiorLoops = plsByLoop.Where(p => p.Value == BrepLoopType.LoopInterior).ToList();
+            var extLoops = plsByLoop.Where(p => p.Value != BrepLoopType.LoopInterior).ToList();
+            var intLoops = plsByLoop.Where(p => p.Value == BrepLoopType.LoopInterior).ToList();
 
-            if (!externalLoops.Any())
+            if (!extLoops.Any())
             {
                 return null;
             }
@@ -155,27 +156,34 @@ namespace AcadLib
             var h = new Hatch();
             h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
 
-            foreach (var item in externalLoops)
+            foreach (var item in extLoops)
             {
                 var pts2dCol = item.Key;
                 pts2dCol.Add(item.Key[0]);
-                h.AppendLoop(HatchLoopTypes.External, pts2dCol, new DoubleCollection(new double[externalLoops.Count + 1]));
+                h.AppendLoop(HatchLoopTypes.External, pts2dCol, new DoubleCollection(new double[extLoops.Count + 1]));
+                if (createOut)
+                {
+                    externalLoops.Add(pts2dCol.Cast<Point2d>().ToList().CreatePolyline());
+                }
             }
 
-            if (interiorLoops.Any())
+            if (intLoops.Any())
             {
-                foreach (var item in interiorLoops)
+                foreach (var item in intLoops)
                 {
                     var pts2dCol = item.Key;
                     pts2dCol.Add(item.Key[0]);
-                    h.AppendLoop(HatchLoopTypes.SelfIntersecting, pts2dCol, new DoubleCollection(new double[interiorLoops.Count + 1]));
+                    h.AppendLoop(HatchLoopTypes.SelfIntersecting, pts2dCol, new DoubleCollection(new double[intLoops.Count + 1]));
                 }
             }
 
             h.EvaluateHatch(true);
             return h;
         }
-
+        public static Hatch CreateHatch (this Region region)
+        {
+            return CreateHatch(region, false, out _);
+        }
 
         public static Region Union(this List<Polyline> pls, Region over)
         {
