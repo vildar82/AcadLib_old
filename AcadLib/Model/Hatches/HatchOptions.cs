@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Hatches
@@ -11,7 +7,7 @@ namespace AcadLib.Hatches
     {
         public HatchOptions()
         {
-            
+
         }
 
         public HatchOptions(Hatch h)
@@ -20,11 +16,13 @@ namespace AcadLib.Hatches
             PatternType = h.PatternType;
             PatternScale = h.PatternScale;
             PatternAngle = h.PatternAngle;
+            BackgroundColor = h.BackgroundColor;
         }
 
         public string PatternName { get; set; }
         public HatchPatternType PatternType { get; set; }
         public double? PatternScale { get; set; }
         public double? PatternAngle { get; set; }
+        public Color BackgroundColor { get; set; }
     }
 }

@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using AcAp = Autodesk.AutoCAD.ApplicationServices.Application;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.DatabaseServices;
 using AcadLib.Jigs;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
+[assembly:ExtensionApplication(typeof(TestAcadlib.Commands))]
+
 namespace TestAcadlib
 {
-    public class Commands
+    public class Commands : IExtensionApplication
     {
         //[CommandMethod("Test")]
         //public void Test()
@@ -28,5 +31,17 @@ namespace TestAcadlib
 
         //    ed.Drag(tables, 50);
         //}       
+        public void Initialize()
+        {
+#if DEBUG
+            // Отключение отладочных сообщений биндинга (тормозит сильно)
+            PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Off;
+#endif
+        }
+
+        public void Terminate()
+        {
+            
+        }
     }
 }

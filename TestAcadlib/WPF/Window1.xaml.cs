@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using AcadLib.WPF.Controls;
 
 namespace TestAcadlib.WPF
 {
@@ -7,9 +8,10 @@ namespace TestAcadlib.WPF
     /// </summary>
     public partial class Window1 : Window
     {
-        public Window1 ()
+        public Window1 (Class1 model)
         {
             InitializeComponent();
+            DataContext = model;
         }
     }
 }

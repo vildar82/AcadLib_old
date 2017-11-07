@@ -5,12 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:AcadLib.WPF.Converters;assembly=AcadLib"
         xmlns:local="clr-namespace:TestAcadlib.WPF"
+        xmlns:controls="clr-namespace:AcadLib.WPF.Controls;assembly=AcadLib"
+        xmlns:ctrl="clr-namespace:UserControlExample"
+        xmlns:controls1="clr-namespace:mpESKD.Base.Properties.Controls"
         mc:Ignorable="d"
         Title="Window1" Height="300" Width="300">
     <Window.DataContext>
         <local:Class1/>
     </Window.DataContext>
     <StackPanel>
+        <!--<controls1:IntTextBox Value="{Binding IntTextBox}"/>-->
+        <ctrl:FieldUserControl Value="{Binding Color}"/>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Цвет: " Margin="2" VerticalAlignment="Center"/>
+            <controls:AcadColorPick Color="{Binding Color}"/>
+        </StackPanel>
         <ComboBox
                     MinWidth="50"
                     Margin="10,5,10,5"

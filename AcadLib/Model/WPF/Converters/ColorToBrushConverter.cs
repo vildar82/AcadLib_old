@@ -6,28 +6,25 @@ using System.Windows.Media;
 namespace AcadLib.WPF.Converters
 {
     [ValueConversion(typeof(Color), typeof(SolidColorBrush))]
-    [ValueConversion(typeof(System.Drawing.Color), typeof(SolidColorBrush))]    
+    [ValueConversion(typeof(System.Drawing.Color), typeof(SolidColorBrush))]
     [ValueConversion(typeof(Autodesk.AutoCAD.Colors.Color), typeof(SolidColorBrush))]
     public class ColorToBrushConverter : ConvertorBase
     {
-        public override object Convert (object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is System.Drawing.Color dc)
             {
                 return new SolidColorBrush(Color.FromArgb(dc.A, dc.R, dc.G, dc.B));
             }
-
             if (value is Color mc)
             {
                 return new SolidColorBrush(mc);
             }
-
             if (value is Autodesk.AutoCAD.Colors.Color ac)
             {
                 var cv = ac.ColorValue;
                 return new SolidColorBrush(Color.FromRgb(cv.R, cv.G, cv.B));
             }
-
             return null;
         }
     }

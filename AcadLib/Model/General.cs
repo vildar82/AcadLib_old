@@ -35,7 +35,8 @@ namespace AcadLib
 	    public static readonly RXClass ClassRecord = RXObject.GetClass(typeof(Xrecord));
 	    public static readonly RXClass ClassDBDic = RXObject.GetClass(typeof(DBDictionary));
 	    public static readonly RXClass ClassPolyline = RXObject.GetClass(typeof(Polyline));
-	    public static readonly RXClass ClassVport = RXObject.GetClass(typeof(Viewport));
+        public static readonly RXClass ClassHatch = RXObject.GetClass(typeof(Hatch));
+        public static readonly RXClass ClassVport = RXObject.GetClass(typeof(Viewport));
 
 		static General()
 	    {

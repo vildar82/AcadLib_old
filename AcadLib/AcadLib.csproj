@@ -273,8 +273,12 @@
     <Compile Include="Model\Visual\VisualOption.cs" />
     <Compile Include="Model\Visual\VisualTransient.cs" />
     <Compile Include="Model\Visual\VisualTransientSimple.cs" />
+    <Compile Include="Model\WPF\Controls\AcadColorPick.xaml.cs">
+      <DependentUpon>AcadColorPick.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\WPF\Converters\BooleanToHidingVisibilityConverter.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToOppositeBooleanConverter.cs" />
+    <Compile Include="Model\WPF\Converters\ColorNameConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Model\WPF\Converters\ConvertorBase.cs" />
     <Compile Include="Model\WPF\Converters\EnumDescriptionConverter.cs" />
@@ -455,6 +459,10 @@
     <Page Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Model\WPF\Controls\AcadColorPick.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\WPF\Style.xaml">
       <Generator>MSBuild:Compile</Generator>

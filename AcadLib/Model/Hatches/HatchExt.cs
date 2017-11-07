@@ -68,6 +68,7 @@ namespace AcadLib.Hatches
             {
                 h.SetHatchPattern(opt.PatternType, opt.PatternName);
             }
+            h.BackgroundColor = opt.BackgroundColor;
         }
 
         public static DisposableSet<HatchLoopPl> GetPolylines2(this Hatch ht, Tolerance weddingTolerance,
@@ -180,8 +181,7 @@ namespace AcadLib.Hatches
             h.HatchStyle = HatchStyle.Normal;
 
             // добавление контура полилинии в гштриховку
-            var ids = new ObjectIdCollection();
-            ids.Add(loop.Id);
+            var ids = new ObjectIdCollection { loop.Id };
             try
             {
                 h.AppendLoop(HatchLoopTypes.Default, ids);
