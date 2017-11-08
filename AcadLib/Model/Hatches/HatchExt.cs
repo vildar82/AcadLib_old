@@ -6,6 +6,7 @@ using NetLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autodesk.AutoCAD.Colors;
 
 namespace AcadLib.Hatches
 {
@@ -68,7 +69,7 @@ namespace AcadLib.Hatches
             {
                 h.SetHatchPattern(opt.PatternType, opt.PatternName);
             }
-            h.BackgroundColor = opt.BackgroundColor;
+            h.BackgroundColor = opt.BackgroundColor ?? Color.FromColorIndex(ColorMethod.None, 257);
         }
 
         public static DisposableSet<HatchLoopPl> GetPolylines2(this Hatch ht, Tolerance weddingTolerance,
