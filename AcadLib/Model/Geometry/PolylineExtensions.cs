@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AcadLib.Scale;
+using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using AcadLib.Scale;
-using Autodesk.AutoCAD.Colors;
 using NetLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnitsNet.Extensions.NumberToAngle;
 
 namespace AcadLib.Geometry
@@ -27,13 +27,18 @@ namespace AcadLib.Geometry
             SelfIntersection = 4,
         }
 
+        public static List<PolylineVertex> GetVertexes(this Polyline pl)
+        {
+            return PolylineVertex.GetVertexes(pl, string.Empty);
+        }
+
         /// <summary>
         /// Пересечение полилиний (штатный IntersectWith)
         /// </summary>
         public static List<Point3d> Intersects(this Polyline pl1, Polyline pl2)
         {
             var pts = new Point3dCollection();
-            pl1.IntersectWith(pl2, Intersect.OnBothOperands, new Plane(),pts,IntPtr.Zero, IntPtr.Zero);
+            pl1.IntersectWith(pl2, Intersect.OnBothOperands, new Plane(), pts, IntPtr.Zero, IntPtr.Zero);
             return pts.Cast<Point3d>().ToList();
         }
 
@@ -82,14 +87,14 @@ namespace AcadLib.Geometry
             return (pt - ptClosest).Length;
         }
 
-		/// <summary>
-		/// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
-		/// </summary>
-		/// <param name="pl">Полилиния</param>
-		/// <param name="pt">Точка</param>
-		/// <param name="extend">Input whether or not to extend curve in search for nearest point.</param>
-		/// <returns></returns>
-		public static double GetParameterAtPointTry(this Polyline pl, Point3d pt, bool extend = false)
+        /// <summary>
+        /// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
+        /// </summary>
+        /// <param name="pl">Полилиния</param>
+        /// <param name="pt">Точка</param>
+        /// <param name="extend">Input whether or not to extend curve in search for nearest point.</param>
+        /// <returns></returns>
+        public static double GetParameterAtPointTry(this Polyline pl, Point3d pt, bool extend = false)
         {
             try
             {
@@ -107,18 +112,18 @@ namespace AcadLib.Geometry
         /// </summary>        
         public static void TestDrawVertexNumbers(this Polyline pl, Color color)
         {
-            var scale =ScaleHelper.GetCurrentAnnoScale(HostApplicationServices.WorkingDatabase);
+            var scale = ScaleHelper.GetCurrentAnnoScale(HostApplicationServices.WorkingDatabase);
             var texts = new List<Entity>();
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
-	            var text = new DBText
-	            {
-		            TextString = i.ToString(),
-		            Position = pl.GetPoint2dAt(i).Convert3d(),
-		            Height = 2.5 * scale,
-		            Color = color
-	            };
-	            texts.Add(text);                
+                var text = new DBText
+                {
+                    TextString = i.ToString(),
+                    Position = pl.GetPoint2dAt(i).Convert3d(),
+                    Height = 2.5 * scale,
+                    Color = color
+                };
+                texts.Add(text);
             }
             texts.AddEntityToCurrentSpace();
         }
@@ -126,7 +131,7 @@ namespace AcadLib.Geometry
         /// <summary>
         /// Прополка полилинии
         /// </summary>        
-        public static void Wedding (this Polyline pl, Tolerance tolerance)
+        public static void Wedding(this Polyline pl, Tolerance tolerance)
         {
             //var count = pl.NumberOfVertices;
             var iPrew = pl.NextVertexIndex(0, -1);
@@ -136,26 +141,26 @@ namespace AcadLib.Geometry
                 var cur = pl.GetPoint2dAt(i);
                 if (prew.IsEqualTo(cur, tolerance))
                 {
-	                if (pl.HasBulges)
-	                {
-		                var bulge = pl.GetBulgeAt(i);
-						pl.SetBulgeAt(pl.NextVertexIndex(i,-1), bulge);
-	                }
-                    pl.RemoveVertexAt(i--);                    
+                    if (pl.HasBulges)
+                    {
+                        var bulge = pl.GetBulgeAt(i);
+                        pl.SetBulgeAt(pl.NextVertexIndex(i, -1), bulge);
+                    }
+                    pl.RemoveVertexAt(i--);
                 }
                 prew = cur;
             }
             if (!pl.Closed) pl.Closed = true;
-		}
+        }
 
         private static bool IsPointsOnSomeLine(Point2d pt1, Point2d pt2, Point2d pt3, Tolerance tolerance)
         {
             var vec1 = pt2 - pt1;
             var vec2 = pt3 - pt1;
-            return vec1.IsParallelTo(vec2, tolerance);            
+            return vec1.IsParallelTo(vec2, tolerance);
         }
 
-        public static List<Point2d> GetPoints (this Polyline pl)
+        public static List<Point2d> GetPoints(this Polyline pl)
         {
             var points = new List<Point2d>();
             for (var i = 0; i < pl.NumberOfVertices; i++)
@@ -166,11 +171,11 @@ namespace AcadLib.Geometry
         }
 
         public static IEnumerable<Point2d> EnumeratePoints(this Polyline pl)
-        {            
+        {
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 yield return pl.GetPoint2dAt(i);
-            }            
+            }
         }
 
         public static List<Point2d> GetApproximatePoints(this Polyline pl, int arcDivisionCount)
@@ -212,7 +217,7 @@ namespace AcadLib.Geometry
                 if (segType != SegmentType.Arc) continue;
                 var seg = pl.GetArcSegment2dAt(i);
                 var chordLength = GetChordLength(seg.Radius, chordHeight);
-                var segLength = seg.GetLength(seg.GetParameterOf(seg.StartPoint),seg.GetParameterOf(seg.EndPoint));
+                var segLength = seg.GetLength(seg.GetParameterOf(seg.StartPoint), seg.GetParameterOf(seg.EndPoint));
                 var numSeg = Convert.ToInt32(segLength / chordLength);
                 var arcPts = seg.GetSamplePoints(numSeg).ToList();
                 arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
@@ -223,7 +228,7 @@ namespace AcadLib.Geometry
 
         private static double GetChordLength(double r, double h)
         {
-            return Math.Sqrt(r * r - (r - h) * (r - h))*2;
+            return Math.Sqrt(r * r - (r - h) * (r - h)) * 2;
         }
 
         /// <summary>
@@ -232,7 +237,7 @@ namespace AcadLib.Geometry
         /// <param name="pline">The polyline this method applies to.</param>
         /// <param name="brkPt">The point where to break the polyline.</param>
         /// <returns>An array of the two resullting polylines.</returns>
-        public static Polyline[] BreakAtPoint (this Polyline pline, Point3d brkPt)
+        public static Polyline[] BreakAtPoint(this Polyline pline, Point3d brkPt)
         {
             brkPt = pline.GetClosestPointTo(brkPt, false);
 
@@ -300,7 +305,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pl">The instance to which the method applies.</param>
         /// <returns>The centroid of the polyline (OCS coordinates).</returns>
-        public static Point2d Centroid2d (this Polyline pl)
+        public static Point2d Centroid2d(this Polyline pl)
         {
             var cen = new Point2d();
             var tri = new Triangle2d();
@@ -310,9 +315,9 @@ namespace AcadLib.Geometry
             var last = pl.NumberOfVertices - 1;
             var p0 = pl.GetPoint2dAt(0);
             var bulge = pl.GetBulgeAt(0);
-	        var pts = new List<Point2d> {p0};
+            var pts = new List<Point2d> { p0 };
 
-	        if (Math.Abs(bulge) > 0.0001)
+            if (Math.Abs(bulge) > 0.0001)
             {
                 arc = pl.GetArcSegment2dAt(0);
                 area = arc.AlgebricArea();
@@ -320,9 +325,9 @@ namespace AcadLib.Geometry
             }
             for (var i = 1; i < last; i++)
             {
-	            var pi = pl.GetPoint2dAt(i);
-	            pi.AddTo(pts);
-				tri.Set(p0, pi, pl.GetPoint2dAt(i + 1));
+                var pi = pl.GetPoint2dAt(i);
+                pi.AddTo(pts);
+                tri.Set(p0, pi, pl.GetPoint2dAt(i + 1));
                 tmpArea = tri.AlgebricArea;
                 cen += (tri.Centroid * tmpArea).GetAsVector();
                 area += tmpArea;
@@ -343,11 +348,11 @@ namespace AcadLib.Geometry
                 area += tmpArea;
                 cen += (arc.Centroid() * tmpArea).GetAsVector();
             }
-	        if (Math.Abs(area) < 0.0001)
-	        {
-		        // Средняя точка из всех точек полилинии
-				return new Point2d(pts.Average(a=>a.X), pts.Average(a => a.Y));
-	        }
+            if (Math.Abs(area) < 0.0001)
+            {
+                // Средняя точка из всех точек полилинии
+                return new Point2d(pts.Average(a => a.X), pts.Average(a => a.Y));
+            }
             return cen.DivideBy(area);
         }
 
@@ -356,7 +361,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pl">The instance to which the method applies.</param>
         /// <returns>The centroid of the polyline (WCS coordinates).</returns>
-        public static Point3d Centroid (this Polyline pl)
+        public static Point3d Centroid(this Polyline pl)
         {
             return pl.Centroid2d().Convert3d(pl.Normal, pl.Elevation);
         }
@@ -366,7 +371,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pline">The instance to which the method applies.</param>
         /// <param name="radius">The arc radius.</param>
-        public static void FilletAll (this Polyline pline, double radius)
+        public static void FilletAll(this Polyline pline, double radius)
         {
             var n = pline.Closed ? 0 : 1;
             for (var i = n; i < pline.NumberOfVertices - n; i += 1 + pline.FilletAt(i, radius))
@@ -380,7 +385,7 @@ namespace AcadLib.Geometry
         /// <param name="index">The index of the vertex.</param>
         /// <param name="radius">The arc radius.</param>
         /// <returns>1 if the operation succeeded, 0 if it failed.</returns>
-        public static int FilletAt (this Polyline pline, int index, double radius)
+        public static int FilletAt(this Polyline pline, int index, double radius)
         {
             var prev = index == 0 && pline.Closed ? pline.NumberOfVertices - 1 : index - 1;
             if (pline.GetSegmentType(prev) != SegmentType.Line ||
@@ -417,7 +422,7 @@ namespace AcadLib.Geometry
         /// <param name="p2">Second point</param>
         /// <param name="p3">Third point</param>
         /// <returns>True if points are clockwise, False otherwise.</returns>
-        private static bool Clockwise (Point2d p1, Point2d p2, Point2d p3)
+        private static bool Clockwise(Point2d p1, Point2d p2, Point2d p3)
         {
             return (p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X) < 1e-8;
         }
@@ -429,7 +434,7 @@ namespace AcadLib.Geometry
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <param name="direction">Direction (in WCS coordinates) of the projection.</param>
         /// <returns>The projected Polyline.</returns>
-        public static Polyline GetProjectedPolyline (this Polyline pline, Plane plane, Vector3d direction)
+        public static Polyline GetProjectedPolyline(this Polyline pline, Plane plane, Vector3d direction)
         {
             var tol = new Tolerance(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
@@ -454,7 +459,7 @@ namespace AcadLib.Geometry
         /// <param name="pline">The polyline to project.</param>
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <returns>The projected polyline</returns>
-        public static Polyline GetOrthoProjectedPolyline (this Polyline pline, Plane plane)
+        public static Polyline GetOrthoProjectedPolyline(this Polyline pline, Plane plane)
         {
             return pline.GetProjectedPolyline(plane, plane.Normal);
         }
@@ -465,7 +470,7 @@ namespace AcadLib.Geometry
         /// <param name="bulge">The bulge this method applies to.</param>
         /// <param name="factor">the factor to apply to the bulge.</param>
         /// <returns>The new bulge.</returns>
-        public static double MultiplyBulge (double bulge, double factor)
+        public static double MultiplyBulge(double bulge, double factor)
         {
             return Math.Tan(Math.Atan(bulge) * factor);
         }
@@ -476,9 +481,9 @@ namespace AcadLib.Geometry
         }
 
         [Obsolete("Используй новую перегрузку с параметром допуска, она работает быстрее.")]
-        public static bool IsPointOnPolyline (this Polyline pl, Point3d pt)
+        public static bool IsPointOnPolyline(this Polyline pl, Point3d pt)
         {
-            var isOn = false;            
+            var isOn = false;
             var ptZeroZ = new Point3d(pt.X, pt.Y, pl.Elevation);
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
@@ -509,8 +514,8 @@ namespace AcadLib.Geometry
         /// <param name="gap">Допуск. Если 0, то используется Tolerance.Global</param>        
         public static bool IsPointOnPolyline(this Polyline pl, Point3d pt, double gap)
         {
-            var tolerance = Math.Abs(gap) < 0.0001? Tolerance.Global: new Tolerance(gap, gap);
-            return IsPointOnPolyline(pl,pt, tolerance);
+            var tolerance = Math.Abs(gap) < 0.0001 ? Tolerance.Global : new Tolerance(gap, gap);
+            return IsPointOnPolyline(pl, pt, tolerance);
         }
 
         public static bool IsPointOnPolyline(this Polyline pl, Point3d pt, Tolerance tolerance)
@@ -524,7 +529,7 @@ namespace AcadLib.Geometry
         /// Но, работает быстрее, чем IsPointInsidePolyline. Примерно в 10раз.
         /// </summary>      
         [Obsolete("Используй IsPointInsidePolyline(), подходящий для дуговых полилиний.")]
-        public static bool IsPointInsidePolygon (this Polyline polygon, Point3d pt)
+        public static bool IsPointInsidePolygon(this Polyline polygon, Point3d pt)
         {
             var n = polygon.NumberOfVertices;
             double angle = 0;
@@ -537,7 +542,7 @@ namespace AcadLib.Geometry
                 pt2.Y = polygon.GetPoint2dAt((i + 1) % n).Y - pt.Y;
                 angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
             }
-            return !(Math.Abs(angle) < Math.PI);                
+            return !(Math.Abs(angle) < Math.PI);
         }
 
         /// <summary>
@@ -547,22 +552,10 @@ namespace AcadLib.Geometry
         /// </summary>
         public static bool IsPointInsidePolylineByRay(this Polyline pl, Point3d pt, Tolerance tolerance)
         {
-            using (var ray = new Ray{ BasePoint = pt, UnitDir= Vector3d.YAxis })
+            using (var ray = new Ray { BasePoint = pt, UnitDir = Vector3d.YAxis })
             {
-                return IsPointInsidePolylineByRay(ray, pt, pl, tolerance);
+                return CurveExt.IsPointInsidePolylineByRay(ray, pt, pl, tolerance);
             }
-        }
-        private static bool IsPointInsidePolylineByRay(Ray ray, Point3d pt, Polyline pl, Tolerance tolerance)
-        {
-            var pts = new Point3dCollection();
-            ray.IntersectWith(pl, Intersect.OnBothOperands, new Plane(), pts, IntPtr.Zero, IntPtr.Zero);
-            if (pts.Count>0 && pts.Cast<Point3d>().All(p=>pl.IsVertex(p)))
-            {
-                // Повернуть луч и повторить
-                ray.TransformBy(Matrix3d.Rotation(5.Radians().Radians, Vector3d.ZAxis, ray.BasePoint));
-                return IsPointInsidePolylineByRay(ray, pt, pl, tolerance);
-            }
-            return pts.Count.IsOdd() || IsPointOnPolyline(pl, pt, tolerance);
         }
 
         public static bool IsVertex(this Polyline pl, Point3d pt, double tolerance = 0.0001)
@@ -620,9 +613,9 @@ namespace AcadLib.Geometry
                             countWhile++;
                             if (countWhile > 3)
                             {
-                                throw new Exceptions.ErrorException(new Errors.Error (
-                                    "Не определено попадает ли точка внутрь полилинии.", 
-                                    pt.GetRectangleFromCenter(3), Matrix3d.Identity, 
+                                throw new Exceptions.ErrorException(new Errors.Error(
+                                    "Не определено попадает ли точка внутрь полилинии.",
+                                    pt.GetRectangleFromCenter(3), Matrix3d.Identity,
                                     System.Drawing.SystemIcons.Error));
                             }
                         }
@@ -632,7 +625,7 @@ namespace AcadLib.Geometry
             }
         }
 
-        public static Polyline CreatePolyline (this List<Point2d> pts)
+        public static Polyline CreatePolyline(this List<Point2d> pts)
         {
             var pl = new Polyline();
             pts = pts.DistinctPoints();
@@ -644,9 +637,9 @@ namespace AcadLib.Geometry
             return pl;
         }
 
-        private static double Angle2D (double x1, double y1, double x2, double y2)
+        private static double Angle2D(double x1, double y1, double x2, double y2)
         {
-	        var theta1 = Math.Atan2(y1, x1);
+            var theta1 = Math.Atan2(y1, x1);
             var theta2 = Math.Atan2(y2, x2);
             var dtheta = theta2 - theta1;
             while (dtheta > Math.PI)
@@ -654,7 +647,7 @@ namespace AcadLib.Geometry
             while (dtheta < -Math.PI)
                 dtheta += Math.PI * 2;
             return dtheta;
-        }        
+        }
 
         /// <summary>
         /// Offset the source polyline to specified side(s).
@@ -663,7 +656,7 @@ namespace AcadLib.Geometry
         /// <param name="offsetDist">The offset distance.</param>
         /// <param name="side">The offset side(s).</param>
         /// <returns>A polyline sequence resulting from the offset of the source polyline.</returns>
-        public static IEnumerable<Polyline> Offset (this Polyline source, double offsetDist, OffsetSide side)
+        public static IEnumerable<Polyline> Offset(this Polyline source, double offsetDist, OffsetSide side)
         {
             offsetDist = Math.Abs(offsetDist);
             var offsetRight = source.GetOffsetCurves(offsetDist).Cast<Polyline>();
@@ -706,7 +699,7 @@ namespace AcadLib.Geometry
                     return null;
             }
         }
-        public static void Dispose (this IEnumerable<Polyline> plines)
+        public static void Dispose(this IEnumerable<Polyline> plines)
         {
             foreach (var pline in plines)
             {
@@ -718,7 +711,7 @@ namespace AcadLib.Geometry
         /// Проверка наличия самопересечений в полилинии
         /// True - нет самопересечений
         /// </summary>        
-        public static bool CheckCross (this Polyline pline)
+        public static bool CheckCross(this Polyline pline)
         {
             var mpoly = new MPolygon();
             var isValidBoundary = false;
@@ -742,9 +735,9 @@ namespace AcadLib.Geometry
         /// <param name="index">Текущий индек</param>
         /// <param name="dir">Величина сдвига индекса. 1 - на ед вверх, -1 на ед. вниз, и т.д.</param>
         /// <returns>Текущий индекс + сдвиг. С проверкой попадания индекса в кол-во вершин полилинии.</returns>
-        public static int NextVertexIndex (this Polyline pl, int index, int dir =1)
+        public static int NextVertexIndex(this Polyline pl, int index, int dir = 1)
         {
-            var res = index+dir;
+            var res = index + dir;
             if (res < 0)
             {
                 res = pl.NumberOfVertices - 1;

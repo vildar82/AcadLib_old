@@ -199,13 +199,28 @@ namespace AcadLib.Hatches
 
             return h;
         }
-
+        
         public static Hatch CreateHatch(this List<Point2d> pts)
         {
             pts = pts.DistinctPoints();
-            var ptCol = new Point2dCollection(pts.ToArray());
-            ptCol.Add(pts[0]);
+            var ptCol = new Point2dCollection(pts.ToArray()) { pts[0] };
             var dCol = new DoubleCollection(new double[pts.Count]);
+            var h = new Hatch();
+            h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+            h.AppendLoop(HatchLoopTypes.Default, ptCol, dCol);
+            h.EvaluateHatch(false);
+            return h;
+        }
+
+        public static Hatch CreateHatch(this List<PolylineVertex> pts)
+        {
+            if (pts?.Any() != true) return null;
+            if (!pts[0].Pt.IsEqualTo(pts[pts.Count - 1].Pt))
+            {
+                pts.Add(pts[0]);
+            }
+            var ptCol = new Point2dCollection(pts.Select(s=>s.Pt).ToArray());
+            var dCol = new DoubleCollection(pts.Select(s=>s.Bulge).ToArray());
             var h = new Hatch();
             h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
             h.AppendLoop(HatchLoopTypes.Default, ptCol, dCol);
@@ -223,9 +238,9 @@ namespace AcadLib.Hatches
         /// </summary>
         public static Hatch CreateHatch(this Polyline pl)
         {
-            var pts = pl.GetPoints();
-            var h = CreateHatch(pts);
-            return h;
+            if (pl == null) return null;
+            var vertexes = pl.GetVertexes();
+            return CreateHatch(vertexes);
         }
     }
 }

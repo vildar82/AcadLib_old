@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AcadLib.Jigs
 {
@@ -44,26 +44,22 @@ namespace AcadLib.Jigs
                     }
                     t.Commit();
                 }
-
                 return true;
             }
-            else
+            using (var t = ed.Document.TransactionManager.StartTransaction())
             {
-                using (var t = ed.Document.TransactionManager.StartTransaction())
+                foreach (var id in ids)
                 {
-                    foreach (var id in ids)
-                    {
-                        var ent = id.GetObject(OpenMode.ForWrite);
-                        ent.Erase();
-                    }
-                    t.Commit();
+                    var ent = id.GetObject(OpenMode.ForWrite);
+                    ent.Erase();
                 }
-                return false;
+                t.Commit();
             }
+            return false;
         }
 
         /// <summary>
-        /// Вставка в 0 объектов в текущее пространство и перемещение в указанную пользователем точку (Drag)
+        /// Вставка объектов в текущее пространство и перемещение в указанную пользователем точку (Drag)
         /// </summary>        
         /// <param name="ents">Объекты не резиденты чертежа (будут вставленны в текущее пространство листа)</param>
         /// <param name="height">Высота разбиения объектов по высоте (вставка в столбик, пока высота столбца меньше заданной высоты)</param>        
@@ -74,7 +70,6 @@ namespace AcadLib.Jigs
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
-
                 foreach (var ent in ents)
                 {
                     cs.AppendEntity(ent);
@@ -103,12 +98,12 @@ namespace AcadLib.Jigs
                     var move = Matrix3d.Displacement(pt - ptEntLT);
                     ent.TransformBy(move);
 
-                    var curX = pt.X + (entExt.MaxPoint.X - entExt.MinPoint.X)*1.1;
+                    var curX = pt.X + (entExt.MaxPoint.X - entExt.MinPoint.X) * 1.1;
                     if (curX > maxX)
                         maxX = curX;
 
                     sumH += vecHWithDelta.Length;
-                    if (sumH>= height)
+                    if (sumH >= height)
                     {
                         sumH = 0;
                         pt = new Point3d(maxX, 0, 0);
@@ -116,10 +111,10 @@ namespace AcadLib.Jigs
                     else
                     {
                         pt = pt - vecHWithDelta;
-                    }                    
+                    }
                 }
                 t.Commit();
-            }           
+            }
             if (ids.Any())
             {
                 ed.Drag(ids.ToArray(), Point3d.Origin);
