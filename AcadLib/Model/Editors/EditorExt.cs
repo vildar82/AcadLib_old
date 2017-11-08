@@ -10,11 +10,29 @@ namespace AcadLib.Editors
 {
 	public static class EditorExt
 	{
-		/// <summary>
-		/// Выбор объектов в заданных границах
-		/// В модели
-		/// </summary>
-		public static List<ObjectId> SelectInExtents(this Editor ed, Extents3d ext)
+	    public static void AddEntToImpliedSelection(this Editor ed, ObjectId id)
+	    {
+	        try
+	        {
+	            var idsToSel = new List<ObjectId> {id};
+	            var selRes = ed.SelectImplied();
+	            if (selRes.Status == PromptStatus.OK)
+	            {
+	                idsToSel.AddRange(selRes.Value.GetObjectIds());
+	            }
+	            ed.SetImpliedSelection(idsToSel.ToArray());
+	        }
+	        catch
+	        {
+	            //
+	        }
+	    }
+
+        /// <summary>
+        /// Выбор объектов в заданных границах
+        /// В модели
+        /// </summary>
+        public static List<ObjectId> SelectInExtents(this Editor ed, Extents3d ext)
 		{
 		    ed.Document.Database.TileMode = true;
 			ed.Zoom(ext);

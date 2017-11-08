@@ -1,11 +1,13 @@
-﻿using System;
+﻿using AcadLib.Errors.UI;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.EditorInput;
 using System.Windows;
+using AcadLib.Editors;
 
 namespace AcadLib.Errors
 {
@@ -27,7 +29,7 @@ namespace AcadLib.Errors
         protected bool _hasEntity;
 
         public object Tag { get; set; }
-        public Matrix3d Trans { get; set; }       
+        public Matrix3d Trans { get; set; }
         public string Message => _msg;
         public string Group { get; set; }
         public string ShortMsg => _shortMsg;
@@ -36,11 +38,12 @@ namespace AcadLib.Errors
         public Icon Icon { get; set; }
         public ErrorStatus Status { get; set; }
         public bool CanShow { get; set; }
-        public List<Entity> Visuals { get; set; }
+        public List<Entity> Visuals { get; set; } = new List<Entity>();
+        public List<ErrorAddButton> AddButtons { get; set; } = new List<ErrorAddButton>();
+
         public Extents3d Extents
         {
-            get
-            {
+            get {
                 if (!_alreadyCalcExtents)
                 {
                     _alreadyCalcExtents = true;
@@ -54,6 +57,7 @@ namespace AcadLib.Errors
                                 {
                                     _extents = ent.GeometricExtents;
                                     _extents.TransformBy(Trans);
+                                    _extents = _extents.Offset();
                                 }
                                 catch (Exception ex)
                                 {
@@ -78,16 +82,17 @@ namespace AcadLib.Errors
             {
                 var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
                 var ed = doc.Editor;
-
                 if (Extents.Diagonal() > 1) ed.Zoom(Extents);
-
                 if (HasEntity)
                 {
                     // Проверка соответствия документа
                     if (IdEnt.Database == doc.Database)
+                    {
                         IdEnt.FlickObjectHighlight(2, 60, 60);
-                    else
-                        MessageBox.Show($"Должен быть активен чертеж {IdEnt.Database.Filename}");
+                        Visuals.FlickObjectHighlight();
+                        ed.AddEntToImpliedSelection(IdEnt);
+                    }
+                    else MessageBox.Show($"Должен быть активен чертеж {IdEnt.Database.Filename}");
                 }
             }
             catch { }
@@ -95,11 +100,10 @@ namespace AcadLib.Errors
 
         public Error()
         {
-
         }
 
         private Error(Error err)
-        {            
+        {
             _msg = err._msg;
             Group = err.Group;
             _shortMsg = err._shortMsg;
@@ -112,8 +116,8 @@ namespace AcadLib.Errors
             Trans = err.Trans;
             Tag = err.Tag;
             CanShow = err.CanShow;
-            Status = err.Status;            
-        }               
+            Status = err.Status;
+        }
 
         public Error(string message, Icon icon = null)
         {
@@ -123,7 +127,7 @@ namespace AcadLib.Errors
             Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             DefineStatus();
-        }               
+        }
 
         public Error(string message, Entity ent, Icon icon = null)
         {
@@ -180,7 +184,7 @@ namespace AcadLib.Errors
         public Error(string message, Extents3d ext, Matrix3d trans, Icon icon = null)
         {
             _msg = PrepareMessage(message);
-            _shortMsg = GetShortMsg(_msg);            
+            _shortMsg = GetShortMsg(_msg);
             _extents = ext;
             _alreadyCalcExtents = true;
             _hasEntity = false;
@@ -238,17 +242,17 @@ namespace AcadLib.Errors
         {
             var res = Status.CompareTo(other.Status);
             if (res != 0) return res;
-            return string.Compare(Message,other.Message);
+            return string.Compare(Message, other.Message);
         }
 
         public bool Equals(IError other)
         {
-            return string.Equals(Message,other.Message);
+            return string.Equals(Message, other.Message);
         }
 
         public override int GetHashCode()
         {
-           return Message.GetHashCode();
+            return Message.GetHashCode();
         }
 
         public IError GetCopy()

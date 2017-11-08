@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using AcadLib.Errors.UI;
+using Autodesk.AutoCAD.DatabaseServices;
 using MicroMvvm;
 using NetLib;
 using System;
@@ -31,7 +32,15 @@ namespace AcadLib.Errors
             this.errorsModel = errorsModel;
             Count = sameErrors.Count;
             firstErr = sameErrors.First();
-            Message = sameErrors.Count == 1 ? firstErr.Message : firstErr.Group;
+            if (sameErrors.Count == 1)
+            {
+                Message = firstErr.Message;
+                AddButtons = firstErr.AddButtons;
+            }
+            else
+            {
+                Message = firstErr.Group;
+            }
             if (firstErr.Icon != null)
             {
                 Image = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
@@ -49,6 +58,7 @@ namespace AcadLib.Errors
         public IError Error => firstErr;
         public ObservableCollection<ErrorModel> SameErrors { get; set; }
         public string Message { get; set; }
+        public List<ErrorAddButton> AddButtons { get; set; }
         public BitmapSource Image { get; set; }
         public RelayCommand Show { get; set; }
         public RelayCommand DeleteError { get; set; }

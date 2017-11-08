@@ -133,6 +133,7 @@
     <Compile Include="Model\Blocks\BlockPropertiesTableExt.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
+    <Compile Include="Model\Errors\UI\ErrorAddButton.cs" />
     <Compile Include="Model\Geometry\CurveExt.cs" />
     <Compile Include="Model\Hatches\HatchLoopPl.cs" />
     <Compile Include="Model\Hatches\HatchOptions.cs" />

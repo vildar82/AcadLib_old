@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:converters="clr-namespace:AcadLib.WPF.Converters"
+        xmlns:converters="clr-namespace:NetLib.WPF.Converters;assembly=NetLib"
         xmlns:local="clr-namespace:AcadLib.Errors"  
         ContextMenu="{DynamicResource cmErrors}"
         d:DataContext="{d:DesignInstance local:ErrorsViewModel,
@@ -78,17 +78,30 @@
                 <Image Grid.Column="2" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
                        Visibility="{Binding HasShow, Converter={converters:BooleanToHidingVisibilityConverter}}"
                        ToolTip="Показать на чертеже"/>
-                <TextBox Grid.Column="3" Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 
-                         FontSize="14"
-                         Background="Transparent"
-                         BorderThickness="0"                         
-                         IsReadOnly="True">
-                    <ToolTipService.ToolTip>
-                        <TextBlock Text="{Binding Message}" MaxWidth="500" TextWrapping="Wrap"/>
-                    </ToolTipService.ToolTip>
-                </TextBox>
-                <Button Grid.Column="4" Content="x" VerticalAlignment="Center" HorizontalAlignment="Center"
+                <WrapPanel Grid.Column="3" Orientation="Horizontal">
+                    <TextBox  Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 
+                         FontSize="14" Background="Transparent" BorderThickness="0" IsReadOnly="True">
+                        <ToolTipService.ToolTip>
+                            <TextBlock Text="{Binding Message}" MaxWidth="500" TextWrapping="Wrap"/>
+                        </ToolTipService.ToolTip>
+                    </TextBox>
+                    <ItemsControl Visibility="{Binding AddButtons, Converter={converters:NullCollapseVisibilityConverter}}"
+                                  ItemsSource="{Binding AddButtons}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding Name}" ToolTip="{Binding Tooltip}" Command="{Binding Click}" Margin="1"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </WrapPanel>
+                <Button Grid.Column="4"  Content="x" VerticalAlignment="Center" HorizontalAlignment="Center"
                         Command="{Binding DeleteError}" ToolTip="Удаление объекта(ов) из чертежа." Margin="2"/>
+                
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="ErrorsItemsTemplate" DataType="{x:Type local:ErrorModel}">
@@ -171,11 +184,11 @@
                     </ListBox.ItemContainerStyle>
                 </ListBox>
                 <WrapPanel Grid.Row="1" VerticalAlignment="Center">
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <TextBlock Text="{Binding ErrorsCountInfo}" ToolTip="Общее количество сообщений" Margin="1" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding CountSelectedErrors, StringFormat=Выделено ошибок: {0}}" Margin="5,1,1,1" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" 
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" 
                                 Visibility="{Binding IsDialog, Converter={converters:BooleanToHidingVisibilityConverter}}">
                         <Button Content="Продолжить" Click="Button_Ok_Click" Margin="5"/>
                         <Button Content="Прервать" IsCancel="True" Margin="5" />

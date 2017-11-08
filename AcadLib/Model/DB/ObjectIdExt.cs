@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using AcadLib.Editors;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
@@ -46,12 +49,38 @@ namespace AcadLib
                 if (ext.Diagonal() > 1)
                 {                    
                     docOrig.Editor.Zoom(ext);                                        
-                    id.FlickObjectHighlight(2, 100, 100);                    
+                    id.FlickObjectHighlight(2, 100, 100);         
+                    docOrig.Editor.AddEntToImpliedSelection(id);
                 }
                 else
                 {
                     Application.ShowAlertDialog("Границы элемента не определены");
                 }
+            }
+        }
+
+        public static void FlickObjectHighlight(this IEnumerable<Entity> ents, int num=2, int delay1=50, int delay2=50)
+        {
+            if (ents?.Any() != true) return;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            for (var i = 0; i < num; i++)
+            {
+                // Highlight entity
+                foreach (var entity in ents)
+                {
+                    entity.Highlight();
+                }
+                doc.Editor.UpdateScreen();
+                // Wait for delay1 msecs
+                Thread.Sleep(delay1);
+                // Unhighlight entity
+                foreach (var entity in ents)
+                {
+                    entity.Unhighlight();
+                }
+                doc.Editor.UpdateScreen();
+                // Wait for delay2 msecs
+                Thread.Sleep(delay2);
             }
         }
 
@@ -68,7 +97,7 @@ namespace AcadLib
             for (var i = 0; i < num; i++)
             {
                 // Highlight entity
-                using (var doclock = doc.LockDocument())
+                using (doc.LockDocument())
                 using (var tr = doc.TransactionManager.StartTransaction())
                 {
                     var en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
@@ -82,17 +111,16 @@ namespace AcadLib
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
                 // Unhighlight entity
-                using (var doclock = doc.LockDocument())
+                using (doc.LockDocument())
+                using (var tr = doc.TransactionManager.StartTransaction())
                 {
-                    using (var tr = doc.TransactionManager.StartTransaction())
-                    {
-                        var en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
-                        var ids = new ObjectId[1]; ids[0] = id;
-                        var index = new SubentityId(SubentityType.Null, IntPtr.Zero);
-                        var path = new FullSubentityPath(ids, index);
-                        en.Unhighlight(path, true);
-                        tr.Commit();
-                    }
+                    var en = (Entity) tr.GetObject(id, OpenMode.ForWrite);
+                    var ids = new ObjectId[1];
+                    ids[0] = id;
+                    var index = new SubentityId(SubentityType.Null, IntPtr.Zero);
+                    var path = new FullSubentityPath(ids, index);
+                    en.Unhighlight(path, true);
+                    tr.Commit();
                 }
                 doc.Editor.UpdateScreen();
                 // Wait for delay2 msecs
@@ -113,31 +141,27 @@ namespace AcadLib
             for (var i = 0; i < num; i++)
             {
                 // Highlight entity
-                using (var doclock = doc.LockDocument())
+                using (doc.LockDocument())
+                using (var tr = doc.TransactionManager.StartTransaction())
                 {
-                    using (var tr = doc.TransactionManager.StartTransaction())
-                    {
-                        var subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
-                        var path = new FullSubentityPath(idsPath, subId);
-                        var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
-                        ent.Highlight(path, true);
-                        tr.Commit();
-                    }
+                    var subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
+                    var path = new FullSubentityPath(idsPath, subId);
+                    var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
+                    ent.Highlight(path, true);
+                    tr.Commit();
                 }
                 doc.Editor.UpdateScreen();
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
                 // Unhighlight entity
-                using (var doclock = doc.LockDocument())
+                using (doc.LockDocument())
+                using (var tr = doc.TransactionManager.StartTransaction())
                 {
-                    using (var tr = doc.TransactionManager.StartTransaction())
-                    {
-                        var subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
-                        var path = new FullSubentityPath(idsPath, subId);
-                        var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
-                        ent.Unhighlight(path, true);
-                        tr.Commit();
-                    }
+                    var subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
+                    var path = new FullSubentityPath(idsPath, subId);
+                    var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
+                    ent.Unhighlight(path, true);
+                    tr.Commit();
                 }
                 doc.Editor.UpdateScreen();
                 // Wait for delay2 msecs

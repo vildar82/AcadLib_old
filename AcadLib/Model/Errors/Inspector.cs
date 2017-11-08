@@ -26,7 +26,7 @@ namespace AcadLib.Errors
         public static void Clear()
         {
             Errors = new List<IError>();
-            _doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            _doc = Application.DocumentManager.MdiActiveDocument;
             if (_doc != null)
             {
                 _db = _doc.Database;
@@ -140,7 +140,6 @@ namespace AcadLib.Errors
             {
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors = SortErrors(Errors);
-
                 // WPF
                 Show(Errors);
             }
@@ -168,7 +167,6 @@ namespace AcadLib.Errors
             {
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors = SortErrors(Errors);
-
                 // WPF
                 if (ShowDialog(Errors) == true)
                 {
