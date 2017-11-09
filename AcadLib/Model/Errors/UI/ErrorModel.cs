@@ -22,19 +22,21 @@ namespace AcadLib.Errors
         public event EventHandler<bool> SelectionChanged;
 
         public ErrorModel(IError err, ErrorModel parentErr, ErrorsViewModel errorsModel)
-            : this(err.Yield().ToList(), errorsModel)
+            : this(err.Yield().ToList(), errorsModel, false)
         {
             this.parentErr = parentErr;
         }
 
-        public ErrorModel(List<IError> sameErrors, ErrorsViewModel errorsModel)
+        public ErrorModel(List<IError> sameErrors, ErrorsViewModel errorsModel, bool isGroup)
         {
             this.errorsModel = errorsModel;
             Count = sameErrors.Count;
             firstErr = sameErrors.First();
             if (sameErrors.Count == 1)
             {
-                Message = firstErr.Message;
+                Message = !isGroup && firstErr.Message.Length > firstErr.Group.Length
+                    ? firstErr.Message.Substring(firstErr.Group.Length)
+                    : firstErr.Message;
                 AddButtons = firstErr.AddButtons;
             }
             else
@@ -83,6 +85,7 @@ namespace AcadLib.Errors
         }
 
         public int Count { get; set; }
+        public object HasAddButtons => AddButtons?.Any() == true;
 
         private void OnShowExecute()
         {

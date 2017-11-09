@@ -68,23 +68,28 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
                 <Grid.InputBindings>
                     <MouseBinding Gesture="LeftClick" Command="{Binding Show}" />
                 </Grid.InputBindings>
-                <TextBlock Grid.Column="0" Text="{Binding Count, Mode=OneWay}" 
+                <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Text="{Binding Count, Mode=OneWay}" 
                            Visibility="{Binding ShowCount, Converter={converters:BooleanToHidingVisibilityConverter}}" 
                            VerticalAlignment="Center"/>
-                <Image Grid.Column="1" Source="{Binding Image}" Margin="5" VerticalAlignment="Center" Height="25"/>
-                <Image Grid.Column="2" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
+                <Image Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Source="{Binding Image}" Margin="5" VerticalAlignment="Center" Height="25"/>
+                <Image Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
                        Visibility="{Binding HasShow, Converter={converters:BooleanToHidingVisibilityConverter}}"
                        ToolTip="Показать на чертеже"/>
-                <WrapPanel Grid.Column="3" Orientation="Horizontal">
-                    <TextBox  Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 
+                <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 
                          FontSize="14" Background="Transparent" BorderThickness="0" IsReadOnly="True">
-                        <ToolTipService.ToolTip>
-                            <TextBlock Text="{Binding Message}" MaxWidth="500" TextWrapping="Wrap"/>
-                        </ToolTipService.ToolTip>
-                    </TextBox>
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="{Binding Message}" MaxWidth="500" TextWrapping="Wrap"/>
+                    </ToolTipService.ToolTip>
+                </TextBox>
+                <StackPanel Orientation="Horizontal" Grid.Column="3" Grid.Row="1" 
+                            Visibility="{Binding HasAddButtons, Converter={converters:BooleanToCollapseVisibilityConverter}}">
                     <ItemsControl Visibility="{Binding AddButtons, Converter={converters:NullCollapseVisibilityConverter}}"
                                   ItemsSource="{Binding AddButtons}">
                         <ItemsControl.ItemsPanel>
@@ -94,14 +99,14 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Content="{Binding Name}" ToolTip="{Binding Tooltip}" Command="{Binding Click}" Margin="1"/>
+                                <Button Content="{Binding Name}" ToolTip="{Binding Tooltip}" Command="{Binding Click}" 
+                                        Margin="1" MaxWidth="150"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </WrapPanel>
-                <Button Grid.Column="4"  Content="x" VerticalAlignment="Center" HorizontalAlignment="Center"
+                </StackPanel>
+                <Button Grid.Column="4" Grid.Row="0" Grid.RowSpan="2"  Content="x" VerticalAlignment="Center" HorizontalAlignment="Center"
                         Command="{Binding DeleteError}" ToolTip="Удаление объекта(ов) из чертежа." Margin="2"/>
-                
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="ErrorsItemsTemplate" DataType="{x:Type local:ErrorModel}">

@@ -26,7 +26,7 @@ namespace AcadLib.Errors
             Errors = new ObservableCollection<ErrorModel>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).
                 GroupBy(g => g.Group).Select(s =>
                 {
-                    var errModel = new ErrorModel(s.ToList(), this);
+                    var errModel = new ErrorModel(s.ToList(), this, true);
                     errModel.SelectionChanged += ErrModel_SelectionChanged;
                     errModel.SameErrors?.Iterate(e => e.SelectionChanged += ErrModel_SelectionChanged);
                     return errModel;
