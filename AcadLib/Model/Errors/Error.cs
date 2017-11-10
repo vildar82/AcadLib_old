@@ -1,4 +1,5 @@
-﻿using AcadLib.Errors.UI;
+﻿using AcadLib.Editors;
+using AcadLib.Errors.UI;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
-using AcadLib.Editors;
 
 namespace AcadLib.Errors
 {
@@ -26,20 +26,24 @@ namespace AcadLib.Errors
         protected Extents3d _extents;
         protected bool _alreadyCalcExtents;
         protected bool _isNullExtents;
-        protected bool _hasEntity;
 
         public object Tag { get; set; }
         public Matrix3d Trans { get; set; }
         public string Message => _msg;
         public string Group { get; set; }
         public string ShortMsg => _shortMsg;
-        public ObjectId IdEnt => _idEnt;
-        public bool HasEntity => _hasEntity;
+        public ObjectId IdEnt
+        {
+            get => _idEnt;
+            set => _idEnt = value;
+        }
+        public bool HasEntity { get; set; }
         public Icon Icon { get; set; }
         public ErrorStatus Status { get; set; }
         public bool CanShow { get; set; }
         public List<Entity> Visuals { get; set; } = new List<Entity>();
         public List<ErrorAddButton> AddButtons { get; set; } = new List<ErrorAddButton>();
+        public Color Background { get; set; }
 
         public Extents3d Extents
         {
@@ -47,7 +51,7 @@ namespace AcadLib.Errors
                 if (!_alreadyCalcExtents)
                 {
                     _alreadyCalcExtents = true;
-                    if (_hasEntity)
+                    if (HasEntity)
                     {
                         using (var ent = _idEnt.Open(OpenMode.ForRead, false, true) as Entity)
                         {
@@ -73,6 +77,11 @@ namespace AcadLib.Errors
                     Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowAlertDialog("Границы объекта не определены.");
                 }
                 return _extents;
+            }
+            set
+            {
+                _extents = value;
+                _alreadyCalcExtents = true;
             }
         }
 
@@ -111,7 +120,7 @@ namespace AcadLib.Errors
             _alreadyCalcExtents = err._alreadyCalcExtents;
             _isNullExtents = err._isNullExtents;
             _extents = err._extents;
-            _hasEntity = err._hasEntity;
+            HasEntity = err.HasEntity;
             Icon = err.Icon;
             Trans = err.Trans;
             Tag = err.Tag;
@@ -123,7 +132,7 @@ namespace AcadLib.Errors
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
-            _hasEntity = false;
+            HasEntity = false;
             Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             DefineStatus();
@@ -134,7 +143,7 @@ namespace AcadLib.Errors
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
             _idEnt = ent.Id;
-            _hasEntity = true;
+            HasEntity = true;
             Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             CanShow = true;
@@ -146,7 +155,7 @@ namespace AcadLib.Errors
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
             _idEnt = ent.Id;
-            _hasEntity = true;
+            HasEntity = true;
             Icon = icon ?? SystemIcons.Error;
             Trans = trans;
             CanShow = true;
@@ -160,7 +169,7 @@ namespace AcadLib.Errors
             _idEnt = ent.Id;
             _extents = ext;
             _alreadyCalcExtents = true;
-            _hasEntity = true;
+            HasEntity = true;
             Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             CanShow = true;
@@ -174,7 +183,7 @@ namespace AcadLib.Errors
             _idEnt = idEnt;
             _extents = ext;
             _alreadyCalcExtents = true;
-            _hasEntity = true;
+            HasEntity = true;
             Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             CanShow = true;
@@ -187,7 +196,7 @@ namespace AcadLib.Errors
             _shortMsg = GetShortMsg(_msg);
             _extents = ext;
             _alreadyCalcExtents = true;
-            _hasEntity = false;
+            HasEntity = false;
             Icon = icon ?? SystemIcons.Error;
             Trans = trans;
             CanShow = true;
@@ -199,7 +208,7 @@ namespace AcadLib.Errors
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
             _idEnt = idEnt;
-            _hasEntity = true;
+            HasEntity = true;
             Icon = icon ?? SystemIcons.Error;
             Trans = Matrix3d.Identity;
             CanShow = true;
@@ -211,7 +220,7 @@ namespace AcadLib.Errors
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
             _idEnt = idEnt;
-            _hasEntity = true;
+            HasEntity = true;
             Icon = icon ?? SystemIcons.Error;
             Trans = trans;
             CanShow = true;

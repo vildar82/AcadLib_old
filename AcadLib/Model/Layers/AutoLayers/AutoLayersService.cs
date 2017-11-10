@@ -17,9 +17,9 @@ namespace AcadLib.Layers.AutoLayers
         private static List<ObjectId> idAddedEnts;
 
 		public static bool IsStarted { get; private set; }
-	    public static List<AutoLayer> AutoLayers { get; set; }
+        public static List<AutoLayer> AutoLayers { get; set; } = GetAutoLayers();
 
-		public static void Init()
+        public static void Init()
         {
             try
             {
@@ -46,8 +46,7 @@ namespace AcadLib.Layers.AutoLayers
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             Application.DocumentManager.DocumentActivated -= DocumentManager_DocumentActivated;
-            Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;            
-            AutoLayers = GetAutoLayers();
+            Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
             SubscribeDocument(doc);
             IsStarted = true;
             Save();

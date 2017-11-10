@@ -1,10 +1,12 @@
 ﻿using AcadLib.Errors.UI;
+using AcadLib.Layers;
 using Autodesk.AutoCAD.DatabaseServices;
 using MicroMvvm;
 using NetLib;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -32,6 +34,7 @@ namespace AcadLib.Errors
             this.errorsModel = errorsModel;
             Count = sameErrors.Count;
             firstErr = sameErrors.First();
+            Background = firstErr.Background.IsEmpty ? Color.LightGray : firstErr.Background;
             if (sameErrors.Count == 1)
             {
                 Message = !isGroup && firstErr.Message.Length > firstErr.Group.Length
@@ -55,6 +58,19 @@ namespace AcadLib.Errors
             }
             HasShow = firstErr.CanShow;
             DeleteError = new RelayCommand(DeleteErrorExec, () => Error?.HasEntity == true);
+            // Добавить кнопку, для отрисовки визуализации на чертежа
+            if (HasVisuals)
+            {
+                if (AddButtons == null) AddButtons = new List<ErrorAddButton>();
+                var visCommand = new RelayCommand(AddVisualsToDrawing, () => Error?.Visuals?.Any() == true);
+                var visButton = new ErrorAddButton
+                {
+                    Name = "Отрисовка",
+                    Tooltip = "Добавить визуализацию ошибки в чертеж.",
+                    Click = visCommand
+                };
+                AddButtons.Add(visButton);
+            }
         }
 
         public IError Error => firstErr;
@@ -75,7 +91,6 @@ namespace AcadLib.Errors
                 }
             }
         }
-
         public bool HasShow { get; set; }
         public bool ShowCount => Count != 1;
         public bool IsSelected
@@ -83,9 +98,10 @@ namespace AcadLib.Errors
             get => isSelected;
             set { isSelected = value; RaisePropertyChanged(); SelectionChanged?.Invoke(this, value); }
         }
-
         public int Count { get; set; }
-        public object HasAddButtons => AddButtons?.Any() == true;
+        public bool HasAddButtons => AddButtons?.Any() == true;
+        public bool HasVisuals => Error?.Visuals?.Any() == true;
+        public Color Background { get; set; }
 
         private void OnShowExecute()
         {
@@ -132,6 +148,57 @@ namespace AcadLib.Errors
                     }
                 }
                 t.Commit();
+            }
+        }
+
+        private void AddVisualsToDrawing()
+        {
+            try
+            {
+                var doc = AcadHelper.Doc;
+                var db = doc.Database;
+                using (doc.LockDocument())
+                using (var t = db.TransactionManager.StartTransaction())
+                {
+                    var layerVisual = LayerExt.CheckLayerState("visuals");
+                    var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject<BlockTableRecord>(OpenMode.ForWrite);
+                    var fEnt = Error.Visuals.First();
+                    Extents3d fEntExt = new Extents3d();
+                    ObjectId fEntId = ObjectId.Null;
+                    foreach (var entity in Error.Visuals)
+                    {
+                        var entClone = (Entity)entity.Clone();
+                        entClone.LayerId = layerVisual;
+                        ms.AppendEntity(entClone);
+                        t.AddNewlyCreatedDBObject(entClone, true);
+                        if (fEnt == entity)
+                        {
+                            fEntId = entClone.Id;
+                            try
+                            {
+                                fEntExt = entClone.GeometricExtents;
+                            }
+                            catch
+                            {
+                                //
+                            }
+                        }
+                        entity.Dispose();
+                    }
+                    if (!Error.HasEntity && !fEntId.IsNull)
+                    {
+                        Error.HasEntity = true;
+                        Error.IdEnt = fEntId;
+                        Error.Extents = fEntExt;
+                        HasShow = true;
+                    }
+                    Error.Visuals = new List<Entity>();
+                    t.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }

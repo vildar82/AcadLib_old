@@ -26,7 +26,8 @@ namespace AcadLib
 					{
 						doc.Editor.Zoom(ent.GeometricExtents.Offset());
 						id.FlickObjectHighlight(num, delay1, delay2);
-					}
+					    doc.Editor.AddEntToImpliedSelection(id);
+                    }
 					catch { }
 				}
 				t.Commit();

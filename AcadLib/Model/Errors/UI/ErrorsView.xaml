@@ -60,7 +60,8 @@
             </Border>
         </ControlTemplate>
         <DataTemplate x:Key="ErrorTemplate" DataType="{x:Type local:ErrorModel}">
-            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="LightGray" HorizontalAlignment="Left" Opacity="0.9">
+            <Grid Margin="2" VerticalAlignment="Center" MaxHeight="100" Background="{Binding Background, Converter={converters:ColorToBrushConverter}}" 
+                  HorizontalAlignment="Left" Opacity="0.9">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -79,7 +80,8 @@
                            Visibility="{Binding ShowCount, Converter={converters:BooleanToHidingVisibilityConverter}}" 
                            VerticalAlignment="Center"/>
                 <Image Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Source="{Binding Image}" Margin="5" VerticalAlignment="Center" Height="25"/>
-                <Image Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Source="{StaticResource eye}" VerticalAlignment="Center" Height="12" 
+                <Image Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Source="{StaticResource eye}" 
+                       VerticalAlignment="Center" Height="12" 
                        Visibility="{Binding HasShow, Converter={converters:BooleanToHidingVisibilityConverter}}"
                        ToolTip="Показать на чертеже"/>
                 <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding Message}" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" 

@@ -1,18 +1,19 @@
-﻿using System;
+﻿using AcadLib.Layers;
+using AcadLib.PaletteCommands;
+using AcadLib.Statistic;
+using AutoCAD_PIK_Manager.Settings;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Runtime;
+using NetLib.IO;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using AcadLib.PaletteCommands;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Runtime;
 using System.Text.RegularExpressions;
-using AcadLib.Layers;
 using System.Threading.Tasks;
-using AcadLib.Statistic;
-using AutoCAD_PIK_Manager.Settings;
-using Autodesk.AutoCAD.ApplicationServices;
-using NetLib.IO;
+using Autodesk.AutoCAD.EditorInput;
 using Path = System.IO.Path;
 
 [assembly: CommandClass(typeof(AcadLib.Commands))]
@@ -35,8 +36,8 @@ namespace AcadLib
         /// </summary>
         public static List<IPaletteCommand> CommandsPalette { get; set; }
 
-	    private List<DllResolve> dllsResolve;
-        public static readonly string CurDllDir =Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private List<DllResolve> dllsResolve;
+        public static readonly string CurDllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         /// <summary>
         /// Список общих команд
@@ -69,77 +70,78 @@ namespace AcadLib
             });
         }
 
-	    public void Initialize()
-	    {
-		    try
-		    {
-			    Logger.Log.Info($"start Initialize AcadLib");
-			    PluginStatisticsHelper.StartAutoCAD();
-		        AllCommandsCommon();
-
+        public void Initialize()
+        {
+#if DEBUG
+            // Отключение отладочных сообщений биндинга (тормозит сильно)
+            PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Off;
+#endif
+            try
+            {
+                Logger.Log.Info($"start Initialize AcadLib");
+                PluginStatisticsHelper.StartAutoCAD();
+                AllCommandsCommon();
                 // Копирование вспомогательных сборок локально из шаровой папки packages
                 var task = Task.Run(() =>
-			    {
-				    LoadService.CopyPackagesLocal();
-			    });
-			    task.Wait(15000);
+                {
+                    LoadService.CopyPackagesLocal();
+                });
+                task.Wait(15000);
+                // Автослоиtest
+                Layers.AutoLayers.AutoLayersService.Init();
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                // Загрузка сборок из текущей папки
+                foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
+                {
+                    LoadService.LoadFromTry(item);
+                }
+                // Загрузка сборок из папки ../Script/Net - без вложенных папок
+                LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), SearchOption.TopDirectoryOnly);
+                // Загрузка сборок из папки ../Script/Net/[UserGroup]
+                foreach (var userGroup in PikSettings.UserGroupsCombined)
+                {
+                    var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
+                    LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
+                }
+                Logger.Log.Info($"end Initialize AcadLib");
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, $"AcadLib Initialize.");
+            }
+        }
 
-			    // Автослоиtest
-			    Layers.AutoLayers.AutoLayersService.Init();
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (dllsResolve == null)
+            {
+                // Сборки в основной папке dll
+                dllsResolve = DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
+                // Все сборки из папки Script\NET
+                dllsResolve.AddRange(DllResolve.GetDllResolve(
+                    Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
+                    SearchOption.AllDirectories));
+                // Все сборки из локальной папки packages
+                dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
+            }
+            var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
+            if (dllResolver == null) return null;
+            try
+            {
+                Logger.Log.Info($"resolve assembly - {dllResolver.DllFile}");
+                return dllResolver.LoadAssembly();
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
+            }
+            return null;
+        }
 
-				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-			    // Загрузка сборок из текущей папки
-			    foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
-			    {
-				    LoadService.LoadFromTry(item);
-			    }
-				// Загрузка сборок из папки ../Script/Net - без вложенных папок
-		        LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), SearchOption.TopDirectoryOnly);
-			    // Загрузка сборок из папки ../Script/Net/[UserGroup]
-			    foreach (var userGroup in PikSettings.UserGroupsCombined)
-			    {
-				    var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
-			        LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
-			    }
-			    Logger.Log.Info($"end Initialize AcadLib");
-		    }
-		    catch (System.Exception ex)
-		    {
-			    Logger.Log.Error(ex, $"AcadLib Initialize.");
-		    }
-	    }
-
-	    private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-	    {
-		    if (dllsResolve == null)
-		    {
-			    // Сборки в основной папке dll
-			    dllsResolve = DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
-			    // Все сборки из папки Script\NET
-			    dllsResolve.AddRange(DllResolve.GetDllResolve(
-				    Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
-				    SearchOption.AllDirectories));
-			    // Все сборки из локальной папки packages
-			    dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
-		    }
-		    var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
-		    if (dllResolver == null) return null;
-		    try
-		    {
-			    Logger.Log.Info($"resolve assembly - {dllResolver.DllFile}");
-			    return dllResolver.LoadAssembly();
-		    }
-		    catch (System.Exception ex)
-		    {
-			    Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
-		    }
-		    return null;
-	    }
-
-		public void Terminate()
-	    {
-		    Logger.Log.Info($"Terminate AcadLib");
-	    }
+        public void Terminate()
+        {
+            Logger.Log.Info($"Terminate AcadLib");
+        }
 
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
         public void BlockListCommand()
@@ -213,20 +215,20 @@ namespace AcadLib
                 var layer = new LayerInfo(layerName);
                 var matchs = tvs.Skip(2).ToList();
                 var file = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"flexBrics\dwg\", fileName);
-                Blocks.Visual.VisualInsertBlock.InsertBlock(file, 
+                Blocks.Visual.VisualInsertBlock.InsertBlock(file,
                     n => matchs.Any(r => Regex.IsMatch(n, r.Value.ToString(), RegexOptions.IgnoreCase)),
                     layer);
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
-                Logger.Log.Error(ex,"PIK_LispInsertBlockFromFbDwg");
+                Logger.Log.Error(ex, "PIK_LispInsertBlockFromFbDwg");
             }
         }
 
         [CommandMethod(Group, CommandXDataView, CommandFlags.Modal)]
         public void XDataView()
         {
-            CommandStart.Start(doc =>XData.Viewer.XDataView.View());
+            CommandStart.Start(doc => XData.Viewer.XDataView.View());
         }
 
         [CommandMethod(Group, nameof(PIK_UpdateFieldsInObjects), CommandFlags.Modal)]
@@ -253,14 +255,14 @@ namespace AcadLib
             CommandStart.Start(doc =>
             {
                 Layers.AutoLayers.AutoLayersService.Start();
-                doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");                
+                doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");
             });
         }
         [CommandMethod(Group, nameof(PIK_AutoLayersStop), CommandFlags.Modal)]
         public void PIK_AutoLayersStop()
         {
             CommandStart.Start(doc =>
-            {                
+            {
                 Layers.AutoLayers.AutoLayersService.Stop();
                 doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");
             });
@@ -275,6 +277,33 @@ namespace AcadLib
         public void PIK_AutoLayersAll()
         {
             CommandStart.Start(doc => Layers.AutoLayers.AutoLayersService.AutoLayersAll());
+        }
+
+        [CommandMethod(Group, nameof(PIK_SearchById), CommandFlags.Modal)]
+        public void PIK_SearchById()
+        {
+            CommandStart.Start(doc =>
+            {
+                var ed = doc.Editor;
+                var res = ed.GetString("\nВведи ObjectID, например:8796086050096");
+                if (res.Status != PromptStatus.OK) return;
+                var id =long.Parse(res.StringResult);
+                var db = doc.Database;
+                using (var t = db.TransactionManager.StartTransaction())
+                {
+                    var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject<BlockTableRecord>();
+                    var entId = ms.Cast<ObjectId>().FirstOrDefault(f => f.OldId == id);
+                    if (entId.IsNull)
+                    {
+                        "Элемент не найден в Моделе.".WriteToCommandLine();
+                    }
+                    else
+                    {
+                        entId.ShowEnt();
+                    }
+                    t.Commit();
+                }
+            });
         }
     }
 }

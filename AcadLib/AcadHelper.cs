@@ -8,7 +8,7 @@ namespace AcadLib
         /// <summary>
         /// Текущий документ
         /// </summary>
-        public static Document Doc => Application.DocumentManager.MdiActiveDocument;
+        public static Document Doc => Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager?.MdiActiveDocument;
 
         /// <summary>
         /// Сообщение в ком.строку. автокада
