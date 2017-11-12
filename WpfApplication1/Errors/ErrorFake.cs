@@ -11,8 +11,8 @@ namespace WpfApplication1.Errors
             _shortMsg = GetShortMsg(_msg);            
             Icon = icon;            
             DefineStatus();
-            _hasEntity = true;
-            CanShow = _hasEntity;
+            HasEntity = true;
+            CanShow = HasEntity;
         }        
 
         public override int GetHashCode()

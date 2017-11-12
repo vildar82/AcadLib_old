@@ -11,7 +11,7 @@ namespace TestAcadlib.Errors
             _msg = msg;
             _shortMsg = msg;
             Icon = SystemIcons.Error;
-            _hasEntity = true;
+            HasEntity = true;
         }
 
         

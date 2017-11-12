@@ -1,18 +1,31 @@
-﻿<Window x:Class="TestAcadlib.WPF.Window1"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:converters="clr-namespace:AcadLib.WPF.Converters;assembly=AcadLib"
-        xmlns:local="clr-namespace:TestAcadlib.WPF"
-        xmlns:controls="clr-namespace:AcadLib.WPF.Controls;assembly=AcadLib"
-        xmlns:ctrl="clr-namespace:UserControlExample"
-        xmlns:controls1="clr-namespace:mpESKD.Base.Properties.Controls"
-        mc:Ignorable="d"
-        Title="Window1" Height="300" Width="300">
-    <Window.DataContext>
-        <local:Class1/>
-    </Window.DataContext>
+﻿<wpf:BaseWindow 
+    x:Class="TestAcadlib.WPF.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="clr-namespace:AcadLib.WPF.Converters;assembly=AcadLib"
+    xmlns:local="clr-namespace:TestAcadlib.WPF"
+    xmlns:controls="clr-namespace:AcadLib.WPF.Controls;assembly=AcadLib"
+    xmlns:ctrl="clr-namespace:UserControlExample"
+    xmlns:controls1="clr-namespace:mpESKD.Base.Properties.Controls"
+    xmlns:wpf="clr-namespace:AcadLib.WPF;assembly=AcadLib"
+    xmlns:controls2="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d"
+    Title="Window1" Height="300" Width="300">
+    <Window.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="test">
+                <TextBlock Text="Test"/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+    <wpf:BaseWindow.RightWindowCommands>
+        <controls2:WindowCommands>
+            <Button Command="{Binding Settings}" Content="Test">
+            </Button>
+        </controls2:WindowCommands>
+    </wpf:BaseWindow.RightWindowCommands>
     <StackPanel>
         <!--<controls1:IntTextBox Value="{Binding IntTextBox}"/>-->
         <ctrl:FieldUserControl Value="{Binding Color}"/>
@@ -26,4 +39,5 @@
                     ItemsSource="{Binding Source={converters:EnumBindingSource {x:Type local:MyEnum}}}"
                     SelectedItem="{Binding Test, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
     </StackPanel>
-</Window>
+</wpf:BaseWindow>
+

@@ -91,10 +91,10 @@ namespace AcadLib
                 Layers.AutoLayers.AutoLayersService.Init();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 // Загрузка сборок из текущей папки
-                foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
-                {
-                    LoadService.LoadFromTry(item);
-                }
+                //foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
+                //{
+                //    LoadService.LoadFromTry(item);
+                //}
                 // Загрузка сборок из папки ../Script/Net - без вложенных папок
                 LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), SearchOption.TopDirectoryOnly);
                 // Загрузка сборок из папки ../Script/Net/[UserGroup]

@@ -2,6 +2,7 @@
 using Autodesk.AutoCAD.Runtime;
 using MicroMvvm;
 using System.ComponentModel;
+using AcadLib.WPF;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib.WPF
@@ -13,7 +14,7 @@ namespace TestAcadlib.WPF
         {
             var model = new Class1 {IntTextBox = 5};
             var w = new Window1(model);
-            Application.ShowModalWindow(w);
+            w.Show();
         }
     }
 
