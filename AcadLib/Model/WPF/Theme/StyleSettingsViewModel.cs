@@ -10,7 +10,7 @@ namespace AcadLib.WPF.Theme
 {
     public class StyleSettingsViewModel : BaseViewModel
     {
-        public StyleSettingsViewModel()
+        public StyleSettingsViewModel(BaseViewModel parent) : base(parent)
         {
             Themes = ThemeManager.AppThemes.Select(s => new ThemeViewModel(s)).ToList();
             Accents = ThemeManager.Accents.Select(s => new AccentViewModel(s)).ToList();

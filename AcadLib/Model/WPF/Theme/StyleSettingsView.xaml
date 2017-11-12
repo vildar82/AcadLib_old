@@ -20,9 +20,10 @@
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="1"/>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type theme:AccentViewModel}">
-                        <StackPanel Background="{Binding Color}" Margin="1">
-                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                        </StackPanel>
+                        <Grid Background="{Binding Color}" HorizontalAlignment="Stretch" MinWidth="100">
+                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                       FontSize="12" Margin="3"/>
+                        </Grid>
                     </DataTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

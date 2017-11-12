@@ -64,9 +64,9 @@ namespace AcadLib.WPF
             ThemeManager.ChangeAppStyle(Resources, StyleSettings.Accent, StyleSettings.Theme);
         }
 
-        private static void ButtonTheme_Click(object sender, RoutedEventArgs e)
+        private void ButtonTheme_Click(object sender, RoutedEventArgs e)
         {
-            var styleSettingsVM = new StyleSettingsViewModel();
+            var styleSettingsVM = new StyleSettingsViewModel(model);
             var styleSettingsView = new StyleSettingsView(styleSettingsVM);
             if (styleSettingsView.ShowDialog() == true)
             {
