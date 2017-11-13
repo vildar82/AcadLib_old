@@ -14,7 +14,7 @@ namespace AcadLib.WPF
     /// <summary>
     /// ReactiveUI ViewModel, с реализацией INotifyDataErrorInfo
     /// </summary>
-    public abstract class BaseViewModel : ReactiveObject, INotifyDataErrorInfo
+    public abstract class BaseViewModel : ReactiveObject, INotifyDataErrorInfo, IDisposable
     {
         protected readonly IDialogCoordinator dialogCoordinator = DialogCoordinator.Instance;
         private readonly Dictionary<string, ICollection<string>> errors = new Dictionary<string, ICollection<string>>();
@@ -25,6 +25,14 @@ namespace AcadLib.WPF
         }
 
         public BaseViewModel()
+        {
+            
+        }
+
+        /// <summary>
+        /// Если модель передана в конструктор окна BaseWindow, то этот метод вызывается после инициализации окна.
+        /// </summary>
+        public virtual void OnInitialize()
         {
             
         }
@@ -82,6 +90,10 @@ namespace AcadLib.WPF
             {
                 MessageBox.Show(msg, title);
             }
+        }
+
+        public virtual void Dispose()
+        {
         }
     }
 }

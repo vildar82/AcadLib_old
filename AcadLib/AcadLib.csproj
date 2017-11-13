@@ -330,6 +330,8 @@
     </Compile>
     <Compile Include="Model\WPF\Theme\StyleSettingsViewModel.cs" />
     <Compile Include="Model\WPF\Theme\ThemeViewModel.cs" />
+    <Compile Include="Model\WPF\Theme\WindowsThemes.cs" />
+    <Compile Include="Model\WPF\Theme\WindowTheme.cs" />
     <Compile Include="Model\XData\DboDataSaveExt.cs" />
     <Compile Include="Model\XData\DictNODExt.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />

@@ -1,5 +1,4 @@
 ﻿using AcadLib.WPF.Theme;
-using MahApps.Metro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
@@ -8,21 +7,31 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace AcadLib.WPF
 {
     public class BaseWindow : MetroWindow
     {
-        protected readonly BaseViewModel model;
+        /// <summary>
+        /// DataContext
+        /// </summary>
+        public BaseViewModel Model { get; set; }
+        /// <summary>
+        /// Изменилась тема оформления окна
+        /// </summary>
+        public event EventHandler ChangeTheme;
 
+        [Obsolete("Лучше не использовать. Не забудь присвоить Model и Model.Window.")]
         public BaseWindow() : this(null)
         {
-            
+
         }
 
         public BaseWindow(BaseViewModel model)
         {
-            this.model = model;
+            Model = model;
+            if (Model != null) Model.Window = this;
             var hideBinding = new Binding("Hide");
             SetBinding(VisibilityHelper.IsHiddenProperty, hideBinding);
             var dialogRegBinding = new Binding { Source = model };
@@ -30,19 +39,36 @@ namespace AcadLib.WPF
             WindowStartupLocation = model?.Parent?.Window == null
                 ? WindowStartupLocation.CenterScreen
                 : WindowStartupLocation.CenterOwner;
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+
+        }
+
+        private void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            if (!(e.Exception is OperationCanceledException) && !(e.Exception is CancelByUserException))
+            {
+                Logger.Log.Error(e.Exception, $"CatalogView UnhandledException");
+            }
+            e.Handled = true;
         }
 
         protected override void OnInitialized(EventArgs e)
         {
-            DataContext = model;
+            DataContext = Model;
             AddStyleResouse();
             // Применение темы оформления
             ApplyTheme();
-            StyleSettings.Change += (s, a) => ApplyTheme();
-            if (model != null) model.Window = this;
+            // При изменении темы
+            StyleSettings.Change += (s, a) =>
+            {
+                ApplyTheme();
+                OnChangeTheme();
+            };
             SaveWindowPosition = true;
             GlowBrush = Resources["AccentColorBrush"] as Brush;
-            if (!(model is StyleSettingsViewModel))
+
+            // Кнопка настроек темы оформления
+            if (!(Model is StyleSettingsViewModel))
             {
                 var buttonTheme = new Button
                 {
@@ -57,26 +83,29 @@ namespace AcadLib.WPF
                 RightWindowCommands.Items.Add(buttonTheme);
             }
             base.OnInitialized(e);
+            Model?.OnInitialize();
         }
 
-        private void ApplyTheme()
+        internal void OnChangeTheme()
         {
-            ThemeManager.ChangeAppStyle(Resources, StyleSettings.Accent, StyleSettings.Theme);
+            ChangeTheme?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void ApplyTheme()
+        {
+            StyleSettings.ApplyWindowTheme(this);
         }
 
         private void ButtonTheme_Click(object sender, RoutedEventArgs e)
         {
-            var styleSettingsVM = new StyleSettingsViewModel(model);
+            var styleSettingsVM = new StyleSettingsViewModel(Model);
             var styleSettingsView = new StyleSettingsView(styleSettingsVM);
-            if (styleSettingsView.ShowDialog() == true)
-            {
-                StyleSettings.Save();
-            }
+            styleSettingsView.ShowDialog();
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            model?.OnClosed();
+            Model?.OnClosed();
             base.OnClosed(e);
         }
 

@@ -39,6 +39,7 @@
                 <TextBlock Text="Цвет:" Margin="1" VerticalAlignment="Center"/>
                 <ComboBox ItemsSource="{Binding Accents}" SelectedItem="{Binding SelectedAccent}"/>
             </StackPanel>
+            <CheckBox Content="Только для этого окна" IsChecked="{Binding IsOnlyThisWindow}" Margin="5"/>
         </StackPanel>
     </Grid>
 </wpf:BaseWindow>
