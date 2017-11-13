@@ -26,7 +26,7 @@ namespace AcadLib.WPF
 
         public BaseViewModel()
         {
-            
+
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace AcadLib.WPF
         /// </summary>
         public virtual void OnInitialize()
         {
-            
+
         }
 
         public BaseWindow Window { get; set; }
@@ -42,6 +42,7 @@ namespace AcadLib.WPF
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
         public bool HasErrors => errors.Any(a => a.Value != null);
         [Reactive] public bool Hide { get; set; }
+        [Reactive] public bool DialogResult { get; set; }
 
         public virtual void OnClosed()
         {

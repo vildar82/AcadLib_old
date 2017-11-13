@@ -2,6 +2,7 @@
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
+using MicroMvvm;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,10 +33,16 @@ namespace AcadLib.WPF
         {
             Model = model;
             if (Model != null) Model.Window = this;
+            // Скрытие окна
             var hideBinding = new Binding("Hide");
             SetBinding(VisibilityHelper.IsHiddenProperty, hideBinding);
+            // Регистрация окна в MahApps
             var dialogRegBinding = new Binding { Source = model };
             SetBinding(DialogParticipation.RegisterProperty, dialogRegBinding);
+            // DialogResult
+            var dialogResultBinding = new Binding("DialogResult");
+            SetBinding(DialogCloser.DialogResultProperty, dialogResultBinding);
+
             WindowStartupLocation = model?.Parent?.Window == null
                 ? WindowStartupLocation.CenterScreen
                 : WindowStartupLocation.CenterOwner;
