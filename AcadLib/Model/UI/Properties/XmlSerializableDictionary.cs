@@ -9,10 +9,9 @@ namespace AcadLib.UI.Properties
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     [XmlRoot("Dictionary")]
-    public class XmlSerializableDictionary<TValue>
-            : Dictionary<string, TValue>, IXmlSerializable
+    public class XmlSerializableDictionary<TValue> : Dictionary<string, TValue>, IXmlSerializable
     {
-        public XmlSerializableDictionary () : base(StringComparer.OrdinalIgnoreCase)
+        public XmlSerializableDictionary() : base(StringComparer.OrdinalIgnoreCase)
         {
         }
 
@@ -24,12 +23,12 @@ namespace AcadLib.UI.Properties
             }
         }
 
-        public System.Xml.Schema.XmlSchema GetSchema ()
+        public System.Xml.Schema.XmlSchema GetSchema()
         {
             return null;
         }
 
-        public void ReadXml (System.Xml.XmlReader reader)
+        public void ReadXml(System.Xml.XmlReader reader)
         {
             var keySerializer = new XmlSerializer(typeof(string));
             var valueSerializer = new XmlSerializer(typeof(TValue));
@@ -53,7 +52,7 @@ namespace AcadLib.UI.Properties
             reader.ReadEndElement();
         }
 
-        public void WriteXml (System.Xml.XmlWriter writer)
+        public void WriteXml(System.Xml.XmlWriter writer)
         {
             var keySerializer = new XmlSerializer(typeof(string));
             var valueSerializer = new XmlSerializer(typeof(TValue));

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using AcadLib.UI.Properties;
 using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib.Plot
@@ -115,10 +116,13 @@ namespace AcadLib.Plot
 
         public void Show()
         {
-            var formOpt = new UI.FormProperties();
+            //var formOpt = new UI.FormProperties();
             var copyOptions = (PlotOptions)MemberwiseClone();
-            formOpt.propertyGrid1.SelectedObject = copyOptions;
-            if (Application.ShowModalDialog(formOpt) == System.Windows.Forms.DialogResult.OK)
+            if (PropertiesService.Show(copyOptions, v =>
+            {
+                copyOptions = (PlotOptions) MemberwiseClone();
+                return copyOptions;
+            }) == true)
             {
                 SortTabOrName = copyOptions.SortTabOrName;
                 OnePdfOrEachDwg = copyOptions.OnePdfOrEachDwg;
@@ -128,7 +132,19 @@ namespace AcadLib.Plot
                 DefaultPlotSource = copyOptions.DefaultPlotSource;
                 IncludeSubdirs = copyOptions.IncludeSubdirs;
                 Save();
-            }            
+            }
+            //formOpt.propertyGrid1.SelectedObject = copyOptions;
+            //if (Application.ShowModalDialog(formOpt) == System.Windows.Forms.DialogResult.OK)
+            //{
+            //    SortTabOrName = copyOptions.SortTabOrName;
+            //    OnePdfOrEachDwg = copyOptions.OnePdfOrEachDwg;
+            //    FilterState = copyOptions.FilterState;
+            //    FilterByNames = copyOptions.FilterByNames;
+            //    FilterByNumbers = copyOptions.FilterByNumbers;
+            //    DefaultPlotSource = copyOptions.DefaultPlotSource;
+            //    IncludeSubdirs = copyOptions.IncludeSubdirs;
+            //    Save();
+            //}            
         }
     }
 

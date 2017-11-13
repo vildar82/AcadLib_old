@@ -5,8 +5,7 @@
     xmlns:local="clr-namespace:AcadLib.PaletteCommands.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    d:DataContext="{d:DesignInstance local:DesignTimePalette,
-                                     IsDesignTimeCreatable=True}"
+    d:DataContext="{d:DesignInstance local:DesignTimePalette,IsDesignTimeCreatable=True}"
     mc:Ignorable="d">
     <Grid Background="{Binding Background}">
 		<Grid.RowDefinitions>

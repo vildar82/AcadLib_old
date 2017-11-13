@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.Controls.Dialogs;
+﻿using AcadLib.Errors;
+using MahApps.Metro.Controls.Dialogs;
 using NetLib;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -29,6 +30,13 @@ namespace AcadLib.WPF
 
         }
 
+        public BaseWindow Window { get; set; }
+        public BaseViewModel Parent { get; set; }
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        public bool HasErrors => errors.Any(a => a.Value != null);
+        [Reactive] public bool Hide { get; set; }
+        [Reactive] public bool? DialogResult { get; set; }
+
         /// <summary>
         /// Если модель передана в конструктор окна BaseWindow, то этот метод вызывается после инициализации окна.
         /// </summary>
@@ -36,13 +44,6 @@ namespace AcadLib.WPF
         {
 
         }
-
-        public BaseWindow Window { get; set; }
-        public BaseViewModel Parent { get; set; }
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
-        public bool HasErrors => errors.Any(a => a.Value != null);
-        [Reactive] public bool Hide { get; set; }
-        [Reactive] public bool DialogResult { get; set; }
 
         public virtual void OnClosed()
         {
@@ -76,9 +77,20 @@ namespace AcadLib.WPF
             return new BoolUsage(Hide, true, h => Hide = h);
         }
 
+        /// <summary>
+        /// Добавление команды - ThrownExceptions.Subscribe.
+        /// </summary>
+        public ReactiveCommand AddCommand(ReactiveCommand command)
+        {
+            command.ThrownExceptions.Subscribe(CommandException);
+            return command;
+        }
+
         public void CommandException(Exception e)
         {
             ShowMessage(e.Message);
+            Inspector.Show();
+            Logger.Log.Error(e, "CommandException");
         }
 
         public void ShowMessage(string msg, string title = "Ошибка")

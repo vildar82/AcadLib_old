@@ -6,18 +6,16 @@ namespace AcadLib.Blocks.Visual.UI
     /// <summary>
     /// Логика взаимодействия для WindowVisualBlocks.xaml
     /// </summary>
-    public partial class WindowVisualBlocks : Window
+    public partial class WindowVisualBlocks
     {
         public VisualBlock Selected;
 
-        public WindowVisualBlocks(VisualBlocksViewModel vm)
+        public WindowVisualBlocks(VisualBlocksViewModel vm) : base(vm)
         {
             InitializeComponent();
-            DataContext = vm;
-
             //lbVisuals.MouseLeftButtonUp += ListBoxVisuals_MouseLeftButtonUp;
             //lvwBlocks.MouseLeftButtonUp += ListBoxVisuals_MouseLeftButtonUp;      
-            KeyDown += WindowVisualBlocks_KeyDown;      
+            KeyDown += WindowVisualBlocks_KeyDown;
         }
 
         private void WindowVisualBlocks_KeyDown(object sender, KeyEventArgs e)
