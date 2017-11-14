@@ -48,15 +48,9 @@ namespace AcadLib.WPF
                 : WindowStartupLocation.CenterOwner;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
 
-        }
-
-        private void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            if (!(e.Exception is OperationCanceledException) && !(e.Exception is CancelByUserException))
-            {
-                Logger.Log.Error(e.Exception, $"CatalogView UnhandledException");
-            }
-            e.Handled = true;
+            // Скрыть кнопки свернуть/минимизировать
+            ShowMinButton = false;
+            ShowMaxRestoreButton = false;
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -91,6 +85,15 @@ namespace AcadLib.WPF
             }
             base.OnInitialized(e);
             Model?.OnInitialize();
+        }
+
+        private void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            if (!(e.Exception is OperationCanceledException) && !(e.Exception is CancelByUserException))
+            {
+                Logger.Log.Error(e.Exception, $"UnhandledException Window - '{GetType().FullName}'.");
+            }
+            e.Handled = true;
         }
 
         internal void OnChangeTheme()

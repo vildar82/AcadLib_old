@@ -9,6 +9,7 @@
     xmlns:wpf="clr-namespace:AcadLib.WPF"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     mc:Ignorable="d"
+    Topmost="True"
     Title="Настройки" Height="300" Width="300">
     <Grid>
         <Grid.RowDefinitions>

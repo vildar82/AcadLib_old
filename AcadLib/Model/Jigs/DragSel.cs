@@ -23,22 +23,25 @@ namespace AcadLib.Jigs
         public static bool Drag(this Editor ed, ObjectId[] ids, Point3d pt)
         {
             if (ids == null || !ids.Any()) return false;
+            var tolerance = new Tolerance(0.1,0.1);
             var selSet = SelectionSet.FromObjectIds(ids);
+            var ptInputLast = pt;
             var ppr = ed.Drag(selSet, "\nТочка вставки:", (Point3d ptInput, ref Matrix3d mat) =>
             {
-                if (ptInput.IsEqualTo(pt)) return SamplerStatus.NoChange;
+                ptInput = ptInput.FromUcsToWcs();
+                if (ptInput.IsEqualTo(ptInputLast, tolerance)) return SamplerStatus.NoChange;
                 mat = Matrix3d.Displacement(pt.GetVectorTo(ptInput));
-                //pt = ptInput;
+                ptInputLast = ptInput;
                 return SamplerStatus.OK;
             });
-
             if (ppr.Status == PromptStatus.OK)
             {
+                var ptInput = ppr.Value.FromUcsToWcs();
                 using (var t = ed.Document.TransactionManager.StartTransaction())
                 {
                     foreach (var item in ids)
                     {
-                        var mat = Matrix3d.Displacement(pt.GetVectorTo(ppr.Value));
+                        var mat = Matrix3d.Displacement(pt.GetVectorTo(ptInput));
                         var ent = item.GetObject(OpenMode.ForWrite, false, true) as Entity;
                         ent.TransformBy(mat);
                     }

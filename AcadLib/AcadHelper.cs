@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
+﻿using System;
+using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib
 {
@@ -15,11 +16,25 @@ namespace AcadLib
         /// </summary>
         public static void WriteLine(string msg)
         {
-            Doc.Editor.WriteMessage($"\n{msg}");
+            try
+            {
+                Doc.Editor.WriteMessage($"\n{msg}");
+            }
+            catch
+            {
+                //
+            }
         }
         public static void WriteToCommandLine(this string msg)
         {
-            Doc.Editor.WriteMessage($"\n{msg}");
+            try
+            {
+                Doc.Editor.WriteMessage($"\n{msg}");
+            }
+            catch
+            {
+                //
+            }
         }
     }
 }

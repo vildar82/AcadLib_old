@@ -13,6 +13,11 @@ namespace Autodesk.AutoCAD.Geometry
     /// </summary>
     public static class Point3dExtensions
     {
+        public static Point3d FromUcsToWcs(this Point3d pt)
+        {
+            return pt.Trans(CoordSystem.UCS, CoordSystem.WCS);
+        }
+
         /// <summary>
         /// Получение квадрата от центральной точки
         /// </summary>
