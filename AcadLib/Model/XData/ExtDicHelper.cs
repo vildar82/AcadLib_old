@@ -28,11 +28,13 @@ namespace AcadLib.XData
                 {
                     res = dic.GetAt(key);
                     if (!clear) return res;
-                    using (var xr = res.Open(OpenMode.ForWrite) as Xrecord)
-                    {
-                        if (xr != null)
-                            xr.Data = null;
-                    }
+                    dic.UpgradeOpen();
+                    dic.Remove(key);
+                    //using (var xr = res.Open(OpenMode.ForWrite) as Xrecord)
+                    //{
+                    //    if (xr != null)
+                    //        xr.Data = null;
+                    //}
                 }
                 else if (create)
                 {
