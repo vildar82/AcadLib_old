@@ -1,33 +1,34 @@
 ﻿using AcadLib.Errors;
 using AcadLib.Geometry;
+using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using NetLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.Colors;
 
 namespace AcadLib.Hatches
 {
     public static class HatchExt
     {
-        public static double GetHatchArea(this Hatch pHatch)
+        public static double GetHatchArea(this Hatch hatch)
         {
             double area = 0;
             try
             {
-                area = pHatch.Area;
+                area = hatch.Area;
             }
             catch
             {
-                var nLoop = pHatch.NumberOfLoops;
+                var nLoop = hatch.NumberOfLoops;
                 for (var i = 0; i < nLoop; i++)
                 {
-                    var loopType = (int)pHatch.LoopTypeAt(i);
+                    double looparea = 0;
+                    var loopType = (int)hatch.LoopTypeAt(i);
                     if ((loopType & (int)HatchLoopTypes.Polyline) > 0)
                     {
-                        var hatchLoop = pHatch.GetLoopAt(i);
+                        var hatchLoop = hatch.GetLoopAt(i);
                         var bulgeVertex = hatchLoop.Polyline;
                         using (var pPoly = new Polyline(bulgeVertex.Count))
                         {
@@ -36,11 +37,48 @@ namespace AcadLib.Hatches
                                 pPoly.AddVertexAt(j, bulgeVertex[j].Vertex, bulgeVertex[j].Bulge, 0, 0);
                             }
                             pPoly.Closed = (loopType & (int)HatchLoopTypes.NotClosed) == 0;
-                            var looparea = pPoly.Area;
+                            looparea = pPoly.Area;
                             if ((loopType & (int)HatchLoopTypes.External) > 0)
                                 area += Math.Abs(looparea);
                             else
                                 area -= Math.Abs(looparea);
+                        }
+                    }
+                    else
+                    {
+                        var hatchLoop = hatch.GetLoopAt(i);
+                        var cur2ds = new Curve2d[hatchLoop.Curves.Count];
+                        hatchLoop.Curves.CopyTo(cur2ds, 0);
+                        using (var compCurve = new CompositeCurve2d(cur2ds))
+                        {
+                            var interval = compCurve.GetInterval();
+                            double dMin = interval.GetBounds()[0], dMax = interval.GetBounds()[1];
+                            if (Math.Abs(dMax - dMin) > 1e-6)
+                            {
+                                try
+                                {
+                                    looparea = compCurve.GetArea(dMin, dMax);
+                                    if ((loopType & (int)HatchLoopTypes.External) > 0)
+                                        area += Math.Abs(looparea);
+                                    else
+                                        area -= Math.Abs(looparea);
+                                }
+                                catch
+                                {
+                                    // Разбиваем кривую на 1000000 точек. Надеюсь, что такой точности 
+                                    // будет достаточно.
+                                    var pts = compCurve.GetSamplePoints(1000);
+                                    var np = pts.Length;
+                                    for (var j = 0; j < np; j++)
+                                    {
+                                        looparea += 0.5 * pts[j].X * (pts[(j + 1) % np].Y - pts[(j + np - 1) % np].Y);
+                                    }
+                                    if ((loopType & (int)HatchLoopTypes.External) > 0)
+                                        area += Math.Abs(looparea);
+                                    else
+                                        area -= Math.Abs(looparea);
+                                }
+                            }
                         }
                     }
                 }
@@ -200,7 +238,7 @@ namespace AcadLib.Hatches
 
             return h;
         }
-        
+
         public static Hatch CreateHatch(this List<Point2d> pts)
         {
             pts = pts.DistinctPoints();
@@ -220,8 +258,8 @@ namespace AcadLib.Hatches
             {
                 pts.Add(pts[0]);
             }
-            var ptCol = new Point2dCollection(pts.Select(s=>s.Pt).ToArray());
-            var dCol = new DoubleCollection(pts.Select(s=>s.Bulge).ToArray());
+            var ptCol = new Point2dCollection(pts.Select(s => s.Pt).ToArray());
+            var dCol = new DoubleCollection(pts.Select(s => s.Bulge).ToArray());
             var h = new Hatch();
             h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
             h.AppendLoop(HatchLoopTypes.Default, ptCol, dCol);
