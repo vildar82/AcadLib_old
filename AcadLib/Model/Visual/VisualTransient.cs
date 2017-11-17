@@ -13,7 +13,7 @@ namespace AcadLib.Visual
     {
 	    public static readonly Autodesk.AutoCAD.Geometry.IntegerCollection vps = new Autodesk.AutoCAD.Geometry.IntegerCollection();        
         protected List<Entity> draws;
-        private Document doc = AcadHelper.Doc;
+        private readonly Document doc = AcadHelper.Doc;
 
         public VisualTransient(string layer = null) : base(layer)
         {

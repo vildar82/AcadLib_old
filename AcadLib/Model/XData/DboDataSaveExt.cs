@@ -6,7 +6,7 @@ namespace AcadLib.XData
     {
         public static void SaveDboDict(this IDboDataSave dboSave)
         {
-            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            var doc = Application.DocumentManager.MdiActiveDocument;
             using (doc.LockDocument())
             using (var dbo = dboSave.GetDBObject())
             {
@@ -19,7 +19,7 @@ namespace AcadLib.XData
 
         public static void LoadDboDict(this IDboDataSave dboSave)
         {
-            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            var doc = Application.DocumentManager.MdiActiveDocument;
             using (doc.LockDocument())
             using (var dbo = dboSave.GetDBObject())
             {

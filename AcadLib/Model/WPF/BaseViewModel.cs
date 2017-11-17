@@ -72,7 +72,13 @@ namespace AcadLib.WPF
             RaiseErrorsChanged(propName);
         }
 
+        [Obsolete("Используй HideWindow")]
         public BoolUsage HideUsing()
+        {
+            return new BoolUsage(Hide, true, h => Hide = h);
+        }
+
+        public IDisposable HideWindow()
         {
             return new BoolUsage(Hide, true, h => Hide = h);
         }
@@ -82,6 +88,13 @@ namespace AcadLib.WPF
         /// </summary>
         public ReactiveCommand AddCommand(ReactiveCommand command)
         {
+            command.ThrownExceptions.Subscribe(CommandException);
+            return command;
+        }
+
+        public ReactiveCommand CreateCommand(Action execute, IObservable<bool> canExecute = null)
+        {
+            var command = ReactiveCommand.Create(execute, canExecute);
             command.ThrownExceptions.Subscribe(CommandException);
             return command;
         }

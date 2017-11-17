@@ -4,9 +4,11 @@ using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
 using MicroMvvm;
 using System;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -14,6 +16,7 @@ namespace AcadLib.WPF
 {
     public class BaseWindow : MetroWindow
     {
+        protected bool isDialog;
         /// <summary>
         /// DataContext
         /// </summary>
@@ -22,17 +25,28 @@ namespace AcadLib.WPF
         /// Изменилась тема оформления окна
         /// </summary>
         public event EventHandler ChangeTheme;
+        /// <summary>
+        /// Закрытие окна по нажатия Enter или Space (пробел) - DialogResult true
+        /// </summary>
+        public bool CloseWindowByEnterOrSpace { get; set; } = true;
+        /// <summary>
+        /// Дествие при нажатии OK/Space
+        /// </summary>
+        public Action OnEnterOrSpace { get; set; }
 
         [Obsolete("Лучше не использовать. Не забудь присвоить Model и Model.Window.")]
         public BaseWindow() : this(null)
         {
-
         }
 
         public BaseWindow(BaseViewModel model)
         {
             Model = model;
-            if (Model != null) Model.Window = this;
+            if (Model != null)
+            {
+                DataContext = Model;
+                Model.Window = this;
+            }
             // Скрытие окна
             var hideBinding = new Binding("Hide");
             SetBinding(VisibilityHelper.IsHiddenProperty, hideBinding);
@@ -47,15 +61,17 @@ namespace AcadLib.WPF
                 ? WindowStartupLocation.CenterScreen
                 : WindowStartupLocation.CenterOwner;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-
             // Скрыть кнопки свернуть/минимизировать
             ShowMinButton = false;
             ShowMaxRestoreButton = false;
+            SaveWindowPosition = true;
+            PreviewKeyDown += BaseWindow_PreviewKeyDown;
+            MouseDown += BaseWindow_MouseDown;
+            Activated += (s, a) => isDialog = (bool)typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
         }
 
         protected override void OnInitialized(EventArgs e)
         {
-            DataContext = Model;
             AddStyleResouse();
             // Применение темы оформления
             ApplyTheme();
@@ -65,9 +81,7 @@ namespace AcadLib.WPF
                 ApplyTheme();
                 OnChangeTheme();
             };
-            SaveWindowPosition = true;
             GlowBrush = Resources["AccentColorBrush"] as Brush;
-
             // Кнопка настроек темы оформления
             if (!(Model is StyleSettingsViewModel))
             {
@@ -91,6 +105,7 @@ namespace AcadLib.WPF
         {
             if (!(e.Exception is OperationCanceledException) && !(e.Exception is CancelByUserException))
             {
+                Model?.ShowMessage(e.Exception.Message);
                 Logger.Log.Error(e.Exception, $"UnhandledException Window - '{GetType().FullName}'.");
             }
             e.Handled = true;
@@ -125,6 +140,46 @@ namespace AcadLib.WPF
             {
                 Source = new Uri("pack://application:,,,/AcadLib;component/Model/WPF/Style.xaml")
             });
+        }
+
+        private void BaseWindow_MouseDown(object sender, MouseButtonEventArgs e)
+         {
+             var scope = FocusManager.GetFocusScope(this); // elem is the UIElement to unfocus
+             FocusManager.SetFocusedElement(scope, null); // remove logical focus
+             Keyboard.ClearFocus(); // remove keyboard focus
+        }
+
+        private void BaseWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (FocusManager.GetFocusedElement(this) != null)
+            {
+                return;
+            }
+            if (e.Key == Key.Escape)
+            {
+                if (isDialog)
+                {
+                    DialogResult = false;
+                }
+                else
+                {
+                    Close();
+                }
+                e.Handled = true;
+            }
+            else if (CloseWindowByEnterOrSpace && e.Key == Key.Enter || e.Key == Key.Space)
+            {
+                OnEnterOrSpace?.Invoke();
+                if (isDialog)
+                {
+                    DialogResult = true;
+                }
+                else
+                {
+                    Close();
+                }
+                e.Handled = true;
+            }
         }
     }
 }

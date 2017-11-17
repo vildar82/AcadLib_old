@@ -10,7 +10,6 @@ namespace WpfApplication1
         public MainWindow() : base(GetModel())
         {
             InitializeComponent();
-            Errors.TestErrors.TestShowErrors();
         }
 
         private static BaseViewModel GetModel()
