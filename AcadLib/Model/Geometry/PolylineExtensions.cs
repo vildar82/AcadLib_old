@@ -128,14 +128,15 @@ namespace AcadLib.Geometry
             texts.AddEntityToCurrentSpace();
         }
 
-        /// <summary>
-        /// Прополка полилинии
-        /// </summary>        
         public static void Wedding(this Polyline pl, Tolerance tolerance)
         {
-            //var count = pl.NumberOfVertices;
-            var iPrew = pl.NextVertexIndex(0, -1);
-            var prew = pl.GetPoint2dAt(iPrew);
+            Wedding(pl, tolerance, false);
+        }
+
+        public static void Wedding(this Polyline pl, Tolerance tolerance, bool close = true, bool onSomeLine = false)
+        {
+            //var iPrew = pl.NextVertexIndex(0, -1);
+            var prew = pl.GetPoint2dAt(0);
             for (var i = 1; i < pl.NumberOfVertices; i++)
             {
                 var cur = pl.GetPoint2dAt(i);
@@ -148,9 +149,26 @@ namespace AcadLib.Geometry
                     }
                     pl.RemoveVertexAt(i--);
                 }
-                prew = cur;
+                else if (onSomeLine && pl.NumberOfVertices>2)
+                {
+                    // Проверка если точки на одной прямой
+                    var iNext = pl.NextVertexIndex(i);
+                    var next = pl.GetPoint2dAt(iNext);
+                    if (!next.IsEqualTo(prew, tolerance) && IsPointsOnSomeLine(prew, cur, next, tolerance))
+                    {
+                        pl.RemoveVertexAt(i--);
+                    }
+                    else
+                    {
+                        prew = cur;
+                    }
+                }
+                else
+                {
+                    prew = cur;
+                }
             }
-            if (!pl.Closed) pl.Closed = true;
+            if (close && !pl.Closed) pl.Closed = true;
         }
 
         private static bool IsPointsOnSomeLine(Point2d pt1, Point2d pt2, Point2d pt3, Tolerance tolerance)
