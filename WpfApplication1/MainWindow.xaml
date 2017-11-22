@@ -1,4 +1,4 @@
-﻿<wpf:BaseWindow 
+﻿<wpf1:BaseWindow 
     x:Class="WpfApplication1.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:WpfApplication1"
     xmlns:wpf="clr-namespace:AcadLib.WPF;assembly=AcadLib"
+    xmlns:wpf1="clr-namespace:NetLib.WPF;assembly=NetLib"
     d:DataContext="{d:DesignInstance local:Model, d:IsDesignTimeCreatable=True}"
     mc:Ignorable="d"
     Title="MainWindow" Height="68.173" Width="170.783">
@@ -13,4 +14,4 @@
 		<BulletDecorator></BulletDecorator>
 		<Button Command="{Binding ShowDialog}" Content="Dialog"/>
     </StackPanel>
-</wpf:BaseWindow>
+</wpf1:BaseWindow>

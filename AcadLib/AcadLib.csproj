@@ -98,6 +98,9 @@
     <Reference Include="EPPlus, Version=4.1.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\..\Packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
+    <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\..\Packages\FluentValidation.7.2.1\lib\net45\FluentValidation.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\..\Packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
@@ -335,8 +338,6 @@
     <Compile Include="Model\Visual\VisualOption.cs" />
     <Compile Include="Model\Visual\VisualTransient.cs" />
     <Compile Include="Model\Visual\VisualTransientSimple.cs" />
-    <Compile Include="Model\WPF\BaseViewModel.cs" />
-    <Compile Include="Model\WPF\BaseWindow.cs" />
     <Compile Include="Model\WPF\Controls\AcadColorPick.xaml.cs">
       <DependentUpon>AcadColorPick.xaml</DependentUpon>
     </Compile>
@@ -349,15 +350,6 @@
     <Compile Include="Model\WPF\Converters\MinToHoursConverter.cs" />
     <Compile Include="Model\WPF\Converters\RadiansToDegreeConverterExtension.cs" />
     <Compile Include="Model\WPF\Converters\EnumBindingSourceExtension.cs" />
-    <Compile Include="Model\WPF\StyleSettings.cs" />
-    <Compile Include="Model\WPF\Theme\AccentViewModel.cs" />
-    <Compile Include="Model\WPF\Theme\StyleSettingsView.xaml.cs">
-      <DependentUpon>StyleSettingsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Model\WPF\Theme\StyleSettingsViewModel.cs" />
-    <Compile Include="Model\WPF\Theme\ThemeViewModel.cs" />
-    <Compile Include="Model\WPF\Theme\WindowsThemes.cs" />
-    <Compile Include="Model\WPF\Theme\WindowTheme.cs" />
     <Compile Include="Model\XData\DboDataSaveExt.cs" />
     <Compile Include="Model\XData\DictNODExt.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />
@@ -542,14 +534,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Model\WPF\Theme\StyleSettingsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Resource Include="Model\WPF\Style.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
     <Resource Include="Model\WPF\Images.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

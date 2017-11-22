@@ -1,4 +1,4 @@
-﻿<wpf:BaseWindow 
+﻿<wpf1:BaseWindow 
     x:Class="PIK_GP_Civil.Parkings.Area.DialogView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:PIK_GP_Civil.Parkings.Area"
     xmlns:wpf="clr-namespace:AcadLib.WPF;assembly=AcadLib"
     xmlns:dialog="clr-namespace:WpfApplication1.Dialog"
+    xmlns:wpf1="clr-namespace:NetLib.WPF;assembly=NetLib"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance dialog:DialogViewModel, d:IsDesignTimeCreatable=True}"
     Title="DialogView" 
@@ -24,5 +25,7 @@
 			<Button Content="Cancel" IsCancel="True" Margin="10" MinWidth="60"/>
 		</StackPanel>
 	</Grid>
-</wpf:BaseWindow>
+</wpf1:BaseWindow>
+
+
 

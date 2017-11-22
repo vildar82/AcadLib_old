@@ -49,6 +49,9 @@
     <Reference Include="MicroMvvm, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\Package\MVVM\MicroMvvm.dll</HintPath>
     </Reference>
+    <Reference Include="NetLib">
+      <HintPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\NetLib.dll</HintPath>
+    </Reference>
     <Reference Include="ReactiveUI, Version=7.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\Packages\reactiveui-core.7.4.0\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>

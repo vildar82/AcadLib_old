@@ -9,10 +9,9 @@ namespace TestAcadlib.WPF
     /// </summary>
     public partial class Window1
     {
-        public Window1 (Class1 model)
+        public Window1 (Class1 model) : base(model)
         {
             InitializeComponent();
-            DataContext = model;
         }
     }
 }

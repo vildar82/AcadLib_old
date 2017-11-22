@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AcadLib.UI.Properties
 {
@@ -13,6 +10,12 @@ namespace AcadLib.UI.Properties
             var propVM = new PropertiesViewModel(value, reset);
             var propView = new PropertiesView(propVM);
             return propView.ShowDialog();
+        }
+
+        public static DialogResult ShowForm(object value)
+        {
+            var formProps = new FormProperties { propertyGrid1 = { SelectedObject = value } };
+            return Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(formProps);
         }
     }
 }

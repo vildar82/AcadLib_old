@@ -5,7 +5,6 @@ namespace AcadLib.UI
 {
     public partial class FormProperties : Form
     {
-        [Obsolete("Используй PropertiesService")]
         public FormProperties()
         {
             InitializeComponent();                         

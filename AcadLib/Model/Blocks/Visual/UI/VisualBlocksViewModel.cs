@@ -2,6 +2,7 @@
 using MicroMvvm;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using NetLib.WPF;
 
 namespace AcadLib.Blocks.Visual.UI
 {
@@ -11,6 +12,7 @@ namespace AcadLib.Blocks.Visual.UI
         {
 
         }
+
         public VisualBlocksViewModel(List<IVisualBlock> visuals)
         {
             Visuals = new ObservableCollection<IVisualBlock>(visuals);

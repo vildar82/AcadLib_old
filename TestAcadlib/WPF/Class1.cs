@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.Runtime;
 using MicroMvvm;
 using System.ComponentModel;
 using AcadLib.WPF;
+using NetLib.WPF;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib.WPF
@@ -18,7 +19,7 @@ namespace TestAcadlib.WPF
         }
     }
 
-    public class Class1
+    public class Class1 : BaseViewModel
     {
         public MyEnum Test { get; set; }
         public Color Color { get; set; } = Color.FromColor(System.Drawing.Color.Aquamarine);
