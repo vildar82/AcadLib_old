@@ -32,7 +32,7 @@ namespace AcadLib.Geometry.Polylines.Join
             try
             {
                 icol = fl.JoinEntities(lines.ToArray()).Cast<int>().ToList();
-                fl.Wedding(tolerance, close:false, onSomeLine: true);
+                if (wedding) fl.Wedding(tolerance, close:false, onSomeLine: true);
             }
             catch
             {
