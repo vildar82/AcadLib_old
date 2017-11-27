@@ -14,7 +14,7 @@ namespace AcadLib.IO
     /// </summary>
     public class JsonData<T>
     {
-        private static NLog.Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+        private static ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
         private readonly string serverFile;
         private readonly string localFile;
 
