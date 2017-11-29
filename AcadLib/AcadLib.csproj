@@ -357,12 +357,18 @@
     <Compile Include="Model\WPF\Controls\AcadColorPick.xaml.cs">
       <DependentUpon>AcadColorPick.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\WPF\Controls\TransparenceSlider.xaml.cs">
+      <DependentUpon>TransparenceSlider.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\WPF\Converters\BooleanToHidingVisibilityConverter.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToOppositeBooleanConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorNameConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Model\WPF\Converters\ConvertorBase.cs" />
     <Compile Include="Model\WPF\Converters\EnumDescriptionConverter.cs" />
+    <Compile Include="Model\WPF\Converters\TransparenceInvertConverter.cs" />
+    <Compile Include="Model\WPF\Converters\TransparenceToPercentConverter.cs" />
+    <Compile Include="Model\WPF\Converters\TransparenceToOpacityConverter.cs" />
     <Compile Include="Model\WPF\Converters\MinToHoursConverter.cs" />
     <Compile Include="Model\WPF\Converters\RadiansToDegreeConverterExtension.cs" />
     <Compile Include="Model\WPF\Converters\EnumBindingSourceExtension.cs" />
@@ -547,6 +553,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\WPF\Controls\AcadColorPick.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model\WPF\Controls\TransparenceSlider.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
