@@ -13,10 +13,10 @@
 		Converter={converters:TransparenceToOpacityConverter}}">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition/>
-			<ColumnDefinition/>
+			<ColumnDefinition Width="Auto"/>
 		</Grid.ColumnDefinitions>
 		<Slider Grid.Column="0" TickFrequency="1"  MinWidth="100" VerticalAlignment="Center" Margin="1"
-				  Value="{Binding Transparence}" Minimum="0" Maximum="255" IsDirectionReversed="True"/>
+				  Value="{Binding Transparence}" Minimum="10" Maximum="255" IsDirectionReversed="True"/>
 		<TextBox Grid.Column="1" Text="{Binding Transparence,UpdateSourceTrigger=PropertyChanged, 
 			Converter={converters:TransparenceInvertConverter}}" 
 					MinWidth="50" TextAlignment="Center" VerticalAlignment="Center" Margin="1"/>

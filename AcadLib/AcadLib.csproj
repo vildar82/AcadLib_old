@@ -367,7 +367,6 @@
     <Compile Include="Model\WPF\Converters\ConvertorBase.cs" />
     <Compile Include="Model\WPF\Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Model\WPF\Converters\TransparenceInvertConverter.cs" />
-    <Compile Include="Model\WPF\Converters\TransparenceToPercentConverter.cs" />
     <Compile Include="Model\WPF\Converters\TransparenceToOpacityConverter.cs" />
     <Compile Include="Model\WPF\Converters\MinToHoursConverter.cs" />
     <Compile Include="Model\WPF\Converters\RadiansToDegreeConverterExtension.cs" />

@@ -14,7 +14,7 @@
     Title="MainWindow" Height="68.173" Width="170.783">
     <StackPanel>
 		 <controls:TransparenceSlider Transparence="{Binding Transparence, UpdateSourceTrigger=PropertyChanged}"/>
-		<TextBlock Text="{Binding Transparence, Converter={converters:TransparenceInvertConverter}}"/>
+		<TextBlock Text="{Binding Transparence}"/>
 		<BulletDecorator></BulletDecorator>
 		<Button Command="{Binding ShowDialog}" Content="Dialog"/>
     </StackPanel>

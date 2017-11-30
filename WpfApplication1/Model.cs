@@ -21,7 +21,7 @@ namespace WpfApplication1
         }
 
         [Reactive]
-        public byte Transparence { get; set; } = 255;
+        public byte Transparence { get; set; } = 50;
         public ReactiveCommand ShowDialog { get; set; }
 
         private void ShowDialogExecute()
