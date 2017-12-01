@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using ReactiveUI.Fody.Helpers;
+using Visibility = System.Windows.Visibility;
 
 namespace AcadLib.Errors
 {
@@ -22,6 +24,7 @@ namespace AcadLib.Errors
 
         public ErrorModelBase(IError err)
         {
+            MarginHeader = new Thickness(2);
             firstErr = err;
             Show = new RelayCommand(OnShowExecute);
             if (firstErr.Icon != null)
@@ -33,21 +36,23 @@ namespace AcadLib.Errors
             Background = firstErr.Background;
         }
 
+        public bool ShowCount { get; set; }
         public IError Error => firstErr;
-        
+        public Thickness MarginHeader { get; set; }
+        public Visibility VisibilityCount { get; set; }
         public string Message { get; set; }
         public List<ErrorAddButton> AddButtons { get; set; }
         public BitmapSource Image { get; set; }
         public RelayCommand Show { get; set; }
         
         public bool HasShow { get; set; }
-        public bool ShowCount => Count > 1;
+        
         public bool IsSelected
         {
             get => isSelected;
             set { isSelected = value; RaisePropertyChanged(); SelectionChanged?.Invoke(this, value); }
         }
-        public int Count { get; set; }
+        
         public bool HasAddButtons => AddButtons?.Any() == true;
         public bool HasVisuals => Error?.Visuals?.Any() == true;
         public Color Background { get; set; }

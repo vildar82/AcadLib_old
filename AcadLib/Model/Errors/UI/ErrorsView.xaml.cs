@@ -17,9 +17,9 @@ namespace AcadLib.Errors
         private readonly VisualTransientSimple errorsVisual;
         private readonly Document doc;
 
-        public ErrorsView(ErrorsViewModel errVM)// : base(errVM)
+        public ErrorsView(ErrorsViewModel errVM) : base(errVM)
         {
-            //doc = AcadHelper.Doc;
+            doc = AcadHelper.Doc;
             InitializeComponent();
             DataContext = errVM;
             KeyDown += ErrorsView_KeyDown;
@@ -79,6 +79,11 @@ namespace AcadLib.Errors
         {
             var subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";            
             Process.Start($"mailto:khisyametdinovvt@pik.ru?subject={subject}");
+        }
+
+        private void HeaderTemplateStretchHack(object sender, RoutedEventArgs e)
+        {
+            ((ContentPresenter)((Grid)sender).TemplatedParent).HorizontalAlignment = HorizontalAlignment.Stretch;
         }
     }
 }

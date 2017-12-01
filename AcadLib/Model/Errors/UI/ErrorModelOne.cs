@@ -7,19 +7,22 @@ using System.Windows;
 using AcadLib.Layers;
 using Autodesk.AutoCAD.DatabaseServices;
 using MicroMvvm;
+using Visibility = System.Windows.Visibility;
 
 namespace AcadLib.Errors.UI
 {
     public class ErrorModelOne : ErrorModelBase
     {
-        public readonly ErrorModelList parentErr;
+        public ErrorModelList Parent { get; set; }
 
         public ErrorModelOne(IError err, ErrorModelList parent) : base(err)
         {
-            parentErr = parent;
+            VisibilityCount = Visibility.Collapsed;
+            Parent = parent;
             if (parent == null)
             {
                 Message = err.Message;
+                MarginHeader = new Thickness(32, 2, 2, 2);
             }
             else
             {

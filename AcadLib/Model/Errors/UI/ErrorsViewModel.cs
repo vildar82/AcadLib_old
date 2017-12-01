@@ -11,6 +11,7 @@ using AcadLib.Errors.UI;
 using Autodesk.AutoCAD.DatabaseServices;
 using NetLib.WPF;
 using OfficeOpenXml;
+using ReactiveUI.Fody.Helpers;
 
 namespace AcadLib.Errors
 {
@@ -68,9 +69,9 @@ namespace AcadLib.Errors
         public RelayCommand ExportToTxt { get; set; }
         public RelayCommand DeleteSelectedDublicateBlocks { get; set; }
         public RelayCommand<ErrorModelBase> DeleteError { get; set; }
-        public int ErrorsCountInfo { get; set; }
+        [Reactive] public int ErrorsCountInfo { get; set; }
         public bool IsDublicateBlocksEnabled { get; set; }
-        public int CountSelectedErrors { get; set; }
+        [Reactive] public int CountSelectedErrors { get; set; }
 
         private bool CanCollapseExecute()
         {
@@ -187,7 +188,7 @@ namespace AcadLib.Errors
             {
                 if (item is ErrorModelOne errOne)
                 {
-                    errOne.parentErr.SameErrors.Remove(item);
+                    errOne.Parent.SameErrors.Remove(item);
                 }
                 else
                 {
@@ -228,7 +229,7 @@ namespace AcadLib.Errors
         {
             if (errorBase is ErrorModelOne errOne)
             {
-                errOne.parentErr.SameErrors.Remove(errorBase);
+                errOne.Parent.SameErrors.Remove(errorBase);
             }
             else
             {
