@@ -4,94 +4,88 @@ using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
 {
-   /// <summary>
-   /// Описание AttributeReference для хранения
-   /// Так же подходит для AttributeDefinition
-   /// </summary>
-   [Obsolete("Лучше используй AttributeInfo.")]
-   public class AttributeRefInfo
-   {
-      public string Tag { get; set; }
-      public string Text { get; set; }
-      /// <summary>
-      /// AttributeReference или AttributeDefinition
-      /// </summary>
-      public ObjectId IdAtrRef { get; set; }
+    /// <summary>
+    /// Описание AttributeReference для хранения
+    /// Так же подходит для AttributeDefinition
+    /// </summary>
+    [Obsolete("Лучше используй AttributeInfo.")]
+    public class AttributeRefInfo
+    {
+        public string Tag { get; set; }
+        public string Text { get; set; }
 
-      //public AttributeRefInfo(AttributeReference attr)
-      //{
-      //   Tag = attr.Tag;
-      //   Text = attr.TextString;
-      //   IdAtrRef = attr.Id;
-      //}
+        /// <summary>
+        /// AttributeReference или AttributeDefinition
+        /// </summary>
+        public ObjectId IdAtrRef { get; set; }
 
-      /// <summary>
-      /// DBText - должен быть или AttributeDefinition или AttributeReference
-      /// иначе исключение ArgumentException
-      /// </summary>
-      /// <param name="attr"></param>
-      public AttributeRefInfo(DBText attr)
-      {
-         var attdef = attr as AttributeDefinition;
-         if (attdef != null)
-         {
-            Tag = attdef.Tag;
-         }
-         else
-         {
-            var attref = attr as AttributeReference;
-            if (attref != null)
+        //public AttributeRefInfo(AttributeReference attr)
+        //{
+        //   Tag = attr.Tag;
+        //   Text = attr.TextString;
+        //   IdAtrRef = attr.Id;
+        //}
+
+        /// <summary>
+        /// DBText - должен быть или AttributeDefinition или AttributeReference
+        /// иначе исключение ArgumentException
+        /// </summary>
+        /// <param name="attr"></param>
+        public AttributeRefInfo(DBText attr)
+        {
+            if (attr is AttributeDefinition attdef)
             {
-               Tag = attref.Tag;
+                Tag = attdef.Tag;
             }
             else
             {
-               throw new ArgumentException("requires an AttributeDefintion or AttributeReference");
+                if (attr is AttributeReference attref)
+                {
+                    Tag = attref.Tag;
+                }
+                else
+                {
+                    throw new ArgumentException("requires an AttributeDefintion or AttributeReference");
+                }
             }
-         }
-         Text = attr.TextString;
-         IdAtrRef = attr.Id;
-      }
+            Text = attr.TextString;
+            IdAtrRef = attr.Id;
+        }
 
-      public static List<AttributeRefInfo> GetAttrDefs(ObjectId idBtr)
-      {
-         var resVal = new List<AttributeRefInfo>();
-
-         if (!idBtr.IsNull)
-         {
+        public static List<AttributeRefInfo> GetAttrDefs(ObjectId idBtr)
+        {
+            var resVal = new List<AttributeRefInfo>();
+            if (idBtr.IsNull) return resVal;
             using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
             {
-               foreach (var idEnt in btr)
-               {
-                  using (var attrDef = idEnt.Open(OpenMode.ForRead, false, true) as AttributeDefinition)
-                  {
-                     if (attrDef != null)
-                     {
-                        var attrDefInfo = new AttributeRefInfo((DBText)attrDef);
+                foreach (var idEnt in btr)
+                {
+                    using (var attrDef = idEnt.Open(OpenMode.ForRead, false, true) as AttributeDefinition)
+                    {
+                        if (attrDef == null) continue;
+                        var attrDefInfo = new AttributeRefInfo((DBText) attrDef);
                         resVal.Add(attrDefInfo);
-                     }
-                  }
-               }
+                    }
+                }
             }
-         }
-         return resVal;
-      }
+            return resVal;
+        }
 
-      public static List<AttributeRefInfo> GetAttrRefs (BlockReference blRef)
-      {
-         var resVal = new List<AttributeRefInfo>();
-         if (blRef?.AttributeCollection != null)
-         {
-            foreach (ObjectId idAttrRef in blRef.AttributeCollection)
+        public static List<AttributeRefInfo> GetAttrRefs(BlockReference blRef)
+        {
+            var resVal = new List<AttributeRefInfo>();
+            if (blRef?.AttributeCollection != null)
             {
-               using (var atrRef = idAttrRef.Open( OpenMode.ForRead, false, true)as AttributeReference)
-               {
-                  var ai = new AttributeRefInfo(atrRef);
-                  resVal.Add(ai);
-               }
+                foreach (ObjectId idAttrRef in blRef.AttributeCollection)
+                {
+                    using (var atrRef = idAttrRef.Open(OpenMode.ForRead, false, true) as AttributeReference)
+                    {
+                        var ai = new AttributeRefInfo(atrRef);
+                        resVal.Add(ai);
+                    }
+                }
             }
-         }
-         return resVal;
-      }
-   }
+            return resVal;
+        }
+    }
 }

@@ -134,7 +134,7 @@ namespace AcadLib.Errors
             _shortMsg = GetShortMsg(_msg);
             HasEntity = false;
             Icon = icon ?? SystemIcons.Error;
-            Trans = Matrix3d.Identity;
+            //Trans = Matrix3d.Identity;
             DefineStatus();
         }
 

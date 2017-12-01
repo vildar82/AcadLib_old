@@ -12,14 +12,14 @@ namespace AcadLib.Errors
     /// <summary>
     /// Логика взаимодействия для WindowErrors.xaml
     /// </summary>
-    public partial class ErrorsView : Window
+    public partial class ErrorsView
     {
         private readonly VisualTransientSimple errorsVisual;
         private readonly Document doc;
 
-        public ErrorsView(ErrorsViewModel errVM)
+        public ErrorsView(ErrorsViewModel errVM)// : base(errVM)
         {
-            doc = AcadHelper.Doc;
+            //doc = AcadHelper.Doc;
             InitializeComponent();
             DataContext = errVM;
             KeyDown += ErrorsView_KeyDown;
@@ -38,23 +38,16 @@ namespace AcadLib.Errors
 
         private void Dispose()
         {
-            if (AcadHelper.Doc == doc)
+            if (AcadHelper.Doc != doc) return;
+            using (doc.LockDocument())
             {
-                using (doc.LockDocument())
-                {
-                    errorsVisual?.Dispose();
-                }
+                errorsVisual?.Dispose();
             }
         }
 
         private void ErrorsView_Closed(object sender, System.EventArgs e)
         {
             Dispose();
-        }
-
-        public void DragWindow(object sender, MouseButtonEventArgs args)
-        {
-            DragMove();
         }
 
         private void ErrorsView_KeyDown(object sender, KeyEventArgs e)
@@ -69,20 +62,7 @@ namespace AcadLib.Errors
                 model.DeleteSelectedErrors();
             }
         }
-
-        private void HandlePreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (sender is ScrollViewer && !e.Handled)
-            {
-                e.Handled = true;
-                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
-                    {
-                        RoutedEvent = MouseWheelEvent,
-                        Source = sender
-                    };
-                ((Control)sender).RaiseEvent(eventArg);                
-            }
-        }        
+        
 
         private void Button_Ok_Click(object sender, RoutedEventArgs e)
         {

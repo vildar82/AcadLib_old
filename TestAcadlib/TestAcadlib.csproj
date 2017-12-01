@@ -141,9 +141,6 @@
     <Compile Include="WPF\FieldUserControl.xaml.cs">
       <DependentUpon>FieldUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WPF\IntTextBox.xaml.cs">
-      <DependentUpon>IntTextBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WPF\Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
@@ -166,10 +163,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="WPF\FieldUserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WPF\IntTextBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

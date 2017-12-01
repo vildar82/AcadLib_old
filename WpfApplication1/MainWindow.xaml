@@ -17,5 +17,6 @@
 		<TextBlock Text="{Binding Transparence}"/>
 		<BulletDecorator></BulletDecorator>
 		<Button Command="{Binding ShowDialog}" Content="Dialog"/>
-    </StackPanel>
+		<Button Command="{Binding TestErrors}"/>
+	</StackPanel>
 </wpf1:BaseWindow>

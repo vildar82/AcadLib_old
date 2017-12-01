@@ -99,7 +99,7 @@ namespace AcadLib
 	        }
 	        catch (Exception ex)
 	        {
-		        Logger.Log.Error(ex, $"CopyPackagesLocal");
+		        Logger.Log.Error(ex, "CopyPackagesLocal");
 	        }
         }
 

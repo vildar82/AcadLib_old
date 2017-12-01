@@ -176,11 +176,12 @@ namespace AcadLib.Errors
             }
             return System.Windows.Forms.DialogResult.OK;
         }
+
         public static bool? ShowDialog(List<IError> errors)
         {
             var errVM = new ErrorsViewModel(errors) {IsDialog = true};
             var errView = new ErrorsView(errVM);
-            return Application.ShowModalWindow(errView);            
+            return errView.ShowDialog();
         }
 
         public static void LogErrors()

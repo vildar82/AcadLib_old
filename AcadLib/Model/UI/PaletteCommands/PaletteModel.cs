@@ -8,9 +8,6 @@ namespace AcadLib.PaletteCommands
 {
     public class PaletteModel : ModelBase
     {
-	    ObservableCollection<IPaletteCommand> _paletteCommands;
-	    System.Windows.Media.Brush _background;
-
 		protected PaletteModel()
         {
 
@@ -19,30 +16,23 @@ namespace AcadLib.PaletteCommands
         public PaletteModel(IEnumerable<IPaletteCommand> commands, string version)
         {
 	        Version = version;
-			_paletteCommands = new ObservableCollection<IPaletteCommand>();
+			PaletteCommands = new ObservableCollection<IPaletteCommand>();
             foreach (var item in commands)
             {
                 if (item.Access == null || item.Access.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase))
-                    _paletteCommands.Add(item);
+                    PaletteCommands.Add(item);
             }
-        }        
+        }
 
         /// <summary>
         /// Цвет фона
         /// </summary>
-        public System.Windows.Media.Brush Background {
-            get => _background;
-	        set { _background = value; RaisePropertyChanged(); }
-        }
-
+        public System.Windows.Media.Brush Background { get; set; }
         /// <summary>
         /// Команды на палитре
         /// </summary>
-        public ObservableCollection<IPaletteCommand> PaletteCommands {
-            get => _paletteCommands;
-	        set { _paletteCommands = value; RaisePropertyChanged(); }
-        }
+        public ObservableCollection<IPaletteCommand> PaletteCommands { get; set; }
 
-	    public string Version { get; }
+        public string Version { get; }
 	}
 }

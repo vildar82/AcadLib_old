@@ -119,11 +119,11 @@ namespace AcadLib.PaletteCommands
             {
                 if (group.Key.Equals(groupCommon, StringComparison.OrdinalIgnoreCase))
                 {
-                    commonCommands.AddRange(group.ToList());
+                    commonCommands.AddRange(group);
                 }
                 else
                 {
-                    var model = new PaletteModel(group, versionPalette);
+                    var model = new PaletteModel(group.GroupBy(g=>g.Name).Select(s=>s.First()), versionPalette);
                     if (model.PaletteCommands.Any())
                     {
 	                    var commControl = new UI.CommandsControl {DataContext = model};
@@ -135,7 +135,8 @@ namespace AcadLib.PaletteCommands
                 }
             }
             // Общие команды для всех отделов определенные в этой сборке            
-            var modelCommon = new PaletteModel(commonCommands, versionPalette);
+            var modelCommon = new PaletteModel(commonCommands.GroupBy(g => g.Name).Select(s => s.First()).ToList(),
+                versionPalette);
 	        var controlCommon = new UI.CommandsControl {DataContext = modelCommon};
 	        AddVisual(groupCommon, controlCommon);
             models.Add(modelCommon);
