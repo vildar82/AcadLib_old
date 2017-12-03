@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks
@@ -36,7 +36,7 @@ namespace AcadLib.Blocks
             var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null)
                 throw new Exception("Нет активного документа!");
-            using (var bt = doc.Database.BlockTableId.Open( OpenMode.ForRead) as BlockTable)
+            using (var bt = doc.Database.BlockTableId.Open(OpenMode.ForRead) as BlockTable)
             {
                 return bt.Has(name);
             }
@@ -52,10 +52,9 @@ namespace AcadLib.Blocks
         public static ObjectId CopyBlockFromExternalDrawing(string blName, string fileDrawing, Database destDb,
                                                   DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
-            ObjectId idRes;
             if (mode == DuplicateRecordCloning.Ignore)
             {
-                using (var bt = destDb.BlockTableId.Open( OpenMode.ForRead) as BlockTable)
+                using (var bt = destDb.BlockTableId.Open(OpenMode.ForRead) as BlockTable)
                 {
                     if (bt.Has(blName))
                     {
@@ -65,10 +64,10 @@ namespace AcadLib.Blocks
             }
             var blNames = new List<string> { blName };
             var resCopy = CopyBlockFromExternalDrawing(blNames, fileDrawing, destDb, mode);
-            if (!resCopy.TryGetValue(blName, out idRes))
+            if (!resCopy.TryGetValue(blName, out var idRes))
             {
                 throw new Autodesk.AutoCAD.Runtime.Exception(Autodesk.AutoCAD.Runtime.ErrorStatus.MissingBlockName, $"Не найден блок {blName}");
-            }            
+            }
             return idRes;
         }
 
@@ -76,10 +75,10 @@ namespace AcadLib.Blocks
         /// Перелопределение блока
         /// </summary>        
         public static void Redefine(string name, string file, Database destDb)
-        {            
+        {
             var idBtr = CopyBlockFromExternalDrawing(name, file, destDb, DuplicateRecordCloning.Replace);
             // Синхронизация атрибутов
-            idBtr.SynchronizeAttributes();            
+            idBtr.SynchronizeAttributes();
         }
 
         /// <summary>
@@ -110,8 +109,8 @@ namespace AcadLib.Blocks
                             if (!btr.IsLayout && !btr.IsDependent && !btr.IsAnonymous && filter(btr.Name))
                             {
                                 valToCopy.Add(btr.Id, btr.Name);
-                            }                            
-                        }                        
+                            }
+                        }
                     }
                 }
                 // Копир
@@ -388,9 +387,9 @@ namespace AcadLib.Blocks
 
             if (blRef.Rotation != 0)
             {
-                var matRotate = Matrix3d.Rotation(-blRef.Rotation, Vector3d.ZAxis, blRef.Position);                
+                var matRotate = Matrix3d.Rotation(-blRef.Rotation, Vector3d.ZAxis, blRef.Position);
                 blRef.TransformBy(matRotate);
-            }            
+            }
 
             //if (mat != Matrix3d.Identity)
             //{

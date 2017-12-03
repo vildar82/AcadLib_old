@@ -14,6 +14,7 @@ namespace AcadLib.Blocks.Visual
         }
         public RelayCommand Redefine { get; set; }
 
+        public string Group { get; set; }
         public string Name { get; set; }
         public ImageSource Image { get; set; }
         public string File { get; set; }        

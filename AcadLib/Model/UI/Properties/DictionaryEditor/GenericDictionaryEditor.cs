@@ -57,8 +57,7 @@ namespace AcadLib.UI.Designer
             if (context == null)
                 throw new ArgumentNullException("context");
 
-            var attribute = context.PropertyDescriptor.Attributes[typeof(GenericDictionaryEditorAttribute)] as GenericDictionaryEditorAttribute;
-            if (attribute != null)
+            if (context.PropertyDescriptor.Attributes[typeof(GenericDictionaryEditorAttribute)] is GenericDictionaryEditorAttribute attribute)
             {
                 m_EditorAttribute = attribute;
 
@@ -70,9 +69,11 @@ namespace AcadLib.UI.Designer
             }
             else
             {
-                m_EditorAttribute = new GenericDictionaryEditorAttribute();
-                m_EditorAttribute.KeyDefaultProviderType = typeof(DefaultProvider<TKey>);
-                m_EditorAttribute.ValueDefaultProviderType = typeof(DefaultProvider<TValue>);
+                m_EditorAttribute = new GenericDictionaryEditorAttribute
+                {
+                    KeyDefaultProviderType = typeof(DefaultProvider<TKey>),
+                    ValueDefaultProviderType = typeof(DefaultProvider<TValue>)
+                };
             }
 
             return base.EditValue(context, provider, value);
@@ -97,17 +98,15 @@ namespace AcadLib.UI.Designer
             TKey key;
             TValue value;
 
-            var KeyDefaultProvider = Activator.CreateInstance(m_EditorAttribute.KeyDefaultProviderType) as DefaultProvider<TKey>;
-            if (KeyDefaultProvider != null)
+            if (Activator.CreateInstance(m_EditorAttribute.KeyDefaultProviderType) is DefaultProvider<TKey> KeyDefaultProvider)
                 key = KeyDefaultProvider.GetDefault(DefaultUsage.Key);
             else
-                key = default(TKey);
+                key = default;
 
-            var ValueDefaultProvider = Activator.CreateInstance(m_EditorAttribute.ValueDefaultProviderType) as DefaultProvider<TValue>;
-            if (ValueDefaultProvider != null)
+            if (Activator.CreateInstance(m_EditorAttribute.ValueDefaultProviderType) is DefaultProvider<TValue> ValueDefaultProvider)
                 value = ValueDefaultProvider.GetDefault(DefaultUsage.Value);
             else
-                value = default(TValue);
+                value = default;
 
             return new EditableKeyValuePair<TKey, TValue>(key, value, m_EditorAttribute);
         }
@@ -169,8 +168,7 @@ namespace AcadLib.UI.Designer
         /// <returns>he display text for <paramref name="value"/>.</returns>
         protected override string GetDisplayText(object value)
         {
-            var pair = value as EditableKeyValuePair<TKey, TValue>;
-            if (pair != null)
+            if (value is EditableKeyValuePair<TKey, TValue> pair)
                 return string.Format(CultureInfo.CurrentCulture, "{0}={1}", pair.Key, pair.Value);
             else
                 return base.GetDisplayText(value);

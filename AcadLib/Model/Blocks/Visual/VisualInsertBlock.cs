@@ -9,25 +9,50 @@ namespace AcadLib.Blocks.Visual
 {
     public static class VisualInsertBlock
     {
-        private static Dictionary<Predicate<string>, List<IVisualBlock>> dictFiles = new Dictionary<Predicate<string>, List<IVisualBlock>>();
+        private static readonly Dictionary<Predicate<string>, List<IVisualBlock>> dictFiles =
+            new Dictionary<Predicate<string>, List<IVisualBlock>>();
+        private static readonly Dictionary<Func<string, string>, List<IVisualBlock>> dictGroup =
+            new Dictionary<Func<string, string>, List<IVisualBlock>>();
         private static LayerInfo _layer;
+        private static WindowVisualBlocks winVisual;
+
+        public static void InsertBlockGroups(string fileBlocks, Func<string, string> filterGroup, LayerInfo layer = null)
+        {
+            _layer = layer;
+            if (!dictGroup.TryGetValue(filterGroup, out var visuals))
+            {
+                visuals = LoadVisuals(fileBlocks, filterGroup);
+                dictGroup.Add(filterGroup, visuals);
+            }
+            ShowVisuals(visuals);
+        }
 
         public static void InsertBlock(string fileBlocks, Predicate<string> filter, LayerInfo layer = null)
         {
             _layer = layer;
-            List<IVisualBlock> visuals;
-            if (!dictFiles.TryGetValue(filter, out visuals))
+            if (!dictFiles.TryGetValue(filter, out var visuals))
             {                
-                visuals = LoadVisuals(fileBlocks, filter);
+                visuals = LoadVisuals(fileBlocks,n=> filter(n) ? "" : null);
                 dictFiles.Add(filter, visuals);
             }
+            ShowVisuals(visuals);
+        }
 
-            var vm = new VisualBlocksViewModel(visuals);
-            var winVisual = new WindowVisualBlocks(vm);
-            Autodesk.AutoCAD.ApplicationServices.Core.Application.ShowModalWindow(winVisual);            
-        }        
+        private static void ShowVisuals(List<IVisualBlock> blocks)
+        {
+            var vm = new VisualBlocksViewModel(blocks);
+            if (winVisual == null)
+            {
+                winVisual = new WindowVisualBlocks(vm);
+            }
+            else
+            {
+                winVisual.Model = vm;
+            }
+            winVisual.ShowDialog();
+        }
 
-        public static List<IVisualBlock> LoadVisuals(string file, Predicate<string> filter)
+        public static List<IVisualBlock> LoadVisuals(string file, Func<string, string> filter)
         {
             var visualBlocks = new List<IVisualBlock>();
             using (var dbTemp = new Database(false, true))
@@ -39,10 +64,10 @@ namespace AcadLib.Blocks.Visual
                     foreach (var idBtr in bt)
                     {
                         var btr = idBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
-                        if (filter(btr.Name))
+                        var group = filter(btr.Name);
+                        if (group != null)
                         {
-                            var visualBl = new VisualBlock(btr);
-                            visualBl.File = file;
+                            var visualBl = new VisualBlock(btr) {File = file, Group = group};
                             visualBlocks.Add(visualBl);
                         }
                     }
@@ -60,7 +85,7 @@ namespace AcadLib.Blocks.Visual
         public static void Redefine(IVisualBlock block)
         {
             if (block == null) return;
-            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+            var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
             using (doc.LockDocument())
             {
@@ -73,22 +98,22 @@ namespace AcadLib.Blocks.Visual
             if (block == null) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
-            var idBtr = GetInsertBtr(block.Name, block.File, db);
+            GetInsertBtr(block.Name, block.File, db);
             BlockInsert.Insert(block.Name, _layer);
         }
 
-        private static ObjectId GetInsertBtr(string name, string fileBlocks, Database dbdest)
+        private static void GetInsertBtr(string name, string fileBlocks, Database dbdest)
         {
             // Есть ли уже блок в текущем файле
             using (var bt = dbdest.BlockTableId.Open( OpenMode.ForRead)as BlockTable)
             {
                 if (bt.Has(name))
                 {
-                    return bt[name];
+                    return;
                 }
             }
             // Копирование блока из файла шаблона
-            return Block.CopyBlockFromExternalDrawing(name, fileBlocks, dbdest);
+            Block.CopyBlockFromExternalDrawing(name, fileBlocks, dbdest);
         }
     }
 }

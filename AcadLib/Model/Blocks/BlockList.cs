@@ -18,8 +18,7 @@ namespace AcadLib
                 var bt = db.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
                 foreach (var item in bt)
                 {
-                    var btr = item.GetObject(OpenMode.ForRead) as BlockTableRecord;
-                    if (btr != null && !btr.IsLayout && !btr.IsAnonymous && !btr.IsDependent)
+                    if (item.GetObject(OpenMode.ForRead) is BlockTableRecord btr && !btr.IsLayout && !btr.IsAnonymous && !btr.IsDependent)
                     {
                         list.Add(btr.Name);
                     }

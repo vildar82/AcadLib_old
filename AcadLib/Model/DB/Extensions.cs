@@ -1,11 +1,10 @@
-﻿using System.Collections;
+﻿using AcadLib;
+using AcadLib.Blocks;
+using Autodesk.AutoCAD.DatabaseServices;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AcadLib;
-using AcadLib.Blocks;
-using Autodesk.AutoCAD.DatabaseServices;
-using AcDataTable = Autodesk.AutoCAD.DatabaseServices.DataTable;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
@@ -57,41 +56,41 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
 namespace System.Collections.Generic
 {
-   public static class GenericExtensions
-   {
-      // Applies the given Action to each element of the collection (mimics the F# Seq.iter function).
-      public static void Iterate<T>(this IEnumerable<T> collection, Action<T> action)
-      {
-         foreach (var item in collection) action(item);
-      }
-      // Applies the given Action to each element of the collection (mimics the F# Seq.iteri function).
-      // The integer passed to the Action indicates the index of element.
-      public static void Iterate<T>(this IEnumerable<T> collection, Action<T, int> action)
-      {
-         var i = 0;
-         foreach (var item in collection) action(item, i++);
-      }
-      // Creates a System.Data.DataTable from a BlockAttribute collection.
-      public static Data.DataTable ToDataTable(this IEnumerable<BlockAttribute> blockAtts, string name)
-      {
-         var dTable = new Data.DataTable(name);
-         dTable.Columns.Add("Name", typeof(string));
-         dTable.Columns.Add("Quantity", typeof(int));
-         blockAtts
-             .GroupBy(blk => blk, (blk, blks) => new { Block = blk, Count = blks.Count() }, new BlockAttributeEqualityComparer())
-             .Iterate(row =>
-             {
-                var dRow = dTable.Rows.Add(row.Block.Name, row.Count);
-                row.Block.Attributes.Iterate(att =>
+    public static class GenericExtensions
+    {
+        // Applies the given Action to each element of the collection (mimics the F# Seq.iter function).
+        public static void Iterate<T>(this IEnumerable<T> collection, Action<T> action)
+        {
+            foreach (var item in collection) action(item);
+        }
+        // Applies the given Action to each element of the collection (mimics the F# Seq.iteri function).
+        // The integer passed to the Action indicates the index of element.
+        public static void Iterate<T>(this IEnumerable<T> collection, Action<T, int> action)
+        {
+            var i = 0;
+            foreach (var item in collection) action(item, i++);
+        }
+        // Creates a System.Data.DataTable from a BlockAttribute collection.
+        public static Data.DataTable ToDataTable(this IEnumerable<BlockAttribute> blockAtts, string name)
+        {
+            var dTable = new Data.DataTable(name);
+            dTable.Columns.Add("Name", typeof(string));
+            dTable.Columns.Add("Quantity", typeof(int));
+            blockAtts
+                .GroupBy(blk => blk, (blk, blks) => new { Block = blk, Count = blks.Count() }, new BlockAttributeEqualityComparer())
+                .Iterate(row =>
                 {
-                   if (!dTable.Columns.Contains(att.Key))
-                      dTable.Columns.Add(att.Key);
-                   dRow[att.Key] = att.Value;
+                    var dRow = dTable.Rows.Add(row.Block.Name, row.Count);
+                    row.Block.Attributes.Iterate(att =>
+                 {
+                       if (!dTable.Columns.Contains(att.Key))
+                           dTable.Columns.Add(att.Key);
+                       dRow[att.Key] = att.Value;
+                   });
                 });
-             });
-         return dTable;
-      }
-   }
+            return dTable;
+        }
+    }
 }
 namespace System.Data
 {
@@ -167,10 +166,10 @@ namespace System.Data
         {
             using (var writer = new StreamWriter(filename))
             {
-                writer.WriteLine(dataTbl.GetColumnNames().Aggregate((s1, s2) => string.Format("{0},{1}", s1, s2)));
+                writer.WriteLine(dataTbl.GetColumnNames().Aggregate((s1, s2) => $"{s1},{s2}"));
                 dataTbl.Rows
                     .Cast<DataRow>()
-                    .Select(row => row.ItemArray.Aggregate((s1, s2) => string.Format("{0},{1}", s1, s2)))
+                    .Select(row => row.ItemArray.Aggregate((s1, s2) => $"{s1},{s2}"))
                     .Iterate(line => writer.WriteLine(line));
             }
         }

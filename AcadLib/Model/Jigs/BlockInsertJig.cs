@@ -21,17 +21,19 @@ namespace AcadLib.Jigs
 
       protected override SamplerStatus Sampler(JigPrompts prompts)
       {
-         var jigOpts =
-           new JigPromptPointOptions();
-         jigOpts.UserInputControls =
-           (UserInputControls.Accept3dCoordinates
-           | UserInputControls.NoZeroResponseAccepted
-           | UserInputControls.NoNegativeResponseAccepted);
+            var jigOpts =
+              new JigPromptPointOptions
+              {
+                  UserInputControls =
+              (UserInputControls.Accept3dCoordinates
+              | UserInputControls.NoZeroResponseAccepted
+              | UserInputControls.NoNegativeResponseAccepted),
 
-         jigOpts.Message =
-           "\nУкажите точку вставки: ";
+                  Message =
+              "\nУкажите точку вставки: "
+              };
 
-         var dres =
+            var dres =
            prompts.AcquirePoint(jigOpts);
 
          if (mActualPoint == dres.Value)

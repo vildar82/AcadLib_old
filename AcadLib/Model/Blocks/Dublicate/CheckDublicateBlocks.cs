@@ -92,8 +92,10 @@ namespace AcadLib.Blocks.Dublicate
                 foreach (var dublBlRefInfo in AllDublicBlRefInfos)
                 {
                     var err = new Error($"Дублирование блоков '{dublBlRefInfo.Name}' - {dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
-                       dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error);
-                    err.Tag = dublBlRefInfo;
+                       dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error)
+                    {
+                        Tag = dublBlRefInfo
+                    };
                     _errors.Add(err);
                 }
             }
@@ -148,16 +150,14 @@ namespace AcadLib.Blocks.Dublicate
                     continue;
                 }
 
-                Dictionary<PointTree, List<BlockRefDublicateInfo>> dictPointsBlInfos;
                 var ptTree = new PointTree(blRefInfo.Position.X, blRefInfo.Position.Y);
 
-                if (!dictBlRefInfos.TryGetValue(blRefInfo.Name, out dictPointsBlInfos))
+                if (!dictBlRefInfos.TryGetValue(blRefInfo.Name, out var dictPointsBlInfos))
                 {
                     dictPointsBlInfos = new Dictionary<PointTree, List<BlockRefDublicateInfo>>();
                     dictBlRefInfos.Add(blRefInfo.Name, dictPointsBlInfos);
                 }
-                List<BlockRefDublicateInfo> listBiAtPoint;
-                if (!dictPointsBlInfos.TryGetValue(ptTree, out listBiAtPoint))
+                if (!dictPointsBlInfos.TryGetValue(ptTree, out var listBiAtPoint))
                 {
                     listBiAtPoint = new List<BlockRefDublicateInfo>();
                     dictPointsBlInfos.Add(ptTree, listBiAtPoint);

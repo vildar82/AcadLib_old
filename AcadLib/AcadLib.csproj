@@ -67,32 +67,26 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AcCoreMgd">
-      <HintPath>..\..\ObjectARX\ObjectARX2015\AcCoreMgd.dll</HintPath>
+    <Reference Include="AcCoreMgd">      
       <Private>False</Private>
     </Reference>
-    <Reference Include="AcDbMgd">
-      <HintPath>..\..\ObjectARX\ObjectARX2015\AcDbMgd.dll</HintPath>
+    <Reference Include="AcDbMgd">      
       <Private>False</Private>
     </Reference>
-    <Reference Include="acdbmgdbrep">
-      <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\acdbmgdbrep.dll</HintPath>
+    <Reference Include="acdbmgdbrep">      
       <Private>False</Private>
     </Reference>
-    <Reference Include="AcMgd">
-      <HintPath>..\..\ObjectARX\ObjectARX2015\AcMgd.dll</HintPath>
+    <Reference Include="AcMgd">      
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMPolygonMGD">
       <HintPath>..\..\Package\AutoCAD\2015\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AdWindows">
-      <HintPath>\\vpp-fs01\Dep$\SR\IRA\06_AUTOCAD\work\!Acad_adds\ObjectARX\ObjectARX2015\inc\AdWindows.dll</HintPath>
+    <Reference Include="AdWindows">      
       <Private>False</Private>
     </Reference>
-    <Reference Include="AutoCAD_PIK_Manager">
-      <HintPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Manager.dll</HintPath>
+    <Reference Include="AutoCAD_PIK_Manager">      
       <Private>False</Private>
     </Reference>
     <Reference Include="EPPlus, Version=4.1.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
@@ -112,16 +106,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="MicroMvvm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\MicroMvvm.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>      
       <Private>True</Private>
     </Reference>
-    <Reference Include="MongoDblib">
-      <HintPath>\\dsk2.picompany.ru\project\CAD_Settings\Revit_server\10. Dll's\Dll\PIK\Dll\MongoDblib.dll</HintPath>
+    <Reference Include="MongoDblib">      
       <Private>True</Private>
     </Reference>
-    <Reference Include="NetLib">
-      <HintPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\NetLib.dll</HintPath>
+    <Reference Include="NetLib">      
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
@@ -176,9 +167,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnitsNet, Version=3.81.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\Packages\UnitsNet.3.81.0\lib\net35\UnitsNet.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="UnitsNet, Version=3.82.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Packages\UnitsNet.3.82.0\lib\net35\UnitsNet.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="Xceed.Wpf.AvalonDock, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
@@ -203,6 +193,7 @@
   <ItemGroup>
     <Compile Include="Model\AcadHelper.cs" />
     <Compile Include="Model\Blocks\BlockPropertiesTableExt.cs" />
+    <Compile Include="Model\Blocks\Visual\VisualGroup.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelOne.cs" />
@@ -345,6 +336,7 @@
     <Compile Include="Model\UI\Properties\XmlSerializableDictionary.cs" />
     <Compile Include="Model\UI\Ribbon\Attribute\RibbonCommandAttribute.cs" />
     <Compile Include="Model\UI\Ribbon\Elements\IRibbonElement.cs" />
+    <Compile Include="Model\UI\Ribbon\Elements\RibbonElement.cs" />
     <Compile Include="Model\UI\Ribbon\RibbonBuilder.cs" />
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\Units\UnitsNetExt.cs" />

@@ -21,9 +21,11 @@ namespace AcadLib.Jigs
 
       protected override SamplerStatus Sampler(JigPrompts prompts)
       {
-         var jigOpts = new JigPromptPointOptions();
-         jigOpts.Message = "\n" + _msg;
-         var res = prompts.AcquirePoint(jigOpts);
+            var jigOpts = new JigPromptPointOptions
+            {
+                Message = "\n" + _msg
+            };
+            var res = prompts.AcquirePoint(jigOpts);
          if (res.Status == PromptStatus.OK)
          {
             var curPoint = res.Value;

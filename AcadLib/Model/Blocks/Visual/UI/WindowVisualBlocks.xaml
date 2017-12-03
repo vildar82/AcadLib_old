@@ -7,39 +7,51 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:wpf="clr-namespace:AcadLib.WPF"
     xmlns:wpf1="clr-namespace:NetLib.WPF;assembly=NetLib"
+    xmlns:visual="clr-namespace:AcadLib.Blocks.Visual"
     Title="Вставка блока"
     d:DataContext="{d:DesignInstance local:VisualBlocksViewModel, IsDesignTimeCreatable=True}"
     mc:Ignorable="d"
     x:Name="win">
-    <Grid>
-        <ScrollViewer>
-            <ItemsControl Name="lbVisuals" ItemsSource="{Binding Visuals}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Margin="2" Background="Transparent" Click="ButtonInsert_Click" 
-                                Command="{Binding ElementName=lbVisuals, Path=DataContext.Insert}"
-                                CommandParameter="{Binding}">
-                            <StackPanel>
-                                <Image Width="190" Margin="2" Source="{Binding Image}" />
-                                <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" />
-                            </StackPanel>
-                            <Button.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Command="{Binding Redefine}" Header="Переопределить" />
-                                </ContextMenu>
-                            </Button.ContextMenu>
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-    </Grid>
+	<Grid>
+		<Grid.Resources>
+			<DataTemplate DataType="{x:Type visual:VisualGroup}">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
+					<TextBlock Grid.Row="0" Text="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="1,5,1,1"/>
+					<ItemsControl Grid.Row="1" ItemsSource="{Binding Blocks}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+					<Separator Grid.Row="2" Visibility="{Binding DataContext.VisibleSeparator, ElementName=groups}"/>
+				</Grid>
+			</DataTemplate>
+			<DataTemplate DataType="{x:Type visual:VisualBlock}">
+				<Button Margin="2" Background="Transparent"
+				        Command="{Binding DataContext.Insert, ElementName=groups}"
+				        CommandParameter="{Binding}" BorderThickness="0">
+					<StackPanel>
+						<Image Width="190" Margin="2" Source="{Binding Image}" />
+						<TextBlock HorizontalAlignment="Center" Text="{Binding Name}" FontSize="12" />
+					</StackPanel>
+					<Button.ContextMenu>
+						<ContextMenu>
+							<MenuItem Command="{Binding Redefine}" Header="Переопределить" />
+						</ContextMenu>
+					</Button.ContextMenu>
+				</Button>
+			</DataTemplate>
+		</Grid.Resources>
+		<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+			<ItemsControl Name="groups" ItemsSource="{Binding Groups}" Margin="2" />
+		</ScrollViewer>
+	</Grid>
 </wpf1:BaseWindow>
 
 

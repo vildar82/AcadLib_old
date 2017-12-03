@@ -19,8 +19,10 @@ namespace AcadLib.PaletteCommands
 			PaletteCommands = new ObservableCollection<IPaletteCommand>();
             foreach (var item in commands)
             {
-                if (item.Access == null || item.Access.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase))
+                if (PaletteSetCommands.IsAccess(item.Access))
+                {
                     PaletteCommands.Add(item);
+                }
             }
         }
 

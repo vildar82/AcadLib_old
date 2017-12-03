@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System;
 
 namespace AcadLib.Geometry
 {
@@ -84,14 +84,12 @@ namespace AcadLib.Geometry
         /// IndexOutOfRangeException is throw if index is less than 0 or more than 2.</exception>
         public T this[int i]
         {
-            get
-            {
+            get {
                 if (i > 2 || i < 0)
                     throw new IndexOutOfRangeException("Index out of range");
                 return _pts[i];
             }
-            set
-            {
+            set {
                 if (i > 2 || i < 0)
                     throw new IndexOutOfRangeException("Index out of range");
                 _pts[i] = value;
@@ -179,7 +177,7 @@ namespace AcadLib.Geometry
         /// <returns>A string containing the three elements separated with commas.</returns>
         public override string ToString()
         {
-            return string.Format("{0},{1},{2}", _pt0, _pt1, _pt2);
+            return $"{_pt0},{_pt1},{_pt2}";
         }
 
         #endregion

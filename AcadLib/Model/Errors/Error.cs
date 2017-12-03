@@ -78,8 +78,7 @@ namespace AcadLib.Errors
                 }
                 return _extents;
             }
-            set
-            {
+            set {
                 _extents = value;
                 _alreadyCalcExtents = true;
             }
@@ -303,7 +302,7 @@ namespace AcadLib.Errors
         protected void DefineStatus()
         {
             if (Icon == null) Icon = SystemIcons.Error;
-            dictErrorIcons.TryGetValue(Icon, out ErrorStatus status);
+            dictErrorIcons.TryGetValue(Icon, out var status);
             Status = status;
         }
     }

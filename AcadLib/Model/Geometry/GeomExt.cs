@@ -71,8 +71,7 @@ namespace AcadLib.Geometry
                 pline.Explode(oldCol);
                 foreach (DBObject obj in oldCol)
                 {
-                    var crv = obj as Curve;
-                    if (crv != null)
+                    if (obj is Curve crv)
                     {
                         var flat = crv.GetProjectedCurve(plane, direction);
                         newCol.Add(flat);

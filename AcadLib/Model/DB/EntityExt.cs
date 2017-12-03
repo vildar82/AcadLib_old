@@ -12,16 +12,18 @@ namespace AcadLib.Extensions
         public static void SetAnnotativeScale(this Entity ent, int scale)
         {
             // Проверка, есть ли нужный масштаб в чертеже
-            var nameScale = string.Format("1:{0}", scale);
+            var nameScale = $"1:{scale}";
             var ocm = ent.Database.ObjectContextManager;
             var occ = ocm.GetContextCollection("ACDB_ANNOTATIONSCALES");
             ObjectContext contextAnnoScale;
             if (!occ.HasContext(nameScale))
             {
-                var annoScale = new AnnotationScale();
-                annoScale.Name = nameScale;
-                annoScale.PaperUnits = 1;
-                annoScale.DrawingUnits = scale;
+                var annoScale = new AnnotationScale
+                {
+                    Name = nameScale,
+                    PaperUnits = 1,
+                    DrawingUnits = scale
+                };
                 occ.AddContext(annoScale);
                 contextAnnoScale = annoScale;
             }

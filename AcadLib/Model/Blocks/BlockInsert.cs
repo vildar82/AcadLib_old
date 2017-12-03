@@ -130,8 +130,10 @@ namespace AcadLib.Blocks
             var db = owner.Database;
             var bt = db.BlockTableId.GetObject( OpenMode.ForRead)as BlockTable;
             var btr = bt[blName].GetObject(OpenMode.ForRead) as BlockTableRecord;
-            var blRef = new BlockReference(pt, btr.Id);
-            blRef.Position = pt;
+            var blRef = new BlockReference(pt, btr.Id)
+            {
+                Position = pt
+            };
             if (blRef.Annotative == AnnotativeStates.True)
             {
                 // Установка аннотативного масштаба

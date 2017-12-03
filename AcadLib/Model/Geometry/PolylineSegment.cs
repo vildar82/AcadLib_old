@@ -1,5 +1,5 @@
-﻿using System;
-using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.Geometry;
+using System;
 
 namespace AcadLib.Geometry
 {
@@ -7,7 +7,7 @@ namespace AcadLib.Geometry
     /// Represents a Polyline segment.
     /// </summary>
     public class PolylineSegment
-   {
+    {
         #region Fields
 
         private Point2d _startPoint, _endPoint;
@@ -278,12 +278,8 @@ namespace AcadLib.Geometry
         /// <returns>A string containing the current PolylineSegemnt properties separated with commas.</returns>
         public override string ToString()
         {
-            return string.Format("{0}, {1}, {2}, {3}, {4}",
-                _startPoint.ToString(),
-                _endPoint.ToString(),
-                _bulge.ToString(),
-                _startWidth.ToString(),
-                _endWidth.ToString());
+            return
+                $"{_startPoint.ToString()}, {_endPoint.ToString()}, {_bulge.ToString()}, {_startWidth.ToString()}, {_endWidth.ToString()}";
         }
 
         #endregion

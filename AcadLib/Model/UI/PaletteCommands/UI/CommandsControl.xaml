@@ -5,49 +5,50 @@
     xmlns:local="clr-namespace:AcadLib.PaletteCommands.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:windows="clr-namespace:Autodesk.Windows;assembly=AdWindows"
     d:DataContext="{d:DesignInstance local:DesignTimePalette,IsDesignTimeCreatable=True}"
     mc:Ignorable="d">
-    <Grid Background="{Binding Background}">
+	<Grid Background="{Binding Background}">
 		<Grid.RowDefinitions>
 			<RowDefinition/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-        <ItemsControl Grid.Row="0"
+		<ItemsControl Grid.Row="0"
             Background="Transparent" BorderThickness="0"
             ItemsSource="{Binding PaletteCommands}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button Width="40" Height="40" Command="{Binding Command}" 
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Button Width="40" Height="40" Command="{Binding Command}" 
                             Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
                             Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                        <Image Margin="2" Source="{Binding Image}" />
-                        <ToolTipService.ToolTip>
-                            <StackPanel MaxWidth="500">
-                                <TextBlock Margin="1" Text="{Binding Name}" TextWrapping="Wrap"/>
-                                <TextBlock Margin="1" Text="{Binding Description}" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </ToolTipService.ToolTip>
-                        <Button.ContextMenu>
-                            <ContextMenu ItemsSource="{Binding ContexMenuItems}">
-                                <ContextMenu.ItemContainerStyle>
-                                    <Style TargetType="{x:Type MenuItem}">
-                                        <Setter Property="Icon" Value="{Binding Icon}"/>
-                                        <Setter Property="Header" Value="{Binding Name}"/>
-                                        <Setter Property="Command" Value="{Binding Command}"/>
-                                    </Style>
-                                </ContextMenu.ItemContainerStyle>
-                            </ContextMenu>
-                        </Button.ContextMenu>
-                    </Button>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+						<Image Margin="2" Source="{Binding Image}" />
+						<ToolTipService.ToolTip>
+							<StackPanel MaxWidth="500">
+								<TextBlock Margin="1" Text="{Binding Name}" TextWrapping="Wrap"/>
+								<TextBlock Margin="1" Text="{Binding Description}" TextWrapping="Wrap"/>
+							</StackPanel>
+						</ToolTipService.ToolTip>
+						<Button.ContextMenu>
+							<ContextMenu ItemsSource="{Binding ContexMenuItems}">
+								<ContextMenu.ItemContainerStyle>
+									<Style TargetType="{x:Type MenuItem}">
+										<Setter Property="Icon" Value="{Binding Icon}"/>
+										<Setter Property="Header" Value="{Binding Name}"/>
+										<Setter Property="Command" Value="{Binding Command}"/>
+									</Style>
+								</ContextMenu.ItemContainerStyle>
+							</ContextMenu>
+						</Button.ContextMenu>
+					</Button>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 		<TextBlock Grid.Row="1" Text="{Binding Version}"/>
-    </Grid>
+	</Grid>
 </UserControl>

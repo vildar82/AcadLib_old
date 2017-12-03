@@ -21,16 +21,14 @@ namespace AcadLib.Blocks
         /// </summary>      
         public AttributeInfo(DBText attr)
         {
-            var attdef = attr as AttributeDefinition;
-            if (attdef != null)
+            if (attr is AttributeDefinition attdef)
             {
                 Tag = attdef.Tag;
                 IsAtrDefinition = true;
             }
             else
             {
-                var attref = attr as AttributeReference;
-                if (attref != null)
+                if (attr is AttributeReference attref)
                 {
                     Tag = attref.Tag;
                 }

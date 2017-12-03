@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using AcadLib.Errors;
+﻿using AcadLib.Errors;
 using OfficeOpenXml;
+using System.Collections.Generic;
+using System.IO;
 
 namespace AcadLib.Colors
 {
@@ -10,7 +10,7 @@ namespace AcadLib.Colors
         public string Name { get; set; }
         public List<ColorItem> Colors { get; set; }
 
-        public ColorBook ( string name)
+        public ColorBook(string name)
         {
             Name = name;
             Colors = new List<ColorItem>();
@@ -18,7 +18,7 @@ namespace AcadLib.Colors
 
         public static ColorBook ReadFromFile(string NcsFile)
         {
-            var colorBookNcs = new ColorBook("NCS");            
+            var colorBookNcs = new ColorBook("NCS");
 
             using (var exlPack = new ExcelPackage(new FileInfo(NcsFile)))
             {
@@ -31,20 +31,20 @@ namespace AcadLib.Colors
                     var nameNcs = wsNcs.Cells[row, 1].Text;
                     if (string.IsNullOrEmpty(nameNcs))
                         break;
-                    
-                    var r = getByte(wsNcs.Cells[row, 2].Text);
+
+                    var r = GetByte(wsNcs.Cells[row, 2].Text);
                     if (r.Failure)
                     {
                         Inspector.AddError($"Ошибка в ячейке [{row},2] - {r.Error}");
                         continue;
                     }
-                    var g = getByte(wsNcs.Cells[row, 3].Text);
+                    var g = GetByte(wsNcs.Cells[row, 3].Text);
                     if (g.Failure)
                     {
                         Inspector.AddError($"Ошибка в ячейке [{row},2] - {g.Error}");
                         continue;
                     }
-                    var b = getByte(wsNcs.Cells[row, 4].Text);
+                    var b = GetByte(wsNcs.Cells[row, 4].Text);
                     if (b.Failure)
                     {
                         Inspector.AddError($"Ошибка в ячейке [{row},2] - {b.Error}");
@@ -53,21 +53,17 @@ namespace AcadLib.Colors
 
                     var colorItem = new ColorItem(nameNcs, r.Value, g.Value, b.Value);
                     colorBookNcs.Colors.Add(colorItem);
-                                        
+
                 } while (true);
             }
             return colorBookNcs;
         }
 
-        private static Result<byte> getByte(string value)
+        private static Result<byte> GetByte(string value)
         {
-            byte res;
-            if (!byte.TryParse(value, out res))
-            {
-                // Ошибка определения бита
-                return Result.Fail<byte>($"Не определен бит из значения {value}");
-            }
-            return Result.Ok(res);
+            return !byte.TryParse(value, out var res)
+                ? Result.Fail<byte>($"Не определен бит из значения {value}")
+                : Result.Ok(res);
         }
     }
 }

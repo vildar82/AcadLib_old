@@ -108,11 +108,9 @@ namespace AcadLib.Extensions
 
         static string GetTag(DBText dbtext)
         {
-            var attdef = dbtext as AttributeDefinition;
-            if (attdef != null)
+            if (dbtext is AttributeDefinition attdef)
                 return attdef.Tag;
-            var attref = dbtext as AttributeReference;
-            if (attref != null)
+            if (dbtext is AttributeReference attref)
                 return attref.Tag;
             throw new ArgumentException("requires an AttributeDefintion or AttributeReference");
         }

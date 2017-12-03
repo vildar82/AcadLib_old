@@ -12,8 +12,7 @@ namespace AcadLib
         public static T GetValue<T>(this Dictionary<string, object> dictValues, string name, T defaultValue)
         {
             if (dictValues == null) return defaultValue;
-            object value;
-            if (dictValues.TryGetValue(name, out value))
+            if (dictValues.TryGetValue(name, out var value))
             {
                 try
                 {
@@ -72,7 +71,7 @@ namespace AcadLib
             }
             catch
             {
-                res = default(T);
+                res = default;
             }
             return res;
         }

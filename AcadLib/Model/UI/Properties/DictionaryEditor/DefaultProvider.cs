@@ -34,7 +34,7 @@ namespace AcadLib.UI.Designer
         {
             var t = typeof(T);
             if (t.IsPrimitive || t.IsEnum)
-                return default(T);
+                return default;
             else if (t == typeof(string))
                 return (T)(object)String.Empty;
             else

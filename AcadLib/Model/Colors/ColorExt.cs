@@ -48,7 +48,7 @@ namespace AcadLib.Colors
         {
             if (color.IsNullOrEmpty()) return null;
             // Index
-            if ( short.TryParse(color, out short colorIndex))
+            if (short.TryParse(color, out var colorIndex))
             {
                 return Color.FromColorIndex(ColorMethod.ByAci, colorIndex);
             }

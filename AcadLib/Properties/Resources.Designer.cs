@@ -8,10 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AcadLib.Properties {
-    using System;
-    
-    
+namespace AcadLib.Properties
+{
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,36 +20,41 @@ namespace AcadLib.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
-        
+    public class Resources
+    {
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal Resources()
+        {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager
+        {
             get {
-                if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AcadLib.Properties.Resources", typeof(Resources).Assembly);
+                if (object.ReferenceEquals(resourceMan, null))
+                {
+                    var temp = new global::System.Resources.ResourceManager("AcadLib.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture
+        {
             get {
                 return resourceCulture;
             }
@@ -59,183 +62,201 @@ namespace AcadLib.Properties {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Collapse {
+        public static System.Drawing.Bitmap Collapse
+        {
             get {
-                object obj = ResourceManager.GetObject("Collapse", resourceCulture);
+                var obj = ResourceManager.GetObject("Collapse", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Delete {
+        public static System.Drawing.Bitmap Delete
+        {
             get {
-                object obj = ResourceManager.GetObject("Delete", resourceCulture);
+                var obj = ResourceManager.GetObject("Delete", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap DeleteAll {
+        public static System.Drawing.Bitmap DeleteAll
+        {
             get {
-                object obj = ResourceManager.GetObject("DeleteAll", resourceCulture);
+                var obj = ResourceManager.GetObject("DeleteAll", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap excel {
+        public static System.Drawing.Bitmap excel
+        {
             get {
-                object obj = ResourceManager.GetObject("excel", resourceCulture);
+                var obj = ResourceManager.GetObject("excel", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Expand {
+        public static System.Drawing.Bitmap Expand
+        {
             get {
-                object obj = ResourceManager.GetObject("Expand", resourceCulture);
+                var obj = ResourceManager.GetObject("Expand", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon house {
+        public static System.Drawing.Icon house
+        {
             get {
-                object obj = ResourceManager.GetObject("house", resourceCulture);
+                var obj = ResourceManager.GetObject("house", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap logo {
+        public static System.Drawing.Bitmap logo
+        {
             get {
-                object obj = ResourceManager.GetObject("logo", resourceCulture);
+                var obj = ResourceManager.GetObject("logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon pik {
+        public static System.Drawing.Icon pik
+        {
             get {
-                object obj = ResourceManager.GetObject("pik", resourceCulture);
+                var obj = ResourceManager.GetObject("pik", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap PIK_XDataView {
+        public static System.Drawing.Bitmap PIK_XDataView
+        {
             get {
-                object obj = ResourceManager.GetObject("PIK_XDataView", resourceCulture);
+                var obj = ResourceManager.GetObject("PIK_XDataView", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap report {
+        public static System.Drawing.Bitmap report
+        {
             get {
-                object obj = ResourceManager.GetObject("report", resourceCulture);
+                var obj = ResourceManager.GetObject("report", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon select {
+        public static System.Drawing.Icon select
+        {
             get {
-                object obj = ResourceManager.GetObject("select", resourceCulture);
+                var obj = ResourceManager.GetObject("select", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap send {
+        public static System.Drawing.Bitmap send
+        {
             get {
-                object obj = ResourceManager.GetObject("send", resourceCulture);
+                var obj = ResourceManager.GetObject("send", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap send2 {
+        public static System.Drawing.Bitmap send2
+        {
             get {
-                object obj = ResourceManager.GetObject("send2", resourceCulture);
+                var obj = ResourceManager.GetObject("send2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Show {
+        public static System.Drawing.Bitmap Show
+        {
             get {
-                object obj = ResourceManager.GetObject("Show", resourceCulture);
+                var obj = ResourceManager.GetObject("Show", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap test {
+        public static System.Drawing.Bitmap test
+        {
             get {
-                object obj = ResourceManager.GetObject("test", resourceCulture);
+                var obj = ResourceManager.GetObject("test", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap txt {
+        public static System.Drawing.Bitmap txt
+        {
             get {
-                object obj = ResourceManager.GetObject("txt", resourceCulture);
+                var obj = ResourceManager.GetObject("txt", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap unknown {
+        public static System.Drawing.Bitmap unknown
+        {
             get {
-                object obj = ResourceManager.GetObject("unknown", resourceCulture);
+                var obj = ResourceManager.GetObject("unknown", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap update {
+        public static System.Drawing.Bitmap update
+        {
             get {
-                object obj = ResourceManager.GetObject("update", resourceCulture);
+                var obj = ResourceManager.GetObject("update", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

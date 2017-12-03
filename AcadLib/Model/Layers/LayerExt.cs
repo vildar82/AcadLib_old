@@ -158,7 +158,7 @@ namespace AcadLib.Layers
             var li = new LayerInfo(layer);
             var layersInfo = new List<LayerInfo> { li };
             var dictLays = CheckLayerState(layersInfo);
-            dictLays.TryGetValue(layer, out ObjectId res);
+            dictLays.TryGetValue(layer, out var res);
             return res;
         }
 

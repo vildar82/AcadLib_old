@@ -24,8 +24,7 @@ namespace AcadLib
                 return defaultValue;
             }
 
-            T result;
-            return Enum.TryParse(value, true, out result) ? result : defaultValue;
+            return Enum.TryParse(value, true, out T result) ? result : defaultValue;
         }
     }
 }

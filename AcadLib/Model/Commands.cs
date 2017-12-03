@@ -1,9 +1,12 @@
 ﻿using AcadLib.Layers;
 using AcadLib.PaletteCommands;
 using AcadLib.Statistic;
+using AcadLib.UI.Ribbon;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
+using Autodesk.Windows;
 using NetLib.IO;
 using System;
 using System.Collections.Generic;
@@ -13,7 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.ApplicationServices;
 using Path = System.IO.Path;
 
 [assembly: CommandClass(typeof(AcadLib.Commands))]
@@ -27,7 +30,6 @@ namespace AcadLib
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
-        public const string CommandDbJbjectsCountInfo = "PIK_DbObjectsCountInfo";
         //public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";
         public const string CommandXDataView = "PIK_XDataView";
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
@@ -78,7 +80,7 @@ namespace AcadLib
 #endif
             try
             {
-                Logger.Log.Info($"start Initialize AcadLib");
+                Logger.Log.Info("start Initialize AcadLib");
                 PluginStatisticsHelper.StartAutoCAD();
                 AllCommandsCommon();
                 // Копирование вспомогательных сборок локально из шаровой папки packages
@@ -103,14 +105,14 @@ namespace AcadLib
                     var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
                     LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
                 }
-                Logger.Log.Info($"end Initialize AcadLib");
+                Logger.Log.Info("end Initialize AcadLib");
             }
             catch (System.Exception ex)
             {
-                Logger.Log.Error(ex, $"AcadLib Initialize.");
+                Logger.Log.Error(ex, "AcadLib Initialize.");
             }
         }
-
+        
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             if (dllsResolve == null)
@@ -166,8 +168,8 @@ namespace AcadLib
             CommandStart.Start(doc => Colors.ColorBookHelper.GenerateNCS());
         }
 
-        [CommandMethod(Group, CommandDbJbjectsCountInfo, CommandFlags.Modal)]
-        public void DbObjectsCountInfo()
+        [CommandMethod(Group, nameof(PIK_DbObjectsCountInfo), CommandFlags.Modal)]
+        public void PIK_DbObjectsCountInfo()
         {
             CommandStart.Start(doc =>
             {
@@ -176,7 +178,7 @@ namespace AcadLib
                 var allTypes = new Dictionary<string, int>();
                 for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
                 {
-                    if (!db.TryGetObjectId(new Handle(i), out ObjectId id)) continue;
+                    if (!db.TryGetObjectId(new Handle(i), out var id)) continue;
                     if (allTypes.ContainsKey(id.ObjectClass.Name))
                         allTypes[id.ObjectClass.Name]++;
                     else
@@ -185,6 +187,36 @@ namespace AcadLib
                 var sortedByCount = allTypes.OrderBy(i => i.Value);
                 foreach (var item in sortedByCount)
                     ed.WriteMessage($"\n{item.Key} - {item.Value}");
+            });
+        }
+
+        [CommandMethod(Group, nameof(PIK_ModelObjectsCountInfo), CommandFlags.Modal)]
+        public void PIK_ModelObjectsCountInfo()
+        {
+            CommandStart.Start(doc =>
+            {
+                var db = doc.Database;
+                var ed = doc.Editor;
+                using (var t = db.TransactionManager.StartTransaction())
+                {
+                    var allTypes = new Dictionary<string, int>();
+                    var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject<BlockTableRecord>();
+                    foreach (var id in ms)
+                    {
+                        if (allTypes.ContainsKey(id.ObjectClass.Name))
+                        {
+                            allTypes[id.ObjectClass.Name]++;
+                        }
+                        else
+                        {
+                            allTypes.Add(id.ObjectClass.Name, 1);
+                        }
+                    }
+                    var sortedByCount = allTypes.OrderBy(i => i.Value);
+                    foreach (var item in sortedByCount)
+                        ed.WriteMessage($"\n{item.Key} - {item.Value}");
+                    t.Commit();
+                }
             });
         }
 
@@ -287,7 +319,7 @@ namespace AcadLib
                 var ed = doc.Editor;
                 var res = ed.GetString("\nВведи ObjectID, например:8796086050096");
                 if (res.Status != PromptStatus.OK) return;
-                var id =long.Parse(res.StringResult);
+                var id = long.Parse(res.StringResult);
                 var db = doc.Database;
                 using (var t = db.TransactionManager.StartTransaction())
                 {

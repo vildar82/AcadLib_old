@@ -12,14 +12,14 @@ namespace AcadLib
             {
                 using (var adUtils = new NetLib.AD.ADUtils())
                 {
-                    UserGroupsAd = adUtils.GetCurrentUserGroups(out string fioAd);
+                    UserGroupsAd = adUtils.GetCurrentUserGroups(out var fioAd);
                     FioAD = fioAd;
                 }
                 UserData = new MongoDblib.UsersData.DbUserData().GetCurrentUser();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Logger.Log.Error(ex,$"adUtils");
+                Logger.Log.Error(ex, $"adUtils");
             }
         }
 
@@ -28,7 +28,7 @@ namespace AcadLib
         public static List<string> UserGroupsAd { get; set; }
 
         public static void ShowUserProfileRegister()
-        {            
+        {
             MongoDblib.UsersData.UserDataRegUI.ShowUserProfileRegister(FioAD, "", "AutoCAD");
         }
     }

@@ -37,8 +37,7 @@ namespace AcadLib.PaletteCommands.UI
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var selComm = ((FrameworkElement)sender).DataContext as PaletteCommand;
-            if (selComm == null) return;
+            if (!(((FrameworkElement)sender).DataContext is PaletteCommand selComm)) return;
             selComm.Execute();
         }        
     }

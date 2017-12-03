@@ -169,7 +169,7 @@ namespace AcadLib
                     }
                 }
             }
-            return default(T);
+            return default;
         }
 
         /// <summary>

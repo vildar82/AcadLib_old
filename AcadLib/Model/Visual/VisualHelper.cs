@@ -90,6 +90,7 @@ namespace AcadLib.Visual
 
         public static void SetEntityOpt(Entity ent, VisualOption opt)
         {
+            if (ent == null) return;
             if (opt.Color != null) ent.Color = opt.Color;
             if (opt.Transparency.Alpha != 0) ent.Transparency = opt.Transparency;
             if (opt.LineWeight.HasValue) ent.LineWeight = opt.LineWeight.Value;

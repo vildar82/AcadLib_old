@@ -35,7 +35,7 @@ namespace AcadLib.WPF.Controls
 
         public static readonly DependencyProperty TransparenceProperty =
             DependencyProperty.Register("Transparence", typeof(byte), typeof(TransparenceSlider),
-                new FrameworkPropertyMetadata(default(byte), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+                new FrameworkPropertyMetadata((byte)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
     }
 }

@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using NetLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using NetLib;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
@@ -19,10 +17,10 @@ namespace AcadLib
         public static readonly string dllLocalPackages = IO.Path.GetUserPluginFolder("packages");
 
         public static void LoadScreenshotToSlack()
-        {           
-            
+        {
+
             LoadPackages("CloudinaryDotNet.dll");
-            LoadPackages("ScreenshotToSlack.dll");            
+            LoadPackages("ScreenshotToSlack.dll");
         }
 
         /// <summary>
@@ -37,21 +35,21 @@ namespace AcadLib
         /// EntityFramework
         /// </summary>
         public static void LoadEntityFramework()
-        {            
+        {
             LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.dll"));
-            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.SqlServer.dll"));            
+            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.SqlServer.dll"));
         }
 
         public static void LoadMDM()
         {
-            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll"));                        
+            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll"));
         }
 
         public static void LoadPackages(string name)
         {
             var dllLocal = Path.Combine(IO.Path.GetUserPluginFolder("packages"), name);
             LoadFromTry(dllLocal);
-        }        
+        }
 
         public static void LoadFrom(string dll)
         {
@@ -70,7 +68,7 @@ namespace AcadLib
             try
             {
                 LoadFrom(dll);
-				Logger.Log.Info($"LoadFromTry - {dll}");
+                Logger.Log.Info($"LoadFromTry - {dll}");
             }
             catch (Exception ex)
             {
@@ -92,15 +90,15 @@ namespace AcadLib
 
         public static void CopyPackagesLocal()
         {
-	        try
-	        {
-		        var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, "packages");
-		        NetLib.IO.Path.CopyDirectory(dllServer, dllLocalPackages);
-	        }
-	        catch (Exception ex)
-	        {
-		        Logger.Log.Error(ex, "CopyPackagesLocal");
-	        }
+            try
+            {
+                var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, "packages");
+                NetLib.IO.Path.CopyDirectory(dllServer, dllLocalPackages);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "CopyPackagesLocal");
+            }
         }
 
         /// <summary>
@@ -119,7 +117,7 @@ namespace AcadLib
         private static List<string> GetDllsForCurVerAcad(List<string> dlls)
         {
             var dllsToLoad = dlls.ToList();
-            if (int.TryParse(HostApplicationServices.Current.releaseMarketVersion, out int ver))
+            if (int.TryParse(HostApplicationServices.Current.releaseMarketVersion, out var ver))
             {
                 foreach (var groupDllVer in dlls.SelectNulless(DllVer.GetDllVer).GroupBy(g => g.FileWoVer))
                 {
@@ -163,7 +161,7 @@ namespace AcadLib
         {
             DllVer dllVer = null;
             var match = Regex.Match(file, @"(_v(\d{4}).dll)$");
-            if (match.Success && int.TryParse(match.Groups[2].Value, out int ver))
+            if (match.Success && int.TryParse(match.Groups[2].Value, out var ver))
             {
                 dllVer = new DllVer(file, ver);
             }
