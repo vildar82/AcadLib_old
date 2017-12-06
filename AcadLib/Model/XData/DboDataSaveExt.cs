@@ -1,10 +1,11 @@
-﻿using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+﻿using JetBrains.Annotations;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.XData
 {
     public static class DboDataSaveExt
     {
-        public static void SaveDboDict(this IDboDataSave dboSave)
+        public static void SaveDboDict([NotNull] this IDboDataSave dboSave)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             using (doc.LockDocument())
@@ -17,7 +18,7 @@ namespace AcadLib.XData
             }
         }
 
-        public static void LoadDboDict(this IDboDataSave dboSave)
+        public static void LoadDboDict([NotNull] this IDboDataSave dboSave)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             using (doc.LockDocument())
@@ -36,7 +37,7 @@ namespace AcadLib.XData
         /// </summary>
         /// <param name="dboSave">Объект чертежа</param>
         /// <param name="dicName">Имя удаляемого словаря или пусто для удаления всего словаря плагина</param>
-        public static void DeleteDboDict (this IDboDataSave dboSave, string dicName = null)
+        public static void DeleteDboDict([NotNull] this IDboDataSave dboSave, [CanBeNull] string dicName = null)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             using (doc.LockDocument())

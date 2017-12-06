@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using NetLib;
+using System.Collections.Generic;
+using System.Linq;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
     public static class EntityHelper
     {
-        public static void AddEntityToCurrentSpace(this IEnumerable<Entity> ents, EntityOptions entityOptions)
+        public static void AddEntityToCurrentSpace([CanBeNull] this IEnumerable<Entity> ents, [CanBeNull] EntityOptions entityOptions = null)
         {
             if (ents == null || !ents.Any()) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -17,11 +18,14 @@ namespace AcadLib
             using (doc.LockDocument())
             using (var t = db.TransactionManager.StartTransaction())
             {
-                var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+                var cs = (BlockTableRecord)db.CurrentSpaceId.GetObject(OpenMode.ForWrite);
                 foreach (var ent in ents)
                 {
                     if (ent.Id != ObjectId.Null || ent.IsDisposed) continue;
-                    if (!ent.IsWriteEnabled) ent.UpgradeOpen();
+                    if (!ent.IsWriteEnabled)
+                    {
+                        ent.Id.GetObject<Entity>(OpenMode.ForWrite);
+                    }
                     ent.SetOptions(entityOptions);
                     cs.AppendEntity(ent);
                     t.AddNewlyCreatedDBObject(ent, true);
@@ -30,39 +34,35 @@ namespace AcadLib
             }
         }
 
-        public static void AddEntityToCurrentSpace(this IEnumerable<Entity> ents)
+        public static void AddEntityToCurrentSpace([CanBeNull] this Entity ent)
         {
-            AddEntityToCurrentSpace(ents, null);
+            AddEntityToCurrentSpace(ent?.Yield());
         }
 
-        public static void AddEntityToCurrentSpace (this Entity ent)
-        {            
-            AddEntityToCurrentSpace(ent?.Yield(), null);            
-        }
-
-        public static void AddEntityToCurrentSpace(this Entity ent, EntityOptions entityOptions)
+        public static void AddEntityToCurrentSpace([CanBeNull] this Entity ent, EntityOptions entityOptions)
         {
             AddEntityToCurrentSpace(ent?.Yield(), entityOptions);
         }
 
-	    public static void AddPointToCurrentSpace(this Point3d pt, EntityOptions opt = null)
-	    {
-		    var ptDb = new DBPoint(pt);
-		    AddEntityToCurrentSpace(ptDb, opt);
-	    }
-	    public static void AddPointToCurrentSpace(this Point2d pt, EntityOptions opt = null)
-	    {
-		    AddPointToCurrentSpace(pt.Convert3d(), opt);
-	    }
-
-		public static DBText CreateText (string text, Point3d pos, EntityOptions entityOptions= null)
+        public static void AddPointToCurrentSpace(this Point3d pt, [CanBeNull] EntityOptions opt = null)
         {
-	        var dbText = new DBText
-	        {
-		        TextString = text,
-		        Position = pos
-	        };
-	        dbText.SetOptions(entityOptions);
+            var ptDb = new DBPoint(pt);
+            AddEntityToCurrentSpace(ptDb, opt);
+        }
+        public static void AddPointToCurrentSpace(this Point2d pt, [CanBeNull] EntityOptions opt = null)
+        {
+            AddPointToCurrentSpace(pt.Convert3d(), opt);
+        }
+
+        [NotNull]
+        public static DBText CreateText(string text, Point3d pos, [CanBeNull] EntityOptions entityOptions = null)
+        {
+            var dbText = new DBText
+            {
+                TextString = text,
+                Position = pos
+            };
+            dbText.SetOptions(entityOptions);
             return dbText;
         }
     }

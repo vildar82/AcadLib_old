@@ -1,17 +1,19 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
 namespace AcadLib.WPF.Converters
-{    
+{
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BooleanToHidingVisibilityConverter : ConvertorBase
     {
-        public override object Convert (object value, Type targetType, object parameter, CultureInfo culture)
+        [NotNull]
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is bool))
-                return Visibility.Collapsed;            
+                return Visibility.Collapsed;
             if ((bool)value)
             {
                 return Visibility.Visible;
@@ -23,6 +25,7 @@ namespace AcadLib.WPF.Converters
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BooleanToOppositeVisibilityConverter : ConvertorBase
     {
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is bool))

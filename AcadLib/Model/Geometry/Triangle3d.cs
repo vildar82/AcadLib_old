@@ -1,5 +1,6 @@
-﻿using System;
-using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
 
 namespace AcadLib.Geometry
 {
@@ -52,8 +53,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public double Area
         {
-            get
-            {
+            get {
                 return Math.Abs(
                     (((_pt1.X - _pt0.X) * (_pt2.Y - _pt0.Y)) -
                     ((_pt2.X - _pt0.X) * (_pt1.Y - _pt0.Y))) / 2.0);
@@ -71,10 +71,10 @@ namespace AcadLib.Geometry
         /// <summary>
         /// Gets the circumscribed circle.
         /// </summary>
+        [CanBeNull]
         public CircularArc3d CircumscribedCircle
         {
-            get
-            {
+            get {
                 var ca2d = Convert2d().CircumscribedCircle;
                 if (ca2d == null)
                     return null;
@@ -95,8 +95,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public Vector3d GreatestSlope
         {
-            get
-            {
+            get {
                 var norm = Normal;
                 if (norm.IsParallelTo(Vector3d.ZAxis))
                     return new Vector3d(0.0, 0.0, 0.0);
@@ -111,8 +110,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public Vector3d Horizontal
         {
-            get
-            {
+            get {
                 var norm = Normal;
                 if (norm.IsParallelTo(Vector3d.ZAxis))
                     return Vector3d.XAxis;
@@ -123,10 +121,10 @@ namespace AcadLib.Geometry
         /// <summary>
         /// Gets the inscribed circle.
         /// </summary>
+        [CanBeNull]
         public CircularArc3d InscribedCircle
         {
-            get
-            {
+            get {
                 var ca2d = Convert2d().InscribedCircle;
                 if (ca2d == null)
                     return null;
@@ -155,8 +153,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public double SlopePerCent
         {
-            get
-            {
+            get {
                 var norm = Normal;
                 if (norm.Z == 0.0)
                     return Double.PositiveInfinity;
@@ -170,8 +167,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public Matrix3d SlopeUCS
         {
-            get
-            {
+            get {
                 var origin = Centroid;
                 var zaxis = Normal;
                 var xaxis = Horizontal;
@@ -192,6 +188,7 @@ namespace AcadLib.Geometry
         /// Converts a Triangle3d into a Triangle2d according to the Triangle3d plane.
         /// </summary>
         /// <returns>The resulting Triangle2d.</returns>
+        [NotNull]
         public Triangle2d Convert2d()
         {
             var plane = GetPlane();
@@ -203,6 +200,7 @@ namespace AcadLib.Geometry
         /// Projects a Triangle3d on the WCS XY plane.
         /// </summary>
         /// <returns>The resulting Triangle2d.</returns>
+        [NotNull]
         public Triangle2d Flatten()
         {
             return new Triangle2d(
@@ -226,6 +224,7 @@ namespace AcadLib.Geometry
         /// Gets the bounded plane defined by the triangle.
         /// </summary>
         /// <returns>The bouned plane.</returns>
+        [NotNull]
         public BoundedPlane GetBoundedPlane()
         {
             return new BoundedPlane(this[0], this[1], this[2]);
@@ -235,6 +234,7 @@ namespace AcadLib.Geometry
         /// Gets the unbounded plane defined by the triangle.
         /// </summary>
         /// <returns>The unbouned plane.</returns>
+        [NotNull]
         public Plane GetPlane()
         {
             var normal = Normal;
@@ -250,6 +250,7 @@ namespace AcadLib.Geometry
         /// <returns>The segment 3d</returns>
         /// <exception cref="IndexOutOfRangeException">
         /// IndexOutOfRangeException is throw if index is less than 0 or more than 2.</exception>
+        [NotNull]
         public LineSegment3d GetSegmentAt(int index)
         {
             if (index > 2)
@@ -273,7 +274,7 @@ namespace AcadLib.Geometry
         /// <param name="t3d">The triangle3d to compare.</param>
         /// <param name="tol">The tolerance used in points comparisons.</param>
         /// <returns>true if the condition is met; otherwise, false.</returns>
-        public bool IsEqualTo(Triangle3d t3d, Tolerance tol)
+        public bool IsEqualTo([NotNull] Triangle3d t3d, Tolerance tol)
         {
             return t3d[0].IsEqualTo(_pt0, tol) && t3d[1].IsEqualTo(_pt1, tol) && t3d[2].IsEqualTo(_pt2, tol);
         }
@@ -326,6 +327,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="mat">The 3d transformation matrix.</param>
         /// <returns>The new Triangle3d.</returns>
+        [NotNull]
         public Triangle3d Transformby(Matrix3d mat)
         {
             return new Triangle3d(Array.ConvertAll<Point3d, Point3d>(

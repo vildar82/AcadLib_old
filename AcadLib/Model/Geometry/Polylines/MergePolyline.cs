@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Geometry
 {
@@ -15,12 +16,13 @@ namespace AcadLib.Geometry
         /// <param name="tolerancePoint">Допуск для определения совпадения вершин полилиний</param>
         /// <returns>Объединенная полилиния</returns>
         /// <exception cref="Exception">Ошибка объединения полининий без самопересечения.</exception>
-        public static Polyline Merge (this List<Polyline> pls, double tolerancePoint= 2)
+        [CanBeNull]
+        public static Polyline Merge([CanBeNull] this List<Polyline> pls, double tolerancePoint = 2)
         {
-            if (pls == null || pls.Count ==0) return null;
+            if (pls == null || pls.Count == 0) return null;
 
             Polyline merge = null;
-            if (pls.Count ==1)
+            if (pls.Count == 1)
             {
                 return (Polyline)pls[0].Clone();
             }
@@ -30,10 +32,10 @@ namespace AcadLib.Geometry
             plsList = SortByNearestCenterExtents(plsList);
 
             var maxIteration = pls.Count * pls.Count;
-            var iterationCount = 0;    
+            var iterationCount = 0;
 
             while (plsList.Count > 1)
-            {                
+            {
                 var plsRemove = new List<Polyline>();
                 var fpl = plsList[0];
                 var countMergePl = 0;
@@ -48,15 +50,15 @@ namespace AcadLib.Geometry
                         merge = plMerge;
                         countMergePl++;
 
-//                        // Test
-//#if DEBUG
-//                        plMerge.ColorIndex = countMergePl;
-//                        EntityHelper.AddEntityToCurrentSpace(plMerge);
-//                        var dbText = EntityHelper.CreateText(countMergePl.ToString(), plMerge.GetPoint3dAt(0));
-//                        dbText.ColorIndex = countMergePl;
-//                        EntityHelper.AddEntityToCurrentSpace(dbText);
-//                        var textPlMerge = new DBText();
-//#endif
+                        //                        // Test
+                        //#if DEBUG
+                        //                        plMerge.ColorIndex = countMergePl;
+                        //                        EntityHelper.AddEntityToCurrentSpace(plMerge);
+                        //                        var dbText = EntityHelper.CreateText(countMergePl.ToString(), plMerge.GetPoint3dAt(0));
+                        //                        dbText.ColorIndex = countMergePl;
+                        //                        EntityHelper.AddEntityToCurrentSpace(dbText);
+                        //                        var textPlMerge = new DBText();
+                        //#endif
                     }
                 }
                 if (plsRemove.Count > 0)
@@ -66,20 +68,21 @@ namespace AcadLib.Geometry
                         plsList.Remove(item);
                     }
                     plsList.Insert(0, fpl);
-                }                
+                }
 
                 // страховочный выход из цикла
                 iterationCount++;
-                if (iterationCount== maxIteration)
+                if (iterationCount == maxIteration)
                 {
                     merge = null;
                     break;
                 }
             }
             return merge;
-        }        
+        }
 
-        private static Polyline MergeTwoPl (Polyline pl1, Polyline pl2, double tolerance)
+        [CanBeNull]
+        private static Polyline MergeTwoPl(Polyline pl1, Polyline pl2, double tolerance)
         {
             Polyline plMerged = null;
             // Точки полилиний
@@ -122,7 +125,7 @@ namespace AcadLib.Geometry
             return plMerged;
         }
 
-        private static Polyline Merge (Polyline pl1, Polyline pl2, PolylineVertex ptInPl1, PolylineVertex ptInPl2)
+        private static Polyline Merge(Polyline pl1, Polyline pl2, [NotNull] PolylineVertex ptInPl1, [NotNull] PolylineVertex ptInPl2)
         {
             Polyline plMerged;
             var indexInPl1 = ptInPl1.Index + 1;
@@ -137,7 +140,8 @@ namespace AcadLib.Geometry
             return plMerged;
         }
 
-        private static Polyline AddVertex (Polyline pl1, Polyline pl2, int indexInPl1, int indexInPl2, Point2d ptInPl2, int dir = 1)
+        [NotNull]
+        private static Polyline AddVertex([NotNull] Polyline pl1, [NotNull] Polyline pl2, int indexInPl1, int indexInPl2, Point2d ptInPl2, int dir = 1)
         {
             var plNew = (Polyline)pl1.Clone();
             for (var i = 0; i < pl2.NumberOfVertices; i++)
@@ -150,7 +154,7 @@ namespace AcadLib.Geometry
             return plNew;
         }
 
-        private static int NextIndex (int index, Polyline pl, int step)
+        private static int NextIndex(int index, [NotNull] Polyline pl, int step)
         {
             var next = index + step;
             if (next == pl.NumberOfVertices)
@@ -168,12 +172,13 @@ namespace AcadLib.Geometry
         /// Сортировка полилиний по расчтоянию между центрами границ
         /// </summary>
         /// <param name="pls"></param>
-        private static List<Polyline> SortByNearestCenterExtents (List<Polyline> pls)
+        [NotNull]
+        private static List<Polyline> SortByNearestCenterExtents([NotNull] List<Polyline> pls)
         {
             var res = new List<Polyline>();
             var plsCenters = pls.Select(s => new { pl = s, center = s.GeometricExtents.Center() })
-                .OrderBy(o => o.center.X+ o.center.Y).ToList();
-                //.OrderBy(o => o.center.X).ThenBy(o => o.center.Y).ToList();
+                .OrderBy(o => o.center.X + o.center.Y).ToList();
+            //.OrderBy(o => o.center.X).ThenBy(o => o.center.Y).ToList();
             var fPlC = plsCenters.First();
             res.Add(fPlC.pl);
             plsCenters.Remove(fPlC);
@@ -187,5 +192,5 @@ namespace AcadLib.Geometry
             }
             return res;
         }
-    }   
+    }
 }

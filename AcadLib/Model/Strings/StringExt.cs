@@ -1,5 +1,6 @@
-﻿using System.Text.RegularExpressions;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System.Text.RegularExpressions;
 
 namespace System
 {
@@ -8,7 +9,7 @@ namespace System
         /// <summary>
         /// IndexOf(toCheck, comp) >= 0
         /// </summary>        
-        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        public static bool Contains([NotNull] this string source, [NotNull] string toCheck, StringComparison comp)
         {
             return source.IndexOf(toCheck, comp) >= 0;
         }
@@ -37,7 +38,8 @@ namespace System
             }
         }
 
-        public static string GetValidDbSymbolName(this string name)
+        [NotNull]
+        public static string GetValidDbSymbolName([NotNull] this string name)
         {
             var res = name.ClearString();
             //string testString = "<>/?\";:*|,='";
@@ -54,7 +56,8 @@ namespace System
         /// <param name="format"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static string f(this string format, params object[] args)
+        [NotNull]
+        public static string f([NotNull] this string format, [NotNull] params object[] args)
         {
             return string.Format(format, args);
         }

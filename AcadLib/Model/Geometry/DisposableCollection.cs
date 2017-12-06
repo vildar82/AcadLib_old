@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,23 +8,23 @@ namespace AcadLib
     public interface IDisposableCollection<T> : ICollection<T>, IDisposable
       where T : IDisposable
     {
-        void AddRange (IEnumerable<T> items);
-        IEnumerable<T> RemoveRange (IEnumerable<T> items);
+        void AddRange(IEnumerable<T> items);
+        IEnumerable<T> RemoveRange(IEnumerable<T> items);
     }
 
     public class DisposableSet<T> : HashSet<T>, IDisposableCollection<T>
        where T : IDisposable
     {
-        public DisposableSet ()
+        public DisposableSet()
         {
         }
 
-        public DisposableSet (IEnumerable<T> items)
+        public DisposableSet(IEnumerable<T> items)
         {
             AddRange(items);
         }
 
-        public void Dispose ()
+        public void Dispose()
         {
             if (Count > 0)
             {
@@ -49,14 +50,15 @@ namespace AcadLib
             }
         }
 
-        public void AddRange (IEnumerable<T> items)
+        public void AddRange([CanBeNull] IEnumerable<T> items)
         {
             if (items == null)
                 return;
             UnionWith(items);
         }
 
-        public IEnumerable<T> RemoveRange (IEnumerable<T> items)
+        [CanBeNull]
+        public IEnumerable<T> RemoveRange([CanBeNull] IEnumerable<T> items)
         {
             if (items == null) return null;
             ExceptWith(items);

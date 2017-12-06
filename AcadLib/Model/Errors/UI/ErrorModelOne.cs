@@ -1,12 +1,12 @@
-﻿using System;
+﻿using AcadLib.Layers;
+using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using System.Windows;
-using AcadLib.Layers;
-using Autodesk.AutoCAD.DatabaseServices;
-using MicroMvvm;
 using Visibility = System.Windows.Visibility;
 
 namespace AcadLib.Errors.UI
@@ -15,7 +15,7 @@ namespace AcadLib.Errors.UI
     {
         public ErrorModelList Parent { get; set; }
 
-        public ErrorModelOne(IError err, ErrorModelList parent) : base(err)
+        public ErrorModelOne([NotNull] IError err, [CanBeNull] ErrorModelList parent) : base(err)
         {
             VisibilityCount = Visibility.Collapsed;
             Parent = parent;
@@ -26,17 +26,17 @@ namespace AcadLib.Errors.UI
             }
             else
             {
-                Message = err.Message.Length > err.Group.Length
+                Message = err.Message.StartsWith(err.Group)
                     ? err.Message.Substring(err.Group.Length)
                     : err.Message;
             }
-            
+
             AddButtons = err.AddButtons;
             // Добавить кнопку, для отрисовки визуализации на чертежа
             if (HasVisuals)
             {
                 if (AddButtons == null) AddButtons = new List<ErrorAddButton>();
-                var visCommand = new RelayCommand(AddVisualsToDrawing, () => Error?.Visuals?.Any() == true);
+                var visCommand = ReactiveCommand.Create(AddVisualsToDrawing, Observable.Start(() => Error?.Visuals?.Any() == true));
                 var visButton = new ErrorAddButton
                 {
                     Name = "Отрисовка",

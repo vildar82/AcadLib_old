@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using AcadLib.Blocks.Dublicate.Tree;
+﻿using AcadLib.Blocks.Dublicate.Tree;
 using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks.Dublicate
@@ -17,7 +18,7 @@ namespace AcadLib.Blocks.Dublicate
     public static class CheckDublicateBlocks
     {
         public static Tolerance Tolerance { get; set; } = new Tolerance(0.2, 10);
-        public static int DEPTH = 5;        
+        public static int DEPTH = 5;
         private static int curDepth;
         private static HashSet<ObjectId> attemptedblocks;
         private static HashSet<string> _ignoreBlocks;
@@ -27,7 +28,7 @@ namespace AcadLib.Blocks.Dublicate
 
         public static void Check()
         {
-            Check(null, null);            
+            Check(null, null);
         }
 
         public static void Check(HashSet<string> ignoreBlocks)
@@ -38,7 +39,7 @@ namespace AcadLib.Blocks.Dublicate
         public static void Check(IEnumerable idsBlRefs)
         {
             Check(idsBlRefs, null);
-        }        
+        }
 
         public static void Check(IEnumerable idsBlRefs, HashSet<string> ignoreBlocks)
         {
@@ -52,7 +53,7 @@ namespace AcadLib.Blocks.Dublicate
             try
             {
                 using (var t = db.TransactionManager.StartTransaction())
-                {                    
+                {
 
                     if (idsBlRefs == null)
                     {
@@ -100,7 +101,7 @@ namespace AcadLib.Blocks.Dublicate
                 }
             }
 
-            if (_errors.Count>0)
+            if (_errors.Count > 0)
             {
                 if (Inspector.ShowDialog(_errors) != true)
                 {
@@ -119,12 +120,12 @@ namespace AcadLib.Blocks.Dublicate
             }
         }
 
-        private static void GetDublicateBlocks(IEnumerable ids, Matrix3d transToModel, double rotate)
-        {            
+        private static void GetDublicateBlocks([NotNull] IEnumerable ids, Matrix3d transToModel, double rotate)
+        {
             var idsBtrNext = new List<Tuple<ObjectId, Matrix3d, double>>();
 
             var isFirstDbo = true;
-                  
+
             foreach (var item in ids)
             {
                 if (!(item is ObjectId)) continue;
@@ -145,7 +146,7 @@ namespace AcadLib.Blocks.Dublicate
                 if (blRef == null || !blRef.Visible) continue;
                 var blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);
 
-                if (_ignoreBlocks!=null && _ignoreBlocks.Contains(blRefInfo.Name, StringComparer.OrdinalIgnoreCase))
+                if (_ignoreBlocks != null && _ignoreBlocks.Contains(blRefInfo.Name, StringComparer.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -164,7 +165,7 @@ namespace AcadLib.Blocks.Dublicate
                 }
                 listBiAtPoint.Add(blRefInfo);
 
-                idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(item1: blRef.BlockTableRecord, item2: blRef.BlockTransform* transToModel, item3: blRef.Rotation + rotate));
+                idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(item1: blRef.BlockTableRecord, item2: blRef.BlockTransform * transToModel, item3: blRef.Rotation + rotate));
             }
 
             // Нырок глубже
@@ -186,7 +187,7 @@ namespace AcadLib.Blocks.Dublicate
         //   AllDublicBlRefInfos.AddRange(trancDublicBlRefInfos);
         //}
 
-        public static void DeleteDublicates(List<IError> errors)
+        public static void DeleteDublicates([CanBeNull] List<IError> errors)
         {
             if (errors == null || errors.Count == 0)
             {
@@ -206,7 +207,7 @@ namespace AcadLib.Blocks.Dublicate
                     }
                     t.Commit();
                 }
-            }            
+            }
         }
     }
 }

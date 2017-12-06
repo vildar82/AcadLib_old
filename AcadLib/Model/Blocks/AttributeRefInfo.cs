@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
 {
@@ -31,7 +32,7 @@ namespace AcadLib.Blocks
         /// иначе исключение ArgumentException
         /// </summary>
         /// <param name="attr"></param>
-        public AttributeRefInfo(DBText attr)
+        public AttributeRefInfo([NotNull] DBText attr)
         {
             if (attr is AttributeDefinition attdef)
             {
@@ -52,6 +53,7 @@ namespace AcadLib.Blocks
             IdAtrRef = attr.Id;
         }
 
+        [NotNull]
         public static List<AttributeRefInfo> GetAttrDefs(ObjectId idBtr)
         {
             var resVal = new List<AttributeRefInfo>();
@@ -63,7 +65,7 @@ namespace AcadLib.Blocks
                     using (var attrDef = idEnt.Open(OpenMode.ForRead, false, true) as AttributeDefinition)
                     {
                         if (attrDef == null) continue;
-                        var attrDefInfo = new AttributeRefInfo((DBText) attrDef);
+                        var attrDefInfo = new AttributeRefInfo((DBText)attrDef);
                         resVal.Add(attrDefInfo);
                     }
                 }
@@ -71,7 +73,8 @@ namespace AcadLib.Blocks
             return resVal;
         }
 
-        public static List<AttributeRefInfo> GetAttrRefs(BlockReference blRef)
+        [NotNull]
+        public static List<AttributeRefInfo> GetAttrRefs([CanBeNull] BlockReference blRef)
         {
             var resVal = new List<AttributeRefInfo>();
             if (blRef?.AttributeCollection != null)

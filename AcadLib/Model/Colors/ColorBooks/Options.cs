@@ -1,8 +1,9 @@
-﻿using System;
+﻿using AcadLib.Files;
+using Autodesk.AutoCAD.ApplicationServices;
+using JetBrains.Annotations;
+using System;
 using System.ComponentModel;
 using System.IO;
-using AcadLib.Files;
-using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib.Colors
 {
@@ -13,12 +14,11 @@ namespace AcadLib.Colors
                        AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
                        "АР\\Палитры цветов\\ColorOptions.xml");
         //@"z:\AutoCAD_server\ShareSettings\АР\Палитры цветов\ColorOptions.xml";
-        
+
         private static Options _instance;
         public static Options Instance
         {
-            get
-            {
+            get {
                 if (_instance == null)
                 {
                     _instance = Load();
@@ -28,7 +28,7 @@ namespace AcadLib.Colors
         }
 
         private Options() { }
-        
+
         /// <summary>
         /// Путь к файлу палитры NCS
         /// </summary>
@@ -72,8 +72,9 @@ namespace AcadLib.Colors
         [DisplayName("Рядов")]
         [Description("Рядов.")]
         [DefaultValue(18)]
-        public int Rows { get; set; } = 18;        
+        public int Rows { get; set; } = 18;
 
+        [NotNull]
         public static Options Load()
         {
             Options options = null;

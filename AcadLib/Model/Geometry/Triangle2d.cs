@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
-using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Geometry
 {
@@ -52,8 +53,7 @@ namespace AcadLib.Geometry
         /// </summary>
         public double AlgebricArea
         {
-            get
-            {
+            get {
                 return (((_pt1.X - _pt0.X) * (_pt2.Y - _pt0.Y)) -
                     ((_pt2.X - _pt0.X) * (_pt1.Y - _pt0.Y))) / 2.0;
             }
@@ -70,10 +70,10 @@ namespace AcadLib.Geometry
         /// <summary>
         /// Gets the circumscribed circle.
         /// </summary>
+        [CanBeNull]
         public CircularArc2d CircumscribedCircle
         {
-            get
-            {
+            get {
                 var l1 = GetSegmentAt(0).GetBisector();
                 var l2 = GetSegmentAt(1).GetBisector();
                 var inters = l1.IntersectWith(l2);
@@ -86,10 +86,10 @@ namespace AcadLib.Geometry
         /// <summary>
         /// Gets the inscribed circle.
         /// </summary>
+        [CanBeNull]
         public CircularArc2d InscribedCircle
         {
-            get
-            {
+            get {
                 var v1 = _pt0.GetVectorTo(_pt1).GetNormal();
                 var v2 = _pt0.GetVectorTo(_pt2).GetNormal();
                 var v3 = _pt1.GetVectorTo(_pt2).GetNormal();
@@ -119,6 +119,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="plane">Plane of the Triangle3d.</param>
         /// <returns>The new Triangle3d.</returns>
+        [NotNull]
         public Triangle3d Convert3d(Plane plane)
         {
             return new Triangle3d(
@@ -131,6 +132,7 @@ namespace AcadLib.Geometry
         /// <param name="normal">The normal vector of the plane.</param>
         /// <param name="elevation">The elevation of the plane.</param>
         /// <returns>The new Triangle3d.</returns>
+        [NotNull]
         public Triangle3d Convert3d(Vector3d normal, double elevation)
         {
             return new Triangle3d(
@@ -161,6 +163,7 @@ namespace AcadLib.Geometry
         /// <returns>The segment 3d.</returns>
         /// <exception cref="IndexOutOfRangeException">
         /// IndexOutOfRangeException is thrown if index is less than 0 or more than 2.</exception>
+        [NotNull]
         public LineSegment2d GetSegmentAt(int index)
         {
             if (index > 2)
@@ -173,6 +176,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="le2d">The line with which intersections are searched.</param>
         /// <returns>The intersection points list (an empty list if none).</returns>
+        [NotNull]
         public List<Point2d> IntersectWith(LinearEntity2d le2d)
         {
             var result = new List<Point2d>();
@@ -192,6 +196,7 @@ namespace AcadLib.Geometry
         /// <param name="le2d">The line with which intersections are searched.</param>
         /// <param name="tol">The tolerance used in comparisons.</param>
         /// <returns>The intersection points list (an empty list if none).</returns>
+        [NotNull]
         public List<Point2d> IntersectWith(LinearEntity2d le2d, Tolerance tol)
         {
             var result = new List<Point2d>();
@@ -220,7 +225,7 @@ namespace AcadLib.Geometry
         /// <param name="t2d">The triangle2d to compare.</param>
         /// <param name="tol">The tolerance used in points comparisons.</param>
         /// <returns>true if the condition is met; otherwise, false.</returns>
-        public bool IsEqualTo(Triangle2d t2d, Tolerance tol)
+        public bool IsEqualTo([NotNull] Triangle2d t2d, Tolerance tol)
         {
             return t2d[0].IsEqualTo(_pt0, tol) && t2d[1].IsEqualTo(_pt1, tol) && t2d[2].IsEqualTo(_pt2, tol);
         }
@@ -275,6 +280,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="mat">The 2d transformation matrix.</param>
         /// <returns>The new Triangle2d.</returns>
+        [NotNull]
         public Triangle2d TransformBy(Matrix2d mat)
         {
             return new Triangle2d(Array.ConvertAll<Point2d, Point2d>(

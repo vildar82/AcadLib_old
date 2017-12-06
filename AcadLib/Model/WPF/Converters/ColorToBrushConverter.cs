@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -10,6 +11,7 @@ namespace AcadLib.WPF.Converters
     [ValueConversion(typeof(Autodesk.AutoCAD.Colors.Color), typeof(SolidColorBrush))]
     public class ColorToBrushConverter : ConvertorBase
     {
+        [CanBeNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is System.Drawing.Color dc)

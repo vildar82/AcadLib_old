@@ -1,12 +1,8 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AcadLib.Comparers;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using NetLib;
 
 namespace AcadLib.Geometry.Polylines.Join
 {
@@ -18,7 +14,7 @@ namespace AcadLib.Geometry.Polylines.Join
         /// <param name="lines">Полилинии</param>
         /// <param name="joined">Объекдиненные полилинии</param>
         /// <param name="disposePls">Очищать объекдиненные полилинии?</param>
-        public static void Join(this List<Polyline> lines, ref List<Polyline> joined, bool disposePls = true,
+        public static void Join([NotNull] this List<Polyline> lines, ref List<Polyline> joined, bool disposePls = true,
             bool wedding = true, Tolerance tolerance = default)
         {
             if (lines.Count == 0)
@@ -32,7 +28,7 @@ namespace AcadLib.Geometry.Polylines.Join
             try
             {
                 icol = fl.JoinEntities(lines.ToArray()).Cast<int>().ToList();
-                if (wedding) fl.Wedding(tolerance, close:false, onSomeLine: true);
+                if (wedding) fl.Wedding(tolerance, close: false, onSomeLine: true);
             }
             catch
             {

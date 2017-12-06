@@ -18,9 +18,10 @@
 
 // Ported to C# By Dror Gluska, April 9th, 2009
 
+using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using System;
 using System.Text;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.RTree.SpatialIndex
 {
@@ -70,7 +71,7 @@ namespace AcadLib.RTree.SpatialIndex
          * @param min array containing the minimum value for each dimension; ie { min(x), min(y) }
          * @param max array containing the maximum value for each dimension; ie { max(x), max(y) }
          */
-        public Rectangle(double[] min, double[] max)
+        public Rectangle([NotNull] double[] min, [NotNull] double[] max)
         {
             if (min.Length != DIMENSIONS || max.Length != DIMENSIONS)
             {
@@ -85,7 +86,7 @@ namespace AcadLib.RTree.SpatialIndex
         }
 
         public Rectangle(Extents3d extents) : this(extents.MinPoint.X, extents.MinPoint.Y,
-            extents.MaxPoint.X, extents.MaxPoint.Y, 0,0)
+            extents.MaxPoint.X, extents.MaxPoint.Y, 0, 0)
         {
 
         }
@@ -120,7 +121,7 @@ namespace AcadLib.RTree.SpatialIndex
          * @param min array containing the minimum value for each dimension; ie { min(x), min(y) }
          * @param max array containing the maximum value for each dimension; ie { max(x), max(y) }
          */
-        internal void set(double[] min, double[] max)
+        internal void set([NotNull] double[] min, [NotNull] double[] max)
         {
             Array.Copy(min, 0, this.min, 0, DIMENSIONS);
             Array.Copy(max, 0, this.max, 0, DIMENSIONS);
@@ -131,6 +132,7 @@ namespace AcadLib.RTree.SpatialIndex
          * 
          * @return copy of this rectangle
          */
+        [NotNull]
         internal Rectangle copy()
         {
             return new Rectangle(min, max);
@@ -309,7 +311,7 @@ namespace AcadLib.RTree.SpatialIndex
          *          compute the difference in area of the union and the
          *          original rectangle
          */
-        internal double enlargement(Rectangle r)
+        internal double enlargement([NotNull] Rectangle r)
         {
             var enlargedArea = (Math.Max(max[0], r.max[0]) - Math.Min(min[0], r.min[0])) *
                                  (Math.Max(max[1], r.max[1]) - Math.Min(min[1], r.min[1]));
@@ -354,6 +356,7 @@ namespace AcadLib.RTree.SpatialIndex
          * 
          * @param r The rectangle to union with this rectangle
          */
+        [NotNull]
         internal Rectangle union(Rectangle r)
         {
             var union = copy();
@@ -361,7 +364,7 @@ namespace AcadLib.RTree.SpatialIndex
             return union;
         }
 
-        internal bool CompareArrays(double[] a1, double[] a2)
+        internal bool CompareArrays([CanBeNull] double[] a1, [CanBeNull] double[] a2)
         {
             if ((a1 == null) || (a2 == null))
                 return false;

@@ -1,27 +1,28 @@
 ﻿using AcadLib.Layers;
 using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 
 namespace AcadLib.Visual
-{ 
-	public abstract class VisualBase : IVisualService
-    {        
-        protected bool isOn;                
-        public string LayerForUser { get; set; }         
+{
+    public abstract class VisualBase : IVisualService
+    {
+        protected bool isOn;
+        public string LayerForUser { get; set; }
 
-        public VisualBase(string layer = null)
+        public VisualBase([CanBeNull] string layer = null)
         {
             LayerForUser = layer ?? SymbolUtilityServices.LayerZeroName;
         }
 
-        public abstract List<Entity> CreateVisual();        
+        public abstract List<Entity> CreateVisual();
         protected abstract void DrawVisuals(List<Entity> draws);
         protected abstract void EraseDraws();
 
-        public bool VisualIsOn {
+        public bool VisualIsOn
+        {
             get => isOn;
-	        set 
-			{
+            set {
                 isOn = value;
                 VisualUpdate();
             }
@@ -46,7 +47,7 @@ namespace AcadLib.Visual
             catch { }
         }
 
-        protected ObjectId GetLayerForVisual(string layer)
+        protected ObjectId GetLayerForVisual([CanBeNull] string layer)
         {
             var lay = new LayerInfo(layer ?? SymbolUtilityServices.LayerZeroName);
             return lay.CheckLayerState();

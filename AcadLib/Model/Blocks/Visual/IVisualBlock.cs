@@ -1,4 +1,5 @@
-﻿using MicroMvvm;
+﻿using System.Windows.Input;
+using ReactiveUI;
 using System.Windows.Media;
 
 namespace AcadLib.Blocks.Visual
@@ -9,6 +10,6 @@ namespace AcadLib.Blocks.Visual
         string Name { get; set; }
         ImageSource Image { get; set; }
         string File { get; set; }
-        RelayCommand Redefine { get; set; }        
+        ICommand Redefine { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -15,7 +16,7 @@ namespace AcadLib.UI.Properties
         {
         }
 
-        public XmlSerializableDictionary(Dictionary<string, TValue> dict) : base(StringComparer.OrdinalIgnoreCase)
+        public XmlSerializableDictionary([NotNull] Dictionary<string, TValue> dict) : base(StringComparer.OrdinalIgnoreCase)
         {
             foreach (var item in dict)
             {

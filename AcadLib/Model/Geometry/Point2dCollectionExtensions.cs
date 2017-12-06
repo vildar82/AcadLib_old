@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System.Collections.Generic;
 
 namespace AcadLib.Geometry
 {
@@ -22,7 +23,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pts">The instance to which the method applies.</param>
         /// <param name="tol">The tolerance to use in comparisons.</param>
-        public static void RemoveDuplicate(this Point2dCollection pts, Tolerance tol)
+        public static void RemoveDuplicate([NotNull] this Point2dCollection pts, Tolerance tol)
         {
             var ptlst = new List<Point2d>();
             for (var i = 0; i < pts.Count; i++)
@@ -32,7 +33,7 @@ namespace AcadLib.Geometry
             ptlst.Sort((p1, p2) => p1.X.CompareTo(p2.X));
             for (var i = 0; i < ptlst.Count - 1; i++)
             {
-                for (var j = i + 1; j < ptlst.Count; )
+                for (var j = i + 1; j < ptlst.Count;)
                 {
                     if ((ptlst[j].X - ptlst[i].X) > tol.EqualPoint)
                         break;
@@ -65,7 +66,7 @@ namespace AcadLib.Geometry
         /// <param name="pt">The point to search.</param>
         /// <param name="tol">The tolerance to use in comparisons.</param>
         /// <returns>true if the point is found; otherwise, false.</returns>
-        public static bool Contains(this Point2dCollection pts, Point2d pt, Tolerance tol)
+        public static bool Contains([NotNull] this Point2dCollection pts, Point2d pt, Tolerance tol)
         {
             for (var i = 0; i < pts.Count; i++)
             {

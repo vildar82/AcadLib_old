@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 
 namespace AcadLib
 {
@@ -8,7 +9,8 @@ namespace AcadLib
         /// Конвертация строки в соответствующее значение перечисления enum
         /// Выбрасывает исключение при несоответствии
         /// </summary>        
-        public static T ToEnum<T>(this string value)
+        [NotNull]
+        public static T ToEnum<T>([NotNull] this string value)
         {
             return (T)Enum.Parse(typeof(T), value, true);
         }
@@ -17,7 +19,7 @@ namespace AcadLib
         /// Конвертация строки в соответствующее значение перечисления enum.
         /// Ичключение не выбрасывапется. (если, только, T не структура)
         /// </summary>        
-        public static T ToEnum<T>(this string value, T defaultValue) where T : struct
+        public static T ToEnum<T>([CanBeNull] this string value, T defaultValue) where T : struct
         {
             if (string.IsNullOrEmpty(value))
             {

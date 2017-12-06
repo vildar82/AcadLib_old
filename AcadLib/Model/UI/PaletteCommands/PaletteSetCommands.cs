@@ -1,5 +1,7 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
+﻿using AcadLib.UI.Ribbon;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Windows;
+using JetBrains.Annotations;
 using NetLib;
 using System;
 using System.Collections.Generic;
@@ -79,6 +81,7 @@ namespace AcadLib.PaletteCommands
                 {
                     palette.Commands.AddRange(commands);
                 }
+                RibbonBuilder.InitRibbon();
             }
             catch (Exception ex)
             {
@@ -176,7 +179,7 @@ namespace AcadLib.PaletteCommands
             }
         }
 
-        public static bool IsAccess(List<string> accessLogins)
+        public static bool IsAccess([CanBeNull] List<string> accessLogins)
         {
             return accessLogins == null ||
                    accessLogins.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase);

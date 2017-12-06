@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Runtime;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using NetLib;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AcadLib.Layers.AutoLayers
 {
@@ -19,17 +19,18 @@ namespace AcadLib.Layers.AutoLayers
 
         public override bool IsAutoLayerCommand(string globalCommandName)
         {
-	        return Commands.Any(a => a.EqualsIgnoreCase(globalCommandName));
+            return Commands.Any(a => a.EqualsIgnoreCase(globalCommandName));
         }
 
-        public override List<ObjectId> GetAutoLayerEnts(List<ObjectId> idAddedEnts)
+        [CanBeNull]
+        public override List<ObjectId> GetAutoLayerEnts([CanBeNull] List<ObjectId> idAddedEnts)
         {
             return idAddedEnts?.Where(IsVportEnt).ToList();
-        }       
+        }
 
         private static bool IsVportEnt(ObjectId idEnt)
         {
-	        return idEnt.ObjectClass == General.ClassVport;
+            return idEnt.ObjectClass == General.ClassVport;
         }
     }
 }

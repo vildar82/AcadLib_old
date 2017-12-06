@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using AcadLib.Colors;
-using Autodesk.AutoCAD.Colors;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using NetLib;
+using System;
+using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
     public static class TypedValueExt
-    {        
-        public static T GetValue<T>(this Dictionary<string, object> dictValues, string name, T defaultValue)
+    {
+        public static T GetValue<T>([CanBeNull] this Dictionary<string, object> dictValues, string name, T defaultValue)
         {
             if (dictValues == null) return defaultValue;
             if (dictValues.TryGetValue(name, out var value))
@@ -27,11 +27,12 @@ namespace AcadLib
             return defaultValue;
         }
 
-        public static Dictionary<string, object> ToDictionary(this IEnumerable<TypedValue> values)
-        {            
+        [NotNull]
+        public static Dictionary<string, object> ToDictionary([CanBeNull] this IEnumerable<TypedValue> values)
+        {
             var dictValues = new Dictionary<string, object>();
             if (values == null) return dictValues;
-            var name = string.Empty;            
+            var name = string.Empty;
             foreach (var item in values)
             {
                 if (!string.IsNullOrEmpty(name))
@@ -41,7 +42,7 @@ namespace AcadLib
                         dictValues.Add(name, item.Value);
                         name = string.Empty;
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Logger.Log.Error(ex, $"ToDictionary() - name={name}, value={item.Value}");
                     }
@@ -62,52 +63,49 @@ namespace AcadLib
         /// <typeparam name="T"></typeparam>
         /// <param name="tv"></param>
         /// <returns></returns>
-        public static T GetTvValue<T> (this TypedValue tv)
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static T GetTvValue<T>(this TypedValue tv)
         {
-            T res;
             try
             {
-                return tv.Value.GetValue<T>();                
+                return tv.Value.GetValue<T>();
             }
             catch
             {
-                res = default;
+                // ignored
             }
-            return res;
+            return default;
         }
 
         /// <summary>
         /// Создание TypedValue для сохранение в расширенные данные DxfCode.ExtendedData
         /// bool, byte, int, double, string
         /// </summary>        
-        public static TypedValue GetTvExtData(object value)
+        public static TypedValue GetTvExtData([CanBeNull] object value)
         {
             if (value == null) return new TypedValue();
-            var typeObj = value.GetType();
-
             var code = 0;
             var tvValue = value;
-
             switch (value)
             {
                 case bool b:
                     code = (int)DxfCode.ExtendedDataInteger32;
                     tvValue = b ? 1 : 0;
                     break;
-                case Enum en:
+                case Enum _:
                     code = (int)DxfCode.ExtendedDataInteger32;
                     tvValue = (int)value;
                     break;
-                case int i:
+                case int _:
                     code = (int)DxfCode.ExtendedDataInteger32;
                     break;
-                case byte b:
+                case byte _:
                     code = (int)DxfCode.ExtendedDataInteger32;
                     break;
-                case double d:
+                case double _:
                     code = (int)DxfCode.ExtendedDataReal;
                     break;
-                case string s:
+                case string _:
                     code = (int)DxfCode.ExtendedDataAsciiString;
                     break;
             }

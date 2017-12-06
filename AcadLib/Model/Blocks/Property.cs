@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
 {
-    
+
 
     /// <summary>
     /// Свойства динамического блока
@@ -46,7 +47,7 @@ namespace AcadLib.Blocks
             Type = type;
         }
 
-        public Property(DynamicBlockReferenceProperty dynProp)
+        public Property([NotNull] DynamicBlockReferenceProperty dynProp)
         {
             Name = dynProp.PropertyName;
             Value = dynProp.Value;
@@ -58,13 +59,14 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Все видимые атрибуты и динамические свойства блока
         /// </summary>        
-        public static List<Property> GetAllProperties (BlockReference blRef)
+        [NotNull]
+        public static List<Property> GetAllProperties(BlockReference blRef)
         {
             var props = new List<Property>();
             var attrs = AttributeInfo.GetAttrRefs(blRef);
             foreach (var atr in attrs)
             {
-                var prop = new Property(atr.Tag, atr.Text.Trim(), atr.IdAtr);                
+                var prop = new Property(atr.Tag, atr.Text.Trim(), atr.IdAtr);
                 props.Add(prop);
             }
             props.AddRange(GetDynamicProperties(blRef));
@@ -74,17 +76,18 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Динамические свойства блока
         /// </summary>        
-        public static List<Property> GetDynamicProperties (BlockReference blRef)
+        [NotNull]
+        public static List<Property> GetDynamicProperties([NotNull] BlockReference blRef)
         {
             var props = new List<Property>();
-            if (blRef.DynamicBlockReferencePropertyCollection!= null)
+            if (blRef.DynamicBlockReferencePropertyCollection != null)
             {
                 foreach (DynamicBlockReferenceProperty dyn in blRef.DynamicBlockReferencePropertyCollection)
                 {
                     if (dyn.VisibleInCurrentVisibilityState)
                     {
                         if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase)) continue;
-                        var prop = new Property(dyn);                        
+                        var prop = new Property(dyn);
                         props.Add(prop);
                     }
                 }
@@ -93,7 +96,7 @@ namespace AcadLib.Blocks
         }
 
         private bool EqualValue(object value)
-        {            
+        {
             if (Value is double && value is double)
             {
                 return Math.Abs((double)Value - (double)value) < 0.0001;
@@ -101,16 +104,16 @@ namespace AcadLib.Blocks
             return Value.Equals(value);
         }
 
-        public bool Equals (Property other)
+        public bool Equals(Property other)
         {
             if (other == null) return false;
             if (ReferenceEquals(this, other)) return true;
             var res = Name == other.Name && EqualValue(other.Value);
 
             return res;
-        }        
+        }
 
-        public override int GetHashCode ()
+        public override int GetHashCode()
         {
             return Name.GetHashCode();
         }

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using JetBrains.Annotations;
+using System.Text.RegularExpressions;
 
 namespace AcadLib.Regexes
 {
@@ -8,7 +9,7 @@ namespace AcadLib.Regexes
         /// Определение числа из строки начинающегося с целого числа
         /// 0 - если число не определено
         /// </summary>        
-        public static int StartInt(this string input)
+        public static int StartInt([NotNull] this string input)
         {
             var value = 0;
             var resRegex = Regex.Match(input, @"^\d+");

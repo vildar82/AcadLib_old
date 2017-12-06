@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System.Collections.Generic;
 
 namespace AcadLib.Layers
 {
@@ -14,15 +15,16 @@ namespace AcadLib.Layers
         /// Нужно создавать новый объект LayerVisibleState после возмоного изменения состояния слоев пользователем.
         /// </summary>
         /// <param name="db"></param>
-        public LayerVisibleState (Database db)
+        public LayerVisibleState(Database db)
         {
             layerVisibleDict = GetLayerVisibleState(db);
         }
 
-        private Dictionary<string, bool> GetLayerVisibleState (Database db)
+        [NotNull]
+        private Dictionary<string, bool> GetLayerVisibleState([NotNull] Database db)
         {
-            var res = new Dictionary<string, bool> ();
-            var lt = db.LayerTableId.GetObject( OpenMode.ForRead) as LayerTable;
+            var res = new Dictionary<string, bool>();
+            var lt = db.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
             foreach (var idLayer in lt)
             {
                 var layer = idLayer.GetObject(OpenMode.ForRead) as LayerTableRecord;
@@ -36,7 +38,7 @@ namespace AcadLib.Layers
         /// </summary>
         /// <param name="ent"></param>
         /// <returns></returns>
-        public bool IsVisible (Entity ent)
+        public bool IsVisible([NotNull] Entity ent)
         {
             var res = true;
             if (!ent.Visible)
@@ -49,6 +51,6 @@ namespace AcadLib.Layers
                 layerVisibleDict.TryGetValue(ent.Layer, out res);
             }
             return res;
-        }        
+        }
     }
 }

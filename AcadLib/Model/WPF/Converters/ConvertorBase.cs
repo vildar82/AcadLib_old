@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -7,29 +8,30 @@ using System.Windows.Markup;
 namespace AcadLib.WPF.Converters
 {
     [MarkupExtensionReturnType(typeof(IValueConverter))]
-    public abstract class ConvertorBase : MarkupExtension, IValueConverter        
+    public abstract class ConvertorBase : MarkupExtension, IValueConverter
     {
         /// <summary>
         /// Must be implemented in inheritor.
         /// </summary>
-        public abstract object Convert (object value, Type targetType, object parameter,
+        public abstract object Convert(object value, Type targetType, object parameter,
             CultureInfo culture);
 
         /// <summary>
         /// Override if needed.
         /// </summary>
-        public virtual object ConvertBack (object value, Type targetType, object parameter,
+        public virtual object ConvertBack(object value, Type targetType, object parameter,
             CultureInfo culture)
         {
             throw new NotImplementedException();
         }
 
-        public override object ProvideValue (IServiceProvider serviceProvider)
+        [NotNull]
+        public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return this;
         }
 
-        object IValueConverter.Convert (object value, Type targetType, object parameter, CultureInfo culture)
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
@@ -41,7 +43,7 @@ namespace AcadLib.WPF.Converters
             }
         }
 
-        object IValueConverter.ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {

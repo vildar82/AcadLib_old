@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 
 namespace AcadLib.Blocks.Dublicate
 {
@@ -23,14 +24,14 @@ namespace AcadLib.Blocks.Dublicate
 
         public List<BlockRefDublicateInfo> Dublicates { get; set; }
 
-        public BlockRefDublicateInfo(BlockReference blRef, Matrix3d transToModel, double rotateToModel)
+        public BlockRefDublicateInfo([NotNull] BlockReference blRef, Matrix3d transToModel, double rotateToModel)
         {
             IdBlRef = blRef.Id;
             Transform = blRef.BlockTransform;
             TransformToModel = transToModel;
             Position = blRef.Position.TransformBy(TransformToModel);
             Name = blRef.GetEffectiveName();
-            Rotation = getRotateToModel(blRef.Rotation, rotateToModel);            
+            Rotation = getRotateToModel(blRef.Rotation, rotateToModel);
             //Bounds = blRef.Bounds;            
         }
 
@@ -53,10 +54,10 @@ namespace AcadLib.Blocks.Dublicate
                        rotDiff < CheckDublicateBlocks.Tolerance.EqualVector ||
                        rotDiff > toleranceRotateNear360
                    );
-                   //(
-                   //    (Bounds.HasValue && other.Bounds.HasValue)
-                   //    && Bounds.Value.IsEqualTo(other.Bounds.Value, CheckDublicateBlocks.Tolerance)
-                   //);
+            //(
+            //    (Bounds.HasValue && other.Bounds.HasValue)
+            //    && Bounds.Value.IsEqualTo(other.Bounds.Value, CheckDublicateBlocks.Tolerance)
+            //);
             //TransformToModel.Equals (other.TransformToModel);
         }
 

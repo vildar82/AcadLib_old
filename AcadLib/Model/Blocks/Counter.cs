@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
 using System.Text;
 
 namespace AcadLib.Blocks
@@ -17,7 +18,7 @@ namespace AcadLib.Blocks
             _counter = new Dictionary<string, int>();
         }
 
-        public static void AddCount(string key)
+        public static void AddCount([NotNull] string key)
         {
             if (_counter.ContainsKey(key))
             {
@@ -29,12 +30,13 @@ namespace AcadLib.Blocks
             }
         }
 
-        public static int GetCount(string key)
+        public static int GetCount([NotNull] string key)
         {
             _counter.TryGetValue(key, out var count);
             return count;
         }
 
+        [NotNull]
         public static string Report()
         {
             var report = new StringBuilder("Обработано блоков:");

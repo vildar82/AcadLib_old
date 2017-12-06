@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Autodesk.AutoCAD.DatabaseServices;
-using OfficeOpenXml;
 using Path = NetLib.IO.Path;
 
 namespace AcadLib
 {
     public static class BlockList
     {
-        public static void List(this Database db)
+        public static void List([NotNull] this Database db)
         {
             var list = new List<string>();
             using (var t = db.TransactionManager.StartTransaction())
@@ -48,7 +49,7 @@ namespace AcadLib
                     excel.Save();
                 }
                 Process.Start(tempFile.FullName);
-            }            
+            }
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace Autodesk.AutoCAD.Geometry
 {
@@ -15,7 +16,8 @@ namespace Autodesk.AutoCAD.Geometry
         /// Отсеивание одинаковых точек
         /// </summary>
         /// <param name="points"></param>        
-        public static List<Point2d> DistinctPoints (this List<Point2d> points)
+        [NotNull]
+        public static List<Point2d> DistinctPoints([NotNull] this List<Point2d> points)
         {
             //  Отсеивание одинаковых точек            
             return points.Distinct(new AcadLib.Comparers.Point2dEqualityComparer()).ToList();
@@ -122,14 +124,15 @@ namespace Autodesk.AutoCAD.Geometry
                 org.Y + (distance * Math.Sin(angle)));
         }
 
-        public static Point2d Center (this Point2d pt, Point2d other)
+        public static Point2d Center(this Point2d pt, Point2d other)
         {
             return new Point2d(
                     pt.X + (other.X - pt.X) * 0.5,
                     pt.Y + (other.Y - pt.Y) * 0.5);
         }
 
-        public static string ToStringEx (this Point2d pt)
+        [NotNull]
+        public static string ToStringEx(this Point2d pt)
         {
             return pt.ToString("0.00", CultureInfo.CurrentCulture);
         }

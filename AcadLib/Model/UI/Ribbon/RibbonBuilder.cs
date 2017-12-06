@@ -1,14 +1,16 @@
 ﻿using AcadLib.PaletteCommands;
 using AcadLib.UI.Ribbon.Elements;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.Windows;
-using MicroMvvm;
+using JetBrains.Annotations;
+using NetLib;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Autodesk.AutoCAD.ApplicationServices;
-using NetLib;
+using MicroMvvm;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.UI.Ribbon
@@ -19,28 +21,31 @@ namespace AcadLib.UI.Ribbon
     public static class RibbonBuilder
     {
         private static RibbonControl ribbon;
+        private static bool isInitialized;
 
         public static void InitRibbon()
         {
-            ComponentManager.ItemInitialized += ComponentManager_ItemInitialized; 
+            if (ribbon != null || isInitialized) return;
+            isInitialized = true;
+            ComponentManager.ItemInitialized += ComponentManager_ItemInitialized;
         }
 
         private static void ComponentManager_ItemInitialized(object sender, RibbonItemEventArgs e)
         {
             ribbon = ComponentManager.Ribbon;
             if (ribbon == null) return;
-            ComponentManager.ItemInitialized -= ComponentManager_ItemInitialized; 
+            ComponentManager.ItemInitialized -= ComponentManager_ItemInitialized;
             ribbon.BackgroundRenderFinished += Ribbon_BackgroundRenderFinished;
         }
 
         private static void Ribbon_BackgroundRenderFinished(object sender, EventArgs e)
         {
-            CreateRibbon();
             ribbon.BackgroundRenderFinished -= Ribbon_BackgroundRenderFinished;
+            CreateRibbon();
             Application.SystemVariableChanged += Application_SystemVariableChanged;
         }
 
-        private static void Application_SystemVariableChanged(object sender, SystemVariableChangedEventArgs e)
+        private static void Application_SystemVariableChanged(object sender, [NotNull] SystemVariableChangedEventArgs e)
         {
             if (e.Name.Equals("WSCURRENT"))
             {
@@ -81,7 +86,7 @@ namespace AcadLib.UI.Ribbon
                 foreach (var tabElems in elements.GroupBy(g => g.Tab))
                 {
                     var tab = CreateTab(tabElems.Key, tabElems.ToList());
-                    ribbon.Tabs.Insert(0,tab);
+                    ribbon.Tabs.Insert(0, tab);
                 }
                 ribbon.UpdateLayout();
             }
@@ -91,7 +96,8 @@ namespace AcadLib.UI.Ribbon
             }
         }
 
-        private static RibbonTab CreateTab(string tabName, List<IRibbonElement> elements)
+        [NotNull]
+        private static RibbonTab CreateTab(string tabName, [NotNull] List<IRibbonElement> elements)
         {
             var tab = new RibbonTab
             {
@@ -107,6 +113,7 @@ namespace AcadLib.UI.Ribbon
             return tab;
         }
 
+        [NotNull]
         private static RibbonPanel CreatePanel(string panelName, List<IRibbonElement> elements)
         {
             var name = panelName.IsNullOrEmpty() ? "Главная" : panelName;
@@ -116,7 +123,7 @@ namespace AcadLib.UI.Ribbon
                 Id = panelName,
                 Title = name
             };
-            foreach (var part in elements.SplitParts(3))
+            foreach (var part in elements.SplitParts(2))
             {
                 var row = new RibbonRowPanel();
                 foreach (var element in part)
@@ -131,7 +138,8 @@ namespace AcadLib.UI.Ribbon
             return panel;
         }
 
-        private static RibbonButton CreateButton(IRibbonElement element)
+        [NotNull]
+        private static RibbonButton CreateButton([NotNull] IRibbonElement element)
         {
             var button = new RibbonButton
             {
@@ -145,11 +153,13 @@ namespace AcadLib.UI.Ribbon
                 IsToolTipEnabled = true,
                 ShowImage = element.LargeImage != null || element.Image != null,
                 ShowText = false,
+                Size = RibbonItemSize.Large
             };
             return button;
         }
 
-        private static RibbonToolTip GetToolTip(IRibbonElement element)
+        [NotNull]
+        private static RibbonToolTip GetToolTip([NotNull] IRibbonElement element)
         {
             return new RibbonToolTip
             {
@@ -160,7 +170,8 @@ namespace AcadLib.UI.Ribbon
             };
         }
 
-        private static BitmapSource ResizeImage(BitmapSource image, int size)
+        [NotNull]
+        private static BitmapSource ResizeImage([NotNull] BitmapSource image, int size)
         {
             return new TransformedBitmap(image, new ScaleTransform(size / image.Width, size / image.Height));
         }

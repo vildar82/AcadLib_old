@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AcadLib;
 using AcadLib.Jigs;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using AcadLib;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Autodesk.AutoCAD.EditorInput
 {
@@ -18,11 +19,11 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <param name="prompt">Строка запроса</param>
         /// <param name="rejectMsg">Сообщение при выбора неправильного типа объекта</param>
         /// <returns>Выбранный объект</returns>
-        public static ObjectId SelectEntity<T>(this Editor ed, string prompt, string rejectMsg) where T : Entity
+        public static ObjectId SelectEntity<T>([NotNull] this Editor ed, string prompt, string rejectMsg) where T : Entity
         {
             var selOpt = new PromptEntityOptions($"\n{prompt}");
             selOpt.SetRejectMessage($"\n{rejectMsg}");
-            selOpt.AddAllowedClass(typeof(T), true);            
+            selOpt.AddAllowedClass(typeof(T), true);
             var selRes = ed.GetEntity(selOpt);
             if (selRes.Status != PromptStatus.OK)
             {
@@ -31,7 +32,7 @@ namespace Autodesk.AutoCAD.EditorInput
             return selRes.ObjectId;
         }
 
-        public static Extents3d PromptExtents(this Editor ed, string msgPromptFirstPoint, string msgPromptsecondPoint)
+        public static Extents3d PromptExtents([NotNull] this Editor ed, string msgPromptFirstPoint, string msgPromptsecondPoint)
         {
             var extentsPrompted = new Extents3d();
             var prPtRes = ed.GetPoint(msgPromptFirstPoint);
@@ -61,7 +62,7 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <param name="msg">Строка запроса</param>
         /// <exception cref="Exception">Отменено пользователем.</exception>
         /// <returns>Point3d in WCS</returns>
-        public static Point3d GetPointWCS(this Editor ed, string msg)
+        public static Point3d GetPointWCS([NotNull] this Editor ed, string msg)
         {
             var res = ed.GetPoint(msg);
             if (res.Status == PromptStatus.OK)
@@ -81,7 +82,7 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <param name="msg">Строка запроса</param>
         /// <exception cref="Exception">Отменено пользователем.</exception>
         /// <returns>Результат успешного запроса.</returns>
-        public static int GetNumber(this Editor ed, int defaultNumber, string msg)
+        public static int GetNumber([NotNull] this Editor ed, int defaultNumber, string msg)
         {
             var opt = new PromptIntegerOptions(msg)
             {
@@ -104,7 +105,8 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <param name="msg">Строка запроса</param>
         /// <exception cref="Exception">Отменено пользователем.</exception>
         /// <returns>Список выбранных объектов</returns>
-        public static List<ObjectId> Select(this Editor ed, string msg)
+        [NotNull]
+        public static List<ObjectId> Select([NotNull] this Editor ed, string msg)
         {
             var selOpt = new PromptSelectionOptions()
             {
@@ -127,7 +129,8 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <param name="msg">Строка запроса</param>
         /// <exception cref="Exception">Отменено пользователем.</exception>
         /// <returns>Список выбранных блоков</returns>
-        public static List<ObjectId> SelectBlRefs(this Editor ed, string msg)
+        [NotNull]
+        public static List<ObjectId> SelectBlRefs([NotNull] this Editor ed, string msg)
         {
             var filList = new TypedValue[1] { new TypedValue((int)DxfCode.Start, "INSERT") };
             var filter = new SelectionFilter(filList);
@@ -151,9 +154,9 @@ namespace Autodesk.AutoCAD.EditorInput
         /// Чтобы человек выбрал нашел место на чертежа соответствующих размеров.
         /// Точка - нижний левый угол
         /// </summary>                
-        public static Point3d GetRectanglePoint(this Editor ed, double len, double height)
+        public static Point3d GetRectanglePoint([NotNull] this Editor ed, double len, double height)
         {
-            var jigRect = new RectangleJig(len, height);            
+            var jigRect = new RectangleJig(len, height);
             var res = ed.Drag(jigRect);
             if (res.Status != PromptStatus.OK)
                 throw new Exception(General.CanceledByUser);

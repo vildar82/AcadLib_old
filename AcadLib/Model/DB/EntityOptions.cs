@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 
 namespace AcadLib
 {
@@ -16,7 +17,7 @@ namespace AcadLib
         {
         }
 
-        public EntityOptions(Entity ent)
+        public EntityOptions([NotNull] Entity ent)
         {
             AcadColor = ent.Color;
             Color = System.Drawing.Color.FromArgb(ent.Color.Red, ent.Color.Green, ent.Color.Blue);
@@ -51,10 +52,11 @@ namespace AcadLib
         /// </summary>
         public bool CheckCreateValues { get; set; }
 
-        public void SetOptions(Entity ent)
+        public void SetOptions([NotNull] Entity ent)
         {
             if (!ent.IsWriteEnabled)
             {
+                // ReSharper disable once UpgradeOpen
                 ent.UpgradeOpen();
             }
             SetLayer(ent);
@@ -66,17 +68,17 @@ namespace AcadLib
 
         private void SetLinetypeScale(Entity ent)
         {
-            if (LinetypeScale != null && LinetypeScale.Value >0)
+            if (LinetypeScale != null && LinetypeScale.Value > 0)
             {
                 ent.LinetypeScale = LinetypeScale.Value;
             }
         }
 
-        public void SetLineType (Entity ent)
+        public void SetLineType(Entity ent)
         {
             if (!LineTypeId.IsNull)
             {
-                ent.LinetypeId = LineTypeId;                
+                ent.LinetypeId = LineTypeId;
             }
             else if (!string.IsNullOrEmpty(LineType))
             {
@@ -88,7 +90,7 @@ namespace AcadLib
             }
         }
 
-        public void SetLineWeight (Entity ent)
+        public void SetLineWeight(Entity ent)
         {
             if (isLineWeight)
             {
@@ -96,7 +98,7 @@ namespace AcadLib
             }
         }
 
-        public void SetColor (Entity ent)
+        public void SetColor(Entity ent)
         {
             if (isColorIndex)
             {
@@ -104,7 +106,7 @@ namespace AcadLib
             }
             else if (!Color.IsEmpty)
             {
-                ent.Color = Autodesk.AutoCAD.Colors.Color.FromColor(Color);                
+                ent.Color = Autodesk.AutoCAD.Colors.Color.FromColor(Color);
             }
             else if (AcadColor != null)
             {
@@ -112,11 +114,11 @@ namespace AcadLib
             }
         }
 
-        public void SetLayer (Entity ent)
+        public void SetLayer(Entity ent)
         {
             if (!LayerId.IsNull)
             {
-                ent.LayerId = LayerId;                
+                ent.LayerId = LayerId;
             }
             else if (!string.IsNullOrEmpty(Layer))
             {
@@ -131,14 +133,15 @@ namespace AcadLib
 
     public static class EntityOptionsExt
     {
-        public static void SetOptions(this Entity ent, EntityOptions opt)
+        public static void SetOptions(this Entity ent, [CanBeNull] EntityOptions opt)
         {
             opt?.SetOptions(ent);
         }
 
-        public static EntityOptions GetEntityOptions(this Entity ent)
+        [NotNull]
+        // ReSharper disable once UnusedMember.Global
+        public static EntityOptions GetEntityOptions([NotNull] this Entity ent)
         {
-            if (ent == null) return null;
             return new EntityOptions(ent);
         }
     }

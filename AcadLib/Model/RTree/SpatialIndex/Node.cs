@@ -17,6 +17,9 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // Ported to C# By Dror Gluska, April 9th, 2009
+
+using JetBrains.Annotations;
+
 namespace AcadLib.RTree.SpatialIndex
 {
 
@@ -45,7 +48,7 @@ namespace AcadLib.RTree.SpatialIndex
             ids = new int[maxNodeEntries];
         }
 
-        internal void addEntry(Rectangle r, int id)
+        internal void addEntry([NotNull] Rectangle r, int id)
         {
             ids[entryCount] = id;
             entries[entryCount] = r.copy();
@@ -152,7 +155,7 @@ namespace AcadLib.RTree.SpatialIndex
         /**
          * eliminate null entries, move all entries to the start of the source node
          */
-        internal void reorganize(RTree<T> rtree)
+        internal void reorganize([NotNull] RTree<T> rtree)
         {
             var countdownIndex = rtree.maxNodeEntries - 1;
             for (var index = 0; index < entryCount; index++)

@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,10 +21,10 @@ namespace AcadLib.Jigs
         /// <param name="ids"></param>
         /// <param name="pt"></param>
         /// <returns></returns>
-        public static bool Drag(this Editor ed, ObjectId[] ids, Point3d pt)
+        public static bool Drag(this Editor ed, [CanBeNull] ObjectId[] ids, Point3d pt)
         {
             if (ids == null || !ids.Any()) return false;
-            var tolerance = new Tolerance(0.1,0.1);
+            var tolerance = new Tolerance(0.1, 0.1);
             var selSet = SelectionSet.FromObjectIds(ids);
             var ptInputLast = pt;
             var ppr = ed.Drag(selSet, "\nТочка вставки:", (Point3d ptInput, ref Matrix3d mat) =>
@@ -66,7 +67,7 @@ namespace AcadLib.Jigs
         /// </summary>        
         /// <param name="ents">Объекты не резиденты чертежа (будут вставленны в текущее пространство листа)</param>
         /// <param name="height">Высота разбиения объектов по высоте (вставка в столбик, пока высота столбца меньше заданной высоты)</param>        
-        public static void Drag(this Editor ed, List<Entity> ents, double height = 10000)
+        public static void Drag([NotNull] this Editor ed, [NotNull] List<Entity> ents, double height = 10000)
         {
             var db = ed.Document.Database;
             var ids = new List<ObjectId>();

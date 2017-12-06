@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Geometry
 {
@@ -25,7 +26,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pts">The instance to which the method applies.</param>
         /// <param name="tol">The tolerance to use in comparisons.</param>
-        public static void RemoveDuplicate(this Point3dCollection pts, Tolerance tol)
+        public static void RemoveDuplicate([NotNull] this Point3dCollection pts, Tolerance tol)
         {
             var ptlst = new List<Point3d>();
             for (var i = 0; i < pts.Count; i++)
@@ -35,7 +36,7 @@ namespace AcadLib.Geometry
             ptlst.Sort((p1, p2) => p1.X.CompareTo(p2.X));
             for (var i = 0; i < ptlst.Count - 1; i++)
             {
-                for (var j = i + 1; j < ptlst.Count; )
+                for (var j = i + 1; j < ptlst.Count;)
                 {
                     if ((ptlst[j].X - ptlst[i].X) > tol.EqualPoint)
                         break;
@@ -68,7 +69,7 @@ namespace AcadLib.Geometry
         /// <param name="pt">The point to search.</param>
         /// <param name="tol">The tolerance to use in comparisons.</param>
         /// <returns>true if the point is found; otherwise, false.</returns>
-        public static bool Contains(this Point3dCollection pts, Point3d pt, Tolerance tol)
+        public static bool Contains([NotNull] this Point3dCollection pts, Point3d pt, Tolerance tol)
         {
             for (var i = 0; i < pts.Count; i++)
             {
@@ -85,7 +86,7 @@ namespace AcadLib.Geometry
         /// <returns>An Extents3d instance.</returns>
         /// <exception cref="ArgumentException">
         /// ArgumentException is thrown if the collection is null or empty.</exception>
-        public static Extents3d ToExtents3d(this Point3dCollection pts)
+        public static Extents3d ToExtents3d([NotNull] this Point3dCollection pts)
         {
             return pts.Cast<Point3d>().ToExtents3d();
         }
@@ -97,7 +98,7 @@ namespace AcadLib.Geometry
         /// <returns>An Extents3d instance.</returns>
         /// <exception cref="ArgumentException">
         /// ArgumentException is thrown if the sequence is null or empty.</exception>
-        public static Extents3d ToExtents3d(this IEnumerable<Point3d> pts)
+        public static Extents3d ToExtents3d([NotNull] this IEnumerable<Point3d> pts)
         {
             if (pts == null || !pts.Any())
                 throw new ArgumentException("Null or empty sequence");

@@ -1,17 +1,18 @@
-﻿using MicroMvvm;
+﻿using AcadLib.Errors.UI;
+using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using NetLib.WPF;
+using OfficeOpenXml;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
-using AcadLib.Errors.UI;
-using Autodesk.AutoCAD.DatabaseServices;
-using NetLib.WPF;
-using OfficeOpenXml;
-using ReactiveUI.Fody.Helpers;
 
 namespace AcadLib.Errors
 {
@@ -22,12 +23,12 @@ namespace AcadLib.Errors
 
         }
 
-        public ErrorsViewModel(List<IError> errors)
+        public ErrorsViewModel([NotNull] List<IError> errors)
         {
             ErrorsOrig = errors;
             // Группировка ошибок
             //"Дублирование блоков"                        
-            Errors = new ObservableCollection<ErrorModelBase>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).
+            Errors = new ReactiveList<ErrorModelBase>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).
                 GroupBy(g => g.Group).Select(s =>
                 {
                     ErrorModelBase errModel;
@@ -45,13 +46,17 @@ namespace AcadLib.Errors
                     return errModel;
                 }).ToList());
             IsDublicateBlocksEnabled = errors.Any(e => e.Message?.StartsWith("Дублирование блоков") ?? false);
-            CollapseAll = new RelayCommand(OnCollapseExecute, CanCollapseExecute);
-            ExpandeAll = new RelayCommand(OnExpandedExecute, CanExpandExecute);
-            ExportToExcel = new RelayCommand(OnExportToExcelExecute);
-            ExportToTxt = new RelayCommand(OnExportToTxtExecute);
-            DeleteSelectedDublicateBlocks = new RelayCommand(OnDeleteSelectedDublicateBlocksExecute);
             ErrorsCountInfo = errors.Count;
-            DeleteError = new RelayCommand<ErrorModelBase>(DeleteErrorExec);
+
+            var canCollapse = Errors.CountChanged.Select(s => Errors.OfType<ErrorModelList>().Any(a => a.IsExpanded));
+            CollapseAll = CreateCommand(CollapseExecute, canCollapse);
+            var canExpand = Errors.CountChanged.Select(s =>
+                Errors.OfType<ErrorModelList>().Any(a => a.SameErrors != null && !a.IsExpanded));
+            ExpandeAll = CreateCommand(ExpandedExecute, canExpand);
+            ExportToExcel = CreateCommand(ExportToExcelExecute);
+            ExportToTxt = CreateCommand(ExportToTxtExecute);
+            DeleteSelectedDublicateBlocks = CreateCommand(OnDeleteSelectedDublicateBlocksExecute);
+            DeleteError = CreateCommand<ErrorModelBase>(DeleteErrorExec);
         }
 
         private void ErrModel_SelectionChanged(object sender, bool e)
@@ -60,35 +65,28 @@ namespace AcadLib.Errors
         }
 
         public List<IError> ErrorsOrig { get; set; }
-        public ObservableCollection<ErrorModelBase> Errors { get; set; }
+        public ReactiveList<ErrorModelBase> Errors { get; set; }
         public bool IsDialog { get; set; }
 
-        public RelayCommand CollapseAll { get; set; }
-        public RelayCommand ExpandeAll { get; set; }
-        public RelayCommand ExportToExcel { get; set; }
-        public RelayCommand ExportToTxt { get; set; }
-        public RelayCommand DeleteSelectedDublicateBlocks { get; set; }
-        public RelayCommand<ErrorModelBase> DeleteError { get; set; }
+        public ReactiveCommand CollapseAll { get; set; }
+        public ReactiveCommand ExpandeAll { get; set; }
+        public ReactiveCommand ExportToExcel { get; set; }
+        public ReactiveCommand ExportToTxt { get; set; }
+        public ReactiveCommand DeleteSelectedDublicateBlocks { get; set; }
+        public ReactiveCommand DeleteError { get; set; }
         [Reactive] public int ErrorsCountInfo { get; set; }
         public bool IsDublicateBlocksEnabled { get; set; }
         [Reactive] public int CountSelectedErrors { get; set; }
 
-        private bool CanCollapseExecute()
-        {
-            return Errors.OfType<ErrorModelList>().Any(a => a.IsExpanded);
-        }
-        private void OnCollapseExecute()
+        private void CollapseExecute()
         {
             foreach (var item in Errors.OfType<ErrorModelList>())
             {
                 item.IsExpanded = false;
             }
         }
-        private bool CanExpandExecute()
-        {
-            return Errors.OfType<ErrorModelList>().Any(a=>a.SameErrors!= null  && !a.IsExpanded);
-        }
-        private void OnExpandedExecute()
+
+        private void ExpandedExecute()
         {
             foreach (var item in Errors.OfType<ErrorModelList>())
             {
@@ -96,7 +94,7 @@ namespace AcadLib.Errors
             }
         }
 
-        private void OnExportToExcelExecute()
+        private void ExportToExcelExecute()
         {
             try
             {
@@ -136,23 +134,24 @@ namespace AcadLib.Errors
             }
         }
 
-        private void OnExportToTxtExecute ()
+        private void ExportToTxtExecute()
         {
-            var sbText = new StringBuilder("Список ошибок:").AppendLine();            
+            var sbText = new StringBuilder("Список ошибок:").AppendLine();
             foreach (var err in Errors)
             {
                 if (err is ErrorModelList errlist)
                 {
+                    sbText.AppendLine(errlist.Header.Message);
                     foreach (var item in errlist.SameErrors)
                     {
-                        sbText.AppendLine(err.Message);
+                        sbText.AppendLine(item.Message);
                     }
                 }
                 else
                 {
                     sbText.AppendLine(err.Message);
                 }
-            }            
+            }
             var fileTxt = Path.GetTempPath() + Guid.NewGuid() + ".txt";
             File.WriteAllText(fileTxt, sbText.ToString());
             Process.Start(fileTxt);
@@ -166,22 +165,22 @@ namespace AcadLib.Errors
                 Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
                 RemoveErrors(selectedErrors);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка удаления дубликатов блоков - {ex.Message}");   
-            }            
-        }    
+                MessageBox.Show($"Ошибка удаления дубликатов блоков - {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// Удаление выделенных ошибок
         /// </summary>
         public void DeleteSelectedErrors()
         {
-            var selectedErrors = GetSelectedErrors(out var errors);
+            var selectedErrors = GetSelectedErrors(out var _);
             RemoveErrors(selectedErrors);
         }
 
-        private void RemoveErrors(List<ErrorModelBase> selectedErrors)
+        private void RemoveErrors([NotNull] List<ErrorModelBase> selectedErrors)
         {
             var countIsSelectedErr = 0;
             foreach (var item in selectedErrors)
@@ -193,7 +192,7 @@ namespace AcadLib.Errors
                 else
                 {
                     Errors.Remove(item);
-                    
+
                 }
                 if (item.IsSelected) countIsSelectedErr++;
             }
@@ -201,10 +200,11 @@ namespace AcadLib.Errors
             CountSelectedErrors -= countIsSelectedErr;
         }
 
-        private List<ErrorModelBase> GetSelectedErrors(out List<IError> errors)
+        [NotNull]
+        private List<ErrorModelBase> GetSelectedErrors([NotNull] out List<IError> errors)
         {
             errors = new List<IError>();
-            var selectedErrors = new List<ErrorModelBase>();            
+            var selectedErrors = new List<ErrorModelBase>();
             foreach (var err in Errors)
             {
                 if (err.IsSelected)
@@ -225,7 +225,7 @@ namespace AcadLib.Errors
             return selectedErrors;
         }
 
-        private void DeleteErrorExec(ErrorModelBase errorBase)
+        private void DeleteErrorExec([NotNull] ErrorModelBase errorBase)
         {
             if (errorBase is ErrorModelOne errOne)
             {
@@ -239,7 +239,7 @@ namespace AcadLib.Errors
             {
                 throw new ArgumentException("Ошибка не найдена.");
             }
-            if (!errorBase.Error.IdEnt.IsValidEx())
+            if (!errorBase.Error.IdEnt.IsValidEx() && errorBase.Error.HasEntity)
             {
                 throw new Exception($"Элемент ошибки не валидный. Возможно был удален.");
             }

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using AcadLib.XData;
+using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AcadLib.XData;
-using Autodesk.AutoCAD.DatabaseServices;
 
 // ReSharper disable once CheckNamespace
 namespace AcadLib
@@ -36,7 +37,7 @@ namespace AcadLib
         /// Сохранение словаря
         /// </summary>
         /// <param name="dicEd">Словарь для сохранения</param>
-        public void Save (DicED dicEd)
+        public void Save([CanBeNull] DicED dicEd)
         {
             if (string.IsNullOrEmpty(dicEd?.Name)) return;
             var dicId = GetDicPlugin(true);
@@ -48,7 +49,8 @@ namespace AcadLib
         /// </summary>
         /// <param name="dicName">Имя словаря</param>
         /// <returns>Словарь по ключу `dicName` если он есть.</returns>
-        public DicED LoadED (string dicName)
+        [CanBeNull]
+        public DicED LoadED(string dicName)
         {
             var dicPluginId = GetDicPlugin(false);
             var dicResId = ExtDicHelper.GetDic(dicPluginId, dicName, false, false);
@@ -63,9 +65,10 @@ namespace AcadLib
         /// <summary>
         /// Чтение всего словаря плагина
         /// </summary>        
-        public DicED LoadED ()
+        [CanBeNull]
+        public DicED LoadED()
         {
-            var dicPluginId = GetDicPlugin(false);            
+            var dicPluginId = GetDicPlugin(false);
             var res = ExtDicHelper.GetDicEd(dicPluginId);
             if (res != null)
             {
@@ -79,11 +82,12 @@ namespace AcadLib
         /// </summary>
         /// <param name="recName">Имя XRecord в словаре</param>
         /// <returns>Список значений в XRecord или null</returns>
+        [CanBeNull]
         [Obsolete("Используй `DicED`")]
-        public List<TypedValue> Load (string recName)
+        public List<TypedValue> Load(string recName)
         {
             List<TypedValue> values;
-            var recId = GetRec(recName, false);           
+            var recId = GetRec(recName, false);
             if (recId.IsNull)
                 return null;
 
@@ -165,7 +169,7 @@ namespace AcadLib
                     if (values.Count() <= 0) return res;
                     try
                     {
-                        return (int) values[0].Value;
+                        return (int)values[0].Value;
                     }
                     catch
                     {
@@ -205,7 +209,7 @@ namespace AcadLib
                     if (values.Count() <= 0) return res;
                     try
                     {
-                        return (double) values[0].Value;
+                        return (double)values[0].Value;
                     }
                     catch
                     {
@@ -340,7 +344,7 @@ namespace AcadLib
         }
 
         [Obsolete("Используй `DicED`")]
-        public void Save (List<TypedValue> values, string key)
+        public void Save([CanBeNull] List<TypedValue> values, string key)
         {
             if (values == null || values.Count == 0) return;
             var idRec = GetRec(key, true);
@@ -356,12 +360,12 @@ namespace AcadLib
             }
         }
 
-        private ObjectId GetDicPlugin (bool create)
+        private ObjectId GetDicPlugin(bool create)
         {
             ObjectId res;
             var dicNodId = Db.NamedObjectsDictionaryId;
             var dicPikId = ExtDicHelper.GetDic(dicNodId, dictName, create, false);
-            if (string.IsNullOrEmpty( dictInnerName))
+            if (string.IsNullOrEmpty(dictInnerName))
             {
                 res = dicPikId;
             }
@@ -374,10 +378,10 @@ namespace AcadLib
         }
 
         [Obsolete("Используй `DicED`")]
-        private ObjectId GetRec (string key, bool create)
+        private ObjectId GetRec([NotNull] string key, bool create)
         {
             var dicId = GetDicPlugin(create);
-            return ExtDicHelper.GetRec(dicId, key, create, false);            
+            return ExtDicHelper.GetRec(dicId, key, create, false);
         }
     }
 }

@@ -18,6 +18,7 @@
 
 // Ported to C# By Dror Gluska, April 9th, 2009
 
+using JetBrains.Annotations;
 using System;
 using System.Text;
 
@@ -46,7 +47,7 @@ namespace RTreeLib
         /**
          * array containing the maximum value for each dimension; ie { max(x), max(y) }
          */
-        internal double [] min;
+        internal double[] min;
 
         /**
          * Constructor.
@@ -69,7 +70,7 @@ namespace RTreeLib
          * @param min array containing the minimum value for each dimension; ie { min(x), min(y) }
          * @param max array containing the maximum value for each dimension; ie { max(x), max(y) }
          */
-        public Rectangle(double[] min, double[] max)
+        public Rectangle([NotNull] double[] min, [NotNull] double[] max)
         {
             if (min.Length != DIMENSIONS || max.Length != DIMENSIONS)
             {
@@ -107,7 +108,7 @@ namespace RTreeLib
          * @param min array containing the minimum value for each dimension; ie { min(x), min(y) }
          * @param max array containing the maximum value for each dimension; ie { max(x), max(y) }
          */
-        internal void set(double[] min, double[] max)
+        internal void set([NotNull] double[] min, [NotNull] double[] max)
         {
             Array.Copy(min, 0, this.min, 0, DIMENSIONS);
             Array.Copy(max, 0, this.max, 0, DIMENSIONS);
@@ -118,6 +119,7 @@ namespace RTreeLib
          * 
          * @return copy of this rectangle
          */
+        [NotNull]
         internal Rectangle copy()
         {
             return new Rectangle(min, max);
@@ -213,7 +215,7 @@ namespace RTreeLib
             double distanceSquared = 0;
             for (var i = 0; i < DIMENSIONS; i++)
             {
-               var greatestMin = Math.Max(min[i], p.coordinates[i]);
+                var greatestMin = Math.Max(min[i], p.coordinates[i]);
                 var leastMax = Math.Min(max[i], p.coordinates[i]);
                 if (greatestMin > leastMax)
                 {
@@ -237,8 +239,8 @@ namespace RTreeLib
             double distanceSquared = 0;
             for (var i = 0; i < DIMENSIONS; i++)
             {
-            var greatestMin = Math.Max(min[i], r.min[i]);
-            var leastMax = Math.Min(max[i], r.max[i]);
+                var greatestMin = Math.Max(min[i], r.min[i]);
+                var leastMax = Math.Min(max[i], r.max[i]);
                 if (greatestMin > leastMax)
                 {
                     distanceSquared += ((greatestMin - leastMax) * (greatestMin - leastMax));
@@ -252,8 +254,8 @@ namespace RTreeLib
          */
         internal double distanceSquared(int dimension, double point)
         {
-         double distanceSquared = 0;
-         var tempDistance = point - max[dimension];
+            double distanceSquared = 0;
+            var tempDistance = point - max[dimension];
             for (var i = 0; i < 2; i++)
             {
                 if (tempDistance > 0)
@@ -276,7 +278,7 @@ namespace RTreeLib
          */
         internal double furthestDistance(Rectangle r)
         {
-         double distanceSquared = 0;
+            double distanceSquared = 0;
 
             for (var i = 0; i < DIMENSIONS; i++)
             {
@@ -296,10 +298,10 @@ namespace RTreeLib
          *          compute the difference in area of the union and the
          *          original rectangle
          */
-        internal double enlargement(Rectangle r)
+        internal double enlargement([NotNull] Rectangle r)
         {
-         var enlargedArea = (Math.Max(max[0], r.max[0]) - Math.Min(min[0], r.min[0])) *
-                                 (Math.Max(max[1], r.max[1]) - Math.Min(min[1], r.min[1]));
+            var enlargedArea = (Math.Max(max[0], r.max[0]) - Math.Min(min[0], r.min[0])) *
+                                    (Math.Max(max[1], r.max[1]) - Math.Min(min[1], r.min[1]));
 
             return enlargedArea - area();
         }
@@ -341,6 +343,7 @@ namespace RTreeLib
          * 
          * @param r The rectangle to union with this rectangle
          */
+        [NotNull]
         internal Rectangle union(Rectangle r)
         {
             var union = copy();
@@ -348,7 +351,7 @@ namespace RTreeLib
             return union;
         }
 
-        internal bool CompareArrays(double[] a1, double[] a2)
+        internal bool CompareArrays([CanBeNull] double[] a1, [CanBeNull] double[] a2)
         {
             if ((a1 == null) || (a2 == null))
                 return false;

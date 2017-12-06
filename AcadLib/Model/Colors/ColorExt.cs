@@ -1,12 +1,14 @@
 ﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using NetLib;
 
 namespace AcadLib.Colors
 {
     public static class ColorExt
     {
-        public static string AcadColorToStrig(this Color color)
+        [NotNull]
+        public static string AcadColorToStrig([CanBeNull] this Color color)
         {
             return color?.ColorValue.ColorToString() ?? "";
         }
@@ -18,7 +20,7 @@ namespace AcadLib.Colors
         /// <summary>
         /// Определение цвета объекта - если ПоСлою, то возвращает цвет слоя.
         /// </summary>
-        public static Color GetEntityColorAbs(this Entity ent)
+        public static Color GetEntityColorAbs([NotNull] this Entity ent)
         {
             var color = ent.Color;
             if (color.IsByLayer)
@@ -32,7 +34,8 @@ namespace AcadLib.Colors
         /// <summary>
         /// Цвет в строку - индекс цвета, или r,g,b.
         /// </summary>
-        public static string AcadColorToString2(this Color color)
+        [NotNull]
+        public static string AcadColorToString2([CanBeNull] this Color color)
         {
             if (color == null) return "";
             if (color.IsByLayer) return "256";

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Blocks
 {
@@ -19,7 +20,7 @@ namespace AcadLib.Blocks
         /// DBText - должен быть или AttributeDefinition или AttributeReference
         /// иначе исключение ArgumentException
         /// </summary>      
-        public AttributeInfo(DBText attr)
+        public AttributeInfo([NotNull] DBText attr)
         {
             if (attr is AttributeDefinition attdef)
             {
@@ -41,13 +42,14 @@ namespace AcadLib.Blocks
             IdAtr = attr.Id;
         }
 
-        public AttributeInfo(AttributeReference atrRef)
+        public AttributeInfo([NotNull] AttributeReference atrRef)
         {
             Tag = atrRef.Tag;
             Text = atrRef.TextString;
             IdAtr = atrRef.Id;
         }
 
+        [NotNull]
         public static List<AttributeInfo> GetAttrDefs(ObjectId idBtr)
         {
             var resVal = new List<AttributeInfo>();
@@ -59,7 +61,7 @@ namespace AcadLib.Blocks
                     foreach (var idEnt in btr)
                     {
                         using (var attrDef = idEnt.Open(OpenMode.ForRead, false, true) as AttributeDefinition)
-                        {                            
+                        {
                             if (attrDef != null && attrDef.Visible)
                             {
                                 var attrDefInfo = new AttributeInfo(attrDef);
@@ -72,7 +74,8 @@ namespace AcadLib.Blocks
             return resVal;
         }
 
-        public static List<AttributeInfo> GetAttrRefs(BlockReference blRef)
+        [NotNull]
+        public static List<AttributeInfo> GetAttrRefs([CanBeNull] BlockReference blRef)
         {
             var resVal = new List<AttributeInfo>();
             if (blRef?.AttributeCollection != null)
@@ -91,6 +94,6 @@ namespace AcadLib.Blocks
                 }
             }
             return resVal;
-        }        
+        }
     }
 }

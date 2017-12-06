@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 using AcRx = Autodesk.AutoCAD.Runtime;
 
 namespace AcadLib.Geometry
@@ -26,7 +27,8 @@ namespace AcadLib.Geometry
         /// <returns>The vertices list.</returns>
         /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
         /// eNoActiveTransactions is thrown if the method is not called form a Transaction.</exception>
-        public static List<Vertex2d> GetVertices(this Polyline2d pl)
+        [NotNull]
+        public static List<Vertex2d> GetVertices([NotNull] this Polyline2d pl)
         {
             var tr = pl.Database.TransactionManager.TopTransaction;
             if (tr == null)
@@ -50,7 +52,8 @@ namespace AcadLib.Geometry
         /// <returns>A copy of the segment (WCS coordinates).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException is thrown the index is out of range.</exception>
-        public static LineSegment3d GetLineSegmentAt(this Polyline2d pl, int index)
+        [NotNull]
+        public static LineSegment3d GetLineSegmentAt([NotNull] this Polyline2d pl, int index)
         {
             try
             {
@@ -72,7 +75,8 @@ namespace AcadLib.Geometry
         /// <returns>A copy of the segment (OCS coordinates).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException is thrown the index is out of range.</exception>
-        public static LineSegment2d GetLineSegment2dAt(this Polyline2d pl, int index)
+        [NotNull]
+        public static LineSegment2d GetLineSegment2dAt([NotNull] this Polyline2d pl, int index)
         {
             try
             {
@@ -95,7 +99,8 @@ namespace AcadLib.Geometry
         /// <returns>A copy of the segment (WCS coordinates).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException is thrown the index is out of range.</exception>
-        public static CircularArc3d GetArcSegmentAt(this Polyline2d pl, int index)
+        [NotNull]
+        public static CircularArc3d GetArcSegmentAt([NotNull] this Polyline2d pl, int index)
         {
             try
             {
@@ -118,7 +123,8 @@ namespace AcadLib.Geometry
         /// <returns>A copy of the segment (OCS coordinates).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException is thrown the index is out of range.</exception>
-        public static CircularArc2d GetArcSegment2dAt(this Polyline2d pl, int index)
+        [NotNull]
+        public static CircularArc2d GetArcSegment2dAt([NotNull] this Polyline2d pl, int index)
         {
             try
             {
@@ -139,7 +145,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pl">The instance to which the method applies.</param>
         /// <returns>The centroid of the polyline 2d (WCS coordinates).</returns>
-        public static Point3d Centroid(this Polyline2d pl)
+        public static Point3d Centroid([NotNull] this Polyline2d pl)
         {
             var vertices = pl.GetVertices().ToArray();
             var last = vertices.Length - 1;
@@ -199,7 +205,7 @@ namespace AcadLib.Geometry
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <param name="direction">Direction (in WCS coordinates) of the projection.</param>
         /// <returns>The projected Polyline.</returns>
-        public static Polyline GetProjectedPolyline(this Polyline2d pline, Plane plane, Vector3d direction)
+        public static Polyline GetProjectedPolyline(this Polyline2d pline, [NotNull] Plane plane, Vector3d direction)
         {
             var tol = new Tolerance(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
@@ -208,7 +214,11 @@ namespace AcadLib.Geometry
             if (pline.Normal.IsPerpendicularTo(direction, tol))
             {
                 var dirPlane = new Plane(Point3d.Origin, direction);
-                if (!pline.IsWriteEnabled) pline.UpgradeOpen();
+                if (!pline.IsWriteEnabled)
+                {
+                    // ReSharper disable once UpgradeOpen
+                    pline.UpgradeOpen();
+                }
                 pline.TransformBy(Matrix3d.WorldToPlane(dirPlane));
                 var extents = pline.GeometricExtents;
                 pline.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
@@ -224,7 +234,7 @@ namespace AcadLib.Geometry
         /// <param name="pline">The polyline to project.</param>
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <returns>The projected polyline</returns>
-        public static Polyline GetOrthoProjectedPolyline(this Polyline2d pline, Plane plane)
+        public static Polyline GetOrthoProjectedPolyline(this Polyline2d pline, [NotNull] Plane plane)
         {
             return pline.GetProjectedPolyline(plane, plane.Normal);
         }

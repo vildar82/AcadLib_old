@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 
@@ -94,6 +95,7 @@ namespace AcadLib.Geometry
             //return pointsLoopAbove;
         }
 
+        [NotNull]
         private static List<Point2d> GetLoopSide(this Polyline contour,
             Point3d ptIntersect1, Point3d ptIntersect2, Func<LineSegment3d, bool> checkSeg, bool includePtIntersects = true)
         {
@@ -142,7 +144,7 @@ namespace AcadLib.Geometry
             return pointsLoopSide;
         }
 
-        private static void AddPoint(List<Point2d> pointsLoop, int dir, ref int indexCur, Polyline contour)
+        private static void AddPoint([NotNull] List<Point2d> pointsLoop, int dir, ref int indexCur, [NotNull] Polyline contour)
         {
             var pt = contour.GetPoint2dAt(indexCur);
             pointsLoop.Add(pt);
@@ -157,7 +159,7 @@ namespace AcadLib.Geometry
             }
         }
 
-        private static int GetStartIndex(Polyline contour, Point3d ptIntersect1,
+        private static int GetStartIndex([NotNull] Polyline contour, Point3d ptIntersect1,
             Func<LineSegment3d, bool> checkSeg,
              out int dir)
         {

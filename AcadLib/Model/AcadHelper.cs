@@ -1,15 +1,17 @@
-﻿using System;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
+using JetBrains.Annotations;
+using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
     public static class AcadHelper
     {
-        public static int VersionMajor => Application.Version.Major;
+        public static int VersionMajor => Version.Major;
         /// <summary>
         /// Текущий документ
         /// </summary>
-        public static Document Doc => Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager?.MdiActiveDocument;
+        [NotNull]
+        public static Document Doc => DocumentManager.MdiActiveDocument;
 
         /// <summary>
         /// Сообщение в ком.строку. автокада

@@ -38,7 +38,7 @@
 					<Grid.InputBindings>
 						<MouseBinding Gesture="LeftClick" Command="{Binding Show}" />
 					</Grid.InputBindings>
-					<StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Width="12"
+					<StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" MaxWidth="18" MinWidth="14"
 					            Margin="{Binding MarginHeader}" >
 						<TextBlock Text="{Binding Parent.SameErrors.Count}" VerticalAlignment="Center" HorizontalAlignment="Center"
 								  Visibility="{Binding ShowCount, Converter={converters:BooleanToCollapseVisibilityConverter}}"/>
@@ -52,7 +52,7 @@
 						<TextBox Text="{Binding Message}" Margin="0" HorizontalAlignment="Left"
 						         VerticalAlignment="Center" TextWrapping="Wrap" 
 						         FontSize="14" BorderThickness="0" IsReadOnly="True"
-									Background="Transparent">
+									Background="Transparent" ContextMenu="{x:Null}">
 							<ToolTipService.ToolTip>
 								<TextBlock Text="{Binding Message}" MaxWidth="500" TextWrapping="Wrap"/>
 							</ToolTipService.ToolTip>
@@ -68,7 +68,7 @@
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
 										<Button Content="{Binding Name}" ToolTip="{Binding Tooltip}" Command="{Binding Click}" 
-										        Margin="1" MaxWidth="150"/>
+										        Margin="1" MaxWidth="150" VerticalAlignment="Center"/>
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>
 							</ItemsControl>
@@ -82,11 +82,12 @@
 				</Border>
 			</DataTemplate>
 			<DataTemplate DataType="{x:Type ui:ErrorModelList}">
-				<Expander Name="expander" Header="{Binding Header}" IsExpanded="{Binding IsExpanded}" Focusable="False" MaxHeight="500"
+				<Expander Name="expander" Header="{Binding Header}" IsExpanded="{Binding IsExpanded}" 
+							 Focusable="False" MaxHeight="500"
 							 Background="{x:Null}" BorderThickness="0"
-				          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-					<ListBox ItemsSource="{Binding SameErrors}" Margin="34,1,1,1" SelectionMode="Extended"
-					         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+				          ScrollViewer.HorizontalScrollBarVisibility="Disabled" ContextMenu="{x:Null}">
+					<ListBox ItemsSource="{Binding SameErrors}" Margin="5,1,1,1" SelectionMode="Extended"
+					         ScrollViewer.HorizontalScrollBarVisibility="Disabled" ContextMenu="{x:Null}">
 						<ListBox.ItemContainerStyle>
 							<Style TargetType="ListBoxItem">
 								<Setter Property="IsSelected" Value="{Binding IsSelected}"/>
@@ -137,13 +138,12 @@
 				<RowDefinition/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			<ListBox Grid.Row="0" ItemsSource="{Binding Errors}" ContextMenu="{DynamicResource cmErrors}"
-						SelectionMode="Extended" Grid.IsSharedSizeScope="True"
+			<ListBox Grid.Row="0" ItemsSource="{Binding Errors}" ContextMenu="{StaticResource cmErrors}"
+						SelectionMode="Extended" Grid.IsSharedSizeScope="True" VerticalAlignment="Top"
 			         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 				<ListBox.ItemContainerStyle>
 					<Style TargetType="ListBoxItem">
 						<Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-						<!--<Setter Property="Focusable" Value="false"/>-->
 					</Style>
 				</ListBox.ItemContainerStyle>
 			</ListBox>

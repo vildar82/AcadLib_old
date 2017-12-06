@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Это пользовательский блок, а не лист, ссылка, анонимный или спец.блок(*).
         /// </summary>        
-        public static bool IsUserBlock(this BlockTableRecord btr)
+        public static bool IsUserBlock([NotNull] this BlockTableRecord btr)
         {
             return !btr.IsLayout && !btr.IsAnonymous && !btr.IsFromExternalReference && !btr.Name.StartsWith("*");
         }
@@ -34,9 +35,10 @@ namespace AcadLib.Blocks
         public static bool HasBlockThisDrawing(string name)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null)
-                throw new Exception("Нет активного документа!");
-            using (var bt = doc.Database.BlockTableId.Open(OpenMode.ForRead) as BlockTable)
+            if (doc == null) throw new Exception("Нет активного документа!");
+#pragma warning disable 618
+            using (var bt = (BlockTable)doc.Database.BlockTableId.Open(OpenMode.ForRead))
+#pragma warning restore 618
             {
                 return bt.Has(name);
             }
@@ -48,6 +50,7 @@ namespace AcadLib.Blocks
         /// <param name="blName">Имя блока</param>
         /// <param name="fileDrawing">Полный путь к чертежу из которого копируется блок</param>
         /// <param name="destDb">База чертежа в который копируетсяя блок</param>
+        /// <param name="mode">Режим для уже существующих элементов - пропускать или заменять.</param>
         /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
         public static ObjectId CopyBlockFromExternalDrawing(string blName, string fileDrawing, Database destDb,
                                                   DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
@@ -87,8 +90,10 @@ namespace AcadLib.Blocks
         /// <param name="filter">Фильтр блоков, которые нужно копировать</param>
         /// <param name="fileDrawing">Полный путь к чертежу из которого копируется блок</param>
         /// <param name="destDb">База чертежа в который копируетсяя блок</param>
+        /// <param name="mode">Режим для существующих элементов - пропускать или заменять</param>
         /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
         /// <returns>Список пар значений имени блока и idBtr</returns>        
+        [NotNull]
         public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing(Predicate<string> filter, string fileDrawing, Database destDb,
                                                   DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
@@ -139,10 +144,12 @@ namespace AcadLib.Blocks
         /// <param name="blNames">Имена блоков</param>
         /// <param name="fileDrawing">Полный путь к чертежу из которого копируется блок</param>
         /// <param name="destDb">База чертежа в который копируетсяя блок</param>
+        /// <param name="mode">Режим для существующих элементов - пропускать или заменять</param>
         /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
         /// <returns>Список пар значений имени блока и idBtr</returns>        
-        public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing(IList<string> blNames, string fileDrawing, Database destDb,
-                                                DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
+        [NotNull]
+        public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing([NotNull] IList<string> blNames, string fileDrawing,
+            Database destDb, DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
             var resVal = new Dictionary<string, ObjectId>();
             var uniqBlNames = blNames.Distinct(StringComparer.OrdinalIgnoreCase);
@@ -151,17 +158,16 @@ namespace AcadLib.Blocks
             {
                 extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, "");
                 extDb.CloseInput(true);
-
                 var valToCopy = new Dictionary<ObjectId, string>();
-
+#pragma warning disable CS0618 // Type or member is obsolete
                 using (var bt = (BlockTable)extDb.BlockTableId.Open(OpenMode.ForRead))
+#pragma warning restore CS0618 // Type or member is obsolete
                 {
                     foreach (var blName in uniqBlNames)
                     {
-                        ObjectId id;
                         if (bt.Has(blName))
                         {
-                            id = bt[blName];
+                            var id = bt[blName];
                             valToCopy.Add(id, blName);
                         }
                     }
@@ -189,27 +195,28 @@ namespace AcadLib.Blocks
             {
                 using (var t = destDb.TransactionManager.StartTransaction())
                 {
-                    var bt = destDb.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
                     foreach (var item in resVal)
                     {
                         if (item.Value.IsValidEx())
                         {
-                            var btr = item.Value.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                            var btr = (BlockTableRecord)item.Value.GetObject(OpenMode.ForRead);
                             if (btr.IsDynamicBlock)
                             {
                                 try
                                 {
-                                    btr.UpgradeOpen();
+                                    btr = (BlockTableRecord)item.Value.GetObject(OpenMode.ForWrite);
                                     btr.UpdateAnonymousBlocks();
                                 }
-                                catch { }
+                                catch
+                                {
+                                    //
+                                }
                             }
                         }
                     }
                     t.Commit();
                 }
             }
-
             return resVal;
         }
 
@@ -221,12 +228,12 @@ namespace AcadLib.Blocks
         /// <returns>ID скопированного блока, или существующего в чертеже с таким именем.</returns>
         public static ObjectId CopyBtr(ObjectId idBtrSource, string name)
         {
-            var idBtrCopy = ObjectId.Null;
+            ObjectId idBtrCopy;
             var db = idBtrSource.Database;
             using (var t = db.TransactionManager.StartTransaction())
             {
-                var btrSource = t.GetObject(idBtrSource, OpenMode.ForRead) as BlockTableRecord;
-                var bt = t.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                var btrSource = (BlockTableRecord)t.GetObject(idBtrSource, OpenMode.ForRead);
+                var bt = (BlockTable)t.GetObject(db.BlockTableId, OpenMode.ForRead);
                 //проверка имени блока
                 if (bt.Has(name))
                 {
@@ -234,9 +241,9 @@ namespace AcadLib.Blocks
                 }
                 else
                 {
-                    var btrCopy = btrSource.Clone() as BlockTableRecord;
+                    var btrCopy = (BlockTableRecord)btrSource.Clone();
                     btrCopy.Name = name;
-                    bt.UpgradeOpen();
+                    bt = bt.Id.GetObject<BlockTable>(OpenMode.ForWrite);
                     idBtrCopy = bt.Add(btrCopy);
                     t.AddNewlyCreatedDBObject(btrCopy, true);
                     // Копирование объектов блока
@@ -259,13 +266,12 @@ namespace AcadLib.Blocks
         /// <returns>ID Layout</returns>
         public static ObjectId CopyLayout(Database db, string layerSource, string layerCopy)
         {
-            var idLayoutCopy = ObjectId.Null;
             var dbOrig = HostApplicationServices.WorkingDatabase;
             HostApplicationServices.WorkingDatabase = db;
             var lm = LayoutManager.Current;
             // Нужно проверить имена. Вдруг нет листа источника, или уже есть копируемый лист.
             lm.CopyLayout(layerSource, layerCopy);
-            idLayoutCopy = lm.GetLayoutId(layerCopy);
+            var idLayoutCopy = lm.GetLayoutId(layerCopy);
             HostApplicationServices.WorkingDatabase = dbOrig;
             return idLayoutCopy;
         }
@@ -279,24 +285,26 @@ namespace AcadLib.Blocks
         /// Должен существовать в чертеже.</param>
         /// <param name="newLayoutName">Имя для нового листа.</param>
         /// <returns>ObjectId нового листа</returns>
-        public static ObjectId CloneLayout(Database db, string existLayoutName, string newLayoutName)
+        public static ObjectId CloneLayout([NotNull] Database db, string existLayoutName, string newLayoutName)
         {
             ObjectId newLayoutId;
             ObjectId existLayoutId;
-            using (var sw = new WorkingDatabaseSwitcher(db))
+            using (new WorkingDatabaseSwitcher(db))
             {
                 var lm = LayoutManager.Current;
                 newLayoutId = lm.CreateLayout(newLayoutName);
                 existLayoutId = lm.GetLayoutId(existLayoutName);
             }
             var objIdCol = new ObjectIdCollection();
-            var idBtrNewLayout = ObjectId.Null;
-            using (var newLayout = newLayoutId.GetObject(OpenMode.ForWrite) as Layout)
+            ObjectId idBtrNewLayout;
+            using (var newLayout = (Layout)newLayoutId.GetObject(OpenMode.ForWrite))
             {
-                var curLayout = existLayoutId.GetObject(OpenMode.ForRead) as Layout;
+                var curLayout = (Layout)existLayoutId.GetObject(OpenMode.ForRead);
                 newLayout.CopyFrom(curLayout);
                 idBtrNewLayout = newLayout.BlockTableRecordId;
-                using (var btrCurLayout = curLayout.BlockTableRecordId.Open(OpenMode.ForRead) as BlockTableRecord)
+#pragma warning disable 618
+                using (var btrCurLayout = (BlockTableRecord)curLayout.BlockTableRecordId.Open(OpenMode.ForRead))
+#pragma warning restore 618
                 {
                     foreach (var objId in btrCurLayout)
                     {
@@ -332,13 +340,13 @@ namespace AcadLib.Blocks
         /// <param name="blk1"></param>
         /// <param name="blk2"></param>
         /// <returns></returns>
-        public static bool IsDuplicate(this BlockReference blk1, BlockReference blk2)
+        public static bool IsDuplicate([NotNull] this BlockReference blk1, [NotNull] BlockReference blk2)
         {
             var tol = new Tolerance(1, 1);
             return
                 blk1.OwnerId == blk2.OwnerId &&
                 blk1.Name == blk2.Name &&
-                Math.Round(blk1.Rotation, 1) == Math.Round(blk2.Rotation, 1) &&
+                Math.Abs(Math.Round(blk1.Rotation, 1) - Math.Round(blk2.Rotation, 1)) < 0.001 &&
                 blk1.Position.IsEqualTo(blk2.Position, tol) &&
                 blk1.ScaleFactors.IsEqualTo(blk2.ScaleFactors, tol);
         }
@@ -348,11 +356,13 @@ namespace AcadLib.Blocks
         /// Блок должен быть открыт для записи
         /// </summary>
         /// <param name="btr"></param>
-        public static void ClearEntity(this BlockTableRecord btr)
+        public static void ClearEntity([NotNull] this BlockTableRecord btr)
         {
             foreach (var idEnt in btr)
             {
-                using (var ent = idEnt.Open(OpenMode.ForWrite) as Entity)
+#pragma warning disable 618
+                using (var ent = (Entity)idEnt.Open(OpenMode.ForWrite))
+#pragma warning restore 618
                 {
                     ent.Erase();
                 }
@@ -363,7 +373,7 @@ namespace AcadLib.Blocks
         /// Проверка натуральной трансформации блока - без масштабирования
         /// blRef.ScaleFactors.IsEqualTo(new Scale3d(1), Tolerance01)
         /// </summary>      
-        public static bool CheckNaturalBlockTransform(this BlockReference blRef)
+        public static bool CheckNaturalBlockTransform([NotNull] this BlockReference blRef)
         {
             return blRef.ScaleFactors.IsEqualTo(new Scale3d(1), Tolerance01);
         }
@@ -373,7 +383,7 @@ namespace AcadLib.Blocks
         /// </summary>
         /// <param name="blRef"></param>
         [Obsolete("Не работает!!!", true)]
-        public static void Normalize(this BlockReference blRef)
+        public static void Normalize([NotNull] this BlockReference blRef)
         {
             // Корректировка масштабирования и зеркальности
             var scale1 = new Scale3d(1);
@@ -385,7 +395,7 @@ namespace AcadLib.Blocks
                 //mat = mat * matScale;
             }
 
-            if (blRef.Rotation != 0)
+            if (Math.Abs(blRef.Rotation) > 0.0001)
             {
                 var matRotate = Matrix3d.Rotation(-blRef.Rotation, Vector3d.ZAxis, blRef.Position);
                 blRef.TransformBy(matRotate);

@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
@@ -13,7 +14,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>
         /// <param name="vp">The instance to which this method applies.</param>
         /// <returns>The DCS to WDCS transformation matrix.</returns>
-        public static Matrix3d DCS2WCS(this Viewport vp)
+        public static Matrix3d DCS2WCS([NotNull] this Viewport vp)
         {
             return
                 Matrix3d.Rotation(-vp.TwistAngle, vp.ViewDirection, vp.ViewTarget) *
@@ -38,7 +39,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>
         /// <param name="vp">The instance to which this method applies.</param>
         /// <returns>The DCS to PSDCS transformation matrix.</returns>
-        public static Matrix3d DCS2PSDCS(this Viewport vp)
+        public static Matrix3d DCS2PSDCS([NotNull] this Viewport vp)
         {
             return
                 Matrix3d.Scaling(vp.CustomScale, vp.CenterPoint) *

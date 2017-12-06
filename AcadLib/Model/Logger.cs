@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 
 namespace AcadLib
 {
@@ -7,83 +8,83 @@ namespace AcadLib
         public static readonly LoggAddinExt Log;
         public static readonly string UserGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
 
-        static Logger ()
+        static Logger()
         {
-            Log = new LoggAddinExt(UserGroup);            
-        }        
+            Log = new LoggAddinExt(UserGroup);
+        }
     }
 
     public class LoggAddinExt : AutoCAD_PIK_Manager.LogAddin
     {
-        public LoggAddinExt (string plugin)
+        public LoggAddinExt(string plugin)
         {
         }
 
         public new void InfoLisp(string msg)
-        {            
+        {
             base.InfoLisp(msg);
         }
 
         /// <summary>
         /// Отзыв
         /// </summary>        
-        public void Report (string msg)
+        public void Report(string msg)
         {
             Error("#Report: " + msg);
         }
 
-        public override void Error (string msg)
+        public override void Error(string msg)
         {
             var newMsg = GetMessage(msg);
             base.Error(newMsg);
         }
 
-        public void Error (Exception ex, string msg)
+        public void Error(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
             base.Error(ex, newMsg);
         }
 
-        public override void Info (string msg)
+        public override void Info(string msg)
         {
             var newMsg = GetMessage(msg);
             base.Info(newMsg);
         }
-        public void Info (Exception ex, string msg)
+        public void Info(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
-            base.Info(ex, newMsg);            
+            base.Info(ex, newMsg);
         }
 
-        public override void Debug (string msg)
+        public override void Debug(string msg)
         {
             var newMsg = GetMessage(msg);
             base.Debug(newMsg);
-        }       
+        }
 
-        public void Debug (Exception ex, string msg)
+        public void Debug(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
             base.Debug(ex, newMsg);
         }
 
-        public override void Fatal (string msg)
+        public override void Fatal(string msg)
         {
             var newMsg = GetMessage(msg);
             base.Fatal(newMsg);
         }
-        public void Fatal (Exception ex, string msg)
+        public void Fatal(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
             base.Fatal(ex, newMsg);
         }
 
-        public override void Warn (string msg)
+        public override void Warn(string msg)
         {
             var newMsg = GetMessage(msg);
             base.Warn(newMsg);
         }
-        public void Warn (Exception ex, string msg)
+        public void Warn(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
             base.Warn(ex, newMsg);
@@ -100,17 +101,18 @@ namespace AcadLib
             base.Mail(ex, newMsg);
         }
 
-        public void StartCommand (CommandStart command)
+        public void StartCommand([CanBeNull] CommandStart command)
         {
             base.Info($"Start command: {command?.CommandName}; Сборка: {command?.Assembly?.FullName}; ");
         }
 
-        public void StartLisp (string command, string file)
+        public void StartLisp(string command, string file)
         {
             base.Info($"Start Lisp: {command}; Файл: {file}; ");
         }
 
-        private static string GetMessage (string msg)
+        [NotNull]
+        private static string GetMessage(string msg)
         {
             return $"Команда: {CommandStart.CurrentCommand}; Сообщение: {msg}";
         }

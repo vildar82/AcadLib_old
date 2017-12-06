@@ -1,9 +1,10 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Reflection;
 using System.Globalization;
+using System.Reflection;
 
 namespace AcadLib.UI.Designer
 {
@@ -12,7 +13,7 @@ namespace AcadLib.UI.Designer
     /// </summary>
     /// <typeparam name="TKey">The type of the Keys in the dictionary.</typeparam>
     /// <typeparam name="TValue">The type of the Values in the dictionary.</typeparam>
-    public class GenericDictionaryEditor<TKey, TValue>: CollectionEditor
+    public class GenericDictionaryEditor<TKey, TValue> : CollectionEditor
     {
         /// <summary>
         /// Initializes a new instance of the GenericDictionaryEditor class using the specified collection type.
@@ -83,6 +84,7 @@ namespace AcadLib.UI.Designer
         /// Gets the data type that this collection contains.
         /// </summary>
         /// <returns>The data type of the items in the collection, or an Object if no Item property can be located on the collection.</returns>
+        [NotNull]
         protected override Type CreateCollectionItemType()
         {
             return typeof(EditableKeyValuePair<TKey, TValue>);
@@ -93,6 +95,7 @@ namespace AcadLib.UI.Designer
         /// </summary>
         /// <param name="itemType">The type of item to create.</param>
         /// <returns>A new instance of the specified type.</returns>
+        [NotNull]
         protected override object CreateInstance(Type itemType)
         {
             TKey key;
@@ -143,6 +146,7 @@ namespace AcadLib.UI.Designer
         /// <param name="editValue">The collection to edit.</param>
         /// <param name="value">An array of objects to set as the collection items.</param>
         /// <returns>The newly created collection object or, otherwise, the collection indicated by the <paramref name="editValue"/> parameter.</returns>
+        [NotNull]
         protected override object SetItems(object editValue, object[] value)
         {
             if (value == null)

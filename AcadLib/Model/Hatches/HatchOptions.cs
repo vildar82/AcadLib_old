@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 
 namespace AcadLib.Hatches
 {
@@ -10,7 +11,7 @@ namespace AcadLib.Hatches
 
         }
 
-        public HatchOptions(Hatch h)
+        public HatchOptions([NotNull] Hatch h)
         {
             PatternName = h.PatternName;
             PatternType = h.PatternType;

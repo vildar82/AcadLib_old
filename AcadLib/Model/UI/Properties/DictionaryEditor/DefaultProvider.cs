@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 
 namespace AcadLib.UI.Designer
 {
@@ -30,6 +31,7 @@ namespace AcadLib.UI.Designer
         /// <param name="usage">Specifies if the desired default value is to be used as Key or Value</param>
         /// <returns>Returns a value of type T to be used as the default</returns>
         /// <remarks>If the default value is to be used as Key it may NOT be null (because the Dictionary doesn't allow null as Key)</remarks>
+        [CanBeNull]
         public virtual T GetDefault(DefaultUsage usage)
         {
             var t = typeof(T);

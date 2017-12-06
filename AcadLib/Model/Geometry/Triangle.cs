@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -49,7 +50,7 @@ namespace AcadLib.Geometry
         /// <param name="pts">The array whose elements are copied to the new Triangle.</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException is thrown if the array do not contains three items.</exception>
-        protected internal Triangle(T[] pts)
+        protected internal Triangle([NotNull] T[] pts)
         {
             if (pts.Length != 3)
                 throw new ArgumentOutOfRangeException("The array must contain 3 items");
@@ -140,7 +141,7 @@ namespace AcadLib.Geometry
         /// <param name="pts">The array whose elements are copied to the Triangle.</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException is thrown if the array do not contains three items.</exception>
-        public void Set(T[] pts)
+        public void Set([NotNull] T[] pts)
         {
             if (pts.Length != 3)
                 throw new IndexOutOfRangeException("The array must contain 3 items");

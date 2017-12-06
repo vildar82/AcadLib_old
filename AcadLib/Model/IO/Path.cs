@@ -1,17 +1,19 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.IO;
 
 namespace AcadLib.IO
 {
     public static class Path
-    {        
+    {
         /// <summary>
         /// Путь к пользовательскому файлу настроек плагина
         /// </summary>
         /// <param name="plugin">Имя плагина</param>
         /// <param name="fileName">Имя файла</param>
         /// <returns>Полный путь к файлу</returns>
-        public static string GetUserPluginFile(string plugin, string fileName)
+        [NotNull]
+        public static string GetUserPluginFile(string plugin, [NotNull] string fileName)
         {
             var pluginFolder = GetUserPluginFolder(plugin);
             return System.IO.Path.Combine(pluginFolder, fileName);
@@ -22,8 +24,9 @@ namespace AcadLib.IO
         /// </summary>
         /// <param name="plugin">Имя плагина - имя папки</param>
         /// <returns>Полный путь</returns>
-        public static string GetUserPluginFolder (string plugin)
-        {            
+        [NotNull]
+        public static string GetUserPluginFolder([NotNull] string plugin)
+        {
             var pikFolder = GetUserPikFolder();
             var pluginFolder = System.IO.Path.Combine(pikFolder, plugin);
             if (!Directory.Exists(pluginFolder))
@@ -35,7 +38,8 @@ namespace AcadLib.IO
         /// Пользовательская папка настроек
         /// </summary>
         /// <returns></returns>
-        public static string GetUserPikFolder ()
+        [NotNull]
+        public static string GetUserPikFolder()
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create);
             var pikFolder = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
@@ -53,7 +57,8 @@ namespace AcadLib.IO
         /// <param name="pluginName">Имя плагина (команды)</param>
         /// <param name="fileName">Имя файла</param>
         /// <returns>Полный путь к файлу. Наличие файла не проверяется. Папка создается</returns>
-        public static string GetSharedFile (string pluginName, string fileName)
+        [NotNull]
+        public static string GetSharedFile([NotNull] string pluginName, [NotNull] string fileName)
         {
             var resFilePath = string.Empty;
             var pluginFolder = System.IO.Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
@@ -73,7 +78,8 @@ namespace AcadLib.IO
         /// <summary>
         /// Создает папку в темпе и возрвращает полный путь
         /// </summary>        
-        public static string GetTemporaryDirectory ()
+        [NotNull]
+        public static string GetTemporaryDirectory()
         {
             var tempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
             Directory.CreateDirectory(tempDirectory);
@@ -85,7 +91,7 @@ namespace AcadLib.IO
         /// </summary>
         /// <param name="source">Откуда</param>
         /// <param name="target">Куда</param>
-        public static void CopyDirTo(this DirectoryInfo source, DirectoryInfo target)
+        public static void CopyDirTo([NotNull] this DirectoryInfo source, [NotNull] DirectoryInfo target)
         {
             Directory.CreateDirectory(target.FullName);
             foreach (var fi in source.GetFiles())
@@ -100,7 +106,7 @@ namespace AcadLib.IO
             }
         }
 
-        public static void CopyDirTo(string sourceDir, string targetDir)
+        public static void CopyDirTo([NotNull] string sourceDir, [NotNull] string targetDir)
         {
             CopyDirTo(new DirectoryInfo(sourceDir), new DirectoryInfo(targetDir));
         }

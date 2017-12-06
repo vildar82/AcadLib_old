@@ -1,9 +1,10 @@
-﻿using System;
-using System.Xml.Serialization;
-using AcadLib.Colors;
+﻿using AcadLib.Colors;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using NetLib;
+using System;
+using System.Xml.Serialization;
 
 namespace AcadLib.Layers
 {
@@ -24,8 +25,7 @@ namespace AcadLib.Layers
         public Color Color
         {
             get => color;
-            set
-            {
+            set {
                 color = value;
                 colorStr = color.AcadColorToString2();
             }
@@ -47,8 +47,7 @@ namespace AcadLib.Layers
         public string ColorStr
         {
             get => colorStr;
-            set
-            {
+            set {
                 colorStr = value;
                 color = colorStr.AcadColorFromString2();
             }
@@ -56,7 +55,7 @@ namespace AcadLib.Layers
 
         public LayerInfo()
         {
-            
+
         }
 
         public LayerInfo(string name)
@@ -68,7 +67,7 @@ namespace AcadLib.Layers
 
         public LayerInfo(ObjectId idLayer)
         {
-            using (var layer = idLayer.Open( OpenMode.ForRead) as LayerTableRecord)
+            using (var layer = idLayer.Open(OpenMode.ForRead) as LayerTableRecord)
             {
                 Name = layer.Name;
                 Color = layer.Color;
@@ -85,7 +84,7 @@ namespace AcadLib.Layers
         /// Установка свойст LayerInfo к слою LayerTableRecord
         /// </summary>
         /// <param name="lay"></param>
-        public void SetProp(LayerTableRecord lay, Database db)
+        public void SetProp([NotNull] LayerTableRecord lay, Database db)
         {
             if (!Name.IsNullOrEmpty()) lay.Name = Name;
             if (Color != null) lay.Color = Color;

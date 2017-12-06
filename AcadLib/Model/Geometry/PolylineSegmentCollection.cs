@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 
 namespace AcadLib.Geometry
 {
@@ -39,7 +40,7 @@ namespace AcadLib.Geometry
         /// Creates a new instance of PolylineSegmentCollection from a PolylineSegment collection (IEnumerable).
         /// </summary>
         /// <param name="segments">A PolylineSegment collection.</param>
-        public PolylineSegmentCollection(IEnumerable<PolylineSegment> segments)
+        public PolylineSegmentCollection([NotNull] IEnumerable<PolylineSegment> segments)
         {
             _contents.AddRange(segments);
         }
@@ -48,7 +49,7 @@ namespace AcadLib.Geometry
         /// Creates a new instance of PolylineSegmentCollection from a PolylineSegment array.
         /// </summary>
         /// <param name="segments">A PolylineSegment array.</param>
-        public PolylineSegmentCollection(params PolylineSegment[] segments)
+        public PolylineSegmentCollection([NotNull] params PolylineSegment[] segments)
         {
             _contents.AddRange(segments);
         }
@@ -57,7 +58,7 @@ namespace AcadLib.Geometry
         /// Creates a new instance of PolylineSegmentCollection from a Polyline.
         /// </summary>
         /// <param name="pline">A Polyline instance.</param>
-        public PolylineSegmentCollection(Polyline pline)
+        public PolylineSegmentCollection([NotNull] Polyline pline)
         {
             var n = pline.NumberOfVertices - 1;
             for (var i = 0; i < n; i++)
@@ -84,7 +85,7 @@ namespace AcadLib.Geometry
         /// Creates a new instance of PolylineSegmentCollection from a Polyline2d.
         /// </summary>
         /// <param name="pline">A Polyline2d instance.</param>
-        public PolylineSegmentCollection(Polyline2d pline)
+        public PolylineSegmentCollection([NotNull] Polyline2d pline)
         {
             var vertices = pline.GetVertices().ToArray();
             var n = vertices.Length - 1;
@@ -114,7 +115,7 @@ namespace AcadLib.Geometry
         /// Creates a new instance of PolylineSegmentCollection from a Circle.
         /// </summary>
         /// <param name="circle">A Circle instance.</param>
-        public PolylineSegmentCollection(Circle circle)
+        public PolylineSegmentCollection([NotNull] Circle circle)
         {
             var plane = new Plane(Point3d.Origin, circle.Normal);
             var cen = circle.Center.Convert2d(plane);
@@ -127,7 +128,7 @@ namespace AcadLib.Geometry
         /// Creates a new instance of PolylineSegmentCollection from an Ellipse.
         /// </summary>
         /// <param name="ellipse">An Ellipse instance.</param>
-        public PolylineSegmentCollection(Ellipse ellipse)
+        public PolylineSegmentCollection([NotNull] Ellipse ellipse)
         {
             // PolylineSegmentCollection figuring the closed ellipse
             var pi = Math.PI;
@@ -270,7 +271,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="match">The Predicate delegate that defines the conditions of the element to search for.</param>
         /// <returns>The zero-based index of the first occurrence of an element that matches the conditions defined by match, if found; otherwise, –1.</returns>
-        public int FindIndex(Predicate<PolylineSegment> match)
+        public int FindIndex([NotNull] Predicate<PolylineSegment> match)
         {
             return _contents.FindIndex(match);
         }
@@ -301,7 +302,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="index">The zero-based index at which collection should be inserted</param>
         /// <param name="collection">The collection to insert</param>
-        public void InsertRange(int index, IEnumerable<PolylineSegment> collection)
+        public void InsertRange(int index, [NotNull] IEnumerable<PolylineSegment> collection)
         {
             _contents.InsertRange(index, collection);
         }
@@ -322,6 +323,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="tol">The tolerance to use while comparing segments startand end points</param>
         /// <returns>A List of PolylineSegmentCollection instances.</returns>
+        [NotNull]
         public List<PolylineSegmentCollection> Join(Tolerance tol)
         {
             var result = new List<PolylineSegmentCollection>();
@@ -407,6 +409,7 @@ namespace AcadLib.Geometry
         /// Creates a new Polyline from the PolylineSegment collection.
         /// </summary>
         /// <returns>A Polyline instance.</returns>
+        [NotNull]
         public Polyline ToPolyline()
         {
             var pline = new Polyline();
@@ -486,7 +489,7 @@ namespace AcadLib.Geometry
         /// Adds the segments of the specified collection to the end of the collection.
         /// </summary>
         /// <param name="range">The collection whose elements should be added to the end of this collection.</param>
-        public void AddRange(IEnumerable<PolylineSegment> range)
+        public void AddRange([NotNull] IEnumerable<PolylineSegment> range)
         {
             _contents.AddRange(range);
         }

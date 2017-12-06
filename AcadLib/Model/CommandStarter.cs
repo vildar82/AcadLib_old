@@ -1,11 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using AcadLib.Errors;
+﻿using AcadLib.Errors;
 using AcadLib.Statistic;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
+using JetBrains.Annotations;
+using System;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
@@ -18,39 +19,39 @@ namespace AcadLib
         public string Doc { get; set; }
         public Assembly Assembly { get; private set; }
 
-        public CommandStart () { }
+        public CommandStart() { }
         public CommandStart(string commandName, Assembly asm)
         {
             CommandName = commandName;
             Assembly = asm;
         }
-        
-        public static void StartLisp (string commandName, string file)
+
+        public static void StartLisp(string commandName, string file)
         {
             Logger.Log.StartLisp(commandName, file);
-	        PluginStatisticsHelper.PluginStart(new CommandStart(commandName, null){ Doc = file, Plugin = "Lisp"});
-		}
+            PluginStatisticsHelper.PluginStart(new CommandStart(commandName, null) { Doc = file, Plugin = "Lisp" });
+        }
 
-	    public static void Start(string commandName, Action<Document> action)
-	    {
-	        MethodBase caller = null;
-	        try
-	        {
-	            caller = new StackTrace().GetFrame(1).GetMethod();
+        public static void Start(string commandName, Action<Document> action)
+        {
+            MethodBase caller = null;
+            try
+            {
+                caller = new StackTrace().GetFrame(1).GetMethod();
             }
-	        catch(System.Exception ex)
-	        {
+            catch (System.Exception ex)
+            {
                 Logger.Log.Error(ex, "CommandStart - StackTrace");
-	        }
+            }
             StartCommand(action, caller, commandName);
-		}
+        }
 
         /// <summary>
         /// Оболочка для старта команды - try-catch, log, inspectoe.clear-show, commandcounter
         /// Условие использования: отключить оптимизацию кода (Параметры проекта -> Сборка) - т.к. используется StackTrace
         /// </summary>
         /// <param name="action">Код выполнения команды</param>
-        [MethodImpl(MethodImplOptions.NoInlining)]        
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Start(Action<Document> action)
         {
             MethodBase caller = null;
@@ -81,14 +82,14 @@ namespace AcadLib
             {
                 Logger.Log.Error(ex, "CommandStart");
             }
-	        try
-	        {
-		        action(doc);
-	        }
-	        catch (OperationCanceledException ex)
-	        {
-		        doc.Editor.WriteMessage(ex.Message);
-	        }
+            try
+            {
+                action(doc);
+            }
+            catch (OperationCanceledException ex)
+            {
+                doc.Editor.WriteMessage(ex.Message);
+            }
             catch (CancelByUserException cancelByUser)
             {
                 doc.Editor.WriteMessage(cancelByUser.Message);
@@ -109,11 +110,12 @@ namespace AcadLib
             Inspector.Show();
         }
 
-        internal static CommandStart GetCallerCommand(MethodBase caller, string commandName = null)
-        {            
+        [NotNull]
+        internal static CommandStart GetCallerCommand([CanBeNull] MethodBase caller, [CanBeNull] string commandName = null)
+        {
             Assembly assm = null;
             try
-            {                
+            {
                 CurrentCommand = commandName ?? GetCallerCommandName(caller);
                 assm = caller?.DeclaringType?.Assembly;
             }
@@ -128,11 +130,12 @@ namespace AcadLib
             return com;
         }
 
-        private static string GetCallerCommandName(MethodBase caller)
-        {            
-            if (caller == null) return "nullCallerMethod!?";            
+        [NotNull]
+        private static string GetCallerCommandName([CanBeNull] MethodBase caller)
+        {
+            if (caller == null) return "nullCallerMethod!?";
             var atrCom = (CommandMethodAttribute)caller.GetCustomAttribute(typeof(CommandMethodAttribute));
-            return atrCom?.GlobalName ?? caller.Name;                        
+            return atrCom?.GlobalName ?? caller.Name;
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿using System.Diagnostics;
+﻿using AcadLib.Visual;
+using Autodesk.AutoCAD.ApplicationServices;
+using JetBrains.Annotations;
+using NetLib;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using AcadLib.Visual;
-using Autodesk.AutoCAD.ApplicationServices;
-using NetLib;
 
 namespace AcadLib.Errors
 {
@@ -17,7 +18,7 @@ namespace AcadLib.Errors
         private readonly VisualTransientSimple errorsVisual;
         private readonly Document doc;
 
-        public ErrorsView(ErrorsViewModel errVM) : base(errVM)
+        public ErrorsView([NotNull] ErrorsViewModel errVM) : base(errVM)
         {
             doc = AcadHelper.Doc;
             InitializeComponent();
@@ -27,7 +28,7 @@ namespace AcadLib.Errors
             var visualsEnts = errVM.ErrorsOrig.SelectManyNulless(s => s.Visuals).ToList();
             if (visualsEnts.Any())
             {
-                errorsVisual = new VisualTransientSimple(visualsEnts) {VisualIsOn = true};
+                errorsVisual = new VisualTransientSimple(visualsEnts) { VisualIsOn = true };
             }
         }
 
@@ -50,34 +51,28 @@ namespace AcadLib.Errors
             Dispose();
         }
 
-        private void ErrorsView_KeyDown(object sender, KeyEventArgs e)
+        private void ErrorsView_KeyDown(object sender, [NotNull] KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
                 Close();
             }
-            else if (e.Key ==  Key.Delete)
+            else if (e.Key == Key.Delete)
             {
                 var model = DataContext as ErrorsViewModel;
                 model.DeleteSelectedErrors();
             }
         }
-        
 
         private void Button_Ok_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
             Dispose();
-        }        
-
-        private void Button_Close_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }        
+        }
 
         private void Button_Send_Click(object sender, RoutedEventArgs e)
         {
-            var subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";            
+            var subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";
             Process.Start($"mailto:khisyametdinovvt@pik.ru?subject={subject}");
         }
 

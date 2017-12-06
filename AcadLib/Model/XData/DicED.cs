@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.XData
 {
@@ -24,27 +25,27 @@ namespace AcadLib.XData
         /// </summary>
         public List<RecXD> Recs { get; set; }
 
-        public DicED () { }
-        public DicED (string name)
+        public DicED() { }
+        public DicED(string name)
         {
             Name = name;
         }
 
-        public void AddRec (RecXD recXd)
+        public void AddRec([CanBeNull] RecXD recXd)
         {
-            if (recXd == null || recXd.IsEmpty()) return;     
-            if (!IsCorrectName(recXd.Name))            
+            if (recXd == null || recXd.IsEmpty()) return;
+            if (!IsCorrectName(recXd.Name))
                 throw new Exception("Invalid Name - " + recXd.Name);
-                        
+
             if (Recs == null) Recs = new List<RecXD>();
             Recs.Add(recXd);
         }
-        public void AddRec (string name, List<TypedValue> values)
+        public void AddRec(string name, List<TypedValue> values)
         {
             AddRec(new RecXD(name, values));
         }
 
-        public void AddInner(DicED dic)
+        public void AddInner([CanBeNull] DicED dic)
         {
             if (dic == null || dic.IsEmpty()) return;
             if (!IsCorrectName(dic.Name))
@@ -61,10 +62,10 @@ namespace AcadLib.XData
         {
             // Если нет записей или они все пустые, и если нет вложенных словарей или они все пустые
             return (Recs == null || Recs.All(r => r.IsEmpty())) &&
-                   (Inners == null || Inners.All(i => i.IsEmpty()));            
+                   (Inners == null || Inners.All(i => i.IsEmpty()));
         }
 
-        public void AddInner (string name, DicED dic)
+        public void AddInner(string name, [CanBeNull] DicED dic)
         {
             if (dic != null)
             {
@@ -72,33 +73,35 @@ namespace AcadLib.XData
                 AddInner(dic);
             }
         }
-        
+
+        [CanBeNull]
         public RecXD GetRec(string name)
-        {            
-            return Recs?.Find(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));            
+        {
+            return Recs?.Find(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public DicED GetInner (string name)
+        [CanBeNull]
+        public DicED GetInner(string name)
         {
             return Inners?.Find(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public bool IsCorrectName (string name)
+        public bool IsCorrectName(string name)
         {
-            if (!name.IsValidDbSymbolName())            
+            if (!name.IsValidDbSymbolName())
                 return false;
 
             if (string.IsNullOrEmpty(name))
                 return false;
-                        
-            if (Inners != null)            
+
+            if (Inners != null)
                 if (Inners.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                     return false;
             if (Recs != null)
                 if (Recs.Any(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                     return false;
 
-            return true;            
+            return true;
         }
     }
 }

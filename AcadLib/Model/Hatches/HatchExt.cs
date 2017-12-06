@@ -3,6 +3,7 @@ using AcadLib.Geometry;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using NetLib;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace AcadLib.Hatches
 {
     public static class HatchExt
     {
-        public static double GetHatchArea(this Hatch hatch)
+        public static double GetHatchArea([NotNull] this Hatch hatch)
         {
             double area = 0;
             try
@@ -86,13 +87,14 @@ namespace AcadLib.Hatches
             return Math.Abs(area);
         }
 
-        public static HatchOptions GetHatchOptions(this Hatch h)
+        [CanBeNull]
+        public static HatchOptions GetHatchOptions([CanBeNull] this Hatch h)
         {
             if (h == null) return null;
             return new HatchOptions(h);
         }
 
-        public static void SetHatchOptions(this Hatch h, HatchOptions opt)
+        public static void SetHatchOptions([CanBeNull] this Hatch h, [CanBeNull] HatchOptions opt)
         {
             if (h == null || opt == null) return;
             if (opt.PatternAngle != null && opt.PatternAngle.Value > 0)
@@ -110,7 +112,8 @@ namespace AcadLib.Hatches
             h.BackgroundColor = opt.BackgroundColor ?? Color.FromColorIndex(ColorMethod.None, 257);
         }
 
-        public static DisposableSet<HatchLoopPl> GetPolylines2(this Hatch ht, Tolerance weddingTolerance,
+        [NotNull]
+        public static DisposableSet<HatchLoopPl> GetPolylines2([NotNull] this Hatch ht, Tolerance weddingTolerance,
             HatchLoopTypes loopType = (HatchLoopTypes)23, bool wedding = false)
         {
             var loops = new DisposableSet<HatchLoopPl>();
@@ -189,6 +192,7 @@ namespace AcadLib.Hatches
         /// </summary>
         /// <param name="ht">Штриховка</param>
         /// <param name="loopType">Из каких типов островков</param>    
+        [NotNull]
         public static DisposableSet<Polyline> GetPolylines(this Hatch ht, HatchLoopTypes loopType = HatchLoopTypes.External)
         {
             var loops = GetPolylines2(ht, Tolerance.Global, loopType);
@@ -201,8 +205,9 @@ namespace AcadLib.Hatches
         /// Создание ассоциативной штриховки по полилинии
         /// Полилиния должна быть в базе чертежа
         /// </summary>        
-        public static Hatch CreateAssociativeHatch(Curve loop, BlockTableRecord cs, Transaction t,
-            string pattern = "SOLID", string layer = null, LineWeight lw = LineWeight.LineWeight015)
+        [CanBeNull]
+        public static Hatch CreateAssociativeHatch([NotNull] Curve loop, [NotNull] BlockTableRecord cs, [NotNull] Transaction t,
+            string pattern = "SOLID", [CanBeNull] string layer = null, LineWeight lw = LineWeight.LineWeight015)
         {
             var h = new Hatch();
             h.SetDatabaseDefaults();
@@ -239,6 +244,7 @@ namespace AcadLib.Hatches
             return h;
         }
 
+        [NotNull]
         public static Hatch CreateHatch(this List<Point2d> pts)
         {
             pts = pts.DistinctPoints();
@@ -251,7 +257,8 @@ namespace AcadLib.Hatches
             return h;
         }
 
-        public static Hatch CreateHatch(this List<PolylineVertex> pts)
+        [CanBeNull]
+        public static Hatch CreateHatch([CanBeNull] this List<PolylineVertex> pts)
         {
             if (pts?.Any() != true) return null;
             if (!pts[0].Pt.IsEqualTo(pts[pts.Count - 1].Pt))
@@ -267,7 +274,7 @@ namespace AcadLib.Hatches
             return h;
         }
 
-        public static Hatch CreateHatch(this List<Point3d> pts)
+        public static Hatch CreateHatch([NotNull] this List<Point3d> pts)
         {
             return CreateHatch(pts.ConvertAll(Point3dExtensions.Convert2d));
         }
@@ -275,7 +282,7 @@ namespace AcadLib.Hatches
         /// <summary>
         /// Создание штриховки по точкам полилинии
         /// </summary>
-        public static Hatch CreateHatch(this Polyline pl)
+        public static Hatch CreateHatch([CanBeNull] this Polyline pl)
         {
             if (pl == null) return null;
             var vertexes = pl.GetVertexes();

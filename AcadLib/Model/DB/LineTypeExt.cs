@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.IO;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
 {
@@ -15,7 +16,7 @@ namespace AcadLib
         {
             var id = db.GetLineTypeId(lineTypeName);
             if (!id.IsNull) return id;
-            
+
             var file = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
                         "Support\\" + fileName);
             if (File.Exists(file))
@@ -38,7 +39,7 @@ namespace AcadLib
         }
 
         [Obsolete("Опечатка - используй GetLineTypeId")]
-        public static ObjectId GetLayerId(this Database db, string lineTypeName)
+        public static ObjectId GetLayerId([NotNull] this Database db, string lineTypeName)
         {
             using (var lt = db.LinetypeTableId.Open(OpenMode.ForRead) as LinetypeTable)
             {
@@ -50,7 +51,7 @@ namespace AcadLib
             }
         }
 
-        public static ObjectId GetLineTypeId(this Database db, string lineTypeName)
+        public static ObjectId GetLineTypeId([NotNull] this Database db, string lineTypeName)
         {
             using (var lt = db.LinetypeTableId.Open(OpenMode.ForRead) as LinetypeTable)
             {

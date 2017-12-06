@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 
 namespace AcadLib.Geometry
@@ -18,7 +19,8 @@ namespace AcadLib.Geometry
             Pt = pt;
         }
 
-        public static List<PolylineVertex> GetVertexes(Polyline pl, string name)
+        [NotNull]
+        public static List<PolylineVertex> GetVertexes([NotNull] Polyline pl, string name)
         {
             var res = new List<PolylineVertex>();
             for (var i = 0; i < pl.NumberOfVertices; i++)

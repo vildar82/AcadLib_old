@@ -1,4 +1,5 @@
 ﻿using AcadLib.Model.Statistic.DataSetStatisticTableAdapters;
+using JetBrains.Annotations;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -32,7 +33,7 @@ namespace AcadLib.Statistic
             });
         }
 
-        public static void PluginStart (CommandStart command)
+        public static void PluginStart(CommandStart command)
         {
             Task.Run(() =>
             {
@@ -40,16 +41,16 @@ namespace AcadLib.Statistic
                 {
                     if (!General.IsCadManager() && !General.IsBimUser)
                     {
-	                    var version = command.Assembly != null
-		                    ? FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion
-		                    : string.Empty;
+                        var version = command.Assembly != null
+                            ? FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion
+                            : string.Empty;
                         using (var pg = new C_PluginStatisticTableAdapter())
                         {
                             var app = IsCivilAssembly(command.Assembly) ? "Civil" : "AutoCAD";
                             pg.Insert(app, command.Plugin, command.CommandName, version,
                                 command.Doc, Environment.UserName, DateTime.Now, null);
                         }
-                    }                   
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -58,7 +59,7 @@ namespace AcadLib.Statistic
             });
         }
 
-        private static bool IsCivilAssembly(Assembly assm)
+        private static bool IsCivilAssembly([CanBeNull] Assembly assm)
         {
             return assm?.GetName()?.Name?.Contains("Civil") == true;
         }
@@ -69,14 +70,14 @@ namespace AcadLib.Statistic
                    AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup == "НС";
         }
 
-        public static void AddStatistic ()
+        public static void AddStatistic()
         {
             try
             {
                 var caller = new StackTrace().GetFrame(1).GetMethod();
                 PluginStart(CommandStart.GetCallerCommand(caller));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "PluginStatisticsHelper.AddStatistic");
             }

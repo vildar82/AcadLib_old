@@ -1,9 +1,10 @@
-﻿using System;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
+using JetBrains.Annotations;
+using System;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Colors
@@ -17,8 +18,8 @@ namespace AcadLib.Colors
         public static double CellWidth { get; set; }
         public static double CellHeight { get; set; }
         public static double TextHeight { get; set; }
-        public static double Margin { get; set; }        
-        
+        public static double Margin { get; set; }
+
         public static void GenerateNCS()
         {
             doc = Application.DocumentManager.Add("");
@@ -46,9 +47,9 @@ namespace AcadLib.Colors
                     t.Commit();
                 }
             }
-        }       
+        }
 
-        private static void placementColors(BlockTableRecord cs, ColorBook colorBookNcs, Point3d ptStart)
+        private static void placementColors(BlockTableRecord cs, [NotNull] ColorBook colorBookNcs, Point3d ptStart)
         {
             var t = db.TransactionManager.TopTransaction;
 
@@ -66,7 +67,7 @@ namespace AcadLib.Colors
             CellHeight = heightCells / rows;
 
             Margin = CellWidth * 0.1;
-            TextHeight = Convert.ToInt32(CellWidth * 0.09);            
+            TextHeight = Convert.ToInt32(CellWidth * 0.09);
 
             var ptLayout = ptStart;
 
@@ -79,8 +80,8 @@ namespace AcadLib.Colors
             var layCount = Convert.ToInt32(Math.Ceiling(colorBookNcs.Colors.Count / cellsCount));
 
             var index = 0;
-            for (var l = 1; l < layCount+1; l++)
-            {                
+            for (var l = 1; l < layCount + 1; l++)
+            {
                 // создание рамки листа         
                 addLayout(ptLayout, l, widthLayout, heightLayout, cs, t);
                 var ptCellFirst = new Point2d(ptLayout.X + (widthLayout - widthCells) * 0.5,
@@ -109,27 +110,27 @@ namespace AcadLib.Colors
                     }
                 }
                 ptLayout = new Point3d(ptLayout.X, ptLayout.Y + heightLayout, 0);
-            }            
+            }
             progress.Stop();
         }
 
-        private static void  addLayout(Point3d pt,int layout ,double width, double height , BlockTableRecord cs, Transaction t)
+        private static void addLayout(Point3d pt, int layout, double width, double height, [NotNull] BlockTableRecord cs, [NotNull] Transaction t)
         {
             // Полилиния контура листа
             var pl = new Polyline(4);
             pl.AddVertexAt(0, new Point2d(pt.X, pt.Y), 0, 0, 0);
-            pl.AddVertexAt(1, new Point2d(pt.X +width, pt.Y), 0, 0, 0);
+            pl.AddVertexAt(1, new Point2d(pt.X + width, pt.Y), 0, 0, 0);
             pl.AddVertexAt(2, new Point2d(pt.X + width, pt.Y - height), 0, 0, 0);
-            pl.AddVertexAt(3, new Point2d(pt.X,  pt.Y-height), 0, 0, 0);
+            pl.AddVertexAt(3, new Point2d(pt.X, pt.Y - height), 0, 0, 0);
             pl.Closed = true;
-            pl.SetDatabaseDefaults();            
+            pl.SetDatabaseDefaults();
 
             cs.AppendEntity(pl);
             t.AddNewlyCreatedDBObject(pl, true);
 
             // Подпись номера листа
             var textHeight = height * 0.008;
-            var ptText = new Point3d(pt.X+textHeight*0.5, pt.Y-textHeight*1.5, 0);
+            var ptText = new Point3d(pt.X + textHeight * 0.5, pt.Y - textHeight * 1.5, 0);
 
             var text = new DBText();
             text.SetDatabaseDefaults();
@@ -145,16 +146,16 @@ namespace AcadLib.Colors
             //createLayout(pl, layout, width, height, t);
         }
 
-        private static void createLayout(Polyline pl, int layout, double widthLay, double heightLay,  Transaction t)
+        private static void createLayout([NotNull] Polyline pl, int layout, double widthLay, double heightLay, [NotNull] Transaction t)
         {
             var lm = LayoutManager.Current;
             var idLay = lm.CreateLayout(layout.ToString());
 
             var extPl = pl.GeometricExtents;
 
-            using (var lay = idLay.GetObject( OpenMode.ForWrite)as Layout)
+            using (var lay = idLay.GetObject(OpenMode.ForWrite) as Layout)
             {
-                var btrLay = lay.BlockTableRecordId.GetObject( OpenMode.ForWrite)as BlockTableRecord;
+                var btrLay = lay.BlockTableRecordId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
 
                 var view = new Viewport();
                 view.SetDatabaseDefaults();
@@ -164,7 +165,7 @@ namespace AcadLib.Colors
 
                 view.Width = widthLay;
                 view.Height = heightLay;
-                view.CenterPoint = new Point3d(widthLay*0.5, heightLay*0.5, 0);
+                view.CenterPoint = new Point3d(widthLay * 0.5, heightLay * 0.5, 0);
                 view.On = true;
 
                 view.ViewCenter = extPl.Center().Convert2d();
@@ -174,13 +175,13 @@ namespace AcadLib.Colors
 
                 var aspect = view.Width / view.Height;
 
-                if (wvp/hvp>aspect)
+                if (wvp / hvp > aspect)
                 {
                     hvp = wvp / aspect;
                 }
 
                 view.ViewHeight = hvp;
-                view.CustomScale = 1;                
+                view.CustomScale = 1;
             }
         }
     }

@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AcadLib.Blocks;
+﻿using AcadLib.Blocks;
 using AcadLib.Errors;
+using AcadLib.Geometry;
+using AcadLib.Hatches;
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using AcadLib.Geometry;
-using AcadLib.Hatches;
 using Extensions;
+using JetBrains.Annotations;
 using NetLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
 namespace AcadLib
@@ -20,16 +21,16 @@ namespace AcadLib
         /// Определение контура для набора полилиний - объекдинением в регион и извлечением внешнего его контура.
         /// Должна быть запущена транзакция
         /// </summary>        
-        public static Polyline3d GetExteriorContour(this List<Polyline> idsPl)
+        public static Polyline3d GetExteriorContour([NotNull] this List<Polyline> idsPl)
         {
             var colReg = new List<Region>();
             foreach (var pl in idsPl)
-            {                
+            {
                 if (pl == null || Math.Abs(pl.Area) < 0.0001) continue;
 
                 // Создание региона из полилинии
-	            var dbs = new DBObjectCollection {pl};
-	            var dbsRegions = Region.CreateFromCurves(dbs);
+                var dbs = new DBObjectCollection { pl };
+                var dbsRegions = Region.CreateFromCurves(dbs);
                 if (dbsRegions.Count > 0)
                 {
                     var r = (Region)dbsRegions[0];
@@ -38,11 +39,11 @@ namespace AcadLib
                     {
                         item.Dispose();
                     }
-                }                
+                }
             }
 
             // Объединение регионов
-            var r1 = colReg.First();            
+            var r1 = colReg.First();
             foreach (var iReg in colReg.Skip(1))
             {
                 r1.BooleanOperation(BooleanOperationType.BoolUnite, iReg);
@@ -51,9 +52,10 @@ namespace AcadLib
             {
                 item.Dispose();
             }
-            return GetRegionContour(r1);            
+            return GetRegionContour(r1);
         }
 
+        [CanBeNull]
         public static Polyline3d GetRegionContour(this Region reg)
         {
             Polyline3d resVal = null;
@@ -65,21 +67,21 @@ namespace AcadLib
                 {
                     if (loop.LoopType == LoopType.LoopExterior)
                     {
-                        var ptsVertex = new List<Point3d>();                                                
+                        var ptsVertex = new List<Point3d>();
                         foreach (var vert in loop.Vertices)
                         {
                             if (!ptsVertex.Any(p => p.IsEqualTo(vert.Point, Tolerance.Global)))
                             {
                                 ptsVertex.Add(vert.Point);
-                            }                            
+                            }
                         }
                         var pts = new Point3dCollection(ptsVertex.ToArray());
                         var pl = new Polyline3d(Poly3dType.SimplePoly, pts, true);
-	                    var plArea = pl.Area;
-						if (plArea>maxArea)
+                        var plArea = pl.Area;
+                        if (plArea > maxArea)
                         {
                             resVal = pl;
-	                        maxArea = plArea;
+                            maxArea = plArea;
                         }
                     }
                 }
@@ -90,8 +92,9 @@ namespace AcadLib
         /// <summary>
         /// Без дуговых сегментов!!!
         /// </summary>
-        public static List<KeyValuePair<Polyline, BrepLoopType>> GetPolylines (this Region reg)
-        {            
+        [NotNull]
+        public static List<KeyValuePair<Polyline, BrepLoopType>> GetPolylines(this Region reg)
+        {
             var resVal = new List<KeyValuePair<Polyline, BrepLoopType>>(); ;
             var brep = new Brep(reg);
             foreach (var face in brep.Faces)
@@ -99,7 +102,7 @@ namespace AcadLib
                 foreach (var loop in face.Loops)
                 {
                     var ptsVertex = new List<Point2d>();
-                    foreach (var vert in loop.Vertices)                    
+                    foreach (var vert in loop.Vertices)
                         ptsVertex.Add(vert.Point.Convert2d());
 
                     var pl = ptsVertex.CreatePolyline();
@@ -109,8 +112,9 @@ namespace AcadLib
             return resVal;
         }
 
-        public static List<KeyValuePair<Point2dCollection, BrepLoopType>> GetPoints2dByLoopType (this Region reg)
-        {            
+        [NotNull]
+        public static List<KeyValuePair<Point2dCollection, BrepLoopType>> GetPoints2dByLoopType(this Region reg)
+        {
             var resVal = new List<KeyValuePair<Point2dCollection, BrepLoopType>>();
             var brep = new Brep(reg);
             foreach (var face in brep.Faces)
@@ -124,14 +128,15 @@ namespace AcadLib
             return resVal;
         }
 
-        public static List<Point3d> GetVertices (this Region reg)
+        [NotNull]
+        public static List<Point3d> GetVertices(this Region reg)
         {
             var ptsVertex = new List<Point3d>();
             var brep = new Brep(reg);
             foreach (var face in brep.Faces)
             {
                 foreach (var loop in face.Loops)
-                {                    
+                {
                     foreach (var vert in loop.Vertices)
                     {
                         ptsVertex.Add(vert.Point);
@@ -141,7 +146,8 @@ namespace AcadLib
             return ptsVertex;
         }
 
-        public static Hatch CreateHatch(this Region region, bool createOut, out DisposableSet<Polyline> externalLoops)
+        [CanBeNull]
+        public static Hatch CreateHatch(this Region region, bool createOut, [CanBeNull] out DisposableSet<Polyline> externalLoops)
         {
             externalLoops = createOut ? new DisposableSet<Polyline>() : null;
             var plsByLoop = region.GetPoints2dByLoopType();
@@ -180,7 +186,7 @@ namespace AcadLib
             h.EvaluateHatch(true);
             return h;
         }
-        public static Hatch CreateHatch (this Region region)
+        public static Hatch CreateHatch(this Region region)
         {
             return CreateHatch(region, false, out _);
         }
@@ -195,9 +201,9 @@ namespace AcadLib
         /// Полилинии должны быть замкнуты!
         /// </summary>        
         /// <param name="over">Контур который должен быть "над" объединенными полилиниями. Т.е. контур этой полилинии вырезается из полученного контура, если попадает на него.</param>
-        public static Region Union (this IEnumerable<Polyline> pls, Region over)
+        public static Region Union([CanBeNull] this IEnumerable<Polyline> pls, Region over)
         {
-            if (pls == null || !pls.Any()) return null;            
+            if (pls == null || !pls.Any()) return null;
             var regions = CreateRegion(pls);
             Region union = null;
             try
@@ -212,21 +218,21 @@ namespace AcadLib
                     item.Dispose();
                 }
             }
-            
+
             // Вырезание over региона
             if (over != null)
             {
                 union.BooleanOperation(BooleanOperationType.BoolSubtract, over);
-            }                                          
+            }
             return union;
         }
 
-	    public static Region CreateRegion(this Polyline pl)
-	    {
-	        return CreateRegion((Curve) pl);
-	    }
+        public static Region CreateRegion(this Polyline pl)
+        {
+            return CreateRegion((Curve)pl);
+        }
 
-        public static Region CreateRegion(this Curve curve)
+        public static Region CreateRegion([CanBeNull] this Curve curve)
         {
             if (curve == null) return null;
             var dbs = new DBObjectCollection { curve };
@@ -241,7 +247,7 @@ namespace AcadLib
             return reg;
         }
 
-        public static Region CreateRegion(this Hatch hatch)
+        public static Region CreateRegion([CanBeNull] this Hatch hatch)
         {
             try
             {
@@ -296,41 +302,42 @@ namespace AcadLib
             }
         }
 
-        public static List<Region> CreateRegion (this IEnumerable<Polyline> pls)
-		{
-			return CreateRegion(pls.Cast<Curve>());
+        public static List<Region> CreateRegion([NotNull] this IEnumerable<Polyline> pls)
+        {
+            return CreateRegion(pls.Cast<Curve>());
         }
 
-	    public static List<Region> CreateRegion(this IEnumerable<Curve> curves)
-	    {
-		    var res = new List<Region>();
-		    var dbs = new DBObjectCollection();
-		    foreach (var curve in curves)
-		    {
-			    dbs.Add(curve);
-		    }
-		    var dbsRegions = Region.CreateFromCurves(dbs);
-		    foreach (var item in dbsRegions)
-		    {
-			    res.Add((Region)item);
-		    }
+        [NotNull]
+        public static List<Region> CreateRegion([NotNull] this IEnumerable<Curve> curves)
+        {
+            var res = new List<Region>();
+            var dbs = new DBObjectCollection();
+            foreach (var curve in curves)
+            {
+                dbs.Add(curve);
+            }
+            var dbsRegions = Region.CreateFromCurves(dbs);
+            foreach (var item in dbsRegions)
+            {
+                res.Add((Region)item);
+            }
 #if DEBUG
-//EntityHelper.AddEntityToCurrentSpace(res);
+            //EntityHelper.AddEntityToCurrentSpace(res);
 #endif
-		    return res;
-	    }
+            return res;
+        }
 
-		public static Region UnionRegions (this List<Region> regions)
+        public static Region UnionRegions([CanBeNull] this List<Region> regions)
         {
             if (regions?.Any() != true) return null;
-            if (regions.Count ==1) return regions[0];           
-            var union = regions.First();            
+            if (regions.Count == 1) return regions[0];
+            var union = regions.First();
             for (var i = 1; i < regions.Count; i++)
             {
                 var cr = regions[i];
-                union.BooleanOperation(BooleanOperationType.BoolUnite, cr);                
+                union.BooleanOperation(BooleanOperationType.BoolUnite, cr);
             }
             return union;
         }
-    }    
+    }
 }

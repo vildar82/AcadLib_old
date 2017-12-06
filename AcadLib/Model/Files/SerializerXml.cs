@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -9,12 +10,12 @@ namespace AcadLib.Files
     {
         private readonly string _settingsFile;
 
-        public SerializerXml (string settingsFile)
+        public SerializerXml(string settingsFile)
         {
             _settingsFile = settingsFile;
         }
 
-        public void SerializeList<T> (T settings)
+        public void SerializeList<T>([NotNull] T settings)
         {
             using (var fs = new FileStream(_settingsFile, FileMode.Create, FileAccess.Write))
             {
@@ -23,7 +24,7 @@ namespace AcadLib.Files
             }
         }
 
-        public void SerializeList<T>(T settings, params Type[] types)
+        public void SerializeList<T>([NotNull] T settings, [NotNull] params Type[] types)
         {
             using (var fs = new FileStream(_settingsFile, FileMode.Create, FileAccess.Write))
             {
@@ -32,7 +33,7 @@ namespace AcadLib.Files
             }
         }
 
-        public T DeserializeXmlFile<T> ()
+        public T DeserializeXmlFile<T>()
         {
             var ser = new XmlSerializer(typeof(T));
             using (var reader = XmlReader.Create(_settingsFile))
@@ -41,7 +42,7 @@ namespace AcadLib.Files
             }
         }
 
-        public T DeserializeXmlFile<T>(params Type[] types)
+        public T DeserializeXmlFile<T>([NotNull] params Type[] types)
         {
             var ser = new XmlSerializer(typeof(T), types);
             using (var reader = XmlReader.Create(_settingsFile))
@@ -56,22 +57,24 @@ namespace AcadLib.Files
         /// <typeparam name="T">Тип считываемого объекта></typeparam>
         /// <param name="file">Файл xml</param>
         /// <returns>Объект T или null</returns>
-        public static T Load<T> (string file) where T: class, new()
+        [CanBeNull]
+        public static T Load<T>(string file) where T : class, new()
         {
             var ser = new SerializerXml(file);
             T res = null;
             try
             {
                 res = ser.DeserializeXmlFile<T>();
-            }            
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, $"Ошибка десирилизации объекта {typeof(T)} из файла {file}");
                 //res = new T();
             }
-            return res;                
+            return res;
         }
 
+        [CanBeNull]
         public static T Load<T>(string file, params Type[] types) where T : class, new()
         {
             var ser = new SerializerXml(file);
@@ -95,14 +98,14 @@ namespace AcadLib.Files
         /// <typeparam name="T">Тип объекта</typeparam>
         /// <param name="file">Файл</param>
         /// <param name="obj">Объект</param>
-        public static void Save<T> (string file, T obj)
+        public static void Save<T>(string file, T obj)
         {
             var ser = new SerializerXml(file);
             try
             {
                 ser.SerializeList(obj);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, $"Ошибка сирилизации объекта {typeof(T)} в файл {file}");
             }

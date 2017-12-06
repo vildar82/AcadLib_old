@@ -1,8 +1,9 @@
-﻿using System.Linq;
-using AcadLib.Geometry;
+﻿using AcadLib.Geometry;
 using AcadLib.Hatches;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System.Linq;
 
 namespace AcadLib
 {
@@ -16,8 +17,9 @@ namespace AcadLib
         /// Таблица должна быть в базе чертежа.
         /// Штриховка добавляется в базу.
         /// </summary>
-        public static Hatch SetCellHatch(this Cell cell, int colorIndex =0, LineWeight lineWeight = LineWeight.LineWeight015,
-            double patternScale =1 , string standartPattern= "LINE", double patternAngleRad = 0)
+        [NotNull]
+        public static Hatch SetCellHatch([NotNull] this Cell cell, int colorIndex = 0, LineWeight lineWeight = LineWeight.LineWeight015,
+            double patternScale = 1, string standartPattern = "LINE", double patternAngleRad = 0)
         {
             var table = cell.ParentTable;
             table.RecomputeTableBlock(true);
@@ -40,14 +42,14 @@ namespace AcadLib
             }
         }
 
-        private static Extents3d OffsetExtToMarginCell(Extents3d ext, Cell cell)
+        private static Extents3d OffsetExtToMarginCell(Extents3d ext, [NotNull] Cell cell)
         {
             return new Extents3d(
                 new Point3d(ext.MinPoint.X - cell.Borders.Horizontal.Margin.Value, ext.MinPoint.Y - cell.Borders.Top.Margin.Value, 0),
                 new Point3d(ext.MaxPoint.X + cell.Borders.Horizontal.Margin.Value, ext.MaxPoint.Y + cell.Borders.Top.Margin.Value, 0));
         }
 
-        public static void SetBorders(this Table table, LineWeight lw)
+        public static void SetBorders([NotNull] this Table table, LineWeight lw)
         {
             if (table.Rows.Count < 2) return;
 
@@ -63,9 +65,9 @@ namespace AcadLib
             }
         }
 
-        private static void setRowTitle(Row row)
+        private static void setRowTitle([NotNull] Row row)
         {
-            setCell(row.Borders.Bottom,  LineWeight.LineWeight000, false);
+            setCell(row.Borders.Bottom, LineWeight.LineWeight000, false);
             setCell(row.Borders.Horizontal, LineWeight.LineWeight000, false);
             setCell(row.Borders.Left, LineWeight.LineWeight000, false);
             setCell(row.Borders.Right, LineWeight.LineWeight000, false);
@@ -73,7 +75,7 @@ namespace AcadLib
             setCell(row.Borders.Vertical, LineWeight.LineWeight000, false);
         }
 
-        private static void setRowHeader(Row row, LineWeight lw)
+        private static void setRowHeader([NotNull] Row row, LineWeight lw)
         {
             setCell(row.Borders.Bottom, lw, true);
             setCell(row.Borders.Horizontal, lw, true);
@@ -83,7 +85,7 @@ namespace AcadLib
             setCell(row.Borders.Vertical, lw, true);
         }
 
-        private static void setRowData(Row row, LineWeight lw)
+        private static void setRowData([NotNull] Row row, LineWeight lw)
         {
             setCell(row.Borders.Bottom, LwDataRow, true);
             setCell(row.Borders.Horizontal, LwDataRow, true);
@@ -93,11 +95,11 @@ namespace AcadLib
             setCell(row.Borders.Vertical, lw, true);
         }
 
-        private static void setCell(CellBorder cell, LineWeight lw, bool visible)
+        private static void setCell([NotNull] CellBorder cell, LineWeight lw, bool visible)
         {
             //cell.Overrides = GridProperties.Visibility | GridProperties.LineWeight;
             cell.LineWeight = lw;
-            cell.IsVisible = visible;            
+            cell.IsVisible = visible;
         }
     }
 }

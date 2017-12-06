@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,27 +8,15 @@ namespace AcadLib.Blocks
 {
     public class BlockAttribute
     {
-        private string _name;
-        private Dictionary<string, string> _atts;
-
         // Public read only properties
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; private set; }
 
-        public Dictionary<string, string> Attributes
-        {
-            get { return _atts; }
-        }
+        public Dictionary<string, string> Attributes { get; private set; }
 
-        public string this[string key]
-        {
-            get { return _atts[key.ToUpper()]; }
-        }
+        public string this[[NotNull] string key] => Attributes[key.ToUpper()];
 
         // Constructors
-        public BlockAttribute(BlockReference br)
+        public BlockAttribute([NotNull] BlockReference br)
         {
             SetProperties(br);
         }
@@ -37,27 +26,26 @@ namespace AcadLib.Blocks
             var db = idBlRef.Database;
             using (var tr = db.TransactionManager.StartTransaction())
             {
-                SetProperties(tr.GetObject(idBlRef, OpenMode.ForRead) as BlockReference);
+                SetProperties((BlockReference)tr.GetObject(idBlRef, OpenMode.ForRead));
             }
         }
 
         // Public method
-        new public string ToString()
+        public new string ToString()
         {
-            if (_atts != null && _atts.Count > 0)
-                return $"{_name}: {_atts.Select(a => $"{a.Key}={a.Value}").Aggregate((a, b) => $"{a}; {b}")}";
-            return _name;
+            if (Attributes != null && Attributes.Count > 0)
+                return $"{Name}: {Attributes.Select(a => $"{a.Key}={a.Value}").Aggregate((a, b) => $"{a}; {b}")}";
+            return Name;
         }
 
         // Private method
-        private void SetProperties(BlockReference br)
+        private void SetProperties([NotNull] BlockReference br)
         {
-            if (br == null) return;
-            _name = br.GetEffectiveName();
-            _atts = new Dictionary<string, string>();
+            Name = br.GetEffectiveName();
+            Attributes = new Dictionary<string, string>();
             br.AttributeCollection
                 .GetObjects<AttributeReference>()
-                .Iterate(att => _atts.Add(att.Tag.ToUpper(), att.TextString));
+                .Iterate(att => Attributes.Add(att.Tag.ToUpper(), att.TextString));
         }
     }
 
@@ -65,9 +53,9 @@ namespace AcadLib.Blocks
     {
         public bool Equals(BlockAttribute x, BlockAttribute y)
         {
-            return
-                x.Name.Equals(y.Name, StringComparison.CurrentCultureIgnoreCase) &&
-                x.Attributes.SequenceEqual(y.Attributes);
+            if (x == null || y == null) return false;
+            return x.Name.Equals(y.Name, StringComparison.CurrentCultureIgnoreCase) &&
+                   x.Attributes.SequenceEqual(y.Attributes);
         }
 
         public int GetHashCode(BlockAttribute obj)

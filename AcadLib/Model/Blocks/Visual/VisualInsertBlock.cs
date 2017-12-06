@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
-using AcadLib.Blocks.Visual.UI;
+﻿using AcadLib.Blocks.Visual.UI;
 using AcadLib.Layers;
+using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks.Visual
@@ -16,7 +17,7 @@ namespace AcadLib.Blocks.Visual
         private static LayerInfo _layer;
         private static WindowVisualBlocks winVisual;
 
-        public static void InsertBlockGroups(string fileBlocks, Func<string, string> filterGroup, LayerInfo layer = null)
+        public static void InsertBlockGroups(string fileBlocks, [NotNull] Func<string, string> filterGroup, [CanBeNull] LayerInfo layer = null)
         {
             _layer = layer;
             if (!dictGroup.TryGetValue(filterGroup, out var visuals))
@@ -27,12 +28,12 @@ namespace AcadLib.Blocks.Visual
             ShowVisuals(visuals);
         }
 
-        public static void InsertBlock(string fileBlocks, Predicate<string> filter, LayerInfo layer = null)
+        public static void InsertBlock(string fileBlocks, [NotNull] Predicate<string> filter, [CanBeNull] LayerInfo layer = null)
         {
             _layer = layer;
             if (!dictFiles.TryGetValue(filter, out var visuals))
-            {                
-                visuals = LoadVisuals(fileBlocks,n=> filter(n) ? "" : null);
+            {
+                visuals = LoadVisuals(fileBlocks, n => filter(n) ? "" : null);
                 dictFiles.Add(filter, visuals);
             }
             ShowVisuals(visuals);
@@ -52,6 +53,7 @@ namespace AcadLib.Blocks.Visual
             winVisual.ShowDialog();
         }
 
+        [NotNull]
         public static List<IVisualBlock> LoadVisuals(string file, Func<string, string> filter)
         {
             var visualBlocks = new List<IVisualBlock>();
@@ -67,7 +69,7 @@ namespace AcadLib.Blocks.Visual
                         var group = filter(btr.Name);
                         if (group != null)
                         {
-                            var visualBl = new VisualBlock(btr) {File = file, Group = group};
+                            var visualBl = new VisualBlock(btr) { File = file, Group = group };
                             visualBlocks.Add(visualBl);
                         }
                     }
@@ -82,7 +84,7 @@ namespace AcadLib.Blocks.Visual
         /// <summary>
         /// Переопределенеи блока
         /// </summary>        
-        public static void Redefine(IVisualBlock block)
+        public static void Redefine([CanBeNull] IVisualBlock block)
         {
             if (block == null) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -93,7 +95,7 @@ namespace AcadLib.Blocks.Visual
             }
         }
 
-        public static void Insert(IVisualBlock block)
+        public static void Insert([CanBeNull] IVisualBlock block)
         {
             if (block == null) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -102,10 +104,10 @@ namespace AcadLib.Blocks.Visual
             BlockInsert.Insert(block.Name, _layer);
         }
 
-        private static void GetInsertBtr(string name, string fileBlocks, Database dbdest)
+        private static void GetInsertBtr(string name, string fileBlocks, [NotNull] Database dbdest)
         {
             // Есть ли уже блок в текущем файле
-            using (var bt = dbdest.BlockTableId.Open( OpenMode.ForRead)as BlockTable)
+            using (var bt = dbdest.BlockTableId.Open(OpenMode.ForRead) as BlockTable)
             {
                 if (bt.Has(name))
                 {

@@ -1,36 +1,37 @@
-﻿using System;
-using AcadLib.Editors;
+﻿using AcadLib.Editors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Editors
 {
-   public static class ViewTableRecordExtension
-   {
-      public static Matrix3d EyeToWorld(this ViewTableRecord view)
-      {
-         if (view == null)
-            throw new ArgumentNullException("view");
+    public static class ViewTableRecordExtension
+    {
+        public static Matrix3d EyeToWorld([NotNull] this ViewTableRecord view)
+        {
+            if (view == null)
+                throw new ArgumentNullException("view");
 
-         return
-             Matrix3d.Rotation(-view.ViewTwist, view.ViewDirection, view.Target) *
-             Matrix3d.Displacement(view.Target - Point3d.Origin) *
-             Matrix3d.PlaneToWorld(view.ViewDirection);
-      }
+            return
+                Matrix3d.Rotation(-view.ViewTwist, view.ViewDirection, view.Target) *
+                Matrix3d.Displacement(view.Target - Point3d.Origin) *
+                Matrix3d.PlaneToWorld(view.ViewDirection);
+        }
 
-      public static Matrix3d WorldToEye(this ViewTableRecord view)
-      {
-         return view.EyeToWorld().Inverse();
-      }
-   }
+        public static Matrix3d WorldToEye(this ViewTableRecord view)
+        {
+            return view.EyeToWorld().Inverse();
+        }
+    }
 }
 
 namespace Autodesk.AutoCAD.EditorInput
 {
     public static class EditorExtension
     {
-        public static void Zoom(this Editor ed, Extents3d ext)
+        public static void Zoom([CanBeNull] this Editor ed, Extents3d ext)
         {
             if (ed == null)
                 return;
@@ -47,7 +48,7 @@ namespace Autodesk.AutoCAD.EditorInput
             }
         }
 
-        public static void ZoomExtents(this Editor ed)
+        public static void ZoomExtents([CanBeNull] this Editor ed)
         {
             if (ed == null)
                 return;
@@ -57,6 +58,6 @@ namespace Autodesk.AutoCAD.EditorInput
                 new Extents3d(db.Pextmin, db.Pextmax) :
                 new Extents3d(db.Extmin, db.Extmax);
             ed.Zoom(ext);
-        }        
+        }
     }
 }

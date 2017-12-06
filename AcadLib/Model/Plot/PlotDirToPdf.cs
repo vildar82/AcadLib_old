@@ -1,17 +1,18 @@
-﻿using System;
+﻿using AcadLib.Layouts;
+using AutoCAD_PIK_Manager.Settings;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.PlottingServices;
+using Autodesk.AutoCAD.Publishing;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.PlottingServices;
-using Autodesk.AutoCAD.Publishing;
-using AutoCAD_PIK_Manager.Settings;
-using AcadLib.Layouts;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Plot
@@ -23,11 +24,11 @@ namespace AcadLib.Plot
         private string dir;
         private string filePdfOutputName;
         private string[] filesDwg;
-        private string title = "Печать";              
+        private string title = "Печать";
 
         public PlotOptions Options { get; set; }
 
-        public PlotDirToPdf(string dir, bool includeSubdirs, string filePdfOutputName = "")
+        public PlotDirToPdf([NotNull] string dir, bool includeSubdirs, string filePdfOutputName = "")
         {
             filesDwg = Directory.GetFiles(dir, "*.dwg",
                 includeSubdirs ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
@@ -38,15 +39,15 @@ namespace AcadLib.Plot
 
         public PlotDirToPdf(string dir, string filePdfOutputName = "") : this(dir, false, filePdfOutputName)
         {
-            
+
         }
 
-        public PlotDirToPdf(string[] filesDwg, string filePdfOutputName)
+        public PlotDirToPdf([NotNull] string[] filesDwg, string filePdfOutputName)
         {
             dir = Path.GetDirectoryName(filesDwg.First());
             this.filesDwg = filesDwg;
             this.filePdfOutputName = filePdfOutputName;
-        }        
+        }
 
         public void Plot()
         {
@@ -76,8 +77,8 @@ namespace AcadLib.Plot
         private void PlotFileToPdf(string file)
         {
             dir = Path.GetDirectoryName(file);
-            filePdfOutputName = Path.GetFileNameWithoutExtension(file);            
-            filesDwg = new[] { file};
+            filePdfOutputName = Path.GetFileNameWithoutExtension(file);
+            filesDwg = new[] { file };
             PlotFiles();
         }
 
@@ -137,10 +138,10 @@ namespace AcadLib.Plot
                     }
                 }
                 PublisherDSD(dsdCol);
-            }        
+            }
         }
 
-        public static void PromptAndPlot (Document doc)
+        public static void PromptAndPlot([NotNull] Document doc)
         {
             var ed = doc.Editor;
             var plotOpt = new PlotOptions();
@@ -179,9 +180,9 @@ namespace AcadLib.Plot
                         dialog.Dialog.Multiselect = true;
                         dialog.IsFolderDialog = true;
                         dialog.Dialog.Title = "Выбор папки или файлов для печати чертежей в PDF.";
-                        dialog.Dialog.Filter = "Чертежи|*.dwg";                        
+                        dialog.Dialog.Filter = "Чертежи|*.dwg";
                         dialog.Dialog.InitialDirectory = Path.GetDirectoryName(doc.Name);
-                        
+
                         if (dialog.ShowDialog() == DialogResult.OK)
                         {
                             PlotDirToPdf plotter;
@@ -217,7 +218,8 @@ namespace AcadLib.Plot
             } while (repeat);
         }
 
-        private List<Layout> FilterLayouts (List<Layout> layouts, PlotOptions options)
+        [NotNull]
+        private List<Layout> FilterLayouts([NotNull] List<Layout> layouts, [NotNull] PlotOptions options)
         {
             var resLayouts = new List<Layout>();
             var filterNums = GetFilterNumbers(layouts.Count, options.FilterByNumbers);
@@ -249,11 +251,12 @@ namespace AcadLib.Plot
             return resLayouts;
         }
 
-        public List<int> GetFilterNumbers (int countTabs, string filter)
+        [NotNull]
+        public List<int> GetFilterNumbers(int countTabs, string filter)
         {
-            var resNums = new List<int>();            
+            var resNums = new List<int>();
             if (Options.FilterState && !string.IsNullOrWhiteSpace(filter))
-            {                
+            {
                 var clearStr = string.Empty;
                 filter = filter.Trim().Replace(" ", "");
                 var negativeNumbersMatchs = Regex.Matches(filter, @"(^-\d+)|[,-](-\d+)");
@@ -268,33 +271,33 @@ namespace AcadLib.Plot
                     var index = countTabs - negNum + 1;
                     clearStr += filter.Substring(0, g.Index).Substring(startIndex) + index;
                     startIndex = g.Index + g.Length;
-                }      
-                if (startIndex!=0)
+                }
+                if (startIndex != 0)
                 {
                     filter = clearStr + filter.Substring(startIndex);
                 }
-                
-                var query = 
+
+                var query =
                 from x in filter.Split(',')
                 let y = x.Split('-')
                 let b = int.Parse(y[0].Trim())
                 let e = int.Parse(y[y.Length - 1].Trim())
-                from n in Enumerable.Range(e>b?b:e, (e>b? e - b:b-e) + 1)
+                from n in Enumerable.Range(e > b ? b : e, (e > b ? e - b : b - e) + 1)
                 select n;
                 resNums = query.ToList();
             }
             return resNums;
         }
 
-        private bool FilterByName(string tabName)
+        private bool FilterByName([NotNull] string tabName)
         {
             return Regex.IsMatch(tabName, Options.FilterByNames, RegexOptions.IgnoreCase);
-        }        
+        }
 
         public void PublisherDSD(DsdEntryCollection collection)
         {
             try
-            {                
+            {
                 var dsdFile = Path.Combine(dir, filePdfOutputName + ".dsd");
                 if (!filePdfOutputName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
                 {
@@ -302,11 +305,11 @@ namespace AcadLib.Plot
                 }
                 var destFile = Path.Combine(dir, filePdfOutputName);
 
-                CheckFileAccess(destFile);               
+                CheckFileAccess(destFile);
 
                 Application.SetSystemVariable("BACKGROUNDPLOT", 0);
                 using (var dsd = new DsdData())
-                {                    
+                {
                     if (PikSettings.UserGroup == "ДО")
                     {
                         dsd.PlotStampOn = true;
@@ -323,7 +326,7 @@ namespace AcadLib.Plot
                     dsd.IsHomogeneous = false;
                     dsd.DestinationName = destFile;
                     dsd.SheetSetName = "PublisherSet";
-                    dsd.PromptForDwfName = false;                    
+                    dsd.PromptForDwfName = false;
                     //dsd.WriteDsd(dsdFile);
                     PostProcessDSD(dsd, dsdFile);
                 }
@@ -353,7 +356,7 @@ namespace AcadLib.Plot
                     //Application.Publisher.PublishExecute(dsd, PlotConfigManager.CurrentConfig);
 
                     publisher.PublishDsd(dsdFile, progressDlg);
-                    progressDlg.Destroy();               
+                    progressDlg.Destroy();
                     //publisher.BeginSheet += Publisher_BeginSheet;
                 }
                 File.Delete(dsdFile);
@@ -364,7 +367,7 @@ namespace AcadLib.Plot
             }
         }
 
-        private void CheckFileAccess(string destFile)
+        private void CheckFileAccess([NotNull] string destFile)
         {
             var fi = new FileInfo(destFile);
             var countWhile = 0;
@@ -391,7 +394,7 @@ namespace AcadLib.Plot
             throw new Exception("Превышено число попыток доступа к файлу. Выход.");
         }
 
-        private void Publisher_BeginSheet (object sender, PublishSheetEventArgs e)
+        private void Publisher_BeginSheet(object sender, PublishSheetEventArgs e)
         {
             //throw new NotImplementedException();
         }
@@ -411,7 +414,7 @@ namespace AcadLib.Plot
         //    }
         //}
 
-        private void PostProcessDSD(DsdData dsd, string destFile)
+        private void PostProcessDSD([NotNull] DsdData dsd, [NotNull] string destFile)
         {
             string str;
             string newStr;
@@ -432,7 +435,7 @@ namespace AcadLib.Plot
                     }
                     else if (str.StartsWith("DWG=", StringComparison.OrdinalIgnoreCase))
                     {
-                        fileDwg= str.Substring(4);
+                        fileDwg = str.Substring(4);
                         newStr = str;
                     }
                     else if (str.StartsWith("OriginalSheetPath="))
@@ -442,11 +445,11 @@ namespace AcadLib.Plot
                     else if (str.StartsWith("Type="))
                     {
                         newStr = "Type=6";
-                    }                                        
+                    }
                     else if (str.StartsWith("PromptForDwfName="))
                     {
                         newStr = "PromptForDwfName=FALSE";
-                    }                    
+                    }
                     else
                     {
                         newStr = str;

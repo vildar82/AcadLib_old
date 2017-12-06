@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System.Collections.Generic;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
     public static class ExtentsExtension
     {
+        [NotNull]
         public static List<Point3d> GetRegularGridPoints(this Extents3d ext, double len)
         {
             var ptsGrid = new List<Point3d>();
@@ -18,7 +20,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             {
                 for (var y = 0; y < iY; y++)
                 {
-                    ptsGrid.Add(new Point3d(ext.MinPoint.X + x * dX, ext.MinPoint.Y + y*dY,0));
+                    ptsGrid.Add(new Point3d(ext.MinPoint.X + x * dX, ext.MinPoint.Y + y * dY, 0));
                 }
             }
             return ptsGrid;
@@ -34,7 +36,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         }
         public static Extents3d Offset(this Extents3d ext, double percent = 50)
         {
-            var dX = ext.GetLength() * (percent / 100) *0.5;
+            var dX = ext.GetLength() * (percent / 100) * 0.5;
             var dY = ext.GetHeight() * (percent / 100) * 0.5;
             return new Extents3d(
                 new Point3d(ext.MinPoint.X - dX, ext.MinPoint.Y - dY, 0),
@@ -42,12 +44,12 @@ namespace Autodesk.AutoCAD.DatabaseServices
             );
         }
 
-	    public static double GetArea(this Extents3d ext)
-	    {
-		    return (ext.MaxPoint.X - ext.MinPoint.X) * (ext.MaxPoint.Y - ext.MinPoint.Y);
-	    }
+        public static double GetArea(this Extents3d ext)
+        {
+            return (ext.MaxPoint.X - ext.MinPoint.X) * (ext.MaxPoint.Y - ext.MinPoint.Y);
+        }
 
-		public static Extents3d Convert3d(this Extents2d ext)
+        public static Extents3d Convert3d(this Extents2d ext)
         {
             return new Extents3d(ext.MinPoint.Convert3d(), ext.MaxPoint.Convert3d());
         }
@@ -62,6 +64,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return ext.Convert3d().GetPolyline();
         }
 
+        [NotNull]
         public static Polyline GetPolyline(this Extents3d ext)
         {
             var pl = new Polyline();

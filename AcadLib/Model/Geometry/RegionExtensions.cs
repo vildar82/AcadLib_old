@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 
 namespace AcadLib.Geometry
 {
@@ -13,7 +14,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="reg">The instance to which the method applies.</param>
         /// <returns>The centroid of the region (WCS coordinates).</returns>
-        public static Point3d Centroid(this Region reg)
+        public static Point3d Centroid([NotNull] this Region reg)
         {
             using (var sol = new Solid3d())
             {

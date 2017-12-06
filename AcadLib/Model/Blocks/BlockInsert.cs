@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.IO;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
-using AcAp = Autodesk.AutoCAD.ApplicationServices.Application;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks
@@ -106,7 +106,7 @@ namespace AcadLib.Blocks
 
         public static ObjectId Insert(string blName, string layer)
         {
-            var layerInfo = new Layers.LayerInfo(layer);            
+            var layerInfo = new Layers.LayerInfo(layer);
             return Insert(blName, layerInfo);
         }
 
@@ -125,10 +125,11 @@ namespace AcadLib.Blocks
         /// <param name="t"></param>
         /// <param name="scale"></param>
         /// <returns></returns>
-        public static BlockReference InsertBlockRef (string blName, Point3d pt, BlockTableRecord owner, Transaction t, double scale = 1)
+        [NotNull]
+        public static BlockReference InsertBlockRef(string blName, Point3d pt, [NotNull] BlockTableRecord owner, [NotNull] Transaction t, double scale = 1)
         {
             var db = owner.Database;
-            var bt = db.BlockTableId.GetObject( OpenMode.ForRead)as BlockTable;
+            var bt = db.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
             var btr = bt[blName].GetObject(OpenMode.ForRead) as BlockTableRecord;
             var blRef = new BlockReference(pt, btr.Id)
             {
@@ -147,7 +148,7 @@ namespace AcadLib.Blocks
 
             owner.AppendEntity(blRef);
             t.AddNewlyCreatedDBObject(blRef, true);
-            
+
             AddAttributes(blRef, btr, t);
             return blRef;
         }
@@ -155,7 +156,7 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Добавление атрибутов к вставке блока
         /// </summary>        
-        public static void AddAttributes(BlockReference blRef, BlockTableRecord btrBl, Transaction t)
+        public static void AddAttributes(BlockReference blRef, [NotNull] BlockTableRecord btrBl, Transaction t)
         {
             foreach (var idEnt in btrBl)
             {

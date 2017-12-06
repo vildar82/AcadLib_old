@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 
 namespace AcadLib.Geometry
 {
@@ -7,7 +8,7 @@ namespace AcadLib.Geometry
     /// Provides extension methods for the Polyline3d type.
     /// </summary>
     public static class Polyline3dExtensions
-   {
+    {
         /// <summary>
         /// Creates a new Polyline that is the result of projecting the Polyline3d parallel to 'direction' onto 'plane' and returns it.
         /// </summary>
@@ -15,7 +16,7 @@ namespace AcadLib.Geometry
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <param name="direction">Direction (in WCS coordinates) of the projection.</param>
         /// <returns>The projected Polyline.</returns>
-        public static Polyline GetProjectedPolyline(this Polyline3d pline, Plane plane, Vector3d direction)
+        public static Polyline GetProjectedPolyline(this Polyline3d pline, [NotNull] Plane plane, Vector3d direction)
         {
             if (plane.Normal.IsPerpendicularTo(direction, new Tolerance(1e-9, 1e-9)))
                 return null;
@@ -29,7 +30,7 @@ namespace AcadLib.Geometry
         /// <param name="pline">The polyline to project.</param>
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <returns>The projected polyline</returns>
-        public static Polyline GetOrthoProjectedPolyline(this Polyline3d pline, Plane plane)
+        public static Polyline GetOrthoProjectedPolyline(this Polyline3d pline, [NotNull] Plane plane)
         {
             return pline.GetProjectedPolyline(plane, plane.Normal);
         }

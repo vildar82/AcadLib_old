@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib
 {
@@ -10,12 +10,12 @@ namespace AcadLib
         /// Удаление словаря из объекта.
         /// </summary>
         /// <param name="dbo"></param>
-        public static void RemoveAllExtensionDictionary (this DBObject dbo)
+        public static void RemoveAllExtensionDictionary([NotNull] this DBObject dbo)
         {
             if (dbo.ExtensionDictionary.IsNull) return;
-            var extDic = dbo.ExtensionDictionary.GetObject(OpenMode.ForWrite) as DBDictionary;
+            var extDic = (DBDictionary)dbo.ExtensionDictionary.GetObject(OpenMode.ForWrite);
             if (extDic == null) return;
-            dbo.UpgradeOpen();
+            dbo = dbo.Id.GetObject<DBObject>(OpenMode.ForWrite);
             foreach (var entry in extDic)
             {
                 extDic.Remove(entry.Key);
@@ -27,15 +27,15 @@ namespace AcadLib
         /// Удаление расширенных данных из объекта
         /// </summary>
         /// <param name="dbo"></param>
-        public static void RemoveAllXData (this DBObject dbo)
+        public static void RemoveAllXData(this DBObject dbo)
         {
             if (dbo.XData == null) return;
             var appNames = from TypedValue tv in dbo.XData.AsArray() where tv.TypeCode == 1001 select tv.Value.ToString();
-            dbo.UpgradeOpen();
+            dbo = dbo.Id.GetObject<DBObject>(OpenMode.ForWrite);
             foreach (var appName in appNames)
             {
                 dbo.XData = new ResultBuffer(new TypedValue(1001, appName));
             }
-        }        
+        }
     }
 }

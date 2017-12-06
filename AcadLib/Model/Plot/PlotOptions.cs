@@ -1,19 +1,19 @@
-﻿using System;
+﻿using AcadLib.UI.Properties;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using AcadLib.UI.Properties;
-using Autodesk.AutoCAD.ApplicationServices;
 
 namespace AcadLib.Plot
-{    
+{
     [Serializable]
     public class PlotOptions
     {
         private static string REGKEY = "PlotOptions";
         private static string KeySortTabOrName = "SortTabOrName";
         private static string KeyOnePdfOrEachDwg = "OnePdfOrEachDwg";
-        private static string KeyFilterByNumbers = "FilterByNumbers";        
+        private static string KeyFilterByNumbers = "FilterByNumbers";
         private static string KeyFilterByNames = "FilterByNames";
         private static string KeyFilterState = "FilterState";
         private static string KeyDefaultPlotSource = "DefaultPlotSource";
@@ -36,7 +36,7 @@ namespace AcadLib.Plot
         {
             Load();
         }
-        
+
         [Category("Печать")]
         [DisplayName("Сортировка по")]
         [Description("Сортировка листов - по порядку вкладок в чертеже или по алфавиту.")]
@@ -68,8 +68,8 @@ namespace AcadLib.Plot
         [Category("Фильтр")]
         [DisplayName("Фильтр по номерам вкладок:")]
         [Description("Печатать только указанные номера вкладок. Номера через запятую и/или тире. Отрицательные числа считаются с конца вкладок.\n\r Например: 16--4 печать с 16 листа до 4 с конца; -1--3 печать трех последних листов.")]
-        [DefaultValue("")]        
-        public string FilterByNumbers { get; set; }        
+        [DefaultValue("")]
+        public string FilterByNumbers { get; set; }
 
         [Category("Фильтр")]
         [DisplayName("Фильтр по названию вкладок:")]
@@ -81,22 +81,22 @@ namespace AcadLib.Plot
         [DisplayName("Использовать фильтр?")]
         [Description("Включение и отключение фильтров.")]
         [DefaultValue(false)]
-        [TypeConverter(typeof(YesNoConverter))]        
+        [TypeConverter(typeof(YesNoConverter))]
         public bool FilterState { get; set; }
 
         public void Load()
-        {            
+        {
             // загрузка настроек из реестра
             using (var reg = new Registry.RegExt(REGKEY))
             {
                 SortTabOrName = reg.Load(KeySortTabOrName, true);
                 OnePdfOrEachDwg = reg.Load(KeyOnePdfOrEachDwg, true);
-                FilterByNumbers = reg.Load(KeyFilterByNumbers, "");                
+                FilterByNumbers = reg.Load(KeyFilterByNumbers, "");
                 FilterByNames = reg.Load(KeyFilterByNames, "");
                 FilterState = reg.Load(KeyFilterState, false);
                 DefaultPlotSource = reg.Load(KeyDefaultPlotSource, "Текущего");
                 IncludeSubdirs = reg.Load(KeyIncludeSubdirs, false);
-            }            
+            }
         }
 
         public void Save()
@@ -106,7 +106,7 @@ namespace AcadLib.Plot
             {
                 reg.Save(KeySortTabOrName, SortTabOrName);
                 reg.Save(KeyOnePdfOrEachDwg, OnePdfOrEachDwg);
-                reg.Save(KeyFilterByNumbers, FilterByNumbers);                
+                reg.Save(KeyFilterByNumbers, FilterByNumbers);
                 reg.Save(KeyFilterByNames, FilterByNames);
                 reg.Save(KeyFilterState, FilterState);
                 reg.Save(KeyDefaultPlotSource, DefaultPlotSource);
@@ -120,7 +120,7 @@ namespace AcadLib.Plot
             var copyOptions = (PlotOptions)MemberwiseClone();
             if (PropertiesService.Show(copyOptions, v =>
             {
-                copyOptions = (PlotOptions) MemberwiseClone();
+                copyOptions = (PlotOptions)MemberwiseClone();
                 return copyOptions;
             }) == true)
             {
@@ -157,25 +157,27 @@ namespace AcadLib.Plot
             return (string)value == "Вкладкам";
         }
 
+        [NotNull]
         public override object ConvertTo(ITypeDescriptorContext context,
                 CultureInfo culture,
-          object value,
+          [NotNull] object value,
           Type destType)
         {
             return (bool)value ? "Вкладкам" : "Именам";
-        }        
+        }
     }
-        
+
     public class YesNoConverter : BooleanConverter
     {
-        public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             return (string)value == "Да";
         }
 
-        public override object ConvertTo (ITypeDescriptorContext context,
+        [NotNull]
+        public override object ConvertTo(ITypeDescriptorContext context,
                 CultureInfo culture,
-          object value,
+          [NotNull] object value,
           Type destType)
         {
             return (bool)value ? "Да" : "Нет";
@@ -191,13 +193,14 @@ namespace AcadLib.Plot
             return (string)value == "Общий";
         }
 
+        [NotNull]
         public override object ConvertTo(ITypeDescriptorContext context,
                 CultureInfo culture,
-          object value,
+          [NotNull] object value,
           Type destType)
         {
             return (bool)value ? "Общий" : "Для каждого dwg";
-        }        
+        }
     }
 
     public class PlotSourceConverter : TypeConverter
@@ -207,6 +210,7 @@ namespace AcadLib.Plot
 
         public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) { return true; }
 
+        [NotNull]
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             return new StandardValuesCollection(values);

@@ -1,9 +1,10 @@
-﻿using System.Drawing;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Windows.Data;
+using JetBrains.Annotations;
+using System.Drawing;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Windows.Data;
 
 namespace AcadLib.Blocks.Visual
 {
@@ -11,15 +12,16 @@ namespace AcadLib.Blocks.Visual
     {
         public static ImageSource GetPreview(BlockTableRecord btr)
         {
-            return CMLContentSearchPreviews.GetBlockTRThumbnail(btr);            
+            return CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
         }
 
         public static System.Drawing.Image GetPreviewImage(BlockTableRecord btr)
         {
-            var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);            
-            return ImageSourceToGDI((BitmapSource)imgsrc);            
+            var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
+            return ImageSourceToGDI((BitmapSource)imgsrc);
         }
 
+        [NotNull]
         public static Icon GetPreviewIcon(BlockTableRecord btr)
         {
             var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
@@ -28,7 +30,8 @@ namespace AcadLib.Blocks.Visual
             return Icon.FromHandle(iconPtr);
         }
 
-        private static System.Drawing.Image ImageSourceToGDI(BitmapSource src)
+        [NotNull]
+        private static System.Drawing.Image ImageSourceToGDI([NotNull] BitmapSource src)
         {
             using (var ms = new MemoryStream())
             {
@@ -38,7 +41,7 @@ namespace AcadLib.Blocks.Visual
                 ms.Flush();
                 return System.Drawing.Image.FromStream(ms);
             }
-        }        
+        }
     }
 }
 

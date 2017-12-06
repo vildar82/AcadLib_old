@@ -1,145 +1,148 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 
 namespace Extensions
 {
 
-   /// <summary>
-   /// Extension methods to make working with Enum values easier
-   /// http://hugoware.net/blog/enumeration-extensions-2-0
-   /// </summary>
-   public static class EnumerationExtensions
-   {
+    /// <summary>
+    /// Extension methods to make working with Enum values easier
+    /// http://hugoware.net/blog/enumeration-extensions-2-0
+    /// </summary>
+    public static class EnumerationExtensions
+    {
 
-      #region Extension Methods
+        #region Extension Methods
 
-      /// <summary>
-      /// Includes an enumerated type and returns the new value
-      /// </summary>
-      public static T Include<T>(this Enum value, T append)
-      {
-         var type = value.GetType();
+        /// <summary>
+        /// Includes an enumerated type and returns the new value
+        /// </summary>
+        [NotNull]
+        public static T Include<T>([NotNull] this Enum value, T append)
+        {
+            var type = value.GetType();
 
-         //determine the values
-         object result = value;
-         var parsed = new _Value(append, type);
-         if (parsed.Signed is long)
-         {
-            result = Convert.ToInt64(value) | (long)parsed.Signed;
-         }
-         else if (parsed.Unsigned is ulong)
-         {
-            result = Convert.ToUInt64(value) | (ulong)parsed.Unsigned;
-         }
-
-         //return the final value
-         return (T)Enum.Parse(type, result.ToString());
-      }
-
-      /// <summary>
-      /// Removes an enumerated type and returns the new value
-      /// </summary>
-      public static T Remove<T>(this Enum value, T remove)
-      {
-         var type = value.GetType();
-
-         //determine the values
-         object result = value;
-         var parsed = new _Value(remove, type);
-         if (parsed.Signed is long)
-         {
-            result = Convert.ToInt64(value) & ~(long)parsed.Signed;
-         }
-         else if (parsed.Unsigned is ulong)
-         {
-            result = Convert.ToUInt64(value) & ~(ulong)parsed.Unsigned;
-         }
-
-         //return the final value
-         return (T)Enum.Parse(type, result.ToString());
-      }
-
-      /// <summary>
-      /// Checks if an enumerated type contains a value
-      /// </summary>
-      public static bool Has<T>(this Enum value, T check)
-      {
-         var type = value.GetType();
-
-         //determine the values
-         object result = value;
-         var parsed = new _Value(check, type);
-         if (parsed.Signed is long)
-         {
-            return (Convert.ToInt64(value) &
-      (long)parsed.Signed) == (long)parsed.Signed;
-         }
-         else if (parsed.Unsigned is ulong)
-         {
-            return (Convert.ToUInt64(value) &
-      (ulong)parsed.Unsigned) == (ulong)parsed.Unsigned;
-         }
-         else
-         {
-            return false;
-         }
-      }
-
-      /// <summary>
-      /// Checks if an enumerated type is missing a value
-      /// </summary>
-      public static bool Missing<T>(this Enum obj, T value)
-      {
-         return !Has<T>(obj, value);
-      }
-
-      #endregion
-
-      #region Helper Classes
-
-      //class to simplfy narrowing values between 
-      //a ulong and long since either value should
-      //cover any lesser value
-      private class _Value
-      {
-
-         //cached comparisons for tye to use
-         private static Type _UInt64 = typeof(ulong);
-         private static Type _UInt32 = typeof(long);
-
-         public long? Signed;
-         public ulong? Unsigned;
-
-         public _Value(object value, Type type)
-         {
-
-            //make sure it is even an enum to work with
-            if (!type.IsEnum)
+            //determine the values
+            object result = value;
+            var parsed = new _Value(append, type);
+            if (parsed.Signed is long)
             {
-               throw new
-       ArgumentException("Value provided is not an enumerated type!");
+                result = Convert.ToInt64(value) | (long)parsed.Signed;
+            }
+            else if (parsed.Unsigned is ulong)
+            {
+                result = Convert.ToUInt64(value) | (ulong)parsed.Unsigned;
             }
 
-            //then check for the enumerated value
-            var compare = Enum.GetUnderlyingType(type);
+            //return the final value
+            return (T)Enum.Parse(type, result.ToString());
+        }
 
-            //if this is an unsigned long then the only
-            //value that can hold it would be a ulong
-            if (compare.Equals(_UInt32) || compare.Equals(_UInt64))
+        /// <summary>
+        /// Removes an enumerated type and returns the new value
+        /// </summary>
+        [NotNull]
+        public static T Remove<T>([NotNull] this Enum value, T remove)
+        {
+            var type = value.GetType();
+
+            //determine the values
+            object result = value;
+            var parsed = new _Value(remove, type);
+            if (parsed.Signed is long)
             {
-               Unsigned = Convert.ToUInt64(value);
+                result = Convert.ToInt64(value) & ~(long)parsed.Signed;
             }
-            //otherwise, a long should cover anything else
+            else if (parsed.Unsigned is ulong)
+            {
+                result = Convert.ToUInt64(value) & ~(ulong)parsed.Unsigned;
+            }
+
+            //return the final value
+            return (T)Enum.Parse(type, result.ToString());
+        }
+
+        /// <summary>
+        /// Checks if an enumerated type contains a value
+        /// </summary>
+        public static bool Has<T>([NotNull] this Enum value, T check)
+        {
+            var type = value.GetType();
+
+            //determine the values
+            object result = value;
+            var parsed = new _Value(check, type);
+            if (parsed.Signed is long)
+            {
+                return (Convert.ToInt64(value) &
+          (long)parsed.Signed) == (long)parsed.Signed;
+            }
+            else if (parsed.Unsigned is ulong)
+            {
+                return (Convert.ToUInt64(value) &
+          (ulong)parsed.Unsigned) == (ulong)parsed.Unsigned;
+            }
             else
             {
-               Signed = Convert.ToInt64(value);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if an enumerated type is missing a value
+        /// </summary>
+        public static bool Missing<T>(this Enum obj, T value)
+        {
+            return !Has<T>(obj, value);
+        }
+
+        #endregion
+
+        #region Helper Classes
+
+        //class to simplfy narrowing values between 
+        //a ulong and long since either value should
+        //cover any lesser value
+        private class _Value
+        {
+
+            //cached comparisons for tye to use
+            private static Type _UInt64 = typeof(ulong);
+            private static Type _UInt32 = typeof(long);
+
+            public long? Signed;
+            public ulong? Unsigned;
+
+            public _Value(object value, [NotNull] Type type)
+            {
+
+                //make sure it is even an enum to work with
+                if (!type.IsEnum)
+                {
+                    throw new
+            ArgumentException("Value provided is not an enumerated type!");
+                }
+
+                //then check for the enumerated value
+                var compare = Enum.GetUnderlyingType(type);
+
+                //if this is an unsigned long then the only
+                //value that can hold it would be a ulong
+                if (compare.Equals(_UInt32) || compare.Equals(_UInt64))
+                {
+                    Unsigned = Convert.ToUInt64(value);
+                }
+                //otherwise, a long should cover anything else
+                else
+                {
+                    Signed = Convert.ToInt64(value);
+                }
+
             }
 
-         }
+        }
 
-      }
+        #endregion
 
-      #endregion
-
-   }
+    }
 
 }

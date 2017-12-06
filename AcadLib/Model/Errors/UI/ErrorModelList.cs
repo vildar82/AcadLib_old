@@ -1,4 +1,5 @@
-﻿using ReactiveUI.Fody.Helpers;
+﻿using JetBrains.Annotations;
+using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace AcadLib.Errors.UI
 {
     public class ErrorModelList : ErrorModelBase
     {
-        public ErrorModelList(List<IError> sameErrors) : base(sameErrors.First())
+        public ErrorModelList([NotNull] List<IError> sameErrors) : base(sameErrors.First())
         {
             VisibilityCount = Visibility.Visible;
             firstErr = sameErrors.First();
@@ -18,7 +19,8 @@ namespace AcadLib.Errors.UI
                 AddButtons = null,
                 MarginHeader = new Thickness(2),
                 Parent = this,
-                ShowCount = true
+                ShowCount = true,
+                Message = firstErr.Group
             };
             SameErrors = new ObservableCollection<ErrorModelBase>(
                 sameErrors.Select(s => new ErrorModelOne(s, this)));

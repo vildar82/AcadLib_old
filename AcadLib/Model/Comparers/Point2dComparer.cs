@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System.Collections.Generic;
 
 namespace AcadLib.Comparers
 {
@@ -13,6 +14,7 @@ namespace AcadLib.Comparers
         /// <summary>
         /// Допуск 1.
         /// </summary>
+        [NotNull]
         public static Point2dEqualityComparer Comparer1 => new Point2dEqualityComparer(1);
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,25 +21,25 @@ namespace AcadLib.Jokes
         /// <summary>
         /// Текущий пользователь пригоден для шуток
         /// </summary>        
-        public static bool IsJokeUser ()
+        public static bool IsJokeUser()
         {
             return JokeUsers.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase);
         }
 
-        public static void Show ()
+        public static void Show()
         {
             var joke = GetJoke();
             try
             {
                 joke.Show();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "Шутка не удалась (:");
-            }            
+            }
         }
 
-        private static IJoke GetJoke ()
+        private static IJoke GetJoke()
         {
             if (jokes == null)
             {
@@ -49,10 +50,11 @@ namespace AcadLib.Jokes
             return joke;
         }
 
-        private static List<IJoke> LoadJokes ()
+        [NotNull]
+        private static List<IJoke> LoadJokes()
         {
             var res = new List<IJoke>();
-            res.AddRange(JokeUrl.Load());            
+            res.AddRange(JokeUrl.Load());
             return res;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace AcadLib.Blocks.Visual
@@ -12,7 +13,7 @@ namespace AcadLib.Blocks.Visual
             Visuals = new ObservableCollection<VisualBlock>();
         }
 
-        public void LoadData(List<VisualBlock> visualBlocks)
+        public void LoadData([NotNull] List<VisualBlock> visualBlocks)
         {
             foreach (var item in visualBlocks)
             {

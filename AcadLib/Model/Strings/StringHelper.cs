@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using JetBrains.Annotations;
+using System.Text.RegularExpressions;
 
 namespace AcadLib.Strings
 {
@@ -10,7 +11,7 @@ namespace AcadLib.Strings
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static Result<int> GetStartInteger (string input)
+        public static Result<int> GetStartInteger([CanBeNull] string input)
         {
             if (input != null)
             {

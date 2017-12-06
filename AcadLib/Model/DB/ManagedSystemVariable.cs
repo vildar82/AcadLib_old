@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
@@ -12,13 +13,13 @@ namespace AcadLib
         string name = null;
         object oldval = null;
 
-        public ManagedSystemVariable (string name, object value)
+        public ManagedSystemVariable(string name, object value)
            : this(name)
         {
             Autodesk.AutoCAD.ApplicationServices.Core.Application.SetSystemVariable(name, value);
         }
 
-        public ManagedSystemVariable (string name)
+        public ManagedSystemVariable([NotNull] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(name);
@@ -26,7 +27,7 @@ namespace AcadLib
             oldval = Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable(name);
         }
 
-        public void Dispose ()
+        public void Dispose()
         {
             if (oldval != null)
             {

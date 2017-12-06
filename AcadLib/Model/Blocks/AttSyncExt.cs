@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Runtime;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ namespace AcadLib.Blocks
 {
     public static class AttSyncExt
     {
-	    
+
 
         public static void SynchronizeAttributes(this ObjectId btrId)
         {
@@ -22,14 +23,11 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Синхронизация атрибутов блока. Требуется запущенная транзакция
         /// </summary>        
-        public static void SynchronizeAttributes(this BlockTableRecord target)
+        public static void SynchronizeAttributes([NotNull] this BlockTableRecord target)
         {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
-
+            if (target == null) throw new ArgumentNullException(nameof(target));
             var tr = target.Database.TransactionManager.TopTransaction;
-            if (tr == null)
-                throw new Autodesk.AutoCAD.Runtime.Exception(ErrorStatus.NoActiveTransactions);
+            if (tr == null) throw new Autodesk.AutoCAD.Runtime.Exception(ErrorStatus.NoActiveTransactions);
             var attDefs = target.GetAttributes(tr);
             foreach (ObjectId id in target.GetBlockReferenceIds(true, false))
             {
@@ -52,7 +50,8 @@ namespace AcadLib.Blocks
             }
         }
 
-        private static List<AttributeDefinition> GetAttributes(this BlockTableRecord target, Transaction tr)
+        [NotNull]
+        private static List<AttributeDefinition> GetAttributes([NotNull] this BlockTableRecord target, Transaction tr)
         {
             var attDefs = new List<AttributeDefinition>();
             foreach (var id in target)
@@ -66,7 +65,7 @@ namespace AcadLib.Blocks
             return attDefs;
         }
 
-        private static void ResetAttributes(this BlockReference br, List<AttributeDefinition> attDefs, Transaction tr)
+        private static void ResetAttributes([NotNull] this BlockReference br, [NotNull] List<AttributeDefinition> attDefs, Transaction tr)
         {
             var attValues = new Dictionary<string, string>();
             foreach (ObjectId id in br.AttributeCollection)

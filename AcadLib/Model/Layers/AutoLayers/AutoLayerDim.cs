@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Runtime;
 
 namespace AcadLib.Layers.AutoLayers
 {
@@ -16,15 +16,16 @@ namespace AcadLib.Layers.AutoLayers
             Commands = new List<string> { "DIM" };
         }
 
-        public override bool IsAutoLayerCommand(string globalCommandName)
+        public override bool IsAutoLayerCommand([NotNull] string globalCommandName)
         {
             return globalCommandName.StartsWith("DIM");
         }
 
-        public override List<ObjectId> GetAutoLayerEnts(List<ObjectId> idAddedEnts)
+        [CanBeNull]
+        public override List<ObjectId> GetAutoLayerEnts([CanBeNull] List<ObjectId> idAddedEnts)
         {
             return idAddedEnts?.Where(IsDimEnt).ToList();
-        }       
+        }
 
         private static bool IsDimEnt(ObjectId idEnt)
         {

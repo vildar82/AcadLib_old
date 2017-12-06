@@ -1,4 +1,5 @@
 ﻿using AcadLib.Errors;
+using JetBrains.Annotations;
 using OfficeOpenXml;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,8 @@ namespace AcadLib.Colors
             Colors = new List<ColorItem>();
         }
 
-        public static ColorBook ReadFromFile(string NcsFile)
+        [NotNull]
+        public static ColorBook ReadFromFile([NotNull] string NcsFile)
         {
             var colorBookNcs = new ColorBook("NCS");
 

@@ -1,22 +1,23 @@
-﻿using System;
+﻿using JetBrains.Annotations;
 using Microsoft.Win32;
+using System;
 
 namespace AcadLib.Registry
 {
-    public class RegExt: IDisposable
+    public class RegExt : IDisposable
     {
-        public const string REGAPPPATH = @"Software\Vildar\AutoCAD\";        
-        private readonly RegistryKey regKey;        
+        public const string REGAPPPATH = @"Software\Vildar\AutoCAD\";
+        private readonly RegistryKey regKey;
 
         public RegExt(string key)
-        {            
-            regKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(REGAPPPATH+key);            
+        {
+            regKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(REGAPPPATH + key);
         }
 
         public void Dispose()
         {
             regKey?.Dispose();
-        }        
+        }
 
         public string Load(string subkey, string defValue = "")
         {
@@ -29,7 +30,7 @@ namespace AcadLib.Registry
             return Convert.ToBoolean(value);
         }
 
-        public void Save(string subkey, string value)
+        public void Save(string subkey, [NotNull] string value)
         {
             regKey.SetValue(subkey, value, RegistryValueKind.String);
         }

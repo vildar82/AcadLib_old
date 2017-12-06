@@ -1,18 +1,19 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 
 namespace AcadLib
 {
     public static class CleanExt
     {
-        public static int CleanZombieBlock(this Database db)
+        public static int CleanZombieBlock([NotNull] this Database db)
         {
             var countZombie = 0;
             using (var t = db.TransactionManager.StartTransaction())
             {
-                var bt = db.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
+                var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
                 foreach (var idBtr in bt)
                 {
-                    var btr = idBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                    var btr = (BlockTableRecord)idBtr.GetObject(OpenMode.ForRead);
                     if (!btr.IsLayout && btr.IsAnonymous && !btr.IsDynamicBlock && btr.Name.StartsWith("*U"))
                     {
                         var idBlRefs = btr.GetBlockReferenceIds(true, false);
@@ -20,18 +21,18 @@ namespace AcadLib
                         var isZombie = true;
                         foreach (ObjectId idBlRef in idBlRefs)
                         {
-                            var blRef = idBlRef.GetObject(OpenMode.ForWrite, false, true) as BlockReference;
+                            var blRef = (BlockReference)idBlRef.GetObject(OpenMode.ForWrite, false, true);
                             if (!blRef.AnonymousBlockTableRecord.IsNull)
                             {
                                 isZombie = false;
-                                break;                                
-                            }                            
+                                break;
+                            }
                             blRef.Erase();
                             countZombie++;
                         }
                         if (isZombie)
                         {
-                            btr.UpgradeOpen();
+                            btr = btr.Id.GetObject<BlockTableRecord>(OpenMode.ForWrite);
                             btr.Erase();
                         }
                     }

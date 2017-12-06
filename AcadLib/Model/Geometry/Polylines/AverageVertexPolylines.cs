@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Geometry
 {
@@ -20,7 +21,7 @@ namespace AcadLib.Geometry
         /// <param name="plOther">Вторая полилиния</param>
         /// <param name="tolerance">Определение совпадения вершин для их усреднения</param>
         [Obsolete("Используй вариант с приклеиванием вершин к сегментам.", true)]
-        public static void AverageVertexes(this Polyline pl,ref Polyline plOther, Tolerance tolerance)
+        public static void AverageVertexes([NotNull] this Polyline pl, ref Polyline plOther, Tolerance tolerance)
         {
             var ptsOther = plOther.GetPoints();
             for (var i = 0; i < pl.NumberOfVertices; i++)
@@ -37,7 +38,7 @@ namespace AcadLib.Geometry
 
                     foreach (var item in nearestPtOther)
                     {
-                        var index= ptsOther.IndexOf(item);
+                        var index = ptsOther.IndexOf(item);
                         plOther.RemoveVertexAt(index);
                         plOther.AddVertexAt(index, avaragePt, 0, 0, 0);
                     }
@@ -53,7 +54,7 @@ namespace AcadLib.Geometry
         /// <param name="plOther">Вторая полилиния</param>
         /// <param name="tolerance">Допуск - поиск совпадающих вершин и ближайших сегментов</param>
         /// <param name="stickToSegment">Делать ли "прилипание" вершин к сегментам соседней полилинии (для обеих полилиний)</param>
-        public static void AverageVertexes(this Polyline pl, ref Polyline plOther, Tolerance tolerance, bool stickToSegment)
+        public static void AverageVertexes([NotNull] this Polyline pl, ref Polyline plOther, Tolerance tolerance, bool stickToSegment)
         {
             var ptsOther = plOther.GetPoints();
             // Индексы вершин второй полилинии совпадающие с первой
@@ -68,7 +69,7 @@ namespace AcadLib.Geometry
                 {
                     // Средняя точка
                     var avaragePt = pt2d.Center(nearestPtOther.First());
-                    pl.MoveVertex( i, avaragePt);
+                    pl.MoveVertex(i, avaragePt);
 
                     foreach (var item in nearestPtOther)
                     {
@@ -79,7 +80,7 @@ namespace AcadLib.Geometry
                 }
                 else if (stickToSegment)
                 {
-                    pl.StickVertexToPl( i, pt, plOther, tolerance);
+                    pl.StickVertexToPl(i, pt, plOther, tolerance);
                 }
             }
             // Приклеивание вершин второй полилинии к сегментам первой
@@ -96,7 +97,7 @@ namespace AcadLib.Geometry
             }
         }
 
-        private static void StickVertexToPl(this Polyline plModify, int indexVertex, Point3d ptVertex, Polyline plOther, Tolerance tolerance)
+        private static void StickVertexToPl(this Polyline plModify, int indexVertex, Point3d ptVertex, [NotNull] Polyline plOther, Tolerance tolerance)
         {
             var ptStick = plOther.GetClosestPointTo(ptVertex, false);
             if ((ptVertex - ptStick).Length <= tolerance.EqualPoint)
@@ -111,7 +112,7 @@ namespace AcadLib.Geometry
         /// <param name="pl">Полилиния</param>
         /// <param name="indexVertex">Номер вершины</param>
         /// <param name="newPlacePt">Новая точка</param>
-        public static void MoveVertex(this Polyline pl, int indexVertex, Point2d newPlacePt)
+        public static void MoveVertex([NotNull] this Polyline pl, int indexVertex, Point2d newPlacePt)
         {
             pl.RemoveVertexAt(indexVertex);
             pl.AddVertexAt(indexVertex, newPlacePt, 0, 0, 0);

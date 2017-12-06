@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using AcRx = Autodesk.AutoCAD.Runtime;
 
 namespace AcadLib.Geometry
@@ -18,7 +19,7 @@ namespace AcadLib.Geometry
         /// eNonPlanarEntity is thrown if the Spline is not planar.</exception>
         /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
         /// eNotApplicable is thrown if the Spline is not closed.</exception>
-        public static Point3d Centroid(this Spline spl)
+        public static Point3d Centroid([NotNull] this Spline spl)
         {
             if (!spl.IsPlanar)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NonPlanarEntity);

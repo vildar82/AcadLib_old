@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,13 @@ namespace AcadLib.Visual
         private const string textStyleName = "PIK-Visual";
         private const string textStyleFontFile = "Arial.ttf";
 
-        public static ObjectId GetTextStyleId(Document doc)
+        public static ObjectId GetTextStyleId([NotNull] Document doc)
         {
             var db = doc.Database;
             return db.GetTextStylePIK();
         }
 
+        [NotNull]
         public static Polyline CreatePolyline(List<Point2d> points, VisualOption opt)
         {
             var pts = DistincPoints(points);
@@ -32,7 +34,8 @@ namespace AcadLib.Visual
             return pl;
         }
 
-        public static Hatch CreateHatch(List<Point2d> points, VisualOption opt)
+        [NotNull]
+        public static Hatch CreateHatch([NotNull] List<Point2d> points, VisualOption opt)
         {
             var pts = DistincPoints(points);
             // Штриховка            
@@ -45,13 +48,15 @@ namespace AcadLib.Visual
             return h;
         }
 
-        private static Point2d[] DistincPoints(List<Point2d> points)
+        [NotNull]
+        private static Point2d[] DistincPoints([NotNull] List<Point2d> points)
         {
             //  Отсеивание одинаковых точек
             return points.Distinct(new Comparers.Point2dEqualityComparer()).ToArray();
         }
 
-        public static DBText CreateText(string text, VisualOption opt, double height, AttachmentPoint justify)
+        [NotNull]
+        public static DBText CreateText(string text, [NotNull] VisualOption opt, double height, AttachmentPoint justify)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
@@ -67,7 +72,8 @@ namespace AcadLib.Visual
             return dbText;
         }
 
-        public static MText CreateMText(string text, VisualOption opt, double height, AttachmentPoint justify)
+        [NotNull]
+        public static MText CreateMText(string text, [NotNull] VisualOption opt, double height, AttachmentPoint justify)
         {
             var mtext = new MText
             {
@@ -81,14 +87,15 @@ namespace AcadLib.Visual
             return mtext;
         }
 
-        public static Circle CreateCircle(double radius, VisualOption opt)
+        [NotNull]
+        public static Circle CreateCircle(double radius, [NotNull] VisualOption opt)
         {
             var c = new Circle(opt.Position, Vector3d.ZAxis, radius);
             SetEntityOpt(c, opt);
             return c;
         }
 
-        public static void SetEntityOpt(Entity ent, VisualOption opt)
+        public static void SetEntityOpt([CanBeNull] Entity ent, VisualOption opt)
         {
             if (ent == null) return;
             if (opt.Color != null) ent.Color = opt.Color;
@@ -107,11 +114,11 @@ namespace AcadLib.Visual
         /// <param name="textStyleId">Тестовый стиль инсоляции</param>
         private static void CheckTextStyle(ObjectId textStyleId)
         {
-            var textStyle = textStyleId.GetObject(OpenMode.ForRead) as TextStyleTableRecord;
+            var textStyle = (TextStyleTableRecord)textStyleId.GetObject(OpenMode.ForRead);
             // Шрифт
             if (!textStyle.FileName.Equals(textStyleFontFile, StringComparison.OrdinalIgnoreCase))
             {
-                textStyle.UpgradeOpen();
+                textStyle = textStyle.Id.GetObject<TextStyleTableRecord>(OpenMode.ForWrite);
                 textStyle.FileName = textStyleFontFile;
             }
         }

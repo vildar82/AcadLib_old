@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 
@@ -13,7 +14,7 @@ namespace AcadLib.UI.Designer
         private Type m_AttributeProviderType;
         private string m_DisplayName;
 
-        public KeyValueDescriptor(PropertyDescriptor pd, Type converterType, Type editorType, Type attributeProviderType, string displayName)
+        public KeyValueDescriptor([NotNull] PropertyDescriptor pd, Type converterType, Type editorType, Type attributeProviderType, string displayName)
             : base(pd)
         {
             _pd = pd;
@@ -26,8 +27,7 @@ namespace AcadLib.UI.Designer
 
         public override string DisplayName
         {
-            get
-            {
+            get {
                 return m_DisplayName;
             }
         }
@@ -74,8 +74,7 @@ namespace AcadLib.UI.Designer
 
         public override TypeConverter Converter
         {
-            get
-            {
+            get {
                 if (m_ConverterType != null)
                     return Activator.CreateInstance(m_ConverterType) as TypeConverter;
                 else
@@ -95,8 +94,7 @@ namespace AcadLib.UI.Designer
 
         public override AttributeCollection Attributes
         {
-            get
-            {
+            get {
                 if (m_AttributeProviderType != null)
                 {
                     return (Activator.CreateInstance(m_AttributeProviderType) as AttributeProvider).GetAttributes(PropertyType);

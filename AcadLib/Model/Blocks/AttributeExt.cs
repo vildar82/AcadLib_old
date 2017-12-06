@@ -1,8 +1,9 @@
-﻿using System;
+﻿using AcadLib.Blocks;
+using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using AcadLib.Blocks;
 
 namespace AcadLib.Extensions
 {
@@ -14,7 +15,7 @@ namespace AcadLib.Extensions
         /// <summary>
         /// Поворот атрибута в 0
         /// </summary>        
-        public static void Normalize(this AttributeReference atr)
+        public static void Normalize([NotNull] this AttributeReference atr)
         {
             if (atr.Rotation != 0)
             {
@@ -24,12 +25,12 @@ namespace AcadLib.Extensions
             }
         }
 
-        public static bool Is(this AttributeReference attr, string tag)
+        public static bool Is([NotNull] this AttributeReference attr, string tag)
         {
             return string.Equals(attr.Tag, tag, StringComparison.CurrentCultureIgnoreCase);
         }
 
-        public static IEnumerable<AttributeInfo> EnumerateAttributes(this BlockReference blRef)
+        public static IEnumerable<AttributeInfo> EnumerateAttributes([CanBeNull] this BlockReference blRef)
         {
             if (blRef == null) yield break;
 
@@ -62,7 +63,7 @@ namespace AcadLib.Extensions
         /// Returns an enumeration of all AttributeDefinitions whose Constant property is
         /// true, and all AttributeReferences attached to the block reference.
         /// </summary>      
-        public static IEnumerable<DBText> GetAttributes(this BlockReference blockRef)
+        public static IEnumerable<DBText> GetAttributes([NotNull] this BlockReference blockRef)
         {
             var tr = blockRef.GetTransaction();
             var btr = (BlockTableRecord)blockRef.BlockTableRecord.GetObject(OpenMode.ForRead);
@@ -91,12 +92,14 @@ namespace AcadLib.Extensions
         // Returns a dictionary whose values are either constant AttributeDefinitions
         // or AttributeReferences, keyed to their tags:
 
+        [NotNull]
         public static Dictionary<string, DBText> GetAttributeDictionary(this BlockReference blockref)
         {
             return blockref.GetAttributes().Where(a => a.Visible).ToDictionary(a => GetTag(a), StringComparer.OrdinalIgnoreCase);
         }
 
-        public static Transaction GetTransaction(this DBObject obj)
+        [NotNull]
+        public static Transaction GetTransaction([NotNull] this DBObject obj)
         {
             if (obj.Database == null)
                 throw new ArgumentException("No database");
@@ -106,7 +109,7 @@ namespace AcadLib.Extensions
             return tr;
         }
 
-        static string GetTag(DBText dbtext)
+        static string GetTag([NotNull] DBText dbtext)
         {
             if (dbtext is AttributeDefinition attdef)
                 return attdef.Tag;

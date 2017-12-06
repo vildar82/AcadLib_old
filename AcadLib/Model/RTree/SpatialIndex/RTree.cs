@@ -22,8 +22,9 @@
 
 //using log4net.Repository.Hierarchy;
 //using log4net;
-using System.Collections.Generic;
+using JetBrains.Annotations;
 using System;
+using System.Collections.Generic;
 
 
 namespace AcadLib.RTree.SpatialIndex
@@ -105,8 +106,8 @@ namespace AcadLib.RTree.SpatialIndex
 
         //Added dictionaries to support generic objects..
         //possibility to change the code to support objects without dictionaries.
-        private Dictionary<int, T> IdsToItems = new Dictionary<int,T>();
-        private Dictionary<T,int> ItemsToIds = new Dictionary<T,int>();
+        private Dictionary<int, T> IdsToItems = new Dictionary<int, T>();
+        private Dictionary<T, int> ItemsToIds = new Dictionary<T, int>();
         private volatile int idcounter = int.MinValue;
 
         //the recursion methods require a delegate to retrieve data
@@ -178,7 +179,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// </summary>
         /// <param name="r"></param>
         /// <param name="item"></param>
-        public void Add(Rectangle r, T item)
+        public void Add(Rectangle r, [NotNull] T item)
         {
             idcounter++;
             var id = idcounter;
@@ -189,7 +190,7 @@ namespace AcadLib.RTree.SpatialIndex
             add(r, id);
         }
 
-        private void add(Rectangle r, int id)
+        private void add([NotNull] Rectangle r, int id)
         {
             //if (log.IsDebugEnabled)
             //{
@@ -257,7 +258,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="r"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool Delete(Rectangle r, T item)
+        public bool Delete(Rectangle r, [NotNull] T item)
         {
             var id = ItemsToIds[item];
 
@@ -353,10 +354,11 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="p">Point of origin</param>
         /// <param name="furthestDistance">maximum distance</param>
         /// <returns>List of items</returns>
+        [NotNull]
         public List<T> Nearest(Point p, double furthestDistance)
         {
             var retval = new List<T>();
-            nearest(p, delegate(int id)
+            nearest(p, delegate (int id)
             {
                 retval.Add(IdsToItems[id]);
             }, furthestDistance);
@@ -380,10 +382,11 @@ namespace AcadLib.RTree.SpatialIndex
         /// </summary>
         /// <param name="r"></param>
         /// <returns></returns>
+        [NotNull]
         public List<T> Intersects(Rectangle r)
         {
             var retval = new List<T>();
-            intersects(r, delegate(int id)
+            intersects(r, delegate (int id)
             {
                 retval.Add(IdsToItems[id]);
             });
@@ -402,10 +405,11 @@ namespace AcadLib.RTree.SpatialIndex
         /// written to be non-recursive (should model other searches on this?)</summary>
         /// <param name="r"></param>
         /// <returns></returns>
+        [NotNull]
         public List<T> Contains(Rectangle r)
         {
             var retval = new List<T>();
-            contains(r, delegate(int id)
+            contains(r, delegate (int id)
             {
                 retval.Add(IdsToItems[id]);
             });
@@ -475,6 +479,7 @@ namespace AcadLib.RTree.SpatialIndex
         /**
         * @see com.infomatiq.jsi.SpatialIndex#getBounds()
         */
+        [CanBeNull]
         public Rectangle getBounds()
         {
             Rectangle bounds = null;
@@ -490,6 +495,7 @@ namespace AcadLib.RTree.SpatialIndex
         /**
          * @see com.infomatiq.jsi.SpatialIndex#getVersion()
          */
+        [NotNull]
         public string getVersion()
         {
             return "RTree-" + version;
@@ -516,9 +522,9 @@ namespace AcadLib.RTree.SpatialIndex
             return nextNodeId;
         }
 
-       
-       
-       
+
+
+
 
         /// <summary>
         /// Get a Node&lt;T&gt; object, given the ID of the node.
@@ -556,7 +562,8 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="newRect"></param>
         /// <param name="newId"></param>
         /// <returns>return new Node&lt;T&gt; object.</returns>
-        private Node<T> splitNode(Node<T> n, Rectangle newRect, int newId)
+        [NotNull]
+        private Node<T> splitNode([NotNull] Node<T> n, Rectangle newRect, int newId)
         {
             // [Pick first entry for each group] Apply algorithm pickSeeds to 
             // choose two entries to be the first elements of the groups. Assign
@@ -655,7 +662,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="newRect"></param>
         /// <param name="newId"></param>
         /// <param name="newNode"></param>
-        private void pickSeeds(Node<T> n, Rectangle newRect, int newId, Node<T> newNode)
+        private void pickSeeds([NotNull] Node<T> n, Rectangle newRect, int newId, [NotNull] Node<T> newNode)
         {
             // Find extreme rectangles along all dimension. Along each dimension,
             // find the entry whose rectangle has the highest low side, and the one 
@@ -755,7 +762,7 @@ namespace AcadLib.RTree.SpatialIndex
 
 
 
-        
+
         /// <summary>
         /// Pick the next entry to be assigned to a group during a Node&lt;T&gt; split.
         /// [Determine cost of putting each entry in each group] For each 
@@ -765,7 +772,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="n"></param>
         /// <param name="newNode"></param>
         /// <returns></returns>
-        private int pickNext(Node<T> n, Node<T> newNode)
+        private int pickNext([NotNull] Node<T> n, Node<T> newNode)
         {
             var maxDifference = double.NegativeInfinity;
             var next = 0;
@@ -847,7 +854,7 @@ namespace AcadLib.RTree.SpatialIndex
             return next;
         }
 
-        
+
         /// <summary>
         /// Recursively searches the tree for the nearest entry. Other queries
         /// call execute() on an IntProcedure when a matching entry is found; 
@@ -861,7 +868,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="n"></param>
         /// <param name="nearestDistance"></param>
         /// <returns></returns>
-        private double nearest(Point p, Node<T> n, double nearestDistance)
+        private double nearest(Point p, [NotNull] Node<T> n, double nearestDistance)
         {
             for (var i = 0; i < n.entryCount; i++)
             {
@@ -891,7 +898,7 @@ namespace AcadLib.RTree.SpatialIndex
             return nearestDistance;
         }
 
-    
+
         /// <summary>
         /// Recursively searches the tree for all intersecting entries.
         /// Immediately calls execute() on the passed IntProcedure when 
@@ -902,7 +909,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="r"></param>
         /// <param name="v"></param>
         /// <param name="n"></param>
-        private void intersects(Rectangle r, intproc v, Node<T> n)
+        private void intersects(Rectangle r, intproc v, [NotNull] Node<T> n)
         {
             for (var i = 0; i < n.entryCount; i++)
             {
@@ -929,7 +936,7 @@ namespace AcadLib.RTree.SpatialIndex
          * contain the nodeIds of all parents up to the root.
          */
 
-        private Rectangle oldRectangle = new Rectangle(0, 0, 0, 0,0,0);
+        private Rectangle oldRectangle = new Rectangle(0, 0, 0, 0, 0, 0);
         private void condenseTree(Node<T> l)
         {
             // CT1 [Initialize] Set n=l. Set the list of eliminated
@@ -991,6 +998,7 @@ namespace AcadLib.RTree.SpatialIndex
         /**
          *  Used by add(). Chooses a leaf to add the rectangle to.
          */
+        [NotNull]
         private Node<T> chooseNode(Rectangle r, int level)
         {
             // CL1 [Initialize] Set N to be the root node
@@ -1042,6 +1050,7 @@ namespace AcadLib.RTree.SpatialIndex
          * Ascend from a leaf Node&lt;T&gt; L to the root, adjusting covering rectangles and
          * propagating Node&lt;T&gt; splits as necessary.
          */
+        [CanBeNull]
         private Node<T> adjustTree(Node<T> n, Node<T> nn)
         {
             // AT1 [Initialize] Set N=L. If L was split previously, set NN to be 
@@ -1159,7 +1168,8 @@ namespace AcadLib.RTree.SpatialIndex
          * Given a Node<T> object, calculate the Node<T> MBR from it's entries.
          * Used in consistency checking
          */
-        private Rectangle calculateMBR(Node<T> n)
+        [NotNull]
+        private Rectangle calculateMBR([NotNull] Node<T> n)
         {
             var mbr = new Rectangle(n.entries[0].min, n.entries[0].max);
 
@@ -1172,8 +1182,7 @@ namespace AcadLib.RTree.SpatialIndex
 
         public int Count
         {
-            get
-            {
+            get {
                 return msize;
             }
         }

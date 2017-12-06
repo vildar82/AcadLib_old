@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using NetLib;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace AcadLib.Layers
         /// </summary>
         /// <param name="layerInfo">параметры слоя</param>
         /// <returns></returns>
-        public static ObjectId GetLayerOrCreateNew(this LayerInfo layerInfo)
+        public static ObjectId GetLayerOrCreateNew([NotNull] this LayerInfo layerInfo)
         {
             ObjectId idLayer;
             var db = HostApplicationServices.WorkingDatabase;
@@ -45,7 +46,7 @@ namespace AcadLib.Layers
         /// </summary>
         /// <param name="layerInfo">параметры слоя</param>
         /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
-        public static ObjectId CreateLayer(this LayerInfo layerInfo, LayerTable lt)
+        public static ObjectId CreateLayer([NotNull] this LayerInfo layerInfo, [NotNull] LayerTable lt)
         {
             if (layerInfo?.Name.IsNullOrEmpty() == true) return lt.Database.Clayer;
             ObjectId idLayer;
@@ -53,6 +54,7 @@ namespace AcadLib.Layers
             using (var newLayer = new LayerTableRecord())
             {
                 layerInfo.SetProp(newLayer, lt.Database);
+                // ReSharper disable once UpgradeOpen
                 lt.UpgradeOpen();
                 idLayer = lt.Add(newLayer);
                 lt.DowngradeOpen();
@@ -66,7 +68,8 @@ namespace AcadLib.Layers
         /// Если слоя нет - то он создается.
         /// </summary>
         /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
-        public static Dictionary<string, ObjectId> CheckLayerState(this List<LayerInfo> layers, bool checkProps)
+        [NotNull]
+        public static Dictionary<string, ObjectId> CheckLayerState([NotNull] this List<LayerInfo> layers, bool checkProps)
         {
             var resVal = new Dictionary<string, ObjectId>();
             var db = HostApplicationServices.WorkingDatabase;
@@ -153,7 +156,7 @@ namespace AcadLib.Layers
             return CheckLayerState(layer, false);
         }
 
-        public static ObjectId CheckLayerState(string layer)
+        public static ObjectId CheckLayerState([NotNull] string layer)
         {
             var li = new LayerInfo(layer);
             var layersInfo = new List<LayerInfo> { li };
@@ -162,7 +165,7 @@ namespace AcadLib.Layers
             return res;
         }
 
-        public static Dictionary<string, ObjectId> CheckLayerState(string[] layers)
+        public static Dictionary<string, ObjectId> CheckLayerState([NotNull] string[] layers)
         {
             var layersInfo = new List<LayerInfo>();
             foreach (var item in layers)
@@ -173,6 +176,7 @@ namespace AcadLib.Layers
             return CheckLayerState(layersInfo);
         }
 
+        [NotNull]
         private static string GetGroupLayerPrefix()
         {
             var usergroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;

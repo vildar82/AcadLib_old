@@ -1,11 +1,13 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 
 namespace AcadLib.Layouts
 {
     public static class LayoutExt
     {
-        public static List<Layout> GetLayouts(this Database db)
+        [NotNull]
+        public static List<Layout> GetLayouts([NotNull] this Database db)
         {
             var layouts = new List<Layout>();
             var dictLayout = db.LayoutDictionaryId.GetObject<DBDictionary>();

@@ -3,6 +3,7 @@ using AcadLib.Errors.UI;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -110,7 +111,7 @@ namespace AcadLib.Errors
         {
         }
 
-        private Error(Error err)
+        private Error([NotNull] Error err)
         {
             _msg = err._msg;
             Group = err.Group;
@@ -127,7 +128,7 @@ namespace AcadLib.Errors
             Status = err.Status;
         }
 
-        public Error(string message, Icon icon = null)
+        public Error(string message, [CanBeNull] Icon icon = null)
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
@@ -137,7 +138,7 @@ namespace AcadLib.Errors
             DefineStatus();
         }
 
-        public Error(string message, Entity ent, Icon icon = null)
+        public Error(string message, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
@@ -149,7 +150,7 @@ namespace AcadLib.Errors
             DefineStatus();
         }
 
-        public Error(string message, Entity ent, Matrix3d trans, Icon icon = null)
+        public Error(string message, [NotNull] Entity ent, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
@@ -161,7 +162,7 @@ namespace AcadLib.Errors
             DefineStatus();
         }
 
-        public Error(string message, Extents3d ext, Entity ent, Icon icon = null)
+        public Error(string message, Extents3d ext, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
@@ -175,7 +176,7 @@ namespace AcadLib.Errors
             DefineStatus();
         }
 
-        public Error(string message, Extents3d ext, ObjectId idEnt, Icon icon = null)
+        public Error(string message, Extents3d ext, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
@@ -189,7 +190,7 @@ namespace AcadLib.Errors
             DefineStatus();
         }
 
-        public Error(string message, Extents3d ext, Matrix3d trans, Icon icon = null)
+        public Error(string message, Extents3d ext, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
@@ -202,7 +203,7 @@ namespace AcadLib.Errors
             DefineStatus();
         }
 
-        public Error(string message, ObjectId idEnt, Icon icon = null)
+        public Error(string message, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
@@ -214,7 +215,7 @@ namespace AcadLib.Errors
             DefineStatus();
         }
 
-        public Error(string message, ObjectId idEnt, Matrix3d trans, Icon icon = null)
+        public Error(string message, ObjectId idEnt, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
@@ -232,7 +233,8 @@ namespace AcadLib.Errors
             return message;//.ClearString(); // делать очистку в момент создания ошибки при необходимости
         }
 
-        protected string GetShortMsg(string msg)
+        [NotNull]
+        protected string GetShortMsg([NotNull] string msg)
         {
             var resVal = string.Empty;
             if (msg.Length > 200)
@@ -246,7 +248,7 @@ namespace AcadLib.Errors
             return resVal.Replace("\n", " ");
         }
 
-        public int CompareTo(IError other)
+        public int CompareTo([NotNull] IError other)
         {
             var res = Status.CompareTo(other.Status);
             if (res != 0) return res;
@@ -263,6 +265,7 @@ namespace AcadLib.Errors
             return Message.GetHashCode();
         }
 
+        [NotNull]
         public IError GetCopy()
         {
             //var errCopy = new Error(this);
@@ -280,7 +283,8 @@ namespace AcadLib.Errors
         /// Сгруппированные ошибки по одинаковым сообщениям.
         /// </summary>
         /// <returns></returns>
-        public static List<IError> GetCollapsedErrors(List<IError> errors)
+        [NotNull]
+        public static List<IError> GetCollapsedErrors([NotNull] List<IError> errors)
         {
             var errCounts = errors.GroupBy(e => e.Message).Select(g =>
             {

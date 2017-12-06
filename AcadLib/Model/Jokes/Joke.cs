@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
 
 namespace AcadLib.Jokes
 {
@@ -8,17 +9,18 @@ namespace AcadLib.Jokes
     class JokeUrl : IJoke
     {
         private string url;
-        public JokeUrl (string url)
+        public JokeUrl(string url)
         {
             this.url = url;
         }
 
-        public void Show ()
+        public void Show()
         {
             System.Diagnostics.Process.Start(url);
         }
 
-        public static List<IJoke> Load ()
+        [NotNull]
+        public static List<IJoke> Load()
         {
             var urls = LoadUrls();
             var res = new List<IJoke>();
@@ -30,7 +32,8 @@ namespace AcadLib.Jokes
             return res;
         }
 
-        private static List<string> LoadUrls ()
+        [NotNull]
+        private static List<string> LoadUrls()
         {
             return new List<string> {
                 "https://www.youtube.com/embed/T9RFb8xXZlk?autoplay=1",

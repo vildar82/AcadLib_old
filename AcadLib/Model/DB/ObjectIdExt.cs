@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using AcadLib.Editors;
+﻿using AcadLib.Editors;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
@@ -20,22 +21,22 @@ namespace AcadLib
             using (doc.LockDocument())
             using (var t = id.Database.TransactionManager.StartTransaction())
             {
-				if (id.GetObject(OpenMode.ForRead) is Entity ent)
-				{
-					try
-					{
-						doc.Editor.Zoom(ent.GeometricExtents.Offset());
-						id.FlickObjectHighlight(num, delay1, delay2);
-					    doc.Editor.AddEntToImpliedSelection(id);
+                if (id.GetObject(OpenMode.ForRead) is Entity ent)
+                {
+                    try
+                    {
+                        doc.Editor.Zoom(ent.GeometricExtents.Offset());
+                        id.FlickObjectHighlight(num, delay1, delay2);
+                        doc.Editor.AddEntToImpliedSelection(id);
                     }
-					catch { }
-				}
-				t.Commit();
+                    catch { }
+                }
+                t.Commit();
             }
         }
-        public static void ShowEnt (this ObjectId id)
+        public static void ShowEnt(this ObjectId id)
         {
-            ShowEnt(id, 2,100,100);
+            ShowEnt(id, 2, 100, 100);
         }
 
         public static void ShowEnt(this ObjectId id, Extents3d ext, Document docOrig)
@@ -48,9 +49,9 @@ namespace AcadLib
             else
             {
                 if (ext.Diagonal() > 1)
-                {                    
-                    docOrig.Editor.Zoom(ext);                                        
-                    id.FlickObjectHighlight(2, 100, 100);         
+                {
+                    docOrig.Editor.Zoom(ext);
+                    id.FlickObjectHighlight(2, 100, 100);
                     docOrig.Editor.AddEntToImpliedSelection(id);
                 }
                 else
@@ -60,7 +61,7 @@ namespace AcadLib
             }
         }
 
-        public static void FlickObjectHighlight(this IEnumerable<Entity> ents, int num=2, int delay1=50, int delay2=50)
+        public static void FlickObjectHighlight([CanBeNull] this IEnumerable<Entity> ents, int num = 2, int delay1 = 50, int delay2 = 50)
         {
             if (ents?.Any() != true) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -107,7 +108,7 @@ namespace AcadLib
                     var path = new FullSubentityPath(ids, index);
                     en.Highlight(path, true);
                     tr.Commit();
-                }                
+                }
                 doc.Editor.UpdateScreen();
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
@@ -115,7 +116,7 @@ namespace AcadLib
                 using (doc.LockDocument())
                 using (var tr = doc.TransactionManager.StartTransaction())
                 {
-                    var en = (Entity) tr.GetObject(id, OpenMode.ForWrite);
+                    var en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
                     var ids = new ObjectId[1];
                     ids[0] = id;
                     var index = new SubentityId(SubentityType.Null, IntPtr.Zero);
@@ -175,18 +176,18 @@ namespace AcadLib
         /// </summary>
         /// <param name="idEnt">Копируемый объект</param>
         /// <param name="idBtrOwner">Куда копировать (контейнер - BlockTableRecord)</param>                
-        public static ObjectId CopyEnt (this ObjectId idEnt, ObjectId idBtrOwner)
+        public static ObjectId CopyEnt(this ObjectId idEnt, ObjectId idBtrOwner)
         {
             var db = idEnt.Database;
             var map = new IdMapping();
             var ids = new ObjectIdCollection(new[] { idEnt });
             db.DeepCloneObjects(ids, idBtrOwner, map, false);
             return map[idEnt].Value;
-        }       
+        }
 
-        public static bool IsValidEx (this ObjectId id)
+        public static bool IsValidEx(this ObjectId id)
         {
-            return id.IsValid && !id.IsNull && !id.IsErased;            
+            return id.IsValid && !id.IsNull && !id.IsErased;
         }
     }
 }

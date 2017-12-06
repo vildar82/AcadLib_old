@@ -1,5 +1,6 @@
 ﻿using AcadLib.Geometry;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 
 namespace Autodesk.AutoCAD.DatabaseServices
 {
@@ -13,7 +14,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>
         /// <param name="ellipse">The ellipse to be approximated</param>
         /// <returns>A new Polyline instance</returns>
-        public static Polyline ToPolyline(this Ellipse ellipse)
+        [NotNull]
+        public static Polyline ToPolyline([NotNull] this Ellipse ellipse)
         {
             var pline = new PolylineSegmentCollection(ellipse).ToPolyline();
             pline.Closed = ellipse.Closed;

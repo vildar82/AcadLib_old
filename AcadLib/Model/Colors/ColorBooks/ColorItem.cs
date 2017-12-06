@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 
 namespace AcadLib.Colors
 {
@@ -15,20 +16,20 @@ namespace AcadLib.Colors
             Color = Color.FromRgb(r, g, b);
         }
 
-        public void Create(Point2d ptCell, BlockTableRecord cs, Transaction t)
+        public void Create(Point2d ptCell, [NotNull] BlockTableRecord cs, [NotNull] Transaction t)
         {
             var cellWidth = ColorBookHelper.CellWidth;
             var cellHeight = ColorBookHelper.CellHeight;
             var margin = ColorBookHelper.Margin;
             var marginHalf = margin * 0.5;
 
-            var ptText = new Point3d(ptCell.X + cellWidth * 0.5, ptCell.Y - ColorBookHelper.TextHeight-margin, 0);
+            var ptText = new Point3d(ptCell.X + cellWidth * 0.5, ptCell.Y - ColorBookHelper.TextHeight - margin, 0);
 
             var pl = new Polyline(4);
-            pl.AddVertexAt(0, new Point2d(ptCell.X+margin, ptText.Y- marginHalf), 0, 0, 0);
-            pl.AddVertexAt(1, new Point2d(ptCell.X+cellWidth- margin, ptText.Y- marginHalf), 0, 0, 0);
-            pl.AddVertexAt(2, new Point2d(ptCell.X + cellWidth-margin, ptCell.Y-cellHeight+margin), 0, 0, 0);
-            pl.AddVertexAt(3, new Point2d(ptCell.X+margin, ptCell.Y - cellHeight+margin), 0, 0, 0);
+            pl.AddVertexAt(0, new Point2d(ptCell.X + margin, ptText.Y - marginHalf), 0, 0, 0);
+            pl.AddVertexAt(1, new Point2d(ptCell.X + cellWidth - margin, ptText.Y - marginHalf), 0, 0, 0);
+            pl.AddVertexAt(2, new Point2d(ptCell.X + cellWidth - margin, ptCell.Y - cellHeight + margin), 0, 0, 0);
+            pl.AddVertexAt(3, new Point2d(ptCell.X + margin, ptCell.Y - cellHeight + margin), 0, 0, 0);
             pl.Closed = true;
             pl.SetDatabaseDefaults();
             pl.Color = Color;
@@ -38,20 +39,20 @@ namespace AcadLib.Colors
 
             var h = new Hatch();
             h.SetDatabaseDefaults();
-            h.SetHatchPattern(HatchPatternType.PreDefined, "Solid");                        
+            h.SetHatchPattern(HatchPatternType.PreDefined, "Solid");
             h.Annotative = AnnotativeStates.False;
 
             cs.AppendEntity(h);
             t.AddNewlyCreatedDBObject(h, true);
 
             h.Associative = true;
-            h.AppendLoop(HatchLoopTypes.Default, new ObjectIdCollection(new[] { pl.Id }));            
-            h.Color = Color;            
+            h.AppendLoop(HatchLoopTypes.Default, new ObjectIdCollection(new[] { pl.Id }));
+            h.Color = Color;
             h.EvaluateHatch(true);
-                        
+
             var text = new DBText();
             text.SetDatabaseDefaults();
-            text.HorizontalMode = TextHorizontalMode.TextCenter;   
+            text.HorizontalMode = TextHorizontalMode.TextCenter;
             text.Annotative = AnnotativeStates.False;
             text.Height = ColorBookHelper.TextHeight;
             text.AlignmentPoint = ptText;

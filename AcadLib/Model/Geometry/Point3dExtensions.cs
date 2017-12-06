@@ -1,8 +1,9 @@
-﻿using System;
-using System.Globalization;
-using AcadLib.Geometry;
+﻿using AcadLib.Geometry;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using JetBrains.Annotations;
+using System;
+using System.Globalization;
 using AcRx = Autodesk.AutoCAD.Runtime;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
@@ -27,11 +28,11 @@ namespace Autodesk.AutoCAD.Geometry
         public static Extents3d GetRectangleFromCenter(this Point3d center, double side)
         {
             var hs = side * 0.5;
-            return new Extents3d(new Point3d (center.X-hs, center.Y-hs, 0), 
+            return new Extents3d(new Point3d(center.X - hs, center.Y - hs, 0),
                                  new Point3d(center.X + hs, center.Y + hs, 0));
         }
 
-        public static Point3d Center (this Point3d pt, Point3d other)
+        public static Point3d Center(this Point3d pt, Point3d other)
         {
             return new Point3d(
                     pt.X + (other.X - pt.X) * 0.5,
@@ -252,7 +253,8 @@ namespace Autodesk.AutoCAD.Geometry
             return pt.TransformBy(mat);
         }
 
-        public static string ToStringEx (this Point3d pt)
+        [NotNull]
+        public static string ToStringEx(this Point3d pt)
         {
             return pt.ToString("0.00", CultureInfo.CurrentCulture);
         }

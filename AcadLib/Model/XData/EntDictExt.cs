@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace AcadLib.XData
         readonly DBObject dbo;
         readonly string pluginName;
 
-        public EntDictExt(DBObject dbo, string pluginName)
+        public EntDictExt([NotNull] DBObject dbo, string pluginName)
         {
             if (dbo != null)
             {
@@ -43,6 +44,7 @@ namespace AcadLib.XData
         /// Чтение словаря плагина
         /// </summary>
         /// <returns>Словарь плагина. Имя DicED.Name - не заполняется.</returns>
+        [CanBeNull]
         public DicED Load()
         {
             var dicId = GetDicPlugin(false);
@@ -52,7 +54,7 @@ namespace AcadLib.XData
         /// <summary>
         /// Удаление словаря из объекта
         /// </summary>
-        public void Delete(string dicName = null)
+        public void Delete([CanBeNull] string dicName = null)
         {
             var dicId = GetDicPlugin(false);
             if (!string.IsNullOrEmpty(dicName))
@@ -133,6 +135,7 @@ namespace AcadLib.XData
         /// <summary>
         /// Чтение всех Xrecord из словаря плагина
         /// </summary>   
+        [CanBeNull]
         [Obsolete("Используй `DicED`")]
         public Dictionary<string, List<TypedValue>> LoadAllXRecords()
         {
@@ -158,7 +161,7 @@ namespace AcadLib.XData
             return res;
         }
 
-        private ObjectId GetXRecord(string key, bool create)
+        private ObjectId GetXRecord([NotNull] string key, bool create)
         {
             var res = ObjectId.Null;
             // Словарь плагина
@@ -183,7 +186,7 @@ namespace AcadLib.XData
         }
 
         [Obsolete("Используй `TypedValueExt`")]
-        private int GetExtendetDataType(Type value)
+        private int GetExtendetDataType([NotNull] Type value)
         {
             if (value == typeof(string))
             {

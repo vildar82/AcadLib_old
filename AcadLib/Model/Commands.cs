@@ -1,12 +1,11 @@
 ﻿using AcadLib.Layers;
 using AcadLib.PaletteCommands;
 using AcadLib.Statistic;
-using AcadLib.UI.Ribbon;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
-using Autodesk.Windows;
+using JetBrains.Annotations;
 using NetLib.IO;
 using System;
 using System.Collections.Generic;
@@ -16,7 +15,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
 using Path = System.IO.Path;
 
 [assembly: CommandClass(typeof(AcadLib.Commands))]
@@ -112,7 +110,7 @@ namespace AcadLib
                 Logger.Log.Error(ex, "AcadLib Initialize.");
             }
         }
-        
+
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             if (dllsResolve == null)
@@ -221,7 +219,7 @@ namespace AcadLib
         }
 
         [LispFunction(nameof(PIK_LispLog))]
-        public void PIK_LispLog(ResultBuffer rb)
+        public void PIK_LispLog([NotNull] ResultBuffer rb)
         {
             var tvs = rb.AsArray();
             if (tvs.Any())
@@ -235,7 +233,7 @@ namespace AcadLib
         /// </summary>
         /// <param name="rb">Парметры: Имя файла, имя слоя, соответствия имен блоков</param>
         [LispFunction(nameof(PIK_LispInsertBlockFromFbDwg))]
-        public void PIK_LispInsertBlockFromFbDwg(ResultBuffer rb)
+        public void PIK_LispInsertBlockFromFbDwg([CanBeNull] ResultBuffer rb)
         {
             try
             {

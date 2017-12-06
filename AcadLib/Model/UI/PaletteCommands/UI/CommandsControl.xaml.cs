@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using JetBrains.Annotations;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace AcadLib.PaletteCommands.UI
@@ -6,15 +7,15 @@ namespace AcadLib.PaletteCommands.UI
     /// <summary>
     /// Логика взаимодействия для CommandsControl.xaml
     /// </summary>
-    public partial class CommandsControl : UserControl
+    public partial class CommandsControl
     {
         public CommandsControl()
         {
             InitializeComponent();
-            Dispatcher.UnhandledException += Dispatcher_UnhandledException;                  
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
         }
 
-        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void Dispatcher_UnhandledException(object sender, [NotNull] System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             if (e.Exception is UserBreakException)
             {
@@ -24,7 +25,7 @@ namespace AcadLib.PaletteCommands.UI
             if (e.Exception.HResult != -2146233079)
             {
                 Logger.Log.Error("CommandsControl.Dispatcher_UnhandledException: " + e.Exception.ToString());
-            }            
+            }
             e.Handled = true;
         }
 
@@ -39,6 +40,6 @@ namespace AcadLib.PaletteCommands.UI
         {
             if (!(((FrameworkElement)sender).DataContext is PaletteCommand selComm)) return;
             selComm.Execute();
-        }        
+        }
     }
 }

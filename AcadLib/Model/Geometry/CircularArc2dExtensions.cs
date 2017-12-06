@@ -1,6 +1,7 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
+using System;
 
 namespace AcadLib.Geometry
 {
@@ -9,22 +10,23 @@ namespace AcadLib.Geometry
     /// </summary>
     public static class CircularArc2dExtensions
     {
-	    public static Circle CreateCircle(this CircularArc2d arc)
-	    {
-		    return new Circle(arc.Center.Convert3d(), Vector3d.ZAxis, arc.Radius);
-	    }
+        [NotNull]
+        public static Circle CreateCircle([NotNull] this CircularArc2d arc)
+        {
+            return new Circle(arc.Center.Convert3d(), Vector3d.ZAxis, arc.Radius);
+        }
 
-	    public static bool IsCircle(this CircularArc2d arc)
-	    {
-		    return Math.Abs(Math.Abs(arc.EndAngle - arc.StartAngle) - MathExt.PI2) < 0.00001;
-	    }
+        public static bool IsCircle([NotNull] this CircularArc2d arc)
+        {
+            return Math.Abs(Math.Abs(arc.EndAngle - arc.StartAngle) - MathExt.PI2) < 0.00001;
+        }
 
         /// <summary>
         /// Gets the algebraic (signed) area of the circular arc.
         /// </summary>
         /// <param name="arc">The instance to which the method applies.</param>
         /// <returns>The algebraic area.</returns>
-        public static double AlgebricArea(this CircularArc2d arc)
+        public static double AlgebricArea([NotNull] this CircularArc2d arc)
         {
             var rad = arc.Radius;
             var ang = arc.IsClockWise ?
@@ -38,7 +40,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="arc">The instance to which the method applies.</param>
         /// <returns>The centroid of the arc.</returns>
-        public static Point2d Centroid(this CircularArc2d arc)
+        public static Point2d Centroid([NotNull] this CircularArc2d arc)
         {
             var start = arc.StartPoint;
             var end = arc.EndPoint;
@@ -59,7 +61,8 @@ namespace AcadLib.Geometry
         /// <param name="arc">The instance to which this method applies.</param>
         /// <param name="pt">The Point2d to which tangents are searched</param>
         /// <returns>An array of LineSegement2d representing the tangents (2) or null if there is none.</returns>
-        public static LineSegment2d[] GetTangentsTo(this CircularArc2d arc, Point2d pt)
+        [CanBeNull]
+        public static LineSegment2d[] GetTangentsTo([NotNull] this CircularArc2d arc, Point2d pt)
         {
             // check if the point is inside the circle
             var center = arc.Center;
@@ -93,7 +96,8 @@ namespace AcadLib.Geometry
         /// <param name="other">The CircularArc2d to which searched for tangents.</param>
         /// <param name="flags">An enum value specifying which type of tangent is returned.</param>
         /// <returns>An array of LineSegment2d representing the tangents (maybe 2 or 4) or null if there is none.</returns>
-        public static LineSegment2d[] GetTangentsTo(this CircularArc2d arc, CircularArc2d other, TangentType flags)
+        [CanBeNull]
+        public static LineSegment2d[] GetTangentsTo([NotNull] this CircularArc2d arc, [NotNull] CircularArc2d other, TangentType flags)
         {
             // check if a circle is inside the other
             var dist = arc.Center.GetDistanceTo(other.Center);

@@ -1,6 +1,7 @@
 ﻿using AcadLib;
 using AcadLib.Blocks;
 using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +12,14 @@ namespace Autodesk.AutoCAD.DatabaseServices
     public static class DatabaseExtensions
     {
         // Opens a DBObject in ForRead mode (kaefer @ TheSwamp)
+        [CanBeNull]
         public static T GetObject<T>(this ObjectId id) where T : DBObject
         {
             return id.GetObject<T>(OpenMode.ForRead);
         }
 
         // Opens a DBObject in the given mode (kaefer @ TheSwamp)
+        [CanBeNull]
         public static T GetObject<T>(this ObjectId id, OpenMode mode) where T : DBObject
         {
             if (!id.IsValidEx())
@@ -25,13 +28,15 @@ namespace Autodesk.AutoCAD.DatabaseServices
         }
 
         // Opens a collection of DBObject in ForRead mode (kaefer @ TheSwamp)       
-        public static IEnumerable<T> GetObjects<T>(this IEnumerable ids) where T : DBObject
+        [NotNull]
+        public static IEnumerable<T> GetObjects<T>([NotNull] this IEnumerable ids) where T : DBObject
         {
             return ids.GetObjects<T>(OpenMode.ForRead);
         }
 
         // Opens a collection of DBObject in the given mode (kaefer @ TheSwamp)
-        public static IEnumerable<T> GetObjects<T>(this IEnumerable ids, OpenMode mode) where T : DBObject
+        [NotNull]
+        public static IEnumerable<T> GetObjects<T>([NotNull] this IEnumerable ids, OpenMode mode) where T : DBObject
         {
             return ids
                 .Cast<ObjectId>()
@@ -44,9 +49,11 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// Без условия открытой транзакции.
         /// br.DynamicBlockTableRecord.Open(OpenMode.ForRead)
         /// </summary>      
-        public static string GetEffectiveName(this BlockReference br)
+        public static string GetEffectiveName([NotNull] this BlockReference br)
         {
-            using (var btrDyn = br.DynamicBlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
+#pragma warning disable 618
+            using (var btrDyn = (BlockTableRecord) br.DynamicBlockTableRecord.Open(OpenMode.ForRead))
+#pragma warning restore 618
             {
                 return btrDyn.Name;
             }
@@ -59,19 +66,20 @@ namespace System.Collections.Generic
     public static class GenericExtensions
     {
         // Applies the given Action to each element of the collection (mimics the F# Seq.iter function).
-        public static void Iterate<T>(this IEnumerable<T> collection, Action<T> action)
+        public static void Iterate<T>([NotNull] this IEnumerable<T> collection, Action<T> action)
         {
             foreach (var item in collection) action(item);
         }
         // Applies the given Action to each element of the collection (mimics the F# Seq.iteri function).
         // The integer passed to the Action indicates the index of element.
-        public static void Iterate<T>(this IEnumerable<T> collection, Action<T, int> action)
+        public static void Iterate<T>([NotNull] this IEnumerable<T> collection, Action<T, int> action)
         {
             var i = 0;
             foreach (var item in collection) action(item, i++);
         }
         // Creates a System.Data.DataTable from a BlockAttribute collection.
-        public static Data.DataTable ToDataTable(this IEnumerable<BlockAttribute> blockAtts, string name)
+        [NotNull]
+        public static Data.DataTable ToDataTable([NotNull] this IEnumerable<BlockAttribute> blockAtts, string name)
         {
             var dTable = new Data.DataTable(name);
             dTable.Columns.Add("Name", typeof(string));
@@ -83,10 +91,10 @@ namespace System.Collections.Generic
                     var dRow = dTable.Rows.Add(row.Block.Name, row.Count);
                     row.Block.Attributes.Iterate(att =>
                  {
-                       if (!dTable.Columns.Contains(att.Key))
-                           dTable.Columns.Add(att.Key);
-                       dRow[att.Key] = att.Value;
-                   });
+                     if (!dTable.Columns.Contains(att.Key))
+                         dTable.Columns.Add(att.Key);
+                     dRow[att.Key] = att.Value;
+                 });
                 });
             return dTable;
         }
@@ -97,13 +105,14 @@ namespace System.Data
     public static class DataExtensions
     {
         // Gets the column names collection of the datatable
-        public static IEnumerable<string> GetColumnNames(this DataTable dataTbl)
+        [NotNull]
+        public static IEnumerable<string> GetColumnNames([NotNull] this DataTable dataTbl)
         {
             return dataTbl.Columns.Cast<DataColumn>().Select(col => col.ColumnName);
         }
 
         // Writes an Excel file from the datatable (using late binding)
-        public static void WriteXls(this DataTable dataTbl, string filename, string sheetName, bool visible)
+        public static void WriteXls([NotNull] this DataTable dataTbl, string filename, [CanBeNull] string sheetName, bool visible)
         {
             var mis = Type.Missing;
             var xlApp = LateBinding.GetOrCreateInstance("Excel.Application");
@@ -162,7 +171,7 @@ namespace System.Data
         }
 
         // Writes a csv file from the datatable.
-        public static void WriteCsv(this DataTable dataTbl, string filename)
+        public static void WriteCsv([NotNull] this DataTable dataTbl, [NotNull] string filename)
         {
             using (var writer = new StreamWriter(filename))
             {
@@ -175,7 +184,8 @@ namespace System.Data
         }
 
         // Creates an AutoCAD Table from the datatable.
-        public static Table ToAcadTable(this DataTable dataTbl, double rowHeight, double columnWidth)
+        [NotNull]
+        public static Table ToAcadTable([NotNull] this DataTable dataTbl, double rowHeight, double columnWidth)
         {
             //return dataTbl.Rows.Cast<DataRow>().ToAcadTable(dataTbl.TableName, dataTbl.GetColumnNames(), rowHeight, columnWidth);
             var tbl = new Table();

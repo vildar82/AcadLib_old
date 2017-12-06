@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 
 namespace AcadLib.Comparers
@@ -9,7 +10,7 @@ namespace AcadLib.Comparers
     /// </summary>
     public class AlphanumComparator : IComparer<string>
     {
-        public static AlphanumComparator New { get; } = new AlphanumComparator ();
+        public static AlphanumComparator New { get; } = new AlphanumComparator();
 
         public int Compare(string s1, string s2)
         {
@@ -17,7 +18,7 @@ namespace AcadLib.Comparers
             var null2 = string.IsNullOrEmpty(s2);
             if (null1)
             {
-                return null2 ? 0: -1;
+                return null2 ? 0 : -1;
             }
             if (null2)
             {
@@ -79,7 +80,7 @@ namespace AcadLib.Comparers
                     // If we have collected numbers, compare them numerically.
                     // Otherwise, if we have strings, compare them alphabetically.
                     var str1 = new string(space1).Trim('\0');
-                    var str2 = new string(space2).Trim('\0');                    
+                    var str2 = new string(space2).Trim('\0');
                     int result;
 
                     if (char.IsDigit(space1[0]) && char.IsDigit(space2[0]))
@@ -107,14 +108,14 @@ namespace AcadLib.Comparers
                 }
                 return len1 - len2;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Warn(ex, "AlphanumComparator.Compare().");
                 return 1;
             }
-        }        
+        }
 
-        public int GetHashCode(string obj)
+        public int GetHashCode([CanBeNull] string obj)
         {
             return obj == null ? 0 : obj.GetHashCode();
         }

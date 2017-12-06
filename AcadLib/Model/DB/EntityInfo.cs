@@ -1,9 +1,10 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 
 namespace AcadLib.DB
 {
-    public class EntityInfo:IEquatable<EntityInfo>
+    public class EntityInfo : IEquatable<EntityInfo>
     {
         public string Layer { get; set; }
         public string Linetype { get; set; }
@@ -14,7 +15,7 @@ namespace AcadLib.DB
         public Extents3d Extents { get; set; }
         public ObjectId Id { get; set; }
 
-        public EntityInfo(Entity ent)
+        public EntityInfo([NotNull] Entity ent)
         {
             ClassName = ent.GetRXClass().Name;
             Id = ent.Id;

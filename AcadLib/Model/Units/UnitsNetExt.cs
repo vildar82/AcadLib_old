@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnitsNet;
@@ -6,13 +7,13 @@ using UnitsNet;
 namespace AcadLib.Units
 {
     public static class UnitsNetExt
-    {        
-        public static Area Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, Area> selector)
+    {
+        public static Area Sum<TSource>([NotNull] this IEnumerable<TSource> source, [NotNull] Func<TSource, Area> selector)
         {
             return source.Select(selector).Sum();
         }
 
-        public static Area Sum(this IEnumerable<Area> source)
+        public static Area Sum([CanBeNull] this IEnumerable<Area> source)
         {
             var area = Area.Zero;
             if (source != null)
@@ -25,12 +26,12 @@ namespace AcadLib.Units
             return area;
         }
 
-        public static Length Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, Length> selector)
+        public static Length Sum<TSource>([NotNull] this IEnumerable<TSource> source, [NotNull] Func<TSource, Length> selector)
         {
             return source.Select(selector).Sum();
         }
 
-        public static Length Sum(this IEnumerable<Length> source)
+        public static Length Sum([CanBeNull] this IEnumerable<Length> source)
         {
             var length = Length.Zero;
             if (source != null)

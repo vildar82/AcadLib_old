@@ -1,7 +1,7 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using AcRx = Autodesk.AutoCAD.Runtime;
+using JetBrains.Annotations;
+using System;
 
 namespace AcadLib.Geometry
 {
@@ -60,6 +60,7 @@ namespace AcadLib.Geometry
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <param name="direction">Direction (in WCS coordinates) of the projection.</param>
         /// <returns>The projected Polyline.</returns>
+        [CanBeNull]
         internal static Polyline ProjectPolyline(Curve pline, Plane plane, Vector3d direction)
         {
             if (!(pline is Polyline) && !(pline is Polyline2d) && !(pline is Polyline3d))
@@ -90,12 +91,12 @@ namespace AcadLib.Geometry
                     var start = crv.StartPoint;
                     var end = crv.EndPoint;
                     var bulge = 0.0;
-					if (crv is Arc arc)
-					{
-						var angle = arc.Center.GetVectorTo(start).GetAngleTo(arc.Center.GetVectorTo(end), arc.Normal);
-						bulge = Math.Tan(angle / 4.0);
-					}
-					psc.Add(new PolylineSegment(start.Convert2d(plane), end.Convert2d(plane), bulge));
+                    if (crv is Arc arc)
+                    {
+                        var angle = arc.Center.GetVectorTo(start).GetAngleTo(arc.Center.GetVectorTo(end), arc.Normal);
+                        bulge = Math.Tan(angle / 4.0);
+                    }
+                    psc.Add(new PolylineSegment(start.Convert2d(plane), end.Convert2d(plane), bulge));
                 }
                 foreach (DBObject o in newCol) o.Dispose();
                 var projectedPline = psc.Join(new Tolerance(1e-9, 1e-9))[0].ToPolyline();
@@ -121,6 +122,7 @@ namespace AcadLib.Geometry
         /// <param name="direction">Direction (in WCS coordinates) of the projection</param>
         /// <param name="dirPlane">The plane which origin is 0, 0, 0 and 'direction' is the normal.</param>
         /// <returns>The newly created Polyline.</returns>
+        [NotNull]
         internal static Polyline ProjectExtents(Extents3d extents, Plane plane, Vector3d direction, Plane dirPlane)
         {
             var pt1 = extents.MinPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));

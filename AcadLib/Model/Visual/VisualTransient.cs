@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.GraphicsInterface;
+using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AcadLib.Visual
 {
@@ -11,11 +12,11 @@ namespace AcadLib.Visual
     /// </summary>
     public abstract class VisualTransient : VisualBase
     {
-	    public static readonly Autodesk.AutoCAD.Geometry.IntegerCollection vps = new Autodesk.AutoCAD.Geometry.IntegerCollection();        
+        public static readonly Autodesk.AutoCAD.Geometry.IntegerCollection vps = new Autodesk.AutoCAD.Geometry.IntegerCollection();
         protected List<Entity> draws;
         private readonly Document doc = AcadHelper.Doc;
 
-        public VisualTransient(string layer = null) : base(layer)
+        public VisualTransient([CanBeNull] string layer = null) : base(layer)
         {
         }
 
@@ -27,7 +28,7 @@ namespace AcadLib.Visual
         /// <summary>
         /// Включение/отключение визуализации (без перестроений)
         /// </summary>
-        protected override void DrawVisuals(List<Entity> draws)
+        protected override void DrawVisuals([CanBeNull] List<Entity> draws)
         {
             this.draws = draws;
             if (draws != null)
@@ -40,7 +41,7 @@ namespace AcadLib.Visual
             }
         }
 
-        protected override void EraseDraws ()
+        protected override void EraseDraws()
         {
             if (draws == null || draws.Count == 0) return;
             if (doc == AcadHelper.Doc)

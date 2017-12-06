@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.PlottingServices;
+using JetBrains.Annotations;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.PlottingServices;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace Gile.Publish
@@ -17,7 +18,7 @@ namespace Gile.Publish
         private const string LOG = "publish.log";
 
         // Base constructor
-        public PlotToFileConfig(string outputFile, IEnumerable<Layout> layouts, string plotType)
+        public PlotToFileConfig([CanBeNull] string outputFile, IEnumerable<Layout> layouts, string plotType)
         {
             var db = HostApplicationServices.WorkingDatabase;
             dwgFile = db.Filename;
@@ -47,7 +48,7 @@ namespace Gile.Publish
                 }
                 catch (System.Exception exn)
                 {
-                    var ed = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor;                    
+                    var ed = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor;
                     ed.WriteMessage("\nError: {0}\n{1}", exn.Message, exn.StackTrace);
                     throw;
                 }
@@ -90,7 +91,8 @@ namespace Gile.Publish
         }
 
         // Creates an entry collection (one per layout) for the DSD file
-        private DsdEntryCollection CreateDsdEntryCollection(IEnumerable<Layout> layouts)
+        [NotNull]
+        private DsdEntryCollection CreateDsdEntryCollection([NotNull] IEnumerable<Layout> layouts)
         {
             var entries = new DsdEntryCollection();
             foreach (var layout in layouts)

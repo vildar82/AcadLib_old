@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.ComponentModel;
 using System.Windows.Markup;
 
@@ -10,7 +11,8 @@ namespace AcadLib.WPF.Converters
     public class EnumBindingSourceExtension : MarkupExtension
     {
         private Type _enumType;
-        public Type EnumType {
+        public Type EnumType
+        {
             get { return _enumType; }
             set {
                 if (value != _enumType)
@@ -27,14 +29,15 @@ namespace AcadLib.WPF.Converters
             }
         }
 
-        public EnumBindingSourceExtension () { }
+        public EnumBindingSourceExtension() { }
 
-        public EnumBindingSourceExtension (Type enumType)
+        public EnumBindingSourceExtension(Type enumType)
         {
             EnumType = enumType;
         }
 
-        public override object ProvideValue (IServiceProvider serviceProvider)
+        [NotNull]
+        public override object ProvideValue(IServiceProvider serviceProvider)
         {
             if (null == _enumType)
                 throw new InvalidOperationException("The EnumType must be specified.");
@@ -66,26 +69,26 @@ namespace AcadLib.WPF.Converters
     /// </summary>
     public class EnumDescriptionTypeConverter : EnumConverter
     {
-        public EnumDescriptionTypeConverter (Type type)
+        public EnumDescriptionTypeConverter(Type type)
             : base(type)
         {
         }
-        public override object ConvertTo (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
         {
             if (destinationType == typeof(string))
             {
-                return  GetEnumDescription(value);                
+                return GetEnumDescription(value);
             }
             return base.ConvertTo(context, culture, value, destinationType);
         }
 
-        public static string GetEnumDescription (object enumValue)
+        public static string GetEnumDescription([CanBeNull] object enumValue)
         {
             if (enumValue == null) return null;
             var fi = enumValue.GetType().GetField(enumValue.ToString());
             if (fi == null) return null;
-            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute),false);            
-            
+            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
             if (attributes != null && attributes.Length > 0)
                 return attributes[0].Description;
             else

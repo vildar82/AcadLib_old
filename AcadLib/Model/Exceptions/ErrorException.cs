@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
 using System.Drawing;
-using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Exceptions
 {
@@ -8,12 +9,12 @@ namespace AcadLib.Exceptions
     {
         public Errors.Error Error { get; private set; }
 
-        public ErrorException(Errors.Error err):base(err.Message)
+        public ErrorException([NotNull] Errors.Error err) : base(err.Message)
         {
             Error = err;
         }
 
-        public ErrorException (string msg, Entity ent, Icon icon) : base(msg)
+        public ErrorException(string msg, Entity ent, Icon icon) : base(msg)
         {
             Error = new Errors.Error(msg, ent, icon);
         }
@@ -21,6 +22,6 @@ namespace AcadLib.Exceptions
         public ErrorException(string msg, Icon icon) : base(msg)
         {
             Error = new Errors.Error(msg, icon);
-        }       
+        }
     }
 }

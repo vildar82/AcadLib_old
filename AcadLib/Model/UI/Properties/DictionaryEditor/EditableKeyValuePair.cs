@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -10,7 +11,7 @@ namespace AcadLib.UI.Designer
         public TKey Key { get; set; }
         public TValue Value { get; set; }
 
-        public EditableKeyValuePair(TKey key, TValue value, GenericDictionaryEditorAttribute editorAttribute)
+        public EditableKeyValuePair(TKey key, TValue value, [NotNull] GenericDictionaryEditorAttribute editorAttribute)
         {
             Key = key;
             Value = value;
@@ -24,6 +25,7 @@ namespace AcadLib.UI.Designer
             return GetProperties();
         }
 
+        [NotNull]
         public override PropertyDescriptorCollection GetProperties()
         {
             var properties = new List<PropertyDescriptor>();
@@ -37,6 +39,7 @@ namespace AcadLib.UI.Designer
             return new PropertyDescriptorCollection(properties.ToArray());
         }
 
+        [NotNull]
         public override object GetPropertyOwner(PropertyDescriptor pd)
         {
             return this;

@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using JetBrains.Annotations;
 using System;
 
 namespace AcadLib.Geometry
@@ -140,7 +141,7 @@ namespace AcadLib.Geometry
         /// Creates a new instance of PolylineSegment from a LineSegment2d
         /// </summary>
         /// <param name="line">A LineSegment2d instance.</param>
-        public PolylineSegment(LineSegment2d line)
+        public PolylineSegment([NotNull] LineSegment2d line)
         {
             _startPoint = line.StartPoint;
             _endPoint = line.EndPoint;
@@ -153,7 +154,7 @@ namespace AcadLib.Geometry
         /// Creates a new instance of PolylineSegment from a CircularArc2d
         /// </summary>
         /// <param name="arc">A CircularArc2d instance.</param>
-        public PolylineSegment(CircularArc2d arc)
+        public PolylineSegment([NotNull] CircularArc2d arc)
         {
             _startPoint = arc.StartPoint;
             _endPoint = arc.EndPoint;
@@ -171,6 +172,7 @@ namespace AcadLib.Geometry
         /// Returns a copy of the PolylineSegment
         /// </summary>
         /// <returns>A new PolylineSegment instance which is a copy of the instance this method applies to.</returns>
+        [NotNull]
         public PolylineSegment Clone()
         {
             return new PolylineSegment(StartPoint, EndPoint, Bulge, StartWidth, EndWidth);
@@ -216,6 +218,7 @@ namespace AcadLib.Geometry
         /// Converts the PolylineSegment into a LineSegment2d.
         /// </summary>
         /// <returns>A new LineSegment2d instance or null if the PolylineSegment bulge is not equal to 0.0.</returns>
+        [CanBeNull]
         public LineSegment2d ToLineSegment()
         {
             return IsLinear ? new LineSegment2d(_startPoint, _endPoint) : null;
@@ -225,6 +228,7 @@ namespace AcadLib.Geometry
         /// Converts the PolylineSegment into a CircularArc2d.
         /// </summary>
         /// <returns>A new CircularArc2d instance or null if the PolylineSegment bulge is equal to 0.0.</returns>
+        [CanBeNull]
         public CircularArc2d ToCircularArc()
         {
             return IsLinear ? null : new CircularArc2d(_startPoint, _endPoint, _bulge, false);
@@ -234,6 +238,7 @@ namespace AcadLib.Geometry
         /// Converts the PolylineSegment into a Curve2d.
         /// </summary>
         /// <returns>A new Curve2d instance.</returns>
+        [NotNull]
         public Curve2d ToCurve2d()
         {
             return IsLinear ?

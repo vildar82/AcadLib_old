@@ -1,22 +1,23 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using NetLib.WPF;
+using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using MicroMvvm;
+using ReactiveUI;
 
 namespace AcadLib.PaletteCommands
 {
-    public class PaletteModel : ModelBase
+    public class PaletteModel : ReactiveObject
     {
-		protected PaletteModel()
+        protected PaletteModel()
         {
 
         }
 
-        public PaletteModel(IEnumerable<IPaletteCommand> commands, string version)
+        public PaletteModel([NotNull] IEnumerable<IPaletteCommand> commands, string version)
         {
-	        Version = version;
-			PaletteCommands = new ObservableCollection<IPaletteCommand>();
+            Version = version;
+            PaletteCommands = new ObservableCollection<IPaletteCommand>();
             foreach (var item in commands)
             {
                 if (PaletteSetCommands.IsAccess(item.Access))
@@ -29,12 +30,12 @@ namespace AcadLib.PaletteCommands
         /// <summary>
         /// Цвет фона
         /// </summary>
-        public System.Windows.Media.Brush Background { get; set; }
+        [Reactive] public System.Windows.Media.Brush Background { get; set; }
         /// <summary>
         /// Команды на палитре
         /// </summary>
         public ObservableCollection<IPaletteCommand> PaletteCommands { get; set; }
 
         public string Version { get; }
-	}
+    }
 }

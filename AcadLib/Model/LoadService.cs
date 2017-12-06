@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 using NetLib;
 using System;
 using System.Collections.Generic;
@@ -45,13 +46,13 @@ namespace AcadLib
             LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll"));
         }
 
-        public static void LoadPackages(string name)
+        public static void LoadPackages([NotNull] string name)
         {
             var dllLocal = Path.Combine(IO.Path.GetUserPluginFolder("packages"), name);
             LoadFromTry(dllLocal);
         }
 
-        public static void LoadFrom(string dll)
+        public static void LoadFrom([NotNull] string dll)
         {
             if (File.Exists(dll))
             {
@@ -114,7 +115,8 @@ namespace AcadLib
             }
         }
 
-        private static List<string> GetDllsForCurVerAcad(List<string> dlls)
+        [NotNull]
+        private static List<string> GetDllsForCurVerAcad([NotNull] List<string> dlls)
         {
             var dllsToLoad = dlls.ToList();
             if (int.TryParse(HostApplicationServices.Current.releaseMarketVersion, out var ver))
@@ -150,14 +152,15 @@ namespace AcadLib
         public string FileWoVer { get; set; }
         public int Ver { get; set; }
 
-        public DllVer(string fileDll, int ver)
+        public DllVer([NotNull] string fileDll, int ver)
         {
             Dll = fileDll;
             Ver = ver;
             FileWoVer = fileDll.Substring(0, fileDll.Length - 10) + ".dll";
         }
 
-        public static DllVer GetDllVer(string file)
+        [CanBeNull]
+        public static DllVer GetDllVer([NotNull] string file)
         {
             DllVer dllVer = null;
             var match = Regex.Match(file, @"(_v(\d{4}).dll)$");

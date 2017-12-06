@@ -1,10 +1,12 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Input;
 using MicroMvvm;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
@@ -41,7 +43,7 @@ namespace AcadLib.PaletteCommands
 
         //public PaletteCommand() { }
 
-        public PaletteCommand(string name, Bitmap image, string command, string description, string group = "", 
+        public PaletteCommand(string name, Bitmap image, string command, string description, string group = "",
             bool isTest = false)
         {
             IsTest = isTest;
@@ -64,9 +66,9 @@ namespace AcadLib.PaletteCommands
             }
         }
 
-        public PaletteCommand(List<string> access, string name, Bitmap image, 
-            string command, string description, string group = "", bool isTest = false)            
-            :this(name, image, command, description, group, isTest)
+        public PaletteCommand(List<string> access, string name, Bitmap image,
+            string command, string description, string group = "", bool isTest = false)
+            : this(name, image, command, description, group, isTest)
         {
             Access = access;
         }
@@ -81,6 +83,7 @@ namespace AcadLib.PaletteCommands
             }
         }
 
+        [NotNull]
         private static ImageSource GetSource(Bitmap image, bool isTest)
         {
             if (image == null)
@@ -98,7 +101,7 @@ namespace AcadLib.PaletteCommands
                     BitmapSizeOptions.FromEmptyOptions());
         }
 
-        private static void AddTestWaterMark(Image image)
+        private static void AddTestWaterMark([NotNull] Image image)
         {
             using (var watermarkImage = Properties.Resources.test)
             using (var imageGraphics = Graphics.FromImage(image))

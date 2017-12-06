@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 
 namespace AcadLib
 {
     public static class RegAppHelper
     {
-        public static void RegApp(this Database db, string regAppName)
+        public static void RegApp([NotNull] this Database db, string regAppName)
         {
-            using (var rat = db.RegAppTableId.Open(OpenMode.ForRead, false) as RegAppTable)
+#pragma warning disable 618
+            using (var rat = (RegAppTable)db.RegAppTableId.Open(OpenMode.ForRead, false))
+#pragma warning restore 618
             {
                 if (rat.Has(regAppName)) return;
+                // ReSharper disable once UpgradeOpen
                 rat.UpgradeOpen();
                 using (var ratr = new RegAppTableRecord())
                 {
@@ -23,9 +22,9 @@ namespace AcadLib
             }
         }
 
-        public static void RegAppPIK(this Database db)
+        public static void RegAppPIK([NotNull] this Database db)
         {
-            RegAppHelper.RegApp(db,General.Company);
+            RegApp(db, General.Company);
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿using System;
+﻿using AcadLib.Comparers;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AcadLib.Comparers;
 
 namespace AcadLib
 {
@@ -9,7 +10,7 @@ namespace AcadLib
     {
         public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
         public const double PI2 = Math.PI * 2;
-        public const double PIHalf = Math.PI *0.5;
+        public const double PIHalf = Math.PI * 0.5;
         public const double PIQuart = Math.PI * 25;
         public const double RatioDegreeToRadian = Math.PI / 180;
         public const double RatioRadianToDegree = 180 / Math.PI;
@@ -19,8 +20,8 @@ namespace AcadLib
         /// </summary>
         /// <param name="angle">Исходный угол в радианах</param>
         /// <returns>Угол в радианах соответствующий исходному углу, но в пределах от 0 до 2pi (круг)</returns>
-        public static double FixedAngle (this double angle)
-        {            
+        public static double FixedAngle(this double angle)
+        {
             if (angle < 0)
             {
                 angle = PI2 + angle % PI2;
@@ -32,12 +33,13 @@ namespace AcadLib
             return angle;
         }
 
-        public static string ToHours (this int min)
+        public static string ToHours(this int min)
         {
             //return Math.Round(min * 0.01667, 1);
             return ToHours((double)min);
         }
-        public static string ToHours (this double min)
+        [NotNull]
+        public static string ToHours(this double min)
         {
             //return Math.Round(min *0.01667, 1);
             var span = TimeSpan.FromMinutes(min);
@@ -45,7 +47,7 @@ namespace AcadLib
             return label;
         }
 
-        public static double ToMin (this double h)
+        public static double ToMin(this double h)
         {
             return h * 60;
         }
@@ -57,7 +59,7 @@ namespace AcadLib
         /// <param name="tolerance">Допуск</param>
         /// <returns>Да или нет - если от заданного значения до целого числа меньше либо равно допуску</returns>
         [Obsolete("Используй NetLib")]
-        public static bool IsWholeNumber (this double value, double tolerance=0.001)
+        public static bool IsWholeNumber(this double value, double tolerance = 0.001)
         {
             return NetLib.MathExt.IsWholeNumber(value, tolerance);
         }
@@ -73,7 +75,7 @@ namespace AcadLib
         /// <summary>
         /// Это четное число
         /// </summary>        
-        public static bool IsEven (this int value)
+        public static bool IsEven(this int value)
         {
             return value % 2 == 0;
         }
@@ -85,7 +87,7 @@ namespace AcadLib
         /// <param name="other">Второе число</param>
         /// <param name="precision">Допуск разницы</param>
         /// <returns>true - равны, false - не равны</returns>
-        public static bool IsEqual (this double d, double other, double precision = double.Epsilon)
+        public static bool IsEqual(this double d, double other, double precision = double.Epsilon)
         {
             return Math.Abs(d - other) <= precision;
         }
@@ -94,7 +96,8 @@ namespace AcadLib
         /// Превращает строки с диапазоном чисел в последовательность чисел.
         /// Например "1-5, 8,9" - {1,2,3,4,5,8,9}
         /// </summary>        
-        public static List<int> ParseRangeNumbers(string text)
+        [NotNull]
+        public static List<int> ParseRangeNumbers([NotNull] string text)
         {
             var query =
                 from x in text.Split(',')
@@ -185,7 +188,8 @@ namespace AcadLib
         /// </summary>
         /// <param name="ints"></param>
         /// <returns></returns>
-        public static string IntsToStringSequenceAnton(int[] ints)
+        [NotNull]
+        public static string IntsToStringSequenceAnton([NotNull] int[] ints)
         {
             // int[] paleNumbersInt = new[] { 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109 };
             // res = 1-8,10,15,16,100-107,109
@@ -234,13 +238,13 @@ namespace AcadLib
             mark = mark.Replace(",,", ",");
             return mark;
         }
-        
+
         /// <summary>
         /// Список чисел в строку, с групперовкой последовательных номеров
         /// ints = 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109
         /// res = "1-8, 10, 15, 16, 100-107, 109"
         /// </summary>        
-        public static string IntsToStringSequence(int[] ints)
+        public static string IntsToStringSequence([NotNull] int[] ints)
         {
             var uniqints = ints.Distinct();
             var res = string.Empty;
@@ -256,7 +260,7 @@ namespace AcadLib
             if (!seq.IsNull())
             {
                 SetSeq(ref res, ref seq);
-            }            
+            }
             return res;
         }
 
@@ -269,7 +273,7 @@ namespace AcadLib
             else
             {
                 res += ", " + seq.GetSeq();
-            }            
+            }
         }
 
         struct IntSequence
@@ -290,9 +294,9 @@ namespace AcadLib
                 return !has;
             }
 
-            public bool AddInt (int next)
+            public bool AddInt(int next)
             {
-                if (next-end ==1)
+                if (next - end == 1)
                 {
                     end = next;
                     return true;
@@ -303,6 +307,7 @@ namespace AcadLib
                 }
             }
 
+            [NotNull]
             public string GetSeq()
             {
                 var res = string.Empty;
@@ -311,22 +316,22 @@ namespace AcadLib
                 {
                     res = start.ToString();
                 }
-                else if (end-start==1)
+                else if (end - start == 1)
                 {
                     res = start + ", " + end;
                 }
                 else
                 {
                     res = start + "-" + end;
-                }                
-                return res;                
+                }
+                return res;
             }
         }
 
         /// <summary>
         /// Парсинг десятичного числа из строки - замена , на . (в англ. культуре)
         /// </summary>        
-        public static double ToDouble (this string val)
+        public static double ToDouble(this string val)
         {
             return NetLib.MathExt.ToDouble(val);
         }

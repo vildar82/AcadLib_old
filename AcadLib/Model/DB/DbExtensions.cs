@@ -1,5 +1,6 @@
 ﻿using AcadLib;
 using AutoCAD_PIK_Manager.Settings;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +23,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return AcadLib.Scale.ScaleHelper.GetCurrentAnnoScale(db);
         }
 
-        public static IEnumerable<T> IterateDB<T>(this Database db) where T : DBObject
+        public static IEnumerable<T> IterateDB<T>([NotNull] this Database db) where T : DBObject
         {
             for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
             {
@@ -35,7 +36,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             }
         }
 
-        public static ObjectId GetLineTypeIdByName(this Database db, string name)
+        public static ObjectId GetLineTypeIdByName([NotNull] this Database db, string name)
         {
             var resVal = ObjectId.Null;
 
@@ -234,7 +235,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return GetStyleId(db, styleName, d => d.TextStyleTableId);
         }
 
-        private static ObjectId GetStyleId(Database db, string styleName, Func<Database, ObjectId> idSymbolTable)
+        private static ObjectId GetStyleId(Database db, string styleName, [NotNull] Func<Database, ObjectId> idSymbolTable)
         {
             var idStyle = ObjectId.Null;
 
@@ -248,7 +249,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return idStyle;
         }
 
-        private static ObjectId GetDictStyleId(Database db, string styleName, Func<Database, ObjectId> idDictTable)
+        private static ObjectId GetDictStyleId(Database db, string styleName, [NotNull] Func<Database, ObjectId> idDictTable)
         {
             var idStyle = ObjectId.Null;
             using (var dictTableStyle = idDictTable(db).Open(OpenMode.ForRead) as DBDictionary)

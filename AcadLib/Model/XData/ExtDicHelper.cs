@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Runtime;
+
 #pragma warning disable 618
 
 namespace AcadLib.XData
@@ -9,7 +11,7 @@ namespace AcadLib.XData
     public static class ExtDicHelper
     {
         public const string PikApp = "PIK";
-        
+
         /// <summary>
         /// Получение записи XRecord словаря по имени.
         /// Если такая запись есть в словаре то возвращается ее id, а Data записи очищаются.
@@ -17,17 +19,19 @@ namespace AcadLib.XData
         /// Если нет, то создается новая если create = true.
         /// <param name="clear">Очищать ли Xrecord если она уже есть.</param>
         /// </summary>        
-        public static ObjectId GetRec (ObjectId dicId, string key, bool create, bool clear)
+        public static ObjectId GetRec(ObjectId dicId, [NotNull] string key, bool create, bool clear)
         {
+            if (key == null) throw new ArgumentNullException(nameof(key));
             var res = ObjectId.Null;
             if (!dicId.IsValidEx() || string.IsNullOrEmpty(key)) return res;
-            using (var dic = dicId.Open(OpenMode.ForRead) as DBDictionary)
+            using (var dic = (DBDictionary)dicId.Open(OpenMode.ForRead))
             {
                 if (dic == null) return res;
                 if (dic.Contains(key))
                 {
                     res = dic.GetAt(key);
                     if (!clear) return res;
+                    // ReSharper disable once UpgradeOpen
                     dic.UpgradeOpen();
                     dic.Remove(key);
                     //using (var xr = res.Open(OpenMode.ForWrite) as Xrecord)
@@ -41,7 +45,10 @@ namespace AcadLib.XData
                     using (var xRec = new Xrecord())
                     {
                         if (!dic.IsWriteEnabled)
+                        {
+                            // ReSharper disable once UpgradeOpen
                             dic.UpgradeOpen();
+                        }
                         res = dic.SetAt(key, xRec);
                     }
                 }
@@ -54,7 +61,7 @@ namespace AcadLib.XData
         /// </summary>
         /// <param name="dicId">Словарь</param>
         /// <param name="dbo">объект</param>
-        public static void DeleteDic (ObjectId dicId, DBObject dbo)
+        public static void DeleteDic(ObjectId dicId, DBObject dbo)
         {
             if (!dicId.IsValidEx()) return;
             using (var dic = dicId.Open(OpenMode.ForWrite) as DBDictionary)
@@ -69,13 +76,14 @@ namespace AcadLib.XData
             if (dboExtDicId.IsNull) return;
             using (var dboExtDic = dboExtDicId.Open(OpenMode.ForRead) as DBDictionary)
             {
-                if (dboExtDic == null) return;                
+                if (dboExtDic == null) return;
                 if (dboExtDic.Count == 0 || (dboExtDic.Count == 1 && dboExtDic.Contains(PikApp)))
                 {
+                    // ReSharper disable once UpgradeOpen
                     dboExtDic.UpgradeOpen();
-                    dboExtDic.Erase();                    
+                    dboExtDic.Erase();
                 }
-            }        
+            }
         }
 
         /// <summary>
@@ -87,7 +95,7 @@ namespace AcadLib.XData
         /// <param name="create">Создавать если его нет.</param>
         /// <param name="clear">Очищать ли словарь если он уже есть</param>
         /// <returns>Id DBDictionary вложенного словаря</returns>
-        public static ObjectId GetDic (ObjectId dicId, string key, bool create, bool clear)
+        public static ObjectId GetDic(ObjectId dicId, [CanBeNull] string key, bool create, bool clear)
         {
             var res = ObjectId.Null;
             if (!dicId.IsValidEx() || string.IsNullOrEmpty(key)) return res;
@@ -115,7 +123,10 @@ namespace AcadLib.XData
                     using (var dicInner = new DBDictionary())
                     {
                         if (!dic.IsWriteEnabled)
+                        {
+                            // ReSharper disable once UpgradeOpen
                             dic.UpgradeOpen();
+                        }
                         res = dic.SetAt(key, dicInner);
                     }
                 }
@@ -129,7 +140,7 @@ namespace AcadLib.XData
         /// <param name="dbo">Объект</param>
         /// <param name="create">Создавать словарь, если его нет</param>
         /// <returns>Id словаря ExtensionDictionary</returns>
-        public static ObjectId GetDboExtDic (DBObject dbo, bool create)
+        public static ObjectId GetDboExtDic([CanBeNull] DBObject dbo, bool create)
         {
             var res = ObjectId.Null;
             if (dbo == null) return res;
@@ -138,7 +149,10 @@ namespace AcadLib.XData
                 if (create)
                 {
                     if (!dbo.IsWriteEnabled)
+                    {
+                        // ReSharper disable once UpgradeOpen
                         dbo.UpgradeOpen();
+                    }
                     dbo.CreateExtensionDictionary();
                     res = dbo.ExtensionDictionary;
                 }
@@ -148,14 +162,15 @@ namespace AcadLib.XData
                 res = dbo.ExtensionDictionary;
             }
             return res;
-        }        
+        }
 
         /// <summary>
         /// Получение создержимого словаря
         /// </summary>
         /// <param name="dicId">Словарь DBDictionary</param>
         /// <returns>Содержимое словаря. Имя не заполняется!</returns>
-        public static DicED GetDicEd (ObjectId dicId)
+        [CanBeNull]
+        public static DicED GetDicEd(ObjectId dicId)
         {
             DicED res;
             if (!dicId.IsValidEx()) return null;
@@ -171,7 +186,7 @@ namespace AcadLib.XData
                 };
 
                 foreach (var item in dic)
-                {   
+                {
                     if (item.Value.ObjectClass == General.ClassRecord)
                     {
                         using (var xrec = item.Value.Open(OpenMode.ForRead) as Xrecord)
@@ -185,8 +200,11 @@ namespace AcadLib.XData
                     else if (item.Value.ObjectClass == General.ClassDBDic)
                     {
                         var dicEdInner = GetDicEd(item.Value);
-                        dicEdInner.Name = item.Key;
-                        res.Inners.Add(dicEdInner);
+                        if (dicEdInner != null)
+                        {
+                            dicEdInner.Name = item.Key;
+                            res.Inners.Add(dicEdInner);
+                        }
                     }
                 }
             }
@@ -197,7 +215,7 @@ namespace AcadLib.XData
         /// Запись значений из RecED в DBDictionary
         /// В переданном родительском словаре создается вложенный словарь с именем DicED.Name
         /// </summary>        
-        public static void SetDicED (ObjectId idDicParent, DicED edDic)
+        public static void SetDicED(ObjectId idDicParent, [CanBeNull] DicED edDic)
         {
             if (edDic == null) return;
             var dicId = GetDic(idDicParent, edDic.Name, true, true);
@@ -226,9 +244,9 @@ namespace AcadLib.XData
         /// </summary>
         /// <param name="dicId">Словарь DBDictionary</param>
         /// <param name="rec">Запись XRecord</param>
-        public static void SetRecXD (ObjectId dicId, RecXD rec)
+        public static void SetRecXD(ObjectId dicId, [CanBeNull] RecXD rec)
         {
-            if (rec?.Values == null || rec.Values.Count==0) return;
+            if (rec?.Values == null || rec.Values.Count == 0) return;
             var idXrec = GetRec(dicId, rec.Name, true, true);
             if (!idXrec.IsValidEx()) return;
             using (var xrec = idXrec.Open(OpenMode.ForWrite) as Xrecord)
