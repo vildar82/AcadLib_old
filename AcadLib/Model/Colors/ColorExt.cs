@@ -40,13 +40,13 @@ namespace AcadLib.Colors
             if (color == null) return "";
             if (color.IsByLayer) return "256";
             if (color.IsByBlock) return "0";
-            if (color.IsByAci) return color.ColorIndex.ToString();
-            return $"{color.Red},{color.Green},{color.Blue}";
+            return color.IsByAci ? color.ColorIndex.ToString() : $"{color.Red},{color.Green},{color.Blue}";
         }
 
         /// <summary>
         /// строку в цвет - из color?.ToString();
         /// </summary>
+        [CanBeNull]
         public static Color AcadColorFromString2(this string color)
         {
             if (color.IsNullOrEmpty()) return null;
