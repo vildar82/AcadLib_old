@@ -31,7 +31,7 @@ namespace AcadLib.Blocks
         /// </summary>        
         public static ObjectId Insert(string blName, Layers.LayerInfo layer, List<Property> props)
         {
-            var idBlRefInsert = ObjectId.Null;
+            ObjectId idBlRefInsert;
             var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return ObjectId.Null;
             var db = doc.Database;
@@ -39,7 +39,7 @@ namespace AcadLib.Blocks
             using (doc.LockDocument())
             using (var t = db.TransactionManager.StartTransaction())
             {
-                var bt = t.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                var bt = (BlockTable) t.GetObject(db.BlockTableId, OpenMode.ForRead);
                 if (!bt.Has(blName))
                 {
                     throw new Exception("Блок не определен в чертеже " + blName);
@@ -85,7 +85,7 @@ namespace AcadLib.Blocks
                 var pr = ed.Drag(entJig);
                 if (pr.Status == PromptStatus.OK)
                 {
-                    var btrBl = t.GetObject(idBlBtr, OpenMode.ForRead) as BlockTableRecord;
+                    var btrBl = (BlockTableRecord) t.GetObject(idBlBtr, OpenMode.ForRead);
                     if (btrBl.HasAttributeDefinitions)
                         AddAttributes(br, btrBl, t);
                 }

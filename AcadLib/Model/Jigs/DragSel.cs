@@ -30,7 +30,10 @@ namespace AcadLib.Jigs
             var ppr = ed.Drag(selSet, "\nТочка вставки:", (Point3d ptInput, ref Matrix3d mat) =>
             {
                 ptInput = ptInput.FromUcsToWcs();
-                if (ptInput.IsEqualTo(ptInputLast, tolerance)) return SamplerStatus.NoChange;
+                if (ptInput.IsEqualTo(ptInputLast, tolerance))
+                {
+                    return SamplerStatus.NoChange;
+                }
                 mat = Matrix3d.Displacement(pt.GetVectorTo(ptInput));
                 ptInputLast = ptInput;
                 return SamplerStatus.OK;
@@ -43,11 +46,12 @@ namespace AcadLib.Jigs
                     foreach (var item in ids)
                     {
                         var mat = Matrix3d.Displacement(pt.GetVectorTo(ptInput));
-                        var ent = item.GetObject(OpenMode.ForWrite, false, true) as Entity;
+                        var ent = (Entity)item.GetObject(OpenMode.ForWrite, false, true);
                         ent.TransformBy(mat);
                     }
                     t.Commit();
                 }
+                ed.Regen();
                 return true;
             }
             using (var t = ed.Document.TransactionManager.StartTransaction())
@@ -59,6 +63,7 @@ namespace AcadLib.Jigs
                 }
                 t.Commit();
             }
+            ed.Regen();
             return false;
         }
 
@@ -73,7 +78,7 @@ namespace AcadLib.Jigs
             var ids = new List<ObjectId>();
             using (var t = db.TransactionManager.StartTransaction())
             {
-                var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+                var cs = (BlockTableRecord)db.CurrentSpaceId.GetObject(OpenMode.ForWrite);
                 foreach (var ent in ents)
                 {
                     cs.AppendEntity(ent);
@@ -90,7 +95,7 @@ namespace AcadLib.Jigs
 
                 foreach (var entId in ids)
                 {
-                    var ent = entId.GetObject(OpenMode.ForWrite, false, true) as Entity;
+                    var ent = (Entity)entId.GetObject(OpenMode.ForWrite, false, true);
                     var entExt = ent.GeometricExtents;
                     // левая верхняя точка объекта
                     var ptEntLT = new Point3d(entExt.MinPoint.X, entExt.MaxPoint.Y, 0);

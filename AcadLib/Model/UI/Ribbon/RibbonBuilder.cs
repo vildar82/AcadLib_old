@@ -1,16 +1,20 @@
-﻿using AcadLib.PaletteCommands;
+﻿using AcadLib.IO;
+using AcadLib.PaletteCommands;
 using AcadLib.UI.Ribbon.Elements;
+using AcadLib.UI.Ribbon.Options;
 using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.Private.Windows;
 using Autodesk.Windows;
 using JetBrains.Annotations;
+using MicroMvvm;
 using NetLib;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using MicroMvvm;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.UI.Ribbon
@@ -21,7 +25,16 @@ namespace AcadLib.UI.Ribbon
     public static class RibbonBuilder
     {
         private static RibbonControl ribbon;
+        private static readonly RibbonOptions ribbonOptions;
+        private static readonly JsonData<RibbonOptions> ribbonOptionsData;
         private static bool isInitialized;
+
+        static RibbonBuilder()
+        {
+            // Загрузка настроек ленты
+            ribbonOptionsData = new JsonData<RibbonOptions>("Ribbon", "RibbonOptions");
+            ribbonOptions = ribbonOptionsData.TryLoad() ?? new RibbonOptions();
+        }
 
         public static void InitRibbon()
         {
@@ -78,17 +91,21 @@ namespace AcadLib.UI.Ribbon
             }
         }
 
-        private static void CreateRibbon(List<IRibbonElement> elements)
+        private static void CreateRibbon(IEnumerable<IRibbonElement> elements)
         {
             try
             {
+                ribbon.Tabs.CollectionChanged -= Tabs_CollectionChanged;
                 // группировка элементов по вкладкам
-                foreach (var tabElems in elements.GroupBy(g => g.Tab))
+                var tabsOpt = elements.GroupBy(g => g.Tab).Select(t => CreateTab(t.Key, t.ToList()));
+                foreach (var tabOpt in tabsOpt)
                 {
-                    var tab = CreateTab(tabElems.Key, tabElems.ToList());
-                    ribbon.Tabs.Insert(0, tab);
+                    var tab = (RibbonTab) tabOpt.Item;
+                    AddItem(tabOpt.Index, tab, ribbon.Tabs);
+                    tab.Panels.CollectionChanged += Panels_CollectionChanged;
+                    tab.PropertyChanged += Tab_PropertyChanged;
                 }
-                ribbon.UpdateLayout();
+                ribbon.Tabs.CollectionChanged += Tabs_CollectionChanged;
             }
             catch (Exception ex)
             {
@@ -96,32 +113,102 @@ namespace AcadLib.UI.Ribbon
             }
         }
 
+        private static void Tab_PropertyChanged(object sender, [NotNull] System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsVisible")
+            {
+                var tab = (RibbonTab) sender;
+                var tabOpt = ribbonOptions.Tabs.FirstOrDefault(t => t.UID == tab.UID);
+                if (tabOpt == null) return;
+                tabOpt.IsVisible = tab.IsVisible;
+                SaveOptions();
+            }
+        }
+        private static void Panel_PropertyChanged(object sender, [NotNull] System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsVisible")
+            {
+                var panel = (RibbonPanel) sender;
+                var tab = panel.Tab;
+                if (tab == null) return;
+                var tabOpt = ribbonOptions.Tabs.FirstOrDefault(t => t.UID == tab.UID);
+                if (tabOpt == null) return;
+                panel.IsVisible = panel.IsVisible;
+                SaveOptions();
+            }
+        }
+
+        private static void Panels_CollectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Move)
+            {
+                var ribbonPanelCol = sender as RibbonPanelCollection;
+                var tab = ribbonPanelCol?.FirstOrDefault()?.Tab;
+                if (tab == null) return;
+                var tabOptions = ribbonOptions.Tabs.FirstOrDefault(t => t.UID == tab.UID);
+                if (tabOptions == null) return;
+                for (var index = 0; index < ribbonPanelCol.Count; index++)
+                {
+                    var panel = ribbonPanelCol[index];
+                    var panelOpt = tabOptions.Items.FirstOrDefault(p => p.UID == panel.UID);
+                    if (panelOpt != null)
+                    {
+                        panelOpt.Index = index;
+                    }
+                }
+                SaveOptions();
+            }
+        }
+
+        private static void Tabs_CollectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (var tab in ribbonOptions.Tabs)
+                {
+                    var index = ribbon.Tabs.IndexOf((RibbonTab)tab.Item);
+                    if (index == -1)
+                    {
+                        return;
+                    }
+                    tab.Index = index;
+                }
+                SaveOptions();
+            }
+        }
+
         [NotNull]
-        private static RibbonTab CreateTab(string tabName, [NotNull] List<IRibbonElement> elements)
+        private static ItemOptions CreateTab(string tabName, [NotNull] IEnumerable<IRibbonElement> elements)
         {
             var tab = new RibbonTab
             {
                 Title = tabName,
                 Name = tabName,
-                Id = tabName
+                Id = tabName,
+                UID = tabName
             };
-            foreach (var panelElems in elements.GroupBy(g => g.Panel))
+            var tabOptions = GetItemOptions(tab, ribbonOptions.Tabs);
+            tab.IsVisible = tabOptions.IsVisible;
+            tabOptions.Items = elements.GroupBy(g => g.Panel).Select(p => CreatePanel(p.Key, p.ToList(), tabOptions))
+                .OrderBy(o => o.Index).ToList();
+            foreach (var panelOpt in tabOptions.Items)
             {
-                var panel = CreatePanel(panelElems.Key, panelElems.ToList());
-                tab.Panels.Add(panel);
+                tab.Panels.Add((RibbonPanel)panelOpt.Item);
             }
-            return tab;
+            return tabOptions;
         }
 
         [NotNull]
-        private static RibbonPanel CreatePanel(string panelName, List<IRibbonElement> elements)
+        private static ItemOptions CreatePanel(string panelName, IEnumerable<IRibbonElement> elements, 
+            [NotNull] ItemOptions tabOptions)
         {
             var name = panelName.IsNullOrEmpty() ? "Главная" : panelName;
             var panelSource = new RibbonPanelSource
             {
                 Name = name,
                 Id = panelName,
-                Title = name
+                Title = name,
+                UID = name
             };
             foreach (var part in elements.SplitParts(2))
             {
@@ -134,8 +221,11 @@ namespace AcadLib.UI.Ribbon
                 panelSource.Items.Add(row);
                 panelSource.Items.Add(new RibbonRowBreak());
             }
-            var panel = new RibbonPanel { Source = panelSource };
-            return panel;
+            var panel = new RibbonPanel { Source = panelSource, UID = panelSource.UID};
+            var panelOpt = GetItemOptions(panel, tabOptions.Items);
+            panel.IsVisible = panelOpt.IsVisible;
+            panel.PropertyChanged += Panel_PropertyChanged;
+            return panelOpt;
         }
 
         [NotNull]
@@ -170,10 +260,60 @@ namespace AcadLib.UI.Ribbon
             };
         }
 
-        [NotNull]
-        private static BitmapSource ResizeImage([NotNull] BitmapSource image, int size)
+        [CanBeNull]
+        private static BitmapSource ResizeImage([CanBeNull] BitmapSource image, int size)
         {
-            return new TransformedBitmap(image, new ScaleTransform(size / image.Width, size / image.Height));
+            return image == null ? null
+                : new TransformedBitmap(image, new ScaleTransform(size / image.Width, size / image.Height));
+        }
+
+        private static void SaveOptions()
+        {
+            foreach (var tabOpt in ribbonOptions.Tabs)
+            {
+                var tab = (RibbonTab)tabOpt.Item;
+                tabOpt.IsVisible = tab.IsVisible;
+                foreach (var panelOpt in tabOpt.Items)
+                {
+                    var panel =(RibbonPanel) panelOpt.Item;
+                    panelOpt.IsVisible = panel.IsVisible;
+                }
+            }
+            Debug.WriteLine("RibbonBuilder SaveOptions");
+            ribbonOptionsData.TrySave(ribbonOptions);
+        }
+
+        [NotNull]
+        private static ItemOptions GetItemOptions<T>([NotNull] T item, [NotNull] List<ItemOptions> itemOptions) 
+            where T : IRibbonContentUid
+        {
+            var tabOption = itemOptions.FirstOrDefault(t => t.UID.Equals(item.UID));
+            if (tabOption == null)
+            {
+                tabOption = new ItemOptions
+                {
+                    UID = item.UID,
+                    Index = 0,
+                    Item = item
+                };
+                itemOptions.Add(tabOption);
+            }
+            else
+            {
+                tabOption.Item = item;
+            }
+            return tabOption;
+        }
+
+        private static void AddItem<T>(int index, [NotNull] T item, [NotNull] IList<T> items) where T : IRibbonContentUid
+        {
+            if (index > items.Count) index = ribbon.Tabs.Count;
+            else if (index < 0)
+            {
+                items.Add(item);
+                return;
+            }
+            items.Insert(index, item);
         }
     }
 }
