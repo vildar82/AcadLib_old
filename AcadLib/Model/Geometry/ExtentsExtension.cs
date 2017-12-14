@@ -12,15 +12,15 @@ namespace Autodesk.AutoCAD.DatabaseServices
             var ptsGrid = new List<Point3d>();
             var extL = ext.GetLength();
             var extH = ext.GetHeight();
-            var iX = (int)(extL / len) + 1;
-            var iY = (int)(extH / len) + 1;
+            var iX = (int)(extL / len)+1;
+            var iY = (int)(extH / len)+1;
             var dX = extL / iX;
             var dY = extH / iY;
             for (var x = 0; x < iX; x++)
             {
                 for (var y = 0; y < iY; y++)
                 {
-                    ptsGrid.Add(new Point3d(ext.MinPoint.X + x * dX, ext.MinPoint.Y + y * dY, 0));
+                    ptsGrid.Add(new Point3d(ext.MinPoint.X + len*0.5 + x * dX, ext.MinPoint.Y + len*0.5 + y * dY, 0));
                 }
             }
             return ptsGrid;

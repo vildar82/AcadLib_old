@@ -54,7 +54,9 @@ namespace AcadLib.Errors
                     _alreadyCalcExtents = true;
                     if (HasEntity)
                     {
+#pragma warning disable 618
                         using (var ent = _idEnt.Open(OpenMode.ForRead, false, true) as Entity)
+#pragma warning restore 618
                         {
                             if (ent != null)
                             {
@@ -195,6 +197,7 @@ namespace AcadLib.Errors
             _msg = PrepareMessage(message);
             _shortMsg = GetShortMsg(_msg);
             _extents = ext;
+            _extents.TransformBy(trans);
             _alreadyCalcExtents = true;
             HasEntity = false;
             Icon = icon ?? SystemIcons.Error;
@@ -227,37 +230,28 @@ namespace AcadLib.Errors
             DefineStatus();
         }
 
-        protected string PrepareMessage(string message)
+        private string PrepareMessage(string message)
         {
             Group = message;
             return message;//.ClearString(); // делать очистку в момент создания ошибки при необходимости
         }
 
         [NotNull]
-        protected string GetShortMsg([NotNull] string msg)
+        private static string GetShortMsg([NotNull] string msg)
         {
-            var resVal = string.Empty;
-            if (msg.Length > 200)
-            {
-                resVal = msg.Substring(0, 200);
-            }
-            else
-            {
-                resVal = msg;
-            }
+            var resVal = msg.Length > 200 ? msg.Substring(0, 200) : msg;
             return resVal.Replace("\n", " ");
         }
 
         public int CompareTo([NotNull] IError other)
         {
             var res = Status.CompareTo(other.Status);
-            if (res != 0) return res;
-            return string.Compare(Message, other.Message);
+            return res != 0 ? res : string.CompareOrdinal(Message, other.Message);
         }
 
         public bool Equals(IError other)
         {
-            return string.Equals(Message, other.Message);
+            return other != null && string.Equals(Message, other.Message);
         }
 
         public override int GetHashCode()
@@ -295,7 +289,8 @@ namespace AcadLib.Errors
             });
             return errCounts.ToList();
         }
-        internal void SetCount(int v)
+
+        private void SetCount(int v)
         {
             if (v > 1)
             {
@@ -303,7 +298,7 @@ namespace AcadLib.Errors
             }
         }
 
-        protected void DefineStatus()
+        private void DefineStatus()
         {
             if (Icon == null) Icon = SystemIcons.Error;
             dictErrorIcons.TryGetValue(Icon, out var status);

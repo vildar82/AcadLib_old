@@ -48,7 +48,7 @@ namespace AcadLib
             {
                 CommandsPalette = new List<IPaletteCommand>()
                 {
-                    new PaletteInsertBlock("PIK_Logo", fileCommonBlocks, "Блок логотипа", Properties.Resources.logo, "Вставка блока логотипа ПИК."),
+                    new PaletteInsertBlock("PIK_Project-Logo", fileCommonBlocks, "Блок логотипа", Properties.Resources.logo, "Вставка блока логотипа ПИК."),
                     new PaletteCommand("Просмотр расширенных данных примитива", Properties.Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива."),
                 };
             }

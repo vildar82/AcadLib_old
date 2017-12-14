@@ -95,7 +95,7 @@ namespace AcadLib.Visual
             return c;
         }
 
-        public static void SetEntityOpt([CanBeNull] Entity ent, VisualOption opt)
+        public static void SetEntityOpt([CanBeNull] this Entity ent, VisualOption opt)
         {
             if (ent == null) return;
             if (opt.Color != null) ent.Color = opt.Color;

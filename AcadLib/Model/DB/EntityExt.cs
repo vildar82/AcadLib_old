@@ -44,9 +44,12 @@ namespace AcadLib.Extensions
         /// <returns>Да - видим, Нет - не видим, слой выключен или заморожен</returns>
         public static bool IsVisibleLayerOnAndUnfrozen([NotNull] this Entity ent)
         {
-            var lt = ent.Database.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
-            var lay = lt[ent.Layer].GetObject(OpenMode.ForRead) as LayerTableRecord;
-            return !lay.IsOff && !lay.IsFrozen && ent.Visible; // Слой включен и разморожен  и объект видимый
+            if (!ent.Visible) return false;
+            using (var lt = (LayerTable)ent.Database.LayerTableId.GetObject(OpenMode.ForRead))
+            using (var lay = (LayerTableRecord)lt[ent.Layer].GetObject(OpenMode.ForRead))
+            {
+                return !lay.IsOff && !lay.IsFrozen; // Слой включен и разморожен  и объект видимый
+            }
         }
     }
 }

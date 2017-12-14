@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
+using NetLib;
 using Visibility = System.Windows.Visibility;
 
 namespace AcadLib.Errors.UI
@@ -21,7 +22,14 @@ namespace AcadLib.Errors.UI
             Parent = parent;
             if (parent == null)
             {
-                Message = err.Message;
+                if (err.Group.IsNullOrEmpty() || err.Message.StartsWith(err.Group))
+                {
+                    Message = err.Message;
+                }
+                else
+                {
+                    Message = $"{err.Group} {err.Message}";
+                }
                 MarginHeader = new Thickness(32, 2, 2, 2);
             }
             else
@@ -35,16 +43,33 @@ namespace AcadLib.Errors.UI
             // Добавить кнопку, для отрисовки визуализации на чертежа
             if (HasVisuals)
             {
-                if (AddButtons == null) AddButtons = new List<ErrorAddButton>();
-                var visCommand = ReactiveCommand.Create(AddVisualsToDrawing, Observable.Start(() => Error?.Visuals?.Any() == true));
-                var visButton = new ErrorAddButton
+                if (AddButtons == null)
                 {
-                    Name = "Отрисовка",
-                    Tooltip = "Добавить визуализацию ошибки в чертеж.",
-                    Click = visCommand
-                };
-                AddButtons.Add(visButton);
+                    AddButtons = new List<ErrorAddButton>();
+                    AddVisualButton();
+                }
+                else if (!HasVisualButton())
+                {
+                    AddVisualButton();
+                }
             }
+        }
+
+        private bool HasVisualButton()
+        {
+            return AddButtons.Any(b => b.Name == "Отрисовка");
+        }
+
+        private void AddVisualButton()
+        {
+            var visCommand = ReactiveCommand.Create(AddVisualsToDrawing, Observable.Start(() => Error?.Visuals?.Any() == true));
+            var visButton = new ErrorAddButton
+            {
+                Name = "Отрисовка",
+                Tooltip = "Добавить визуализацию ошибки в чертеж.",
+                Click = visCommand
+            };
+            AddButtons.Add(visButton);
         }
 
         private void AddVisualsToDrawing()

@@ -26,13 +26,13 @@ namespace AcadLib.UI.Ribbon
     {
         private static RibbonControl ribbon;
         private static readonly RibbonOptions ribbonOptions;
-        private static readonly JsonData<RibbonOptions> ribbonOptionsData;
+        private static readonly JsonLocalData<RibbonOptions> ribbonOptionsData;
         private static bool isInitialized;
 
         static RibbonBuilder()
         {
             // Загрузка настроек ленты
-            ribbonOptionsData = new JsonData<RibbonOptions>("Ribbon", "RibbonOptions");
+            ribbonOptionsData = new JsonLocalData<RibbonOptions>("Ribbon", "RibbonOptions");
             ribbonOptions = ribbonOptionsData.TryLoad() ?? new RibbonOptions();
         }
 

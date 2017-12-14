@@ -33,9 +33,7 @@ namespace Autodesk.AutoCAD.EditorInput
     {
         public static void Zoom([CanBeNull] this Editor ed, Extents3d ext)
         {
-            if (ed == null)
-                return;
-
+            if (ed == null) return;
             using (var view = ed.GetCurrentView())
             {
                 ext.TransformBy(view.WorldToEye());
@@ -50,9 +48,7 @@ namespace Autodesk.AutoCAD.EditorInput
 
         public static void ZoomExtents([CanBeNull] this Editor ed)
         {
-            if (ed == null)
-                return;
-
+            if (ed == null) return;
             var db = ed.Document.Database;
             var ext = (short)Application.GetSystemVariable("cvport") == 1 ?
                 new Extents3d(db.Pextmin, db.Pextmax) :

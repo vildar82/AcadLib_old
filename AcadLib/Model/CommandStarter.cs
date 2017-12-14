@@ -90,7 +90,9 @@ namespace AcadLib
             {
                 doc.Editor.WriteMessage(ex.Message);
             }
+#pragma warning disable 618
             catch (CancelByUserException cancelByUser)
+#pragma warning restore 618
             {
                 doc.Editor.WriteMessage(cancelByUser.Message);
             }
@@ -119,7 +121,10 @@ namespace AcadLib
                 CurrentCommand = commandName ?? GetCallerCommandName(caller);
                 assm = caller?.DeclaringType?.Assembly;
             }
-            catch { }
+            catch
+            {
+                //
+            }
             var com = new CommandStart
             {
                 CommandName = CurrentCommand,

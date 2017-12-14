@@ -12,6 +12,28 @@ namespace Autodesk.AutoCAD.EditorInput
     public static class UserPrompt
     {
         /// <summary>
+        /// Выбор объекта заданного типа на чертеже. В том числе, на заблокированном слое.
+        /// </summary>
+        /// <typeparam name="T">Тип объекта</typeparam>
+        /// <param name="ed">Editor</param>
+        /// <param name="prompt">Запрос выбора объекта пользователю</param>
+        /// <param name="exactMatch">Точное соответствие типа объекта</param>
+        /// <returns></returns>
+        public static ObjectId SelectEntity<T>([NotNull] this Editor ed, string prompt, bool exactMatch = true) where T : Entity
+        {
+            var selOpt = new PromptEntityOptions($"\n{prompt}");
+            selOpt.SetRejectMessage($"\nМожно выбрать {typeof(T).Name}");
+            selOpt.AddAllowedClass(typeof(T), exactMatch);
+            selOpt.AllowObjectOnLockedLayer = true;
+            var selRes = ed.GetEntity(selOpt);
+            if (selRes.Status != PromptStatus.OK)
+            {
+                throw new OperationCanceledException();
+            }
+            return selRes.ObjectId;
+        }
+
+        /// <summary>
         /// Выбор объекта на чертеже заданного типа
         /// </summary>
         /// <typeparam name="T">Тип выбираемого объекта</typeparam>
@@ -24,6 +46,7 @@ namespace Autodesk.AutoCAD.EditorInput
             var selOpt = new PromptEntityOptions($"\n{prompt}");
             selOpt.SetRejectMessage($"\n{rejectMsg}");
             selOpt.AddAllowedClass(typeof(T), true);
+            selOpt.AllowObjectOnLockedLayer = true;
             var selRes = ed.GetEntity(selOpt);
             if (selRes.Status != PromptStatus.OK)
             {

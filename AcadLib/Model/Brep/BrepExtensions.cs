@@ -10,8 +10,11 @@ using JetBrains.Annotations;
 using NetLib;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Exception = Autodesk.AutoCAD.Runtime.Exception;
+using Region = Autodesk.AutoCAD.DatabaseServices.Region;
+using Surface = Autodesk.AutoCAD.DatabaseServices.Surface;
 
 namespace AcadLib
 {
@@ -146,6 +149,7 @@ namespace AcadLib
             return ptsVertex;
         }
 
+        [Obsolete("Use CreateSurface")]
         [CanBeNull]
         public static Hatch CreateHatch(this Region region, bool createOut, [CanBeNull] out DisposableSet<Polyline> externalLoops)
         {
@@ -186,9 +190,19 @@ namespace AcadLib
             h.EvaluateHatch(true);
             return h;
         }
+
+        [Obsolete("Use CreateSurface")]
         public static Hatch CreateHatch(this Region region)
         {
             return CreateHatch(region, false, out _);
+        }
+
+        public static Surface CreateSurface(this Region region)
+        {
+            using (var brep = new Brep(region))
+            {
+                return brep.Surf;
+            }
         }
 
         public static Region Union(this List<Polyline> pls, Region over)
@@ -247,6 +261,7 @@ namespace AcadLib
             return reg;
         }
 
+        [Obsolete("Использвуй CreateRegion2, нужно протестить.")]
         public static Region CreateRegion([CanBeNull] this Hatch hatch)
         {
             try
@@ -259,26 +274,34 @@ namespace AcadLib
                 {
                     var validLoops = loops.Where(w => w.Loop.Area > 0).ToList();
                     var externalLoops = new List<Curve>();
-                    var internalLoop = new List<Curve>();
+                    var internalLoops = new List<Curve>();
                     foreach (var loop in validLoops)
                     {
-                        if (loop.Types.Has(HatchLoopTypes.External))
+                        if (loop.Types.HasFlag(HatchLoopTypes.External))
+                        {
                             externalLoops.Add(loop.Loop);
-                        else if (loop.Types.HasAny(HatchLoopTypes.Derived | HatchLoopTypes.Outermost))
-                            internalLoop.Add(loop.Loop);
+                        }
                         else
                         {
-                            Inspector.AddError($"Тип контура {loop.Types} в штриховке пропущен", hatch);
+                            internalLoops.Add(loop.Loop);
                         }
                     }
                     if (!externalLoops.Any())
                     {
-                        Inspector.AddError($"Штриховка без внешних контуров - пропущена", hatch);
+                        Inspector.AddError("Штриховка без внешних контуров - пропущена", hatch);
                     }
+//#if DEBUG
+//                    externalLoops.AddEntityToCurrentSpace(new EntityOptions{ Color = Color.Blue});
+//                    internalLoops.AddEntityToCurrentSpace(new EntityOptions { Color = Color.DarkOliveGreen });
+//#endif
                     var externalRegion = GetRegion(externalLoops);
-                    if (internalLoop.Any())
+                    if (internalLoops.Any())
                     {
-                        var internalRegion = GetRegion(internalLoop);
+                        var internalRegion = GetRegion(internalLoops);
+#if DEBUG
+                        ((Region)externalRegion.Clone()).AddEntityToCurrentSpace(new EntityOptions { Color = Color.Blue });
+                        ((Region)internalRegion.Clone()).AddEntityToCurrentSpace(new EntityOptions { Color = Color.DarkOliveGreen });
+#endif
                         externalRegion.BooleanOperation(BooleanOperationType.BoolSubtract, internalRegion);
                         internalRegion.Dispose();
                     }
@@ -292,6 +315,40 @@ namespace AcadLib
                 return null;
             }
         }
+
+        /// <summary>
+        /// Область штриховки - по вычитанию регионов - лучше чем первый сплособ!!!
+        /// </summary>
+        /// <param name="hatch"></param>
+        /// <returns></returns>
+        public static Region CreateRegion2([NotNull] this Hatch hatch)
+        {
+            using (var loops = hatch.GetPolylines2(Tolerance.Global))
+            {
+                var dbs = new DBObjectCollection();
+                foreach (var loop in loops)
+                {
+                    dbs.Add(loop.Loop);
+                }
+                var regions = new DisposableSet<Region>(Region.CreateFromCurves(dbs).Cast<Region>());
+                var regionRes = regions.First();
+                regions.Remove(regionRes);
+                foreach (var region in regions.Skip(1))
+                {
+                    using (var regionClone = (Region) region.Clone())
+                    {
+                        var areaBefore = regionRes.Area;
+                        regionRes.BooleanOperation(BooleanOperationType.BoolSubtract, regionClone);
+                        if (Math.Abs(areaBefore - regionRes.Area) < 0.0001)
+                        {
+                            regionRes.BooleanOperation(BooleanOperationType.BoolUnite, region);
+                        }
+                    }
+                }
+                return regionRes;
+            }
+        }
+
         private static Region GetRegion(IEnumerable<Curve> pls)
         {
             using (var regions = new DisposableSet<Region>(pls.CreateRegion()))

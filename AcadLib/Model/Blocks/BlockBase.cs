@@ -24,6 +24,7 @@ namespace AcadLib.Blocks
         private Extents3d _extentsToShow;
         private bool _isNullExtents;
 
+        public bool DontAddErrorsToInspector { get; set; }
         public Database Db { get; private set; }
         /// <inheritdoc />
         /// <summary>
@@ -283,7 +284,7 @@ namespace AcadLib.Blocks
                 {
                     Group = $"Ошибка в блоке '{BlName}'"
                 };
-                Inspector.AddError(Error);
+                if (!DontAddErrorsToInspector) Inspector.AddError(Error);
             }
             Error.AdditionToMessage(msg);
         }
@@ -373,7 +374,10 @@ namespace AcadLib.Blocks
         {
             if (blRef.Color.IsByLayer)
             {
-                using (var lay = blRef.LayerId.Open(OpenMode.ForRead) as LayerTableRecord)
+                // ReSharper disable once IdOpenMode
+#pragma warning disable 618
+                using (var lay = (LayerTableRecord) blRef.LayerId.Open(OpenMode.ForRead))
+#pragma warning restore 618
                 {
                     if (lay.IsFrozen || !blRef.Visible)
                     {

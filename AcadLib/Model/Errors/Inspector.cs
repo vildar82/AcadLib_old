@@ -22,9 +22,12 @@ namespace AcadLib.Errors
 
         static Inspector()
         {
+#pragma warning disable 618
             Clear();
+#pragma warning restore 618
         }
 
+        [Obsolete("После Show очищаются ошибки.")]
         public static void Clear()
         {
             Errors = new List<IError>();
@@ -189,7 +192,7 @@ namespace AcadLib.Errors
         {
             if (HasErrors)
             {
-                Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
+                Logger.Log.Error($"Окно ошибок: {string.Join("\n", Errors.Select(e => e.Group + e.Message))}");
                 Errors = SortErrors(Errors);
                 // WPF
                 Show(Errors);
@@ -200,6 +203,7 @@ namespace AcadLib.Errors
             var errVM = new ErrorsViewModel(errors) { IsDialog = false };
             var errView = new ErrorsView(errVM);
             errView.Show();
+            Clear();
         }
 
         [NotNull]
@@ -224,7 +228,7 @@ namespace AcadLib.Errors
                 {
                     return System.Windows.Forms.DialogResult.OK;
                 }
-                throw new CancelByUserException();
+                throw new OperationCanceledException();
             }
             return System.Windows.Forms.DialogResult.OK;
         }
