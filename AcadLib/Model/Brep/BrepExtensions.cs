@@ -30,7 +30,6 @@ namespace AcadLib
             foreach (var pl in idsPl)
             {
                 if (pl == null || Math.Abs(pl.Area) < 0.0001) continue;
-
                 // Создание региона из полилинии
                 var dbs = new DBObjectCollection { pl };
                 var dbsRegions = Region.CreateFromCurves(dbs);
@@ -44,7 +43,6 @@ namespace AcadLib
                     }
                 }
             }
-
             // Объединение регионов
             var r1 = colReg.First();
             foreach (var iReg in colReg.Skip(1))
@@ -63,28 +61,30 @@ namespace AcadLib
         {
             Polyline3d resVal = null;
             double maxArea = 0;
-            var brep = new Brep(reg);
-            foreach (var face in brep.Faces)
+            using (var brep = new Brep(reg))
             {
-                foreach (var loop in face.Loops)
+                foreach (var face in brep.Faces)
                 {
-                    if (loop.LoopType == LoopType.LoopExterior)
+                    foreach (var loop in face.Loops)
                     {
-                        var ptsVertex = new List<Point3d>();
-                        foreach (var vert in loop.Vertices)
+                        if (loop.LoopType == LoopType.LoopExterior)
                         {
-                            if (!ptsVertex.Any(p => p.IsEqualTo(vert.Point, Tolerance.Global)))
+                            var ptsVertex = new List<Point3d>();
+                            foreach (var vert in loop.Vertices)
                             {
-                                ptsVertex.Add(vert.Point);
+                                if (!ptsVertex.Any(p => p.IsEqualTo(vert.Point, Tolerance.Global)))
+                                {
+                                    ptsVertex.Add(vert.Point);
+                                }
                             }
-                        }
-                        var pts = new Point3dCollection(ptsVertex.ToArray());
-                        var pl = new Polyline3d(Poly3dType.SimplePoly, pts, true);
-                        var plArea = pl.Area;
-                        if (plArea > maxArea)
-                        {
-                            resVal = pl;
-                            maxArea = plArea;
+                            var pts = new Point3dCollection(ptsVertex.ToArray());
+                            var pl = new Polyline3d(Poly3dType.SimplePoly, pts, true);
+                            var plArea = pl.Area;
+                            if (plArea > maxArea)
+                            {
+                                resVal = pl;
+                                maxArea = plArea;
+                            }
                         }
                     }
                 }
@@ -99,17 +99,19 @@ namespace AcadLib
         public static List<KeyValuePair<Polyline, BrepLoopType>> GetPolylines(this Region reg)
         {
             var resVal = new List<KeyValuePair<Polyline, BrepLoopType>>(); ;
-            var brep = new Brep(reg);
-            foreach (var face in brep.Faces)
+            using (var brep = new Brep(reg))
             {
-                foreach (var loop in face.Loops)
+                foreach (var face in brep.Faces)
                 {
-                    var ptsVertex = new List<Point2d>();
-                    foreach (var vert in loop.Vertices)
-                        ptsVertex.Add(vert.Point.Convert2d());
+                    foreach (var loop in face.Loops)
+                    {
+                        var ptsVertex = new List<Point2d>();
+                        foreach (var vert in loop.Vertices)
+                            ptsVertex.Add(vert.Point.Convert2d());
 
-                    var pl = ptsVertex.CreatePolyline();
-                    resVal.Add(new KeyValuePair<Polyline, BrepLoopType>(pl, (BrepLoopType)loop.LoopType));
+                        var pl = ptsVertex.CreatePolyline();
+                        resVal.Add(new KeyValuePair<Polyline, BrepLoopType>(pl, (BrepLoopType) loop.LoopType));
+                    }
                 }
             }
             return resVal;
@@ -119,13 +121,17 @@ namespace AcadLib
         public static List<KeyValuePair<Point2dCollection, BrepLoopType>> GetPoints2dByLoopType(this Region reg)
         {
             var resVal = new List<KeyValuePair<Point2dCollection, BrepLoopType>>();
-            var brep = new Brep(reg);
-            foreach (var face in brep.Faces)
+            using (var brep = new Brep(reg))
             {
-                foreach (var loop in face.Loops)
+                foreach (var face in brep.Faces)
                 {
-                    var pts2dCol = new Point2dCollection(loop.Vertices.Select(vert => vert.Point.Convert2d()).ToArray());
-                    resVal.Add(new KeyValuePair<Point2dCollection, BrepLoopType>(pts2dCol, (BrepLoopType)loop.LoopType));
+                    foreach (var loop in face.Loops)
+                    {
+                        var pts2dCol =
+                            new Point2dCollection(loop.Vertices.Select(vert => vert.Point.Convert2d()).ToArray());
+                        resVal.Add(new KeyValuePair<Point2dCollection, BrepLoopType>(pts2dCol,
+                            (BrepLoopType) loop.LoopType));
+                    }
                 }
             }
             return resVal;
@@ -135,14 +141,16 @@ namespace AcadLib
         public static List<Point3d> GetVertices(this Region reg)
         {
             var ptsVertex = new List<Point3d>();
-            var brep = new Brep(reg);
-            foreach (var face in brep.Faces)
+            using (var brep = new Brep(reg))
             {
-                foreach (var loop in face.Loops)
+                foreach (var face in brep.Faces)
                 {
-                    foreach (var vert in loop.Vertices)
+                    foreach (var loop in face.Loops)
                     {
-                        ptsVertex.Add(vert.Point);
+                        foreach (var vert in loop.Vertices)
+                        {
+                            ptsVertex.Add(vert.Point);
+                        }
                     }
                 }
             }
