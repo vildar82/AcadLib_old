@@ -106,7 +106,7 @@ namespace AcadLib.Blocks.Dublicate
                 if (Inspector.ShowDialog(_errors) != true)
                 {
                     Inspector.Show(_errors);
-                    throw new CancelByUserException();
+                    throw new OperationCanceledException();
                 }
                 //var formDublicates = new FormError(_errors, true);
                 //formDublicates.Text = "Дублирование блоков";

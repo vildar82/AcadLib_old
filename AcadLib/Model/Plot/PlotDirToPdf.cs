@@ -386,7 +386,7 @@ namespace AcadLib.Plot
                         "Печать", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
                     if (dlgRes == DialogResult.Cancel)
                     {
-                        throw new CancelByUserException();
+                        throw new OperationCanceledException();
                     }
                 }
                 countWhile++;

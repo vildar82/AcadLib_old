@@ -82,7 +82,7 @@ namespace AcadLib.Errors.UI
                 using (var t = db.TransactionManager.StartTransaction())
                 {
                     var layerVisual = LayerExt.CheckLayerState("visuals");
-                    var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject<BlockTableRecord>(OpenMode.ForWrite);
+                    var ms =(BlockTableRecord) SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForWrite);
                     var fEnt = Error.Visuals.First();
                     var fEntExt = new Extents3d();
                     var fEntId = ObjectId.Null;

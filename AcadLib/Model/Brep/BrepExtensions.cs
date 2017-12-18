@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Autodesk.AutoCAD.ApplicationServices;
 using Exception = Autodesk.AutoCAD.Runtime.Exception;
 using Region = Autodesk.AutoCAD.DatabaseServices.Region;
 using Surface = Autodesk.AutoCAD.DatabaseServices.Surface;
@@ -20,6 +21,8 @@ namespace AcadLib
 {
     public static class BrepExtensions
     {
+        private static List<ObjectId> hatchEditAppendIds;
+
         /// <summary>
         /// Определение контура для набора полилиний - объекдинением в регион и извлечением внешнего его контура.
         /// Должна быть запущена транзакция
@@ -268,96 +271,142 @@ namespace AcadLib
             }
             return reg;
         }
-
-        [Obsolete("Использвуй CreateRegion2, нужно протестить.")]
-        public static Region CreateRegion([CanBeNull] this Hatch hatch)
+        
+        [NotNull]
+        [Obsolete("Используй CreateRegionFromHatch")]
+        public static Region CreateRegion([NotNull] this Hatch hatch)
         {
-            try
+            using (var loops = hatch.GetPolylines2(Block.Tolerance01, HatchLoopTypes.External | HatchLoopTypes.Outermost))
             {
-                if (hatch == null) return null;
-                using (var loops = hatch.GetPolylines2(Block.Tolerance01,
-                    HatchLoopTypes.Polyline | HatchLoopTypes.Default | HatchLoopTypes.Derived
-                    | HatchLoopTypes.External | HatchLoopTypes.Outermost | HatchLoopTypes.NotClosed |
-                    HatchLoopTypes.SelfIntersecting, false))
+                var validLoops = loops.Where(w => w.Loop.Area > 0).ToList();
+#if DEBUG
+                validLoops.Select(s=>(Curve)s.Loop.Clone()).AddEntityToCurrentSpace(new EntityOptions{Color =  Color.DarkRed});
+#endif
+                var externalLoops = new List<Curve>();
+                var internalLoops = new List<Curve>();
+                foreach (var loop in validLoops)
                 {
-                    var validLoops = loops.Where(w => w.Loop.Area > 0).ToList();
-                    var externalLoops = new List<Curve>();
-                    var internalLoops = new List<Curve>();
-                    foreach (var loop in validLoops)
+                    if (loop.Types.HasFlag(HatchLoopTypes.External))
                     {
-                        if (loop.Types.HasFlag(HatchLoopTypes.External))
-                        {
-                            externalLoops.Add(loop.Loop);
-                        }
-                        else
-                        {
-                            internalLoops.Add(loop.Loop);
-                        }
+                        externalLoops.Add(loop.Loop);
                     }
-                    if (!externalLoops.Any())
+                    else
                     {
-                        Inspector.AddError("Штриховка без внешних контуров - пропущена", hatch);
+                        internalLoops.Add(loop.Loop);
                     }
+                }
+                if (!externalLoops.Any())
+                {
+                    Inspector.AddError("Штриховка без внешних контуров - пропущена", hatch);
+                }
 //#if DEBUG
 //                    externalLoops.AddEntityToCurrentSpace(new EntityOptions{ Color = Color.Blue});
 //                    internalLoops.AddEntityToCurrentSpace(new EntityOptions { Color = Color.DarkOliveGreen });
 //#endif
-                    var externalRegion = GetRegion(externalLoops);
-                    if (internalLoops.Any())
-                    {
-                        var internalRegion = GetRegion(internalLoops);
+                var externalRegion = GetRegion(externalLoops);
+                if (internalLoops.Any())
+                {
+                    var internalRegion = GetRegion(internalLoops);
 #if DEBUG
-                        ((Region)externalRegion.Clone()).AddEntityToCurrentSpace(new EntityOptions { Color = Color.Blue });
-                        ((Region)internalRegion.Clone()).AddEntityToCurrentSpace(new EntityOptions { Color = Color.DarkOliveGreen });
-#endif
-                        externalRegion.BooleanOperation(BooleanOperationType.BoolSubtract, internalRegion);
-                        internalRegion.Dispose();
-                    }
-                    var region = externalRegion;
-                    return region;
-                }
-            }
-            catch (Exception ex)
-            {
-                Inspector.AddError($"ошибка определения области штриховки. Пропущена. {ex.Message}.", hatch);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Область штриховки - по вычитанию регионов - лучше чем первый сплособ!!!
-        /// </summary>
-        /// <param name="hatch"></param>
-        /// <returns></returns>
-        public static Region CreateRegion2([NotNull] this Hatch hatch)
-        {
-            using (var loops = hatch.GetPolylines2(Tolerance.Global))
-            {
-                var dbs = new DBObjectCollection();
-                foreach (var loop in loops)
-                {
-                    dbs.Add(loop.Loop);
-                }
-                var regions = new DisposableSet<Region>(Region.CreateFromCurves(dbs).Cast<Region>());
-                var regionRes = regions.First();
-                regions.Remove(regionRes);
-                foreach (var region in regions.Skip(1))
-                {
-                    using (var regionClone = (Region) region.Clone())
+                    ((Region) externalRegion.Clone()).AddEntityToCurrentSpace(new EntityOptions {Color = Color.Blue});
+                    ((Region) internalRegion.Clone()).AddEntityToCurrentSpace(new EntityOptions
                     {
-                        var areaBefore = regionRes.Area;
-                        regionRes.BooleanOperation(BooleanOperationType.BoolSubtract, regionClone);
-                        if (Math.Abs(areaBefore - regionRes.Area) < 0.0001)
-                        {
-                            regionRes.BooleanOperation(BooleanOperationType.BoolUnite, region);
-                        }
-                    }
+                        Color = Color.DarkOliveGreen
+                    });
+#endif
+                    externalRegion.BooleanOperation(BooleanOperationType.BoolSubtract, internalRegion);
+                    internalRegion.Dispose();
                 }
-                return regionRes;
+                var region = externalRegion;
+                return region;
             }
         }
 
-        private static Region GetRegion(IEnumerable<Curve> pls)
+        [NotNull]
+        public static Region CreateRegionFromHatch(this ObjectId hatchId)
+        {
+            var doc = AcadHelper.Doc;
+            var ed = doc.Editor;
+            var db = doc.Database;
+            hatchEditAppendIds = new List<ObjectId>();
+            doc.CommandWillStart += CommandWillStartHatchEdit;
+            ed.Command("_.-HATCHEDIT", hatchId, "_B", "_R", "_N");
+            doc.CommandWillStart -= CommandWillStartHatchEdit;
+            db.ObjectAppended -= ObjectAppendedHatchEdit;
+            var rId = hatchEditAppendIds.FirstOrDefault(v => v.ObjectClass == General.ClassRegion);
+            if (rId.IsNull)
+            {
+                throw new System.Exception("Не удалось создать регион из штриховки из-за самоперемечений.");
+            }
+            var r = rId.GetObject(OpenMode.ForWrite);
+            var res = (Region)r.Clone();
+            r.Erase();
+            hatchEditAppendIds.Remove(rId);
+            hatchEditAppendIds.ForEach(i=>i.GetObject(OpenMode.ForWrite).Erase());
+            hatchEditAppendIds.Clear();
+            return res;
+        }
+
+        private static void CommandWillStartHatchEdit(object sender, [NotNull] CommandEventArgs e)
+        {
+            if (e.GlobalCommandName == "-HATCHEDIT")
+            {
+                var doc = (Document)sender;
+                var db = doc.Database;
+                db.ObjectAppended += ObjectAppendedHatchEdit;
+            }
+        }
+
+        private static void ObjectAppendedHatchEdit(object sender, [NotNull] ObjectEventArgs e)
+        {
+            hatchEditAppendIds.Add(e.DBObject.Id);
+        }
+
+        //        /// <summary>
+        //        /// Область штриховки - по вычитанию регионов - лучше чем первый сплособ!!!
+        //        /// </summary>
+        //        /// <param name="hatch"></param>
+        //        /// <returns></returns>
+        //        public static Region CreateRegion2([NotNull] this Hatch hatch)
+        //        {
+        //            using (var loops = hatch.GetPolylines2(Tolerance.Global))
+        //            {
+        //#if DEBUG
+        //                var loopEnts = new List<Entity>();
+        //                var index = 0;
+        //                foreach (var loopPl in loops.ToList())
+        //                {
+        //                    loopEnts.Add(loopPl.Loop);
+        //                    loopEnts.Add(EntityHelper.CreateText($"{index++},{loopPl.Types}", loopPl.Loop.StartPoint));
+        //                    loopEnts.AddEntityToCurrentSpace();
+        //                }
+        //                index = 5;
+        //#endif
+        //                var extLoop = loops.First(l => l.Types.HasFlag(HatchLoopTypes.External));
+        //                var regionRes = extLoop.Loop.CreateRegion();
+        //                loops.Remove(extLoop);
+        //                extLoop.Dispose();
+        //                foreach (var loop in loops)
+        //                {
+        //                    using (var loopR = loop.Loop.CreateRegion())
+        //                    using (var loopRClone = (Region)loopR.Clone())
+        //                    {
+        //                        var areaBefore = regionRes.Area;
+        //                        regionRes.BooleanOperation(BooleanOperationType.BoolSubtract, loopR);
+        //                        if (Math.Abs(areaBefore - regionRes.Area) < 0.0001)
+        //                        {
+        //                            regionRes.BooleanOperation(BooleanOperationType.BoolUnite, loopRClone);
+        //                        }
+        //#if DEBUG
+        //                        ((Region)regionRes.Clone()).AddEntityToCurrentSpace(new EntityOptions { ColorIndex = index++ });
+        //#endif
+        //                    }
+        //                }
+        //                return regionRes;
+        //            }
+        //        }
+
+        private static Region GetRegion([NotNull] IEnumerable<Curve> pls)
         {
             using (var regions = new DisposableSet<Region>(pls.CreateRegion()))
             {
@@ -376,15 +425,22 @@ namespace AcadLib
         public static List<Region> CreateRegion([NotNull] this IEnumerable<Curve> curves)
         {
             var res = new List<Region>();
-            var dbs = new DBObjectCollection();
             foreach (var curve in curves)
             {
-                dbs.Add(curve);
-            }
-            var dbsRegions = Region.CreateFromCurves(dbs);
-            foreach (var item in dbsRegions)
-            {
-                res.Add((Region)item);
+                var dbs = new DBObjectCollection {curve};
+                try
+                {
+                    var dbsRegions = Region.CreateFromCurves(dbs);
+                    foreach (var item in dbsRegions)
+                    {
+                        res.Add((Region) item);
+                    }
+                }
+                catch
+                {
+                    // Самопересечение
+                    Inspector.AddError("Самопересечение контура", curve.GeometricExtents, Matrix3d.Identity);
+                }
             }
 #if DEBUG
             //EntityHelper.AddEntityToCurrentSpace(res);

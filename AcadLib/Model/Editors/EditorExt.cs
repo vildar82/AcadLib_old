@@ -34,12 +34,15 @@ namespace AcadLib.Editors
         [NotNull]
         public static List<ObjectId> SelectInExtents([NotNull] this Editor ed, Extents3d ext)
         {
-            ed.Document.Database.TileMode = true;
-            ed.Zoom(ext);
-            var selRes = ed.SelectCrossingWindow(ext.MinPoint, ext.MaxPoint);
-            if (selRes.Status == PromptStatus.OK)
+            using (ed.Document.LockDocument())
             {
-                return selRes.Value.GetObjectIds().ToList();
+                ed.Document.Database.TileMode = true;
+                ed.Zoom(ext);
+                var selRes = ed.SelectCrossingWindow(ext.MinPoint, ext.MaxPoint);
+                if (selRes.Status == PromptStatus.OK)
+                {
+                    return selRes.Value.GetObjectIds().ToList();
+                }
             }
             throw new Exception($"Ошибка выбора элементов в заданных границах - {ext}");
         }

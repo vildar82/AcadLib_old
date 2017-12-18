@@ -50,7 +50,7 @@ namespace Autodesk.AutoCAD.EditorInput
             var selRes = ed.GetEntity(selOpt);
             if (selRes.Status != PromptStatus.OK)
             {
-                throw new CancelByUserException();
+                throw new OperationCanceledException();
             }
             return selRes.ObjectId;
         }
@@ -69,12 +69,12 @@ namespace Autodesk.AutoCAD.EditorInput
                 }
                 else
                 {
-                    throw new CancelByUserException();
+                    throw new OperationCanceledException();
                 }
             }
             else
             {
-                throw new CancelByUserException();
+                throw new OperationCanceledException();
             }
             return extentsPrompted;
         }
@@ -92,10 +92,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 return res.Value.TransformBy(ed.CurrentUserCoordinateSystem);
             }
-            else
-            {
-                throw new CancelByUserException();
-            }
+            throw new OperationCanceledException();
         }
 
         /// <summary>
@@ -116,10 +113,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 return res.Value;
             }
-            else
-            {
-                throw new CancelByUserException();
-            }
+            throw new OperationCanceledException();
         }
 
         /// <summary>
@@ -140,10 +134,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 return selRes.Value.GetObjectIds().ToList();
             }
-            else
-            {
-                throw new CancelByUserException();
-            }
+            throw new OperationCanceledException();
         }
 
         /// <summary>
@@ -166,10 +157,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 return selRes.Value.GetObjectIds().ToList();
             }
-            else
-            {
-                throw new CancelByUserException();
-            }
+            throw new OperationCanceledException();
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ namespace AcadLib
 {
     public static class MathExt
     {
+        public static Random Rnd { get; } = new Random();
         public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
         public const double PI2 = Math.PI * 2;
         public const double PIHalf = Math.PI * 0.5;

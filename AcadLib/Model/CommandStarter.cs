@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
@@ -54,6 +55,25 @@ namespace AcadLib
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Start(Action<Document> action)
         {
+            MethodBase caller = null;
+            try
+            {
+                caller = new StackTrace().GetFrame(1).GetMethod();
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, "CommandStart - StackTrace");
+            }
+            StartCommand(action, caller, null);
+        }
+
+        public static void Start(Action<Document> action, Version minAcadVersion)
+        {
+            if (Application.Version < minAcadVersion)
+            {
+                MessageBox.Show($"Команда не работает в данной версии автокада. \nМинимальная требуемая версия {minAcadVersion}.");
+                return;
+            }
             MethodBase caller = null;
             try
             {

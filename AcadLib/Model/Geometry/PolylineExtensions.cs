@@ -736,19 +736,23 @@ namespace AcadLib.Geometry
         /// </summary>        
         public static bool CheckCross(this Polyline pline)
         {
-            var mpoly = new MPolygon();
-            var isValidBoundary = false;
-            try
+            using (var mpoly = new MPolygon())
             {
-                mpoly.AppendLoopFromBoundary(pline, true, Tolerance.Global.EqualPoint);
-                if (mpoly.NumMPolygonLoops != 0)
+                var isValidBoundary = false;
+                try
                 {
-                    isValidBoundary = true;
+                    mpoly.AppendLoopFromBoundary(pline, true, Tolerance.Global.EqualPoint);
+                    if (mpoly.NumMPolygonLoops != 0)
+                    {
+                        isValidBoundary = true;
+                    }
                 }
+                catch
+                {
+                    // Самопересечение
+                }
+                return isValidBoundary;
             }
-            catch { }
-            mpoly.Dispose();
-            return isValidBoundary;
         }
 
         /// <summary>
