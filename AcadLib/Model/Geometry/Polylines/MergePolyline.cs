@@ -51,7 +51,7 @@ namespace AcadLib.Geometry
                         countMergePl++;
 
                         //                        // Test
-                        //#if DEBUG
+                        //#if DRAW
                         //                        plMerge.ColorIndex = countMergePl;
                         //                        EntityHelper.AddEntityToCurrentSpace(plMerge);
                         //                        var dbText = EntityHelper.CreateText(countMergePl.ToString(), plMerge.GetPoint3dAt(0));

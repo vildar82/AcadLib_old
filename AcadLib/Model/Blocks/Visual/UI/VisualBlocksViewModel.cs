@@ -24,11 +24,26 @@ namespace AcadLib.Blocks.Visual.UI
         public List<VisualGroup> Groups { get; set; }
         public ReactiveCommand Insert { get; set; }
         public Visibility VisibleSeparator { get; set; }
+        public bool IsHideWindow { get; set; } = true;
 
         private void OnInsertExecute(IVisualBlock block)
         {
-            DialogResult = true;
-            VisualInsertBlock.Insert(block);
+            var doc = AcadHelper.Doc;
+            using (doc.LockDocument())
+            {
+                if (IsHideWindow)
+                {
+                    HideMe();
+                    VisualInsertBlock.Insert(block);
+                }
+                else
+                {
+                    using (HideWindow())
+                    {
+                        VisualInsertBlock.Insert(block);
+                    }
+                }
+            }
         }
     }
 }

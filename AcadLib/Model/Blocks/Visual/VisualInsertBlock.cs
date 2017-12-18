@@ -39,7 +39,7 @@ namespace AcadLib.Blocks.Visual
             ShowVisuals(visuals);
         }
 
-        private static void ShowVisuals(List<IVisualBlock> blocks)
+        private static void ShowVisuals([NotNull] List<IVisualBlock> blocks)
         {
             var vm = new VisualBlocksViewModel(blocks);
             if (winVisual == null)
@@ -48,9 +48,10 @@ namespace AcadLib.Blocks.Visual
             }
             else
             {
+                vm.IsHideWindow = true;
                 winVisual.Model = vm;
             }
-            winVisual.ShowDialog();
+            winVisual.Show();
         }
 
         [NotNull]
@@ -62,10 +63,10 @@ namespace AcadLib.Blocks.Visual
                 dbTemp.ReadDwgFile(file, FileOpenMode.OpenForReadAndReadShare, true, "");
                 using (var t = dbTemp.TransactionManager.StartTransaction())
                 {
-                    var bt = dbTemp.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
+                    var bt =(BlockTable) dbTemp.BlockTableId.GetObject(OpenMode.ForRead);
                     foreach (var idBtr in bt)
                     {
-                        var btr = idBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                        var btr =(BlockTableRecord) idBtr.GetObject(OpenMode.ForRead);
                         var group = filter(btr.Name);
                         if (group != null)
                         {
@@ -107,7 +108,9 @@ namespace AcadLib.Blocks.Visual
         private static void GetInsertBtr(string name, string fileBlocks, [NotNull] Database dbdest)
         {
             // Есть ли уже блок в текущем файле
+#pragma warning disable 618
             using (var bt = dbdest.BlockTableId.Open(OpenMode.ForRead) as BlockTable)
+#pragma warning restore 618
             {
                 if (bt.Has(name))
                 {

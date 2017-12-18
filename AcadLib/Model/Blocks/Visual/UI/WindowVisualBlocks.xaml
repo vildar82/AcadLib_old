@@ -47,11 +47,13 @@
 				</Button>
 			</DataTemplate>
 		</Grid.Resources>
-		<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+		<Grid.RowDefinitions>
+			<RowDefinition/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 			<ItemsControl Name="groups" ItemsSource="{Binding Groups}" Margin="2" />
 		</ScrollViewer>
+		<CheckBox Grid.Row="1" IsChecked="{Binding IsHideWindow}" Content="_Закрыть окно после вставки блока" Margin="2"/>
 	</Grid>
 </wpf1:BaseWindow>
-
-
-
