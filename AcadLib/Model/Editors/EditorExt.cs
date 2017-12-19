@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Editors
 {
@@ -43,8 +44,22 @@ namespace AcadLib.Editors
                 {
                     return selRes.Value.GetObjectIds().ToList();
                 }
+                throw new OperationCanceledException();
             }
-            throw new Exception($"Ошибка выбора элементов в заданных границах - {ext}");
+        }
+
+        [NotNull]
+        public static List<ObjectId> SelectByPolygon([NotNull] this Editor ed, [NotNull] IEnumerable<Point3d> pts)
+        {
+            using (ed.Document.LockDocument())
+            {
+                var selRes = ed.SelectCrossingPolygon(new Point3dCollection(pts.ToArray()));
+                if (selRes.Status == PromptStatus.OK)
+                {
+                    return selRes.Value.GetObjectIds().ToList();
+                }
+                throw new OperationCanceledException();
+            }
         }
     }
 }

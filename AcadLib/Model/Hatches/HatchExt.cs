@@ -114,7 +114,7 @@ namespace AcadLib.Hatches
 
         [NotNull]
         public static DisposableSet<HatchLoopPl> GetPolylines2([NotNull] this Hatch ht, Tolerance weddingTolerance,
-            HatchLoopTypes loopType = (HatchLoopTypes)120, bool wedding = false)
+            HatchLoopTypes loopType = (HatchLoopTypes)119, bool wedding = false)
         {
             var loops = new DisposableSet<HatchLoopPl>();
             var nloops = ht.NumberOfLoops;

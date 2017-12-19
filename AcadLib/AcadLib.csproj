@@ -364,11 +364,13 @@
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\Units\UnitsNetExt.cs" />
     <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Model\VisualStyle\VisualStyleUsing.cs" />
     <Compile Include="Model\Visual\IVisualElement.cs" />
     <Compile Include="Model\Visual\IVisualService.cs" />
     <Compile Include="Model\Visual\VisualBase.cs" />
     <Compile Include="Model\Visual\VisualHelper.cs" />
     <Compile Include="Model\Visual\VisualOption.cs" />
+    <Compile Include="Model\VisualStyle\VisualStyleExt.cs" />
     <Compile Include="Model\Visual\VisualTransient.cs" />
     <Compile Include="Model\Visual\VisualTransientSimple.cs" />
     <Compile Include="Model\WPF\Controls\AcadColorPick.xaml.cs">
