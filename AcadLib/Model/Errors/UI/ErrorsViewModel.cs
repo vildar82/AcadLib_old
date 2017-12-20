@@ -227,7 +227,7 @@ namespace AcadLib.Errors
 
         private void DeleteErrorExec([NotNull] ErrorModelBase errorBase)
         {
-            if (errorBase is ErrorModelOne errOne)
+            if (errorBase is ErrorModelOne errOne && errOne.Parent != null)
             {
                 errOne.Parent.SameErrors.Remove(errorBase);
             }
@@ -241,7 +241,7 @@ namespace AcadLib.Errors
             }
             if (!errorBase.Error.IdEnt.IsValidEx() && errorBase.Error.HasEntity)
             {
-                throw new Exception($"Элемент ошибки не валидный. Возможно был удален.");
+                throw new Exception("Элемент ошибки не валидный. Возможно был удален.");
             }
             var doc = AcadHelper.Doc;
             var db = doc.Database;

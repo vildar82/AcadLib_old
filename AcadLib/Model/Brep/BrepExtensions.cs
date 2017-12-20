@@ -336,7 +336,7 @@ namespace AcadLib
             var rId = hatchEditAppendIds.FirstOrDefault(v => v.ObjectClass == General.ClassRegion);
             if (rId.IsNull)
             {
-                throw new System.Exception("Не удалось создать регион из штриховки из-за самоперемечений.");
+                throw new System.Exception("Не удалось создать область из штриховки. Возможно, из-за самоперемечений.");
             }
             var r = rId.GetObject(OpenMode.ForWrite);
             var res = (Region)r.Clone();
