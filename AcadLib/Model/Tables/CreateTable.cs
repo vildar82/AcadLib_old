@@ -28,6 +28,10 @@ namespace AcadLib.Tables
         /// Имя стиля из шаблона. Если пусто, то ПИК
         /// </summary>
         public string StyleName { get; set; }
+        /// <summary>
+        /// Имя шаблона
+        /// </summary>
+        public string TemplateName { get; set; }
         public abstract void CalcRows();
         protected abstract void SetColumnsAndCap(ColumnsCollection columns);
         protected abstract void FillCells(Table table);
@@ -57,7 +61,7 @@ namespace AcadLib.Tables
         {
             var table = new Table();
             table.SetDatabaseDefaults(db);
-            table.TableStyle = StyleName.IsNullOrEmpty() ? db.GetTableStylePIK() : db.GetTableStylePIK(StyleName);
+            table.TableStyle = StyleName.IsNullOrEmpty() ? db.GetTableStylePIK() : db.GetTableStylePIK(StyleName, TemplateName);
 
             if (!string.IsNullOrEmpty(Layer))
             {
@@ -66,7 +70,7 @@ namespace AcadLib.Tables
             }
 
             table.SetSize(NumRows, NumColumns);
-            TableExt.SetBorders(table, LwBold);
+            table.SetBorders(LwBold);
             table.SetRowHeight(8);
 
             // Название таблицы
@@ -100,7 +104,7 @@ namespace AcadLib.Tables
                 var jigTable = new TableJig(table, scale, "Вставка таблицы");
                 if (doc.Editor.Drag(jigTable).Status == PromptStatus.OK)
                 {
-                    var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+                    var cs = (BlockTableRecord) db.CurrentSpaceId.GetObject(OpenMode.ForWrite);
                     cs.AppendEntity(table);
                     t.AddNewlyCreatedDBObject(table, true);
                 }

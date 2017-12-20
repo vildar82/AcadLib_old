@@ -113,6 +113,19 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// </summary>      
         public static ObjectId GetTableStylePIK(this Database db, string styleName, bool update)
         {
+            return GetTableStylePIK(db, styleName, UserGroup, update);
+        }
+
+        public static ObjectId GetTableStylePIK(this Database db, string styleName, [CanBeNull] string templateName)
+        {
+            return GetTableStylePIK(db, styleName, templateName ?? UserGroup, false);
+        }
+
+        /// <summary>
+        /// Получение табличного стиля ПИК
+        /// </summary>      
+        public static ObjectId GetTableStylePIK(this Database db, string styleName, string templateName, bool update)
+        {
             var idStyle = ObjectId.Null;
             if (!update)
             {
@@ -123,10 +136,13 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 // Копирование стиля таблиц из шаблона
                 try
                 {
-                    idStyle = CopyObjectFromTemplate(db, GetTableStyleId, styleName, db.TableStyleDictionaryId, UserGroup);
+                    idStyle = CopyObjectFromTemplate(db, GetTableStyleId, styleName, db.TableStyleDictionaryId,
+                        templateName);
                 }
                 catch
-                { }
+                {
+                    //
+                }
                 if (idStyle.IsNull)
                 {
                     idStyle = db.Tablestyle;

@@ -19,7 +19,7 @@ namespace AcadLib
             }
             catch (Exception ex)
             {
-                Logger.Log.Error(ex, $"adUtils");
+                Logger.Log.Error(ex, "adUtils");
             }
         }
 
