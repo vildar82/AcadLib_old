@@ -128,8 +128,9 @@ namespace AcadLib
             if (dllResolver == null) return null;
             try
             {
-                Logger.Log.Info($"resolve assembly - {dllResolver.DllFile}");
-                return dllResolver.LoadAssembly();
+                var asm = dllResolver.LoadAssembly();
+                Logger.Log.Info($"resolve assembly - {asm.FullName}");
+                return asm;
             }
             catch (System.Exception ex)
             {

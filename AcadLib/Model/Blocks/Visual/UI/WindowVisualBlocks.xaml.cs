@@ -1,7 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Input;
-
-namespace AcadLib.Blocks.Visual.UI
+﻿namespace AcadLib.Blocks.Visual.UI
 {
     /// <summary>
     /// Логика взаимодействия для WindowVisualBlocks.xaml

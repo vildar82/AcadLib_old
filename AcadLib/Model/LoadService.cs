@@ -56,7 +56,8 @@ namespace AcadLib
         {
             if (File.Exists(dll))
             {
-                Assembly.LoadFrom(dll);
+                var asm = Assembly.LoadFrom(dll);
+                Logger.Log.Info($"LoadFrom {asm.FullName}.");
             }
             else
             {
@@ -69,7 +70,6 @@ namespace AcadLib
             try
             {
                 LoadFrom(dll);
-                Logger.Log.Info($"LoadFromTry - {dll}");
             }
             catch (Exception ex)
             {

@@ -2,18 +2,14 @@
 using AcadLib.Errors;
 using AcadLib.Geometry;
 using AcadLib.Hatches;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using Extensions;
 using JetBrains.Annotations;
-using NetLib;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using Autodesk.AutoCAD.ApplicationServices;
-using Exception = Autodesk.AutoCAD.Runtime.Exception;
 using Region = Autodesk.AutoCAD.DatabaseServices.Region;
 using Surface = Autodesk.AutoCAD.DatabaseServices.Surface;
 
@@ -113,7 +109,7 @@ namespace AcadLib
                             ptsVertex.Add(vert.Point.Convert2d());
 
                         var pl = ptsVertex.CreatePolyline();
-                        resVal.Add(new KeyValuePair<Polyline, BrepLoopType>(pl, (BrepLoopType) loop.LoopType));
+                        resVal.Add(new KeyValuePair<Polyline, BrepLoopType>(pl, (BrepLoopType)loop.LoopType));
                     }
                 }
             }
@@ -133,7 +129,7 @@ namespace AcadLib
                         var pts2dCol =
                             new Point2dCollection(loop.Vertices.Select(vert => vert.Point.Convert2d()).ToArray());
                         resVal.Add(new KeyValuePair<Point2dCollection, BrepLoopType>(pts2dCol,
-                            (BrepLoopType) loop.LoopType));
+                            (BrepLoopType)loop.LoopType));
                     }
                 }
             }
@@ -271,7 +267,7 @@ namespace AcadLib
             }
             return reg;
         }
-        
+
         [NotNull]
         [Obsolete("Используй CreateRegionFromHatch")]
         public static Region CreateRegion([NotNull] this Hatch hatch)
@@ -279,7 +275,7 @@ namespace AcadLib
             using (var loops = hatch.GetPolylines2(Block.Tolerance01, HatchLoopTypes.External | HatchLoopTypes.Outermost))
             {
                 var validLoops = loops.Where(w => w.Loop.Area > 0).ToList();
-#if DEBUG
+#if DRAW
                 validLoops.Select(s=>(Curve)s.Loop.Clone()).AddEntityToCurrentSpace(new EntityOptions{Color =  Color.DarkRed});
 #endif
                 var externalLoops = new List<Curve>();
@@ -299,15 +295,15 @@ namespace AcadLib
                 {
                     Inspector.AddError("Штриховка без внешних контуров - пропущена", hatch);
                 }
-//#if DEBUG
-//                    externalLoops.AddEntityToCurrentSpace(new EntityOptions{ Color = Color.Blue});
-//                    internalLoops.AddEntityToCurrentSpace(new EntityOptions { Color = Color.DarkOliveGreen });
-//#endif
+                //#if DRAW
+                //                    externalLoops.AddEntityToCurrentSpace(new EntityOptions{ Color = Color.Blue});
+                //                    internalLoops.AddEntityToCurrentSpace(new EntityOptions { Color = Color.DarkOliveGreen });
+                //#endif
                 var externalRegion = GetRegion(externalLoops);
                 if (internalLoops.Any())
                 {
                     var internalRegion = GetRegion(internalLoops);
-#if DEBUG
+#if DRAW
                     ((Region) externalRegion.Clone()).AddEntityToCurrentSpace(new EntityOptions {Color = Color.Blue});
                     ((Region) internalRegion.Clone()).AddEntityToCurrentSpace(new EntityOptions
                     {
@@ -342,7 +338,7 @@ namespace AcadLib
             var res = (Region)r.Clone();
             r.Erase();
             hatchEditAppendIds.Remove(rId);
-            hatchEditAppendIds.ForEach(i=>i.GetObject(OpenMode.ForWrite).Erase());
+            hatchEditAppendIds.ForEach(i => i.GetObject(OpenMode.ForWrite).Erase());
             hatchEditAppendIds.Clear();
             return res;
         }
@@ -361,50 +357,6 @@ namespace AcadLib
         {
             hatchEditAppendIds.Add(e.DBObject.Id);
         }
-
-        //        /// <summary>
-        //        /// Область штриховки - по вычитанию регионов - лучше чем первый сплособ!!!
-        //        /// </summary>
-        //        /// <param name="hatch"></param>
-        //        /// <returns></returns>
-        //        public static Region CreateRegion2([NotNull] this Hatch hatch)
-        //        {
-        //            using (var loops = hatch.GetPolylines2(Tolerance.Global))
-        //            {
-        //#if DEBUG
-        //                var loopEnts = new List<Entity>();
-        //                var index = 0;
-        //                foreach (var loopPl in loops.ToList())
-        //                {
-        //                    loopEnts.Add(loopPl.Loop);
-        //                    loopEnts.Add(EntityHelper.CreateText($"{index++},{loopPl.Types}", loopPl.Loop.StartPoint));
-        //                    loopEnts.AddEntityToCurrentSpace();
-        //                }
-        //                index = 5;
-        //#endif
-        //                var extLoop = loops.First(l => l.Types.HasFlag(HatchLoopTypes.External));
-        //                var regionRes = extLoop.Loop.CreateRegion();
-        //                loops.Remove(extLoop);
-        //                extLoop.Dispose();
-        //                foreach (var loop in loops)
-        //                {
-        //                    using (var loopR = loop.Loop.CreateRegion())
-        //                    using (var loopRClone = (Region)loopR.Clone())
-        //                    {
-        //                        var areaBefore = regionRes.Area;
-        //                        regionRes.BooleanOperation(BooleanOperationType.BoolSubtract, loopR);
-        //                        if (Math.Abs(areaBefore - regionRes.Area) < 0.0001)
-        //                        {
-        //                            regionRes.BooleanOperation(BooleanOperationType.BoolUnite, loopRClone);
-        //                        }
-        //#if DEBUG
-        //                        ((Region)regionRes.Clone()).AddEntityToCurrentSpace(new EntityOptions { ColorIndex = index++ });
-        //#endif
-        //                    }
-        //                }
-        //                return regionRes;
-        //            }
-        //        }
 
         private static Region GetRegion([NotNull] IEnumerable<Curve> pls)
         {
@@ -427,13 +379,13 @@ namespace AcadLib
             var res = new List<Region>();
             foreach (var curve in curves)
             {
-                var dbs = new DBObjectCollection {curve};
+                var dbs = new DBObjectCollection { curve };
                 try
                 {
                     var dbsRegions = Region.CreateFromCurves(dbs);
                     foreach (var item in dbsRegions)
                     {
-                        res.Add((Region) item);
+                        res.Add((Region)item);
                     }
                 }
                 catch
@@ -442,7 +394,7 @@ namespace AcadLib
                     Inspector.AddError("Самопересечение контура", curve.GeometricExtents, Matrix3d.Identity);
                 }
             }
-#if DEBUG
+#if DRAW
             //EntityHelper.AddEntityToCurrentSpace(res);
 #endif
             return res;

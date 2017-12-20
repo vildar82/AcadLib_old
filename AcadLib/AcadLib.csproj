@@ -43,8 +43,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\AcadLib.XML</DocumentationFile>
-    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
-    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
     <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
     <AssemblyVersionSettings>None.None.DayOfYearStamp.Increment</AssemblyVersionSettings>
     <AssemblyFileVersionSettings>None.None.DayOfYearStamp.Increment</AssemblyFileVersionSettings>
@@ -52,6 +52,8 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>CS1561, CS1591, CS1573, CS1570</NoWarn>
     <LangVersion>latest</LangVersion>
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
