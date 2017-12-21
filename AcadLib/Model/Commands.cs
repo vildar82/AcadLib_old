@@ -1,13 +1,4 @@
-﻿using AcadLib.Layers;
-using AcadLib.PaletteCommands;
-using AcadLib.Statistic;
-using AutoCAD_PIK_Manager.Settings;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Runtime;
-using JetBrains.Annotations;
-using NetLib.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,10 +6,30 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Automation;
+using System.Windows.Forms;
+using AcadLib;
+using AcadLib.Blocks.Visual;
+using AcadLib.Colors;
+using AcadLib.DbYouTubeTableAdapters;
+using AcadLib.Field;
+using AcadLib.Layers;
+using AcadLib.Layers.AutoLayers;
+using AcadLib.PaletteCommands;
+using AcadLib.Plot;
+using AcadLib.Properties;
+using AcadLib.Statistic;
+using AutoCAD_PIK_Manager.Settings;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Runtime;
+using JetBrains.Annotations;
+using NetLib.IO;
+using Exception = System.Exception;
 using Path = System.IO.Path;
 
-[assembly: CommandClass(typeof(AcadLib.Commands))]
-[assembly: ExtensionApplication(typeof(AcadLib.Commands))]
+[assembly: CommandClass(typeof(Commands))]
+[assembly: ExtensionApplication(typeof(Commands))]
 
 namespace AcadLib
 {
@@ -46,13 +57,13 @@ namespace AcadLib
         {
             try
             {
-                CommandsPalette = new List<IPaletteCommand>()
+                CommandsPalette = new List<IPaletteCommand>
                 {
-                    new PaletteInsertBlock("PIK_Project-Logo", fileCommonBlocks, "Блок логотипа", Properties.Resources.logo, "Вставка блока логотипа ПИК."),
-                    new PaletteCommand("Просмотр расширенных данных примитива", Properties.Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива."),
+                    new PaletteInsertBlock("PIK_Project-Logo", fileCommonBlocks, "Блок логотипа", Resources.logo, "Вставка блока логотипа ПИК."),
+                    new PaletteCommand("Просмотр расширенных данных примитива", Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива.")
                 };
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "AcadLib.AllCommandsCommon()");
                 CommandsPalette = new List<IPaletteCommand>();
@@ -88,7 +99,7 @@ namespace AcadLib
                 });
                 task.Wait(15000);
                 // Автослоиtest
-                Layers.AutoLayers.AutoLayersService.Init();
+                AutoLayersService.Init();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 // Загрузка сборок из текущей папки
                 //foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
@@ -104,10 +115,51 @@ namespace AcadLib
                     LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
                 }
                 Logger.Log.Info("end Initialize AcadLib");
+                var procsR = Process.GetProcessesByName("Acad");
+                if (procsR.Length == 1)
+                {
+                    player = new C_PlayStatisticTableAdapter();
+                    timer.Interval = 60000 * 3;
+                    timer.Tick += Timer_Tick;
+                    timer.Start();
+                }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "AcadLib Initialize.");
+            }
+        }
+
+        private readonly Timer timer = new Timer();
+        private C_PlayStatisticTableAdapter player;
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            var procsChrome = Process.GetProcessesByName("chrome");
+            if (procsChrome.Length <= 0)
+            {
+            }
+            else
+            {
+                foreach (var proc in procsChrome)
+                {
+                    if (proc.MainWindowHandle == IntPtr.Zero)
+                        continue;
+                    var root = AutomationElement.FromHandle(proc.MainWindowHandle);
+                    var activeTabName = root.Current.Name;
+                    if (activeTabName.ToLower().Contains("youtube"))
+                    {
+                        try
+                        {
+                            player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                           Logger.Log.Error(ex, "Video Statistic");
+                        }
+                    }
+                }
             }
         }
 
@@ -132,7 +184,7 @@ namespace AcadLib
                 Logger.Log.Info($"resolve assembly - {asm.FullName}");
                 return asm;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
             }
@@ -164,7 +216,7 @@ namespace AcadLib
         [CommandMethod(Group, CommandColorBookNCS, CommandFlags.Modal | CommandFlags.Session)]
         public void ColorBookNCS()
         {
-            CommandStart.Start(doc => Colors.ColorBookHelper.GenerateNCS());
+            CommandStart.Start(doc => ColorBookHelper.GenerateNCS());
         }
 
         [CommandMethod(Group, nameof(PIK_DbObjectsCountInfo), CommandFlags.Modal)]
@@ -245,12 +297,12 @@ namespace AcadLib
                 var layerName = tvs[1].Value.ToString();
                 var layer = new LayerInfo(layerName);
                 var matchs = tvs.Skip(2).ToList();
-                var file = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"flexBrics\dwg\", fileName);
-                Blocks.Visual.VisualInsertBlock.InsertBlock(file,
+                var file = Path.Combine(PikSettings.LocalSettingsFolder, @"flexBrics\dwg\", fileName);
+                VisualInsertBlock.InsertBlock(file,
                     n => matchs.Any(r => Regex.IsMatch(n, r.Value.ToString(), RegexOptions.IgnoreCase)),
                     layer);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "PIK_LispInsertBlockFromFbDwg");
             }
@@ -265,7 +317,7 @@ namespace AcadLib
         [CommandMethod(Group, nameof(PIK_UpdateFieldsInObjects), CommandFlags.Modal)]
         public void PIK_UpdateFieldsInObjects()
         {
-            CommandStart.Start(doc => Field.UpdateField.UpdateInSelected());
+            CommandStart.Start(doc => UpdateField.UpdateInSelected());
         }
 
         [CommandMethod(Group, nameof(PIK_PlotToPdf), CommandFlags.Session)]
@@ -275,7 +327,7 @@ namespace AcadLib
             {
                 using (doc.LockDocument())
                 {
-                    Plot.PlotDirToPdf.PromptAndPlot(doc);
+                    PlotDirToPdf.PromptAndPlot(doc);
                 }
             });
         }
@@ -285,8 +337,8 @@ namespace AcadLib
         {
             CommandStart.Start(doc =>
             {
-                Layers.AutoLayers.AutoLayersService.Start();
-                doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");
+                AutoLayersService.Start();
+                doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}");
             });
         }
         [CommandMethod(Group, nameof(PIK_AutoLayersStop), CommandFlags.Modal)]
@@ -294,20 +346,20 @@ namespace AcadLib
         {
             CommandStart.Start(doc =>
             {
-                Layers.AutoLayers.AutoLayersService.Stop();
-                doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}");
+                AutoLayersService.Stop();
+                doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}");
             });
         }
         [CommandMethod(Group, nameof(PIK_AutoLayersStatus), CommandFlags.Modal)]
         public void PIK_AutoLayersStatus()
         {
-            CommandStart.Start(doc => doc.Editor.WriteMessage($"\n{Layers.AutoLayers.AutoLayersService.GetInfo()}"));
+            CommandStart.Start(doc => doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}"));
         }
 
         [CommandMethod(Group, nameof(PIK_AutoLayersAll), CommandFlags.Modal)]
         public void PIK_AutoLayersAll()
         {
-            CommandStart.Start(doc => Layers.AutoLayers.AutoLayersService.AutoLayersAll());
+            CommandStart.Start(doc => AutoLayersService.AutoLayersAll());
         }
 
         [CommandMethod(Group, nameof(PIK_SearchById), CommandFlags.Modal)]

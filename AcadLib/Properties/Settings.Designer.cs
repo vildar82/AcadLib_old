@@ -12,7 +12,7 @@ namespace AcadLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -55,6 +55,17 @@ namespace AcadLib.Properties {
             }
             set {
                 this["Accent"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=VPP-SQLTEST02;Initial Catalog=SR_IRA_AR_DECOR;Persist Security Info=T" +
+            "rue;User ID=sa;Password=VPP-SQLTEST02")]
+        public string SR_IRA_AR_DECORConnectionString {
+            get {
+                return ((string)(this["SR_IRA_AR_DECORConnectionString"]));
             }
         }
     }
