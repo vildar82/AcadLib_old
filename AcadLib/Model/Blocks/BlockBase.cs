@@ -72,9 +72,8 @@ namespace AcadLib.Blocks
         /// Блок - по имени и ссылке на вхождение блока
         /// Заполняются параметры блока. и граница Bounds
         /// </summary>        
-        public BlockBase([CanBeNull] BlockReference blRef, string blName)
+        public BlockBase([NotNull] BlockReference blRef, string blName)
         {
-            if (blRef == null) return;
             BlName = blName;
             Update(blRef);
         }
@@ -336,13 +335,9 @@ namespace AcadLib.Blocks
             return BlName.GetHashCode();
         }
 
-        public virtual void Update([CanBeNull] BlockReference blRef)
+        public virtual void Update([NotNull] BlockReference blRef)
         {
             // Считать блок заново
-            if (blRef == null)
-            {
-                return;
-            }
             Db = blRef.Database;
             IdBtrOwner = blRef.OwnerId;
             IdBlRef = blRef.Id;

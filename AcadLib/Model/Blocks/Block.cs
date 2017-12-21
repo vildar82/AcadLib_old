@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autodesk.AutoCAD.Internal;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks
@@ -11,6 +12,55 @@ namespace AcadLib.Blocks
     public static class Block
     {
         public static Tolerance Tolerance01 = new Tolerance(0.01, 0.01);
+
+        /// <summary>
+        /// Создание блока из объектов чертежа. 
+        /// Должна быть запусщена транзакция. блок добавляется в таблицу блоков.
+        /// </summary>
+        /// <param name="entIds">Объекты чертежа</param>
+        /// <param name="name">Имя блока</param>
+        /// <param name="location">Точка вставки блока</param>
+        /// <param name="erase">Удалять исходные объекты</param>
+        public static ObjectId CreateBlock([NotNull] this List<ObjectId> entIds, string name, Point3d location, bool erase)
+        {
+            var db = entIds[0].Database;
+            var t = db.TransactionManager.TopTransaction;
+            ObjectId idBtr;
+            // создание определения блока
+            BlockTableRecord btr;
+            using (var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForWrite))
+            using (btr = new BlockTableRecord())
+            {
+                btr.Name = name;
+                idBtr = bt.Add(btr);
+                t.AddNewlyCreatedDBObject(btr, true);
+            }
+            // копирование выбранных объектов в блок
+            var idsCol = new ObjectIdCollection(entIds.ToArray());
+            using (var mapping = new IdMapping())
+            {
+                db.DeepCloneObjects(idsCol, idBtr, mapping, false);
+            }
+            // перемещение объектов в блоке
+            btr = (BlockTableRecord)idBtr.GetObject(OpenMode.ForRead);
+            var moveMatrix = Matrix3d.Displacement(Point3d.Origin - location);
+            foreach (var idEnt in btr)
+            {
+                var ent = idEnt.GetObject<Entity>(OpenMode.ForWrite) ?? throw new InvalidOperationException();
+                ent.TransformBy(moveMatrix);
+            }
+            // удаление выбранных объектов
+            if (erase)
+            {
+                foreach (ObjectId idEnt in idsCol)
+                {
+                    if (!idEnt.IsValidEx()) continue;
+                    var ent = idEnt.GetObject<Entity>(OpenMode.ForWrite) ?? throw new InvalidOperationException();
+                    ent.Erase();
+                }
+            }
+            return idBtr;
+        }
 
         /// <summary>
         /// Это пользовательский блок, а не лист, ссылка, анонимный или спец.блок(*).
