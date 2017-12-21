@@ -217,6 +217,7 @@
     <Compile Include="Model\Blocks\BlockPropertiesTableExt.cs" />
     <Compile Include="Model\Blocks\DictBlockName.cs" />
     <Compile Include="Model\Blocks\Visual\VisualGroup.cs" />
+    <Compile Include="Model\DB\SystemVariableExt.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelOne.cs" />

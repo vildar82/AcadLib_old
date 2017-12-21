@@ -19,8 +19,7 @@ namespace AcadLib.Extensions
         {
             if (atr.Rotation != 0)
             {
-                if (!atr.IsWriteEnabled)
-                    atr.UpgradeOpen();
+                if (!atr.IsWriteEnabled) atr.UpgradeOpen();
                 atr.Rotation = 0;
             }
         }

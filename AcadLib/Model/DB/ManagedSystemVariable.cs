@@ -7,7 +7,6 @@ namespace AcadLib
     /// <summary>
     /// Automates saving/changing/restoring system variables
     /// </summary>
-
     public class ManagedSystemVariable : IDisposable
     {
         string name = null;
