@@ -18,12 +18,13 @@ namespace AcadLib
         private readonly string dictName;
         private readonly string dictInnerName;
 
-        public Database Db { get; set; } = HostApplicationServices.WorkingDatabase;
+        public Database Db { get; set; }
 
         [Obsolete("Используй `innerDict` конструктор.")]
         public DictNOD(string dictName)
         {
             this.dictName = dictName;
+            Db = HostApplicationServices.WorkingDatabase;
         }
 
         // ReSharper disable once UnusedParameter.Local
@@ -31,6 +32,14 @@ namespace AcadLib
         {
             dictName = ExtDicHelper.PikApp;
             dictInnerName = innerDict;
+            Db = HostApplicationServices.WorkingDatabase;
+        }
+
+        public DictNOD(string innerDict, Database db)
+        {
+            dictName = ExtDicHelper.PikApp;
+            dictInnerName = innerDict;
+            Db = db;
         }
 
         /// <summary>
@@ -88,9 +97,7 @@ namespace AcadLib
         {
             List<TypedValue> values;
             var recId = GetRec(recName, false);
-            if (recId.IsNull)
-                return null;
-
+            if (recId.IsNull) return null;
             using (var xRec = recId.Open(OpenMode.ForRead) as Xrecord)
             {
                 if (xRec == null) return null;
@@ -126,7 +133,7 @@ namespace AcadLib
                     if (data == null)
                         return res;
                     var values = data.AsArray();
-                    if (values.Count() <= 0) return res;
+                    if (values.Length <= 0) return res;
                     try
                     {
                         return Convert.ToBoolean(values[0].Value);
@@ -166,7 +173,7 @@ namespace AcadLib
                     if (data == null)
                         return res;
                     var values = data.AsArray();
-                    if (values.Count() <= 0) return res;
+                    if (!values.Any()) return res;
                     try
                     {
                         return (int)values[0].Value;
@@ -206,7 +213,7 @@ namespace AcadLib
                     if (data == null)
                         return res;
                     var values = data.AsArray();
-                    if (values.Count() <= 0) return res;
+                    if (!values.Any()) return res;
                     try
                     {
                         return (double)values[0].Value;
@@ -246,7 +253,7 @@ namespace AcadLib
                     if (data == null)
                         return res;
                     var values = data.AsArray();
-                    if (values.Count() > 0)
+                    if (values.Any())
                     {
                         return values[0].Value.ToString();
                     }

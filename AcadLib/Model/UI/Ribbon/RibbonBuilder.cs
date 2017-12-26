@@ -66,7 +66,7 @@ namespace AcadLib.UI.Ribbon
             }
         }
 
-        private static void CreateRibbon()
+        internal static void CreateRibbon()
         {
             try
             {
@@ -95,6 +95,7 @@ namespace AcadLib.UI.Ribbon
         {
             try
             {
+                if (ribbon == null) ribbon = ComponentManager.Ribbon;
                 ribbon.Tabs.CollectionChanged -= Tabs_CollectionChanged;
                 // группировка элементов по вкладкам
                 var tabsOpt = elements.GroupBy(g => g.Tab).Select(t => CreateTab(t.Key, t.ToList()));

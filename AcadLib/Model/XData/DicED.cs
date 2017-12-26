@@ -26,6 +26,7 @@ namespace AcadLib.XData
         public List<RecXD> Recs { get; set; }
 
         public DicED() { }
+
         public DicED(string name)
         {
             Name = name;
@@ -34,9 +35,7 @@ namespace AcadLib.XData
         public void AddRec([CanBeNull] RecXD recXd)
         {
             if (recXd == null || recXd.IsEmpty()) return;
-            if (!IsCorrectName(recXd.Name))
-                throw new Exception("Invalid Name - " + recXd.Name);
-
+            if (!IsCorrectName(recXd.Name)) throw new Exception("Invalid Name - " + recXd.Name);
             if (Recs == null) Recs = new List<RecXD>();
             Recs.Add(recXd);
         }
@@ -48,9 +47,7 @@ namespace AcadLib.XData
         public void AddInner([CanBeNull] DicED dic)
         {
             if (dic == null || dic.IsEmpty()) return;
-            if (!IsCorrectName(dic.Name))
-                throw new Exception("Invalid Name - " + dic.Name);
-
+            if (!IsCorrectName(dic.Name)) throw new Exception("Invalid Name - " + dic.Name);
             if (Inners == null) Inners = new List<DicED>();
             Inners.Add(dic);
         }
@@ -90,17 +87,14 @@ namespace AcadLib.XData
         {
             if (!name.IsValidDbSymbolName())
                 return false;
-
             if (string.IsNullOrEmpty(name))
                 return false;
-
             if (Inners != null)
                 if (Inners.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                     return false;
             if (Recs != null)
                 if (Recs.Any(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                     return false;
-
             return true;
         }
     }

@@ -85,6 +85,10 @@
       <HintPath>..\..\Package\AutoCAD\2015\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AdUiPalettes">
+      <HintPath>..\..\..\Program Files\Autodesk\AutoCAD 2016\AdUiPalettes.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AdWindows">
       <Private>False</Private>
     </Reference>
@@ -96,19 +100,18 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentValidation.7.3.1\lib\net45\FluentValidation.dll</HintPath>
+      <HintPath>..\packages\FluentValidation.7.3.3\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Annotations">
       <HintPath>..\packages\JetBrains.Annotations.11.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MahApps.Metro">
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MahApps.Metro.IconPacks">
-      <HintPath>..\packages\MahApps.Metro.IconPacks.1.9.1\lib\net45\MahApps.Metro.IconPacks.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MahApps.Metro.IconPacks, Version=2.0.0.31, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.IconPacks.2.0.0\lib\net45\MahApps.Metro.IconPacks.dll</HintPath>
     </Reference>
     <Reference Include="MicroMvvm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -371,6 +374,10 @@
     <Compile Include="Model\UI\Ribbon\Options\ItemOptions.cs" />
     <Compile Include="Model\UI\Ribbon\RibbonBuilder.cs" />
     <Compile Include="Model\UI\Ribbon\Options\RibbonOptions.cs" />
+    <Compile Include="Model\UI\StatusBar\StatusBarEx.cs" />
+    <Compile Include="Model\UI\StatusBar\View\StatusBarMenu.xaml.cs">
+      <DependentUpon>StatusBarMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\Units\UnitsNetExt.cs" />
     <Compile Include="Model\UserInfo.cs" />
@@ -401,7 +408,8 @@
     <Compile Include="Model\WPF\Converters\RadiansToDegreeConverterExtension.cs" />
     <Compile Include="Model\WPF\Converters\EnumBindingSourceExtension.cs" />
     <Compile Include="Model\XData\DboDataSaveExt.cs" />
-    <Compile Include="Model\XData\DictNODExt.cs" />
+    <Compile Include="Model\XData\DicNODExt.cs" />
+    <Compile Include="Model\XData\DictNOD.cs" />
     <Compile Include="Model\DB\EntityExt.cs" />
     <Compile Include="Model\DB\ObjectIdExt.cs" />
     <Compile Include="Model\Files\SerializerXml.cs" />
@@ -591,6 +599,10 @@
     <Page Include="Model\UI\Properties\PropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model\UI\StatusBar\View\StatusBarMenu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Model\WPF\Controls\AcadColorPick.xaml">
       <SubType>Designer</SubType>

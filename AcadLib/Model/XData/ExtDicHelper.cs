@@ -249,12 +249,10 @@ namespace AcadLib.XData
             if (rec?.Values == null || rec.Values.Count == 0) return;
             var idXrec = GetRec(dicId, rec.Name, true, true);
             if (!idXrec.IsValidEx()) return;
-            using (var xrec = idXrec.Open(OpenMode.ForWrite) as Xrecord)
+            using (var xrec = (Xrecord) idXrec.Open(OpenMode.ForWrite))
+            using (var rb = new ResultBuffer(rec.Values.ToArray()))
             {
-                using (var rb = new ResultBuffer(rec.Values.ToArray()))
-                {
-                    if (xrec != null) xrec.Data = rb;
-                }
+                if (xrec != null) xrec.Data = rb;
             }
         }
     }

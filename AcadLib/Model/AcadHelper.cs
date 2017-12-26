@@ -1,17 +1,20 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
+﻿using System;
+using Autodesk.AutoCAD.ApplicationServices;
 using JetBrains.Annotations;
 using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
     public static class AcadHelper
     {
-        public static int VersionMajor => Version.Major;
+        public static int VersionMajor => Application.Version.Major;
         /// <summary>
-        /// Текущий документ
+        /// Текущий документ.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Если нет активного чертежа.</exception>
         [NotNull]
-        public static Document Doc => DocumentManager.MdiActiveDocument;
+        public static Document Doc => DocumentManager.MdiActiveDocument ?? throw new InvalidOperationException();
 
         /// <summary>
         /// Сообщение в ком.строку. автокада

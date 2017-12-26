@@ -129,8 +129,8 @@ namespace AcadLib.Blocks
         public static BlockReference InsertBlockRef(string blName, Point3d pt, [NotNull] BlockTableRecord owner, [NotNull] Transaction t, double scale = 1)
         {
             var db = owner.Database;
-            var bt = db.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
-            var btr = bt[blName].GetObject(OpenMode.ForRead) as BlockTableRecord;
+            var bt = (BlockTable) db.BlockTableId.GetObject(OpenMode.ForRead);
+            var btr = (BlockTableRecord) bt[blName].GetObject(OpenMode.ForRead);
             var blRef = new BlockReference(pt, btr.Id)
             {
                 Position = pt
@@ -145,10 +145,8 @@ namespace AcadLib.Blocks
                 blRef.TransformBy(Matrix3d.Scaling(scale, pt));
             }
             blRef.SetDatabaseDefaults();
-
             owner.AppendEntity(blRef);
             t.AddNewlyCreatedDBObject(blRef, true);
-
             AddAttributes(blRef, btr, t);
             return blRef;
         }

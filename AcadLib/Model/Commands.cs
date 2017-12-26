@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Automation;
-using System.Windows.Forms;
-using AcadLib;
+﻿using AcadLib;
 using AcadLib.Blocks.Visual;
 using AcadLib.Colors;
 using AcadLib.DbYouTubeTableAdapters;
@@ -25,8 +15,19 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using JetBrains.Annotations;
 using NetLib.IO;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Automation;
+using AcadLib.UI.Ribbon;
 using Exception = System.Exception;
 using Path = System.IO.Path;
+using Timer = System.Windows.Forms.Timer;
 
 [assembly: CommandClass(typeof(Commands))]
 [assembly: ExtensionApplication(typeof(Commands))]
@@ -90,6 +91,7 @@ namespace AcadLib
             try
             {
                 Logger.Log.Info("start Initialize AcadLib");
+                "MODEMACRO".SetSystemVariableTry(PikSettings.UserGroup);
                 PluginStatisticsHelper.StartAutoCAD();
                 AllCommandsCommon();
                 // Копирование вспомогательных сборок локально из шаровой папки packages
@@ -135,34 +137,37 @@ namespace AcadLib
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            var procsChrome = Process.GetProcessesByName("chrome");
-            if (procsChrome.Length <= 0)
+            Task.Run(() =>
             {
-            }
-            else
-            {
-                foreach (var proc in procsChrome)
+                var procsChrome = Process.GetProcessesByName("chrome");
+                if (procsChrome.Length <= 0)
                 {
-                    if (proc.MainWindowHandle == IntPtr.Zero)
-                        continue;
-                    var root = AutomationElement.FromHandle(proc.MainWindowHandle);
-                    var activeTabName = root.Current.Name;
-                    if (activeTabName.ToLower().Contains("youtube"))
+                }
+                else
+                {
+                    foreach (var proc in procsChrome)
                     {
-                        try
+                        if (proc.MainWindowHandle == IntPtr.Zero) continue;
+                        var root = AutomationElement.FromHandle(proc.MainWindowHandle);
+                        var activeTabName = root.Current.Name;
+                        if (activeTabName.ToLower().Contains("youtube"))
                         {
-                            player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
-                            break;
-                        }
-                        catch (Exception ex)
-                        {
-                           Logger.Log.Error(ex, "Video Statistic");
+                            try
+                            {
+                                player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Log.Error(ex, "Video Statistic");
+                            }
                         }
                     }
                 }
-            }
+            });
         }
 
+        [CanBeNull]
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             if (dllsResolve == null)
@@ -193,7 +198,13 @@ namespace AcadLib
 
         public void Terminate()
         {
-            Logger.Log.Info($"Terminate AcadLib");
+            Logger.Log.Info("Terminate AcadLib");
+        }
+        
+        [CommandMethod(Group, nameof(PIK_Ribbon), CommandFlags.Modal)]
+        public void PIK_Ribbon()
+        {
+            CommandStart.Start(d=>RibbonBuilder.CreateRibbon());
         }
 
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]

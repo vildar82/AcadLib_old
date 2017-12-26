@@ -2,7 +2,6 @@
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Windows;
 using JetBrains.Annotations;
-using NetLib;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -67,15 +66,16 @@ namespace AcadLib.PaletteCommands
                 var palette = _paletteSets.FirstOrDefault(p => p.Guid.Equals(paletteGuid));
                 if (palette == null)
                 {
+                    var ver = Assembly.GetCallingAssembly().GetName().Version;
                     _paletteSets.Add(new UserGroupPalette
                     {
                         Guid = paletteGuid,
                         Name = paletteName,
                         CommandStartPalette = commandStartPalette,
                         Commands = commands,
-                        VersionPalette = $"{Assembly.GetCallingAssembly().GetName().Version}"
+                        VersionPalette = ver.ToString()
                     });
-                    SetTrayIcon(paletteName, paletteGuid);
+                    SetTrayIcon(paletteName, paletteGuid, ver);
                 }
                 else
                 {
@@ -153,25 +153,21 @@ namespace AcadLib.PaletteCommands
             Models.ForEach(m => m.Background = colorBkg);
         }
 
-        private static void SetTrayIcon(string paletteName, Guid paletteGuid)
+        private static void SetTrayIcon(string paletteName, Guid paletteGuid, Version ver)
         {
             // Добавление иконки в трей    
             try
             {
-                var ti = new TrayItem
+                var p = new Pane
                 {
-                    ToolTipText = "Палитра " + paletteName,
+                    ToolTipText = $"Палитра {paletteName}, вер. {ver.Revision}",
                     Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon())
                 };
-                ti.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);
-                ti.Visible = true;
-                Application.StatusBar.TrayItems.Add(ti);
-
-                //Pane pane = new Pane();                
-                //pane.ToolTipText = "Палитра ПИК";                                
-                //pane.Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon());
-                //pane.MouseDown += PikTray_MouseDown;
-                //Application.StatusBar.Panes.Add(pane);
+                p.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);
+                p.Visible = false;
+                Application.StatusBar.Panes.Insert(0,p);
+                p.Visible = true;
+                Application.StatusBar.Update();
             }
             catch (Exception ex)
             {
