@@ -1,5 +1,4 @@
 ﻿using AcadLib.UI.Ribbon;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Windows;
 using JetBrains.Annotations;
 using System;
@@ -7,8 +6,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
+using System.Windows.Forms.Integration;
 using System.Windows.Media;
+using Autodesk.Windows;
+using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
 
 namespace AcadLib.PaletteCommands
 {
@@ -45,13 +50,13 @@ namespace AcadLib.PaletteCommands
             CommandsAddin = commandsAddin;
             Icon = Properties.Resources.pik;
             LoadPalettes();
-            // Установка фона контрола на палитре - в зависимости от цветовой темы автокада.            
-            CheckTheme();
-            Autodesk.AutoCAD.ApplicationServices.Core.Application.SystemVariableChanged += (s, e) =>
-            {
-                if (e.Name == "COLORTHEME" && e.Changed)
-                    CheckTheme();
-            };
+            //// Установка фона контрола на палитре - в зависимости от цветовой темы автокада.            
+            //CheckTheme();
+            //Autodesk.AutoCAD.ApplicationServices.Core.Application.SystemVariableChanged += (s, e) =>
+            //{
+            //    if (e.Name == "COLORTHEME" && e.Changed)
+            //        CheckTheme();
+            //};
         }
 
         /// <summary>
@@ -132,6 +137,13 @@ namespace AcadLib.PaletteCommands
                         var commControl = new UI.CommandsControl { DataContext = model };
                         var name = group.Key;
                         if (string.IsNullOrEmpty(name)) name = "Главная";
+                        //var host = new ElementHost
+                        //{
+                        //    AutoSize = true,
+                        //    Dock = DockStyle.Fill,
+                        //    Child = commControl
+                        //};
+                        //Add(name, host);
                         AddVisual(name, commControl);
                         Models.Add(model);
                     }

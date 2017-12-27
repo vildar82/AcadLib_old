@@ -48,7 +48,9 @@ namespace AcadLib.UI.Ribbon
             ribbon = ComponentManager.Ribbon;
             if (ribbon == null) return;
             ComponentManager.ItemInitialized -= ComponentManager_ItemInitialized;
-            ribbon.BackgroundRenderFinished += Ribbon_BackgroundRenderFinished;
+            CreateRibbon();
+            Application.SystemVariableChanged += Application_SystemVariableChanged;
+            //ribbon.BackgroundRenderFinished += Ribbon_BackgroundRenderFinished;
         }
 
         private static void Ribbon_BackgroundRenderFinished(object sender, EventArgs e)

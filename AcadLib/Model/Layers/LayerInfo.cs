@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 namespace AcadLib.Layers
 {
     [Serializable]
+    [Equals]
     public class LayerInfo
     {
         private Color color;
@@ -22,6 +23,7 @@ namespace AcadLib.Layers
         public bool IsPlotable { get; set; } = true;
         public bool IsLocked { get; set; }
         [XmlIgnore]
+        [IgnoreDuringEquals]
         public Color Color
         {
             get => color;
@@ -67,11 +69,11 @@ namespace AcadLib.Layers
 
         public LayerInfo(ObjectId idLayer)
         {
-            using (var layer = idLayer.Open(OpenMode.ForRead) as LayerTableRecord)
+            using (var layer = (LayerTableRecord)idLayer.Open(OpenMode.ForRead))
             {
                 Name = layer.Name;
                 Color = layer.Color;
-                using (var lt = layer.LinetypeObjectId.Open(OpenMode.ForRead) as LinetypeTableRecord)
+                using (var lt = (LinetypeTableRecord)layer.LinetypeObjectId.Open(OpenMode.ForRead))
                 {
                     LineType = lt.Name;
                 }

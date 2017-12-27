@@ -24,9 +24,14 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Automation;
+using System.Windows.Media;
 using AcadLib.UI.Ribbon;
+using Autodesk.Windows;
+using NetLib;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 using Exception = System.Exception;
 using Path = System.IO.Path;
+using SystemVariableChangedEventArgs = Autodesk.AutoCAD.ApplicationServices.SystemVariableChangedEventArgs;
 using Timer = System.Windows.Forms.Timer;
 
 [assembly: CommandClass(typeof(Commands))]
@@ -36,6 +41,7 @@ namespace AcadLib
 {
     public class Commands : IExtensionApplication
     {
+        private static bool isRibbonColorStoped;
         internal static readonly string fileCommonBlocks = Path.Combine(PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
@@ -125,10 +131,56 @@ namespace AcadLib
                     timer.Tick += Timer_Tick;
                     timer.Start();
                 }
+                // Раскраска ленты - включить в пятницу.
+                if (Environment.UserName.EqualsIgnoreCase("karadzhayanra"))
+                {
+                    ComponentManager.ItemInitialized += ComponentManager_ItemInitialized;
+                }
             }
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, "AcadLib Initialize.");
+            }
+        }
+
+        private void ComponentManager_ItemInitialized(object sender, RibbonItemEventArgs e)
+        {
+            var ribbon = ComponentManager.Ribbon;
+            if (ribbon == null) return;
+            ComponentManager.ItemInitialized -= ComponentManager_ItemInitialized;
+            ribbon.BackgroundRenderFinished +=(o,oe)=> RibbonPaint();
+            Application.SystemVariableChanged += Application_SystemVariableChanged;
+        }
+
+        private void Application_SystemVariableChanged(object sender, SystemVariableChangedEventArgs e)
+        {
+            if (isRibbonColorStoped) return;
+            if (e.Name.Equals("WSCURRENT"))
+            {
+                RibbonPaint();
+            }
+        }
+
+        private void RibbonPaint()
+        {
+            if (isRibbonColorStoped) return;
+            var ribbon = ComponentManager.Ribbon;
+            var red = new SolidColorBrush(Color.FromRgb(234,48,6));
+            var white = Brushes.Snow;
+            var green = new SolidColorBrush(Color.FromRgb(15, 171, 7));
+            foreach (var tab in ribbon.Tabs)
+            {
+                var i = 0;
+                foreach (var panel in tab.Panels)
+                {
+                    if (i==0) panel.CustomPanelBackground = red;
+                    else if (i == 1) panel.CustomPanelBackground = white;
+                    else if (i == 2) panel.CustomPanelBackground = green;
+                    //panel.CustomPanelBackground = new SolidColorBrush(Color.FromRgb((byte) MathExt.Rnd.Next(0, 255),
+                    //    (byte) MathExt.Rnd.Next(0, 255), (byte) MathExt.Rnd.Next(0, 255)));
+                    i++;
+                    if (i > 2) i = 0;
+                }
             }
         }
 
@@ -205,6 +257,23 @@ namespace AcadLib
         public void PIK_Ribbon()
         {
             CommandStart.Start(d=>RibbonBuilder.CreateRibbon());
+        }
+
+        [CommandMethod(Group, nameof(PIK_RibbonClearColor), CommandFlags.Modal)]
+        public void PIK_RibbonClearColor()
+        {
+            isRibbonColorStoped = true;
+            CommandStart.Start(d =>
+            {
+                var ribbon = ComponentManager.Ribbon;
+                foreach (var tab in ribbon.Tabs)
+                {
+                    foreach (var panel in tab.Panels)
+                    {
+                        panel.CustomPanelBackground = null;
+                    }
+                }
+            });
         }
 
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
