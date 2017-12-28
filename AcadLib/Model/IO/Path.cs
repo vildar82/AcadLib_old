@@ -60,7 +60,12 @@ namespace AcadLib.IO
         [NotNull]
         public static string GetSharedFile([NotNull] string pluginName, [NotNull] string fileName)
         {
-            var resFilePath = string.Empty;
+            return System.IO.Path.Combine(GetSharedPluginFolder(pluginName), fileName);
+        }
+
+        [NotNull]
+        public static string GetSharedPluginFolder([NotNull] string pluginName)
+        {
             var pluginFolder = System.IO.Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
                 AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, pluginName);
             if (!Directory.Exists(pluginFolder))
@@ -69,10 +74,12 @@ namespace AcadLib.IO
                 {
                     Directory.CreateDirectory(pluginFolder);
                 }
-                catch { }
+                catch(Exception ex)
+                {
+                    Logger.Log.Error(ex, $"GetSharedpluginFolder - pluginName={pluginName}");
+                }
             }
-            resFilePath = System.IO.Path.Combine(pluginFolder, fileName);
-            return resFilePath;
+            return pluginFolder;
         }
 
         /// <summary>

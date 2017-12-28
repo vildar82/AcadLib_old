@@ -11,7 +11,10 @@ namespace AcadLib
 {
     public static class General
     {
-		private static readonly List<string> bimUsers = new List<string>{ "PrudnikovVS", "vrublevskiyba", "khisyametdinovvt", "arslanovti" };
+		private static readonly List<string> bimUsers = new List<string>
+		{
+		    "PrudnikovVS", "vrublevskiyba", "khisyametdinovvt", "arslanovti", "karadzhayanra"
+        };
         public const string Company = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
 
         public const string UserGroupAR = "АР";
@@ -44,6 +47,9 @@ namespace AcadLib
 		    IsBimUser = bimUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
 		}
 
+        /// <summary>
+        /// BIM-manager - отдел поддержки пользователей
+        /// </summary>
 	    public static bool IsBimUser { get; }
 
 		/// <summary>
