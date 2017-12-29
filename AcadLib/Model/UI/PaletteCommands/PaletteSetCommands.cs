@@ -6,14 +6,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
-using System.Windows.Forms.Integration;
 using System.Windows.Media;
-using Autodesk.Windows;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Brush = System.Windows.Media.Brush;
-using Brushes = System.Windows.Media.Brushes;
-using Color = System.Windows.Media.Color;
 
 namespace AcadLib.PaletteCommands
 {
