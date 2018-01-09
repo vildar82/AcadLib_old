@@ -29,7 +29,10 @@ namespace AcadLib
                         id.FlickObjectHighlight(num, delay1, delay2);
                         doc.Editor.AddEntToImpliedSelection(id);
                     }
-                    catch { }
+                    catch
+                    {
+                        //
+                    }
                 }
                 t.Commit();
             }

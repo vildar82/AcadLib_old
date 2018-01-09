@@ -10,6 +10,34 @@ namespace AcadLib.Editors
 {
     public static class EditorExt
     {
+        /// <summary>
+        /// Выделение объектов и зумирование по границе
+        /// </summary>
+        /// <param name="ids">Элементв</param>
+        /// <param name="ed">Редактор</param>
+        public static void SetSelectionAndZoom([NotNull] this List<ObjectId> ids, Editor ed)
+        {
+            try
+            {
+                if (!ids.Any())
+                {
+                    "Нет объектов для выделения.".WriteToCommandLine();
+                    return;
+                }
+                ed.SetImpliedSelection(ids.ToArray());
+                var ext = new Extents3d();
+                ids.Select(s => s.GetObject(OpenMode.ForRead)).Iterate(o =>
+                {
+                    if (o.Bounds.HasValue) ext.AddExtents(o.Bounds.Value);
+                });
+                ed.Zoom(ext);
+            }
+            catch (Exception ex)
+            {
+                $"Ошибка выделения объектов - {ex.Message}.".WriteToCommandLine();
+            }
+        }
+
         public static void AddEntToImpliedSelection(this Editor ed, ObjectId id)
         {
             try

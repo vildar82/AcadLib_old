@@ -11,9 +11,7 @@ namespace AcadLib.Editors
     {
         public static Matrix3d EyeToWorld([NotNull] this ViewTableRecord view)
         {
-            if (view == null)
-                throw new ArgumentNullException("view");
-
+            if (view == null) throw new ArgumentNullException("view");
             return
                 Matrix3d.Rotation(-view.ViewTwist, view.ViewDirection, view.Target) *
                 Matrix3d.Displacement(view.Target - Point3d.Origin) *
