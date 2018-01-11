@@ -16,14 +16,9 @@ namespace AcadLib.Layers
         private string colorStr;
         private LineWeight? lineWeight;
 
-        public ObjectId LayerId { get; set; }
-        public string Name { get; set; }
-        public bool IsOff { get; set; }
-        public bool IsFrozen { get; set; }
-        public bool IsPlotable { get; set; } = true;
-        public bool IsLocked { get; set; }
         [XmlIgnore]
         [IgnoreDuringEquals]
+        [PublicAPI]
         public Color Color
         {
             get => color;
@@ -32,20 +27,10 @@ namespace AcadLib.Layers
                 colorStr = color.AcadColorToString2();
             }
         }
-
-        public LineWeight LineWeight
-        {
-            get => lineWeight ?? LineWeight.ByLayer;
-            set => lineWeight = value;
-        }
-
-        [XmlIgnore]
-        public ObjectId LinetypeObjectId { get; set; }
-        public string LineType { get; set; }
-
         /// <summary>
         /// Только для Serializable
         /// </summary>
+        [PublicAPI]
         public string ColorStr
         {
             get => colorStr;
@@ -54,10 +39,32 @@ namespace AcadLib.Layers
                 color = colorStr.AcadColorFromString2();
             }
         }
+        [PublicAPI]
+        public bool IsFrozen { get; set; }
+        [PublicAPI]
+        public bool IsLocked { get; set; }
+        [PublicAPI]
+        public bool IsOff { get; set; }
+        [PublicAPI]
+        public bool IsPlotable { get; set; } = true;
+        [PublicAPI]
+        public ObjectId LayerId { get; set; }
+        [PublicAPI]
+        public string LineType { get; set; }
+        [XmlIgnore]
+        [PublicAPI]
+        public ObjectId LinetypeObjectId { get; set; }
+        [PublicAPI]
+        public LineWeight LineWeight
+        {
+            get => lineWeight ?? LineWeight.ByLayer;
+            set => lineWeight = value;
+        }
+        [PublicAPI]
+        public string Name { get; set; }
 
         public LayerInfo()
         {
-
         }
 
         public LayerInfo(string name)
@@ -86,6 +93,7 @@ namespace AcadLib.Layers
         /// Установка свойст LayerInfo к слою LayerTableRecord
         /// </summary>
         /// <param name="lay"></param>
+        /// <param name="db">Чертеж</param>
         public void SetProp([NotNull] LayerTableRecord lay, Database db)
         {
             if (!Name.IsNullOrEmpty()) lay.Name = Name;

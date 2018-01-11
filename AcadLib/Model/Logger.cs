@@ -6,6 +6,7 @@ namespace AcadLib
     public static class Logger
     {
         public static readonly LoggAddinExt Log;
+        [PublicAPI]
         public static readonly string UserGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
 
         static Logger()
@@ -20,17 +21,17 @@ namespace AcadLib
         {
         }
 
-        public new void InfoLisp(string msg)
+        public override void Debug(string msg)
         {
-            base.InfoLisp(msg);
+            var newMsg = GetMessage(msg);
+            base.Debug(newMsg);
         }
 
-        /// <summary>
-        /// Отзыв
-        /// </summary>        
-        public void Report(string msg)
+        [PublicAPI]
+        public void Debug(Exception ex, string msg)
         {
-            Error("#Report: " + msg);
+            var newMsg = GetMessage(msg);
+            base.Debug(ex, newMsg);
         }
 
         public override void Error(string msg)
@@ -45,49 +46,35 @@ namespace AcadLib
             base.Error(ex, newMsg);
         }
 
-        public override void Info(string msg)
-        {
-            var newMsg = GetMessage(msg);
-            base.Info(newMsg);
-        }
-        public void Info(Exception ex, string msg)
-        {
-            var newMsg = GetMessage(msg);
-            base.Info(ex, newMsg);
-        }
-
-        public override void Debug(string msg)
-        {
-            var newMsg = GetMessage(msg);
-            base.Debug(newMsg);
-        }
-
-        public void Debug(Exception ex, string msg)
-        {
-            var newMsg = GetMessage(msg);
-            base.Debug(ex, newMsg);
-        }
-
         public override void Fatal(string msg)
         {
             var newMsg = GetMessage(msg);
             base.Fatal(newMsg);
         }
+
+        [PublicAPI]
         public void Fatal(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
             base.Fatal(ex, newMsg);
         }
 
-        public override void Warn(string msg)
+        public override void Info(string msg)
         {
             var newMsg = GetMessage(msg);
-            base.Warn(newMsg);
+            base.Info(newMsg);
         }
-        public void Warn(Exception ex, string msg)
+
+        [PublicAPI]
+        public void Info(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
-            base.Warn(ex, newMsg);
+            base.Info(ex, newMsg);
+        }
+
+        public new void InfoLisp(string msg)
+        {
+            base.InfoLisp(msg);
         }
 
         public override void Mail(string msg)
@@ -95,10 +82,20 @@ namespace AcadLib
             var newMsg = GetMessage(msg);
             base.Mail(newMsg);
         }
+
         public override void Mail(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
             base.Mail(ex, newMsg);
+        }
+
+        /// <summary>
+        /// Отзыв
+        /// </summary>
+        [PublicAPI]
+        public void Report(string msg)
+        {
+            Error("#Report: " + msg);
         }
 
         public void StartCommand([CanBeNull] CommandStart command)
@@ -109,6 +106,18 @@ namespace AcadLib
         public void StartLisp(string command, string file)
         {
             base.Info($"Start Lisp: {command}; Файл: {file}; ");
+        }
+
+        public override void Warn(string msg)
+        {
+            var newMsg = GetMessage(msg);
+            base.Warn(newMsg);
+        }
+
+        public void Warn(Exception ex, string msg)
+        {
+            var newMsg = GetMessage(msg);
+            base.Warn(ex, newMsg);
         }
 
         [NotNull]
