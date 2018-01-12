@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace AcadLib.Layers
 {
     [Serializable]
-    [Equals]
+    [Equals(DoNotAddEqualityOperators = true)]
     public class LayerInfo
     {
         private Color color;
