@@ -8,20 +8,15 @@ using System.Xml.Serialization;
 
 namespace AcadLib.Layers
 {
+    [PublicAPI]
     [Serializable]
-    [Equals]
+    [Equals(DoNotAddEqualityOperators = true)]
     public class LayerInfo
     {
         private Color color;
         private string colorStr;
         private LineWeight? lineWeight;
 
-        public ObjectId LayerId { get; set; }
-        public string Name { get; set; }
-        public bool IsOff { get; set; }
-        public bool IsFrozen { get; set; }
-        public bool IsPlotable { get; set; } = true;
-        public bool IsLocked { get; set; }
         [XmlIgnore]
         [IgnoreDuringEquals]
         public Color Color
@@ -32,17 +27,6 @@ namespace AcadLib.Layers
                 colorStr = color.AcadColorToString2();
             }
         }
-
-        public LineWeight LineWeight
-        {
-            get => lineWeight ?? LineWeight.ByLayer;
-            set => lineWeight = value;
-        }
-
-        [XmlIgnore]
-        public ObjectId LinetypeObjectId { get; set; }
-        public string LineType { get; set; }
-
         /// <summary>
         /// Только для Serializable
         /// </summary>
@@ -54,10 +38,23 @@ namespace AcadLib.Layers
                 color = colorStr.AcadColorFromString2();
             }
         }
+        public bool IsFrozen { get; set; }
+        public bool IsLocked { get; set; }
+        public bool IsOff { get; set; }
+        public bool IsPlotable { get; set; } = true;
+        public ObjectId LayerId { get; set; }
+        public string LineType { get; set; }
+        [XmlIgnore]
+        public ObjectId LinetypeObjectId { get; set; }
+        public LineWeight LineWeight
+        {
+            get => lineWeight ?? LineWeight.ByLayer;
+            set => lineWeight = value;
+        }
+        public string Name { get; set; }
 
         public LayerInfo()
         {
-
         }
 
         public LayerInfo(string name)
