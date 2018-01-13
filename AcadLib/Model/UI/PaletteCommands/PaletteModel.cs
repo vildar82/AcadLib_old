@@ -1,18 +1,26 @@
 ﻿using JetBrains.Annotations;
-using NetLib.WPF;
 using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ReactiveUI;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
     public class PaletteModel : ReactiveObject
     {
-        protected PaletteModel()
-        {
+        /// <summary>
+        /// Цвет фона
+        /// </summary>
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
+        [Reactive] public System.Windows.Media.Brush Background { get; set; }
 
-        }
+        /// <summary>
+        /// Команды на палитре
+        /// </summary>
+        public ObservableCollection<IPaletteCommand> PaletteCommands { get; set; }
+
+        public string Version { get; }
 
         public PaletteModel([NotNull] IEnumerable<IPaletteCommand> commands, string version)
         {
@@ -27,15 +35,8 @@ namespace AcadLib.PaletteCommands
             }
         }
 
-        /// <summary>
-        /// Цвет фона
-        /// </summary>
-        [Reactive] public System.Windows.Media.Brush Background { get; set; }
-        /// <summary>
-        /// Команды на палитре
-        /// </summary>
-        public ObservableCollection<IPaletteCommand> PaletteCommands { get; set; }
-
-        public string Version { get; }
+        protected PaletteModel()
+        {
+        }
     }
 }

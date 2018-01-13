@@ -2,47 +2,17 @@
 using System.Runtime.CompilerServices;
 using Autodesk.AutoCAD.Windows;
 using System.Windows;
-using System.Windows.Controls;
 using JetBrains.Annotations;
-using MicroMvvm;
 
 namespace AcadLib.WPF.Controls
 {
     /// <summary>
     /// Кнопка выбора цвета.
-    /// <controls:AcadColorPick Color="{Binding Color}"/> 
+    /// <controls:AcadColorPick Color="{Binding Color}"/>
     /// </summary>
     // ReSharper disable once UnusedMember.Global
     public partial class AcadColorPick : INotifyPropertyChanged
     {
-        public AcadColorPick()
-        {
-            InitializeComponent();
-            CanClearColor = true;
-        }
-
-        [CanBeNull]
-        public Autodesk.AutoCAD.Colors.Color Color
-        {
-            get => (Autodesk.AutoCAD.Colors.Color)GetValue(ColorProperty);
-            set
-            {
-                SetValue(ColorProperty, value);
-                CanClearColor = Color != null;
-            }
-        }
-
-        public bool CanClearColor
-        {
-            get => canClearColor;
-            set
-            {
-                if (value == canClearColor) return;
-                canClearColor = value;
-                OnPropertyChanged();
-            }
-        }
-
         /// <summary>
         /// Цвет (AutoCAD)
         /// </summary>
@@ -52,13 +22,38 @@ namespace AcadLib.WPF.Controls
 
         private bool canClearColor;
 
-        private void SelectColor(object sender, RoutedEventArgs e)
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool CanClearColor
         {
-            var colorDlg = new ColorDialog { Color = Color };
-            if (colorDlg.ShowModal() == true)
-            {
-                Color = colorDlg.Color;
+            get => canClearColor;
+            set {
+                if (value == canClearColor) return;
+                canClearColor = value;
+                OnPropertyChanged();
             }
+        }
+
+        [CanBeNull]
+        public Autodesk.AutoCAD.Colors.Color Color
+        {
+            get => (Autodesk.AutoCAD.Colors.Color)GetValue(ColorProperty);
+            set {
+                SetValue(ColorProperty, value);
+                CanClearColor = Color != null;
+            }
+        }
+
+        public AcadColorPick()
+        {
+            InitializeComponent();
+            CanClearColor = true;
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CanBeNull] [CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void Clear(object sender, RoutedEventArgs e)
@@ -66,12 +61,13 @@ namespace AcadLib.WPF.Controls
             Color = null;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void SelectColor(object sender, RoutedEventArgs e)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            var colorDlg = new ColorDialog { Color = Color };
+            if (colorDlg.ShowModal() == true)
+            {
+                Color = colorDlg.Color;
+            }
         }
     }
 }

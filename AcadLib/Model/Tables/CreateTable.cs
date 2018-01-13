@@ -14,16 +14,16 @@ namespace AcadLib.Tables
     /// 2 Create
     /// 3 Insert
     /// </summary>
+    [PublicAPI]
     public abstract class CreateTable : ICreateTable
     {
         protected readonly Database db;
         protected readonly double scale;
 
-        public LineWeight LwBold { get; set; } = LineWeight.LineWeight050;
         public string Layer { get; set; }
-        public int NumRows { get; set; }
+        public LineWeight LwBold { get; set; } = LineWeight.LineWeight050;
         public int NumColumns { get; set; }
-        public string Title { get; set; }
+        public int NumRows { get; set; }
         /// <summary>
         /// Имя стиля из шаблона. Если пусто, то ПИК
         /// </summary>
@@ -32,9 +32,7 @@ namespace AcadLib.Tables
         /// Имя шаблона
         /// </summary>
         public string TemplateName { get; set; }
-        public abstract void CalcRows();
-        protected abstract void SetColumnsAndCap(ColumnsCollection columns);
-        protected abstract void FillCells(Table table);
+        public string Title { get; set; }
 
         public CreateTable(Database db)
         {
@@ -42,20 +40,25 @@ namespace AcadLib.Tables
             scale = Scale.ScaleHelper.GetCurrentAnnoScale(db);
         }
 
+        public abstract void CalcRows();
+
+        [NotNull]
         public Table Create()
         {
             var table = GetTable();
             return table;
         }
 
-        public void Insert(Table table, Document doc)
+        public void Insert([NotNull] Table table, [NotNull] Document doc)
         {
             insertTable(table, doc);
         }
 
+        protected abstract void FillCells(Table table);
+
         /// <summary>
         /// перед вызовом необходимо заполнить свойства - Title, NumRows, NumColumns
-        /// </summary>        
+        /// </summary>
         [NotNull]
         protected Table GetTable()
         {
@@ -97,14 +100,16 @@ namespace AcadLib.Tables
             return table;
         }
 
-        private void insertTable(Table table, [NotNull] Document doc)
+        protected abstract void SetColumnsAndCap(ColumnsCollection columns);
+
+        private void insertTable([NotNull] Table table, [NotNull] Document doc)
         {
             using (var t = doc.TransactionManager.StartTransaction())
             {
                 var jigTable = new TableJig(table, scale, "Вставка таблицы");
                 if (doc.Editor.Drag(jigTable).Status == PromptStatus.OK)
                 {
-                    var cs = (BlockTableRecord) db.CurrentSpaceId.GetObject(OpenMode.ForWrite);
+                    var cs = (BlockTableRecord)db.CurrentSpaceId.GetObject(OpenMode.ForWrite);
                     cs.AppendEntity(table);
                     t.AddNewlyCreatedDBObject(table, true);
                 }

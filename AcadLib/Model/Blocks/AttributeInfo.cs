@@ -9,6 +9,7 @@ namespace AcadLib.Blocks
     /// Описание атрибута
     /// Для AttributeDefinition или AttributeReference
     /// </summary>
+    [PublicAPI]
     public class AttributeInfo
     {
         public string Tag { get; set; }
@@ -19,7 +20,7 @@ namespace AcadLib.Blocks
         /// <summary>
         /// DBText - должен быть или AttributeDefinition или AttributeReference
         /// иначе исключение ArgumentException
-        /// </summary>      
+        /// </summary>
         public AttributeInfo([NotNull] DBText attr)
         {
             if (attr is AttributeDefinition attdef)
@@ -56,11 +57,15 @@ namespace AcadLib.Blocks
 
             if (!idBtr.IsNull)
             {
-                using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
+#pragma warning disable 618
+                using (var btr = (BlockTableRecord)idBtr.Open(OpenMode.ForRead))
+#pragma warning restore 618
                 {
                     foreach (var idEnt in btr)
                     {
-                        using (var attrDef = idEnt.Open(OpenMode.ForRead, false, true) as AttributeDefinition)
+#pragma warning disable 618
+                        using (var attrDef = (AttributeDefinition)idEnt.Open(OpenMode.ForRead, false, true))
+#pragma warning restore 618
                         {
                             if (attrDef != null && attrDef.Visible)
                             {
@@ -83,7 +88,9 @@ namespace AcadLib.Blocks
                 foreach (ObjectId idAttrRef in blRef.AttributeCollection)
                 {
                     if (!idAttrRef.IsValidEx()) continue;
-                    using (var atrRef = idAttrRef.Open(OpenMode.ForRead, false, true) as AttributeReference)
+#pragma warning disable 618
+                    using (var atrRef = (AttributeReference)idAttrRef.Open(OpenMode.ForRead, false, true))
+#pragma warning restore 618
                     {
                         if (atrRef.Visible)
                         {

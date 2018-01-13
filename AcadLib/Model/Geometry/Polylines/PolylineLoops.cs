@@ -4,28 +4,12 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Geometry
 {
+    [PublicAPI]
     public static class PolylineLoops
     {
-        /// <summary>
-        /// Точки петли полилинии слева/справа от точек пересечения
-        /// </summary>        
-        public static List<Point2d> GetLoopSideBetweenVerticalIntersectPoints(this Polyline contour,
-            Point3d ptIntersect1, Point3d ptIntersect2, bool isRightSide = true, bool includePtIntersects = true)
-        {
-            List<Point2d> res;
-            if (isRightSide)
-            {
-                res = GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.X > seg.EndPoint.X, includePtIntersects);
-            }
-            else
-            {
-                res = GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.X < seg.EndPoint.X, includePtIntersects);
-            }
-            return res;
-        }
-
         /// <summary>
         /// Точки "петли" полилинии между точками пересечения.
         /// </summary>
@@ -35,68 +19,50 @@ namespace AcadLib.Geometry
         /// <param name="above">Петля выше или ниже точек пересечения</param>
         /// <param name="includePtIntersects">Включать ли сами точки пересечения в результат</param>
         /// <returns>Список точек петли пересечения</returns>
-        public static List<Point2d> GetLoopSideBetweenHorizontalIntersectPoints(this Polyline contour,
+        [NotNull]
+        public static List<Point2d> GetLoopSideBetweenHorizontalIntersectPoints([NotNull] this Polyline contour,
             Point3d ptIntersect1, Point3d ptIntersect2, bool above = true, bool includePtIntersects = true)
         {
-            List<Point2d> res;
-            if (above)
-            {
-                res = GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.Y > seg.EndPoint.Y, includePtIntersects);
-            }
-            else
-            {
-                res = GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.Y < seg.EndPoint.Y, includePtIntersects);
-            }
+            var res = above
+                ? GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.Y > seg.EndPoint.Y,
+                    includePtIntersects)
+                : GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.Y < seg.EndPoint.Y,
+                    includePtIntersects);
             return res;
-            //var pointsLoopAbove = new List<Point2d>();
+        }
 
-            //var ptIntersectStart = ptIntersect1;
-            //var ptIntersectEnd = ptIntersect2;           
+        /// <summary>
+        /// Точки петли полилинии слева/справа от точек пересечения
+        /// </summary>
+        [NotNull]
+        public static List<Point2d> GetLoopSideBetweenVerticalIntersectPoints([NotNull] this Polyline contour,
+            Point3d ptIntersect1, Point3d ptIntersect2, bool isRightSide = true, bool includePtIntersects = true)
+        {
+            var res = isRightSide
+                ? GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.X > seg.EndPoint.X,
+                    includePtIntersects)
+                : GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.X < seg.EndPoint.X,
+                    includePtIntersects);
+            return res;
+        }
 
-            //// Индекс стартовой точки петли (вершины) с нужной стороны от точки пересечения            
-            //int dir;
-            //var indexStart = GetStartIndex(contour, ptIntersect1,(seg)=> seg.StartPoint.Y > seg.EndPoint.Y, out dir);
-            //int indexCur = indexStart;
-
-            //int dirEnd;
-            //var indexEnd = GetStartIndex(contour, ptIntersect2, (seg) => seg.StartPoint.Y > seg.EndPoint.Y, out dirEnd);
-            //if (dir == 0)
-            //{
-            //    dir = dirEnd;
-            //    indexCur = indexEnd;
-            //    indexEnd = indexStart;
-            //    ptIntersectStart = ptIntersect2;
-            //    ptIntersectEnd = ptIntersect1;
-            //}
-
-            //if (includePtIntersects)
-            //    pointsLoopAbove.Add(ptIntersectStart.Convert2d());
-
-            //if (dir != 0)
-            //{
-            //    if (indexCur == indexEnd)
-            //    {
-            //        AddPoint(pointsLoopAbove, dir, ref indexCur, contour);
-            //    }
-            //    else
-            //    {
-            //        while (indexCur != indexEnd)
-            //        {
-            //            AddPoint(pointsLoopAbove, dir, ref indexCur, contour);
-            //        }
-            //        // Добавление последней вершины
-            //        AddPoint(pointsLoopAbove, dir, ref indexCur, contour);
-            //    }
-            //}            
-
-            //if (includePtIntersects)
-            //    pointsLoopAbove.Add(ptIntersectEnd.Convert2d());
-
-            //return pointsLoopAbove;
+        private static void AddPoint([NotNull] List<Point2d> pointsLoop, int dir, ref int indexCur, [NotNull] Polyline contour)
+        {
+            var pt = contour.GetPoint2dAt(indexCur);
+            pointsLoop.Add(pt);
+            indexCur += dir;
+            if (indexCur == -1)
+            {
+                indexCur = contour.NumberOfVertices - 1;
+            }
+            else if (indexCur == contour.NumberOfVertices)
+            {
+                indexCur = 0;
+            }
         }
 
         [NotNull]
-        private static List<Point2d> GetLoopSide(this Polyline contour,
+        private static List<Point2d> GetLoopSide([NotNull] this Polyline contour,
             Point3d ptIntersect1, Point3d ptIntersect2, Func<LineSegment3d, bool> checkSeg, bool includePtIntersects = true)
         {
             var pointsLoopSide = new List<Point2d>();
@@ -104,7 +70,7 @@ namespace AcadLib.Geometry
             var ptIntersectStart = ptIntersect1;
             var ptIntersectEnd = ptIntersect2;
 
-            // Индекс стартовой точки петли (вершины) с нужной стороны от точки пересечения            
+            // Индекс стартовой точки петли (вершины) с нужной стороны от точки пересечения
             var indexStart = GetStartIndex(contour, ptIntersect1, checkSeg, out var dir);
             var indexCur = indexStart;
 
@@ -142,21 +108,6 @@ namespace AcadLib.Geometry
                 pointsLoopSide.Add(ptIntersectEnd.Convert2d());
 
             return pointsLoopSide;
-        }
-
-        private static void AddPoint([NotNull] List<Point2d> pointsLoop, int dir, ref int indexCur, [NotNull] Polyline contour)
-        {
-            var pt = contour.GetPoint2dAt(indexCur);
-            pointsLoop.Add(pt);
-            indexCur += dir;
-            if (indexCur == -1)
-            {
-                indexCur = contour.NumberOfVertices - 1;
-            }
-            else if (indexCur == contour.NumberOfVertices)
-            {
-                indexCur = 0;
-            }
         }
 
         private static int GetStartIndex([NotNull] Polyline contour, Point3d ptIntersect1,

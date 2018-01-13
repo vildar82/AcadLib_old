@@ -1,20 +1,15 @@
 ﻿using JetBrains.Annotations;
 using NetLib;
-using NLog;
-using System;
 using System.IO;
-using AcadLib.UI.Ribbon.Options;
 
 namespace AcadLib.IO
 {
     /// <summary>
     /// Данные хранимые в файле json на сервере, с локальным кэшем
     /// </summary>
+    [PublicAPI]
     public class JsonLocalData<T>
     {
-        // ReSharper disable once StaticMemberInGenericType
-        private static ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
-        // ReSharper disable once MemberCanBePrivate.Global
         public readonly string LocalFile;
 
         /// <summary>
@@ -28,7 +23,7 @@ namespace AcadLib.IO
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="IOException"/>
         [CanBeNull]
@@ -36,6 +31,12 @@ namespace AcadLib.IO
         public T Load()
         {
             return !File.Exists(LocalFile) ? default : LocalFile.Deserialize<T>();
+        }
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public void Save(T data)
+        {
+            data.Serialize(LocalFile);
         }
 
         [CanBeNull]
@@ -49,12 +50,6 @@ namespace AcadLib.IO
             {
                 return default;
             }
-        }
-
-        // ReSharper disable once MemberCanBePrivate.Global
-        public void Save(T data)
-        {
-            data.Serialize(LocalFile);
         }
 
         public void TrySave(T data)

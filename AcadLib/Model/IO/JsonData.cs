@@ -3,21 +3,23 @@ using NetLib;
 using NLog;
 using System;
 using System.IO;
-using AcadLib.UI.Ribbon.Options;
 
 namespace AcadLib.IO
 {
     /// <summary>
     /// Данные хранимые в файле json на сервере, с локальным кэшем
     /// </summary>
+    [PublicAPI]
     public class JsonData<T>
     {
-        // ReSharper disable once StaticMemberInGenericType
-        private static ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
-        // ReSharper disable once MemberCanBePrivate.Global
-        public readonly string ServerFile;
         // ReSharper disable once MemberCanBePrivate.Global
         public readonly string LocalFile;
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public readonly string ServerFile;
+
+        // ReSharper disable once StaticMemberInGenericType
+        private static ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Данные хранимые в файле json на сервере, с локальным кэшем
@@ -31,7 +33,7 @@ namespace AcadLib.IO
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="IOException"/>
         [CanBeNull]
@@ -40,6 +42,13 @@ namespace AcadLib.IO
         {
             Copy();
             return !File.Exists(LocalFile) ? default : LocalFile.Deserialize<T>();
+        }
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public void Save(T data)
+        {
+            data.Serialize(ServerFile);
+            Copy();
         }
 
         [CanBeNull]
@@ -53,13 +62,6 @@ namespace AcadLib.IO
             {
                 return default;
             }
-        }
-
-        // ReSharper disable once MemberCanBePrivate.Global
-        public void Save(T data)
-        {
-            data.Serialize(ServerFile);
-            Copy();
         }
 
         public void TrySave(T data)

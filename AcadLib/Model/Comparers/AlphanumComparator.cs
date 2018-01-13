@@ -8,6 +8,7 @@ namespace AcadLib.Comparers
     /// Сортировка строк с числами.
     /// http://www.dotnetperls.com/alphanumeric-sorting
     /// </summary>
+    [Obsolete]
     public class AlphanumComparator : IComparer<string>
     {
         public static AlphanumComparator New { get; } = new AlphanumComparator();

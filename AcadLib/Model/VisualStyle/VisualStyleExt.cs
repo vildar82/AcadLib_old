@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Linq;
-using AcadLib.Visual;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.GraphicsInterface;
-using Autodesk.AutoCAD.Internal.Reactors;
 using JetBrains.Annotations;
 
 namespace AcadLib.VisualStyle

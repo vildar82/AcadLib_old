@@ -4,6 +4,7 @@ using System;
 
 namespace AcadLib.Registry
 {
+    [PublicAPI]
     public class RegExt : IDisposable
     {
         public const string REGAPPPATH = @"Software\Vildar\AutoCAD\";
@@ -34,6 +35,7 @@ namespace AcadLib.Registry
         {
             regKey.SetValue(subkey, value, RegistryValueKind.String);
         }
+
         public void Save(string subkey, bool value)
         {
             regKey.SetValue(subkey, value, RegistryValueKind.DWord);

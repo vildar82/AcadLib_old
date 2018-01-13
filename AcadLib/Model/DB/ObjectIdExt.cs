@@ -11,67 +11,32 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
+    [PublicAPI]
     public static class ObjectIdExt
     {
-        public static void ShowEnt(this ObjectId id, int num, int delay1, int delay2)
+        /// <summary>
+        /// Копирование объекта в одной базе
+        /// </summary>
+        /// <param name="idEnt">Копируемый объект</param>
+        /// <param name="idBtrOwner">Куда копировать (контейнер - BlockTableRecord)</param>
+        public static ObjectId CopyEnt(this ObjectId idEnt, ObjectId idBtrOwner)
         {
-            var doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null || !id.IsValidEx()) return;
-
-            using (doc.LockDocument())
-            using (var t = id.Database.TransactionManager.StartTransaction())
-            {
-                if (id.GetObject(OpenMode.ForRead) is Entity ent)
-                {
-                    try
-                    {
-                        doc.Editor.Zoom(ent.GeometricExtents.Offset());
-                        id.FlickObjectHighlight(num, delay1, delay2);
-                        doc.Editor.AddEntToImpliedSelection(id);
-                    }
-                    catch
-                    {
-                        //
-                    }
-                }
-                t.Commit();
-            }
-        }
-        public static void ShowEnt(this ObjectId id)
-        {
-            ShowEnt(id, 2, 100, 100);
-        }
-
-        public static void ShowEnt(this ObjectId id, Extents3d ext, Document docOrig)
-        {
-            var curDoc = Application.DocumentManager.MdiActiveDocument;
-            if (docOrig != curDoc)
-            {
-                Application.ShowAlertDialog($"Должен быть активен документ {docOrig.Name}");
-            }
-            else
-            {
-                if (ext.Diagonal() > 1)
-                {
-                    docOrig.Editor.Zoom(ext);
-                    id.FlickObjectHighlight(2, 100, 100);
-                    docOrig.Editor.AddEntToImpliedSelection(id);
-                }
-                else
-                {
-                    Application.ShowAlertDialog("Границы элемента не определены");
-                }
-            }
+            var db = idEnt.Database;
+            var map = new IdMapping();
+            var ids = new ObjectIdCollection(new[] { idEnt });
+            db.DeepCloneObjects(ids, idBtrOwner, map, false);
+            return map[idEnt].Value;
         }
 
         public static void FlickObjectHighlight([CanBeNull] this IEnumerable<Entity> ents, int num = 2, int delay1 = 50, int delay2 = 50)
         {
-            if (ents?.Any() != true) return;
+            var list = ents?.ToList();
+            if (list?.Any() != true) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             for (var i = 0; i < num; i++)
             {
                 // Highlight entity
-                foreach (var entity in ents)
+                foreach (var entity in list)
                 {
                     entity.Highlight();
                 }
@@ -79,7 +44,7 @@ namespace AcadLib
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
                 // Unhighlight entity
-                foreach (var entity in ents)
+                foreach (var entity in list)
                 {
                     entity.Unhighlight();
                 }
@@ -96,7 +61,7 @@ namespace AcadLib
         /// <param name="num">Количество "миганий"</param>
         /// <param name="delay1">Длительность "подсвеченного" состояния</param>
         /// <param name="delay2">Длительность "неподсвеченного" состояния</param>
-        static public void FlickObjectHighlight(this ObjectId id, int num, int delay1, int delay2)
+        public static void FlickObjectHighlight(this ObjectId id, int num, int delay1, int delay2)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             for (var i = 0; i < num; i++)
@@ -140,7 +105,7 @@ namespace AcadLib
         /// <param name="num">Количество "миганий"</param>
         /// <param name="delay1">Длительность "подсвеченного" состояния</param>
         /// <param name="delay2">Длительность "неподсвеченного" состояния</param>
-        static public void FlickSubentityHighlight(ObjectId[] idsPath, int num, int delay1, int delay2)
+        public static void FlickSubentityHighlight(ObjectId[] idsPath, int num, int delay1, int delay2)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             for (var i = 0; i < num; i++)
@@ -151,7 +116,7 @@ namespace AcadLib
                 {
                     var subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
                     var path = new FullSubentityPath(idsPath, subId);
-                    var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
+                    var ent = (Entity)idsPath[0].GetObject(OpenMode.ForRead);
                     ent.Highlight(path, true);
                     tr.Commit();
                 }
@@ -164,7 +129,7 @@ namespace AcadLib
                 {
                     var subId = new SubentityId(SubentityType.Null, IntPtr.Zero);
                     var path = new FullSubentityPath(idsPath, subId);
-                    var ent = idsPath[0].GetObject(OpenMode.ForRead) as Entity;
+                    var ent = (Entity)idsPath[0].GetObject(OpenMode.ForRead);
                     ent.Unhighlight(path, true);
                     tr.Commit();
                 }
@@ -174,23 +139,61 @@ namespace AcadLib
             }
         }
 
-        /// <summary>
-        /// Копирование объекта в одной базе
-        /// </summary>
-        /// <param name="idEnt">Копируемый объект</param>
-        /// <param name="idBtrOwner">Куда копировать (контейнер - BlockTableRecord)</param>                
-        public static ObjectId CopyEnt(this ObjectId idEnt, ObjectId idBtrOwner)
-        {
-            var db = idEnt.Database;
-            var map = new IdMapping();
-            var ids = new ObjectIdCollection(new[] { idEnt });
-            db.DeepCloneObjects(ids, idBtrOwner, map, false);
-            return map[idEnt].Value;
-        }
-
         public static bool IsValidEx(this ObjectId id)
         {
             return id.IsValid && !id.IsNull && !id.IsErased;
+        }
+
+        public static void ShowEnt(this ObjectId id, int num, int delay1, int delay2)
+        {
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null || !id.IsValidEx()) return;
+
+            using (doc.LockDocument())
+            using (var t = id.Database.TransactionManager.StartTransaction())
+            {
+                if (id.GetObject(OpenMode.ForRead) is Entity ent)
+                {
+                    try
+                    {
+                        doc.Editor.Zoom(ent.GeometricExtents.Offset());
+                        id.FlickObjectHighlight(num, delay1, delay2);
+                        doc.Editor.AddEntToImpliedSelection(id);
+                    }
+                    catch
+                    {
+                        //
+                    }
+                }
+                t.Commit();
+            }
+        }
+
+        public static void ShowEnt(this ObjectId id)
+        {
+            ShowEnt(id, 2, 100, 100);
+        }
+
+        public static void ShowEnt(this ObjectId id, Extents3d ext, Document docOrig)
+        {
+            var curDoc = Application.DocumentManager.MdiActiveDocument;
+            if (docOrig != curDoc)
+            {
+                Application.ShowAlertDialog($"Должен быть активен документ {docOrig.Name}");
+            }
+            else
+            {
+                if (ext.Diagonal() > 1)
+                {
+                    docOrig.Editor.Zoom(ext);
+                    id.FlickObjectHighlight(2, 100, 100);
+                    docOrig.Editor.AddEntToImpliedSelection(id);
+                }
+                else
+                {
+                    Application.ShowAlertDialog("Границы элемента не определены");
+                }
+            }
         }
     }
 }

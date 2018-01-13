@@ -17,14 +17,14 @@ namespace AcadLib.Blocks.Dublicate
     /// </summary>
     public static class CheckDublicateBlocks
     {
-        public static Tolerance Tolerance { get; set; } = new Tolerance(0.2, 10);
         public static int DEPTH = 5;
-        private static int curDepth;
-        private static HashSet<ObjectId> attemptedblocks;
+        private static List<IError> _errors;
         private static HashSet<string> _ignoreBlocks;
         private static List<BlockRefDublicateInfo> AllDublicBlRefInfos;
+        private static HashSet<ObjectId> attemptedblocks;
+        private static int curDepth;
         private static Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>> dictBlRefInfos;
-        private static List<IError> _errors;
+        public static Tolerance Tolerance { get; set; } = new Tolerance(0.2, 10);
 
         public static void Check()
         {
@@ -54,10 +54,9 @@ namespace AcadLib.Blocks.Dublicate
             {
                 using (var t = db.TransactionManager.StartTransaction())
                 {
-
                     if (idsBlRefs == null)
                     {
-                        var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead) as BlockTableRecord;
+                        var ms = (BlockTableRecord)SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
                         idsBlRefs = ms;
                     }
                     GetDublicateBlocks(idsBlRefs, Matrix3d.Identity, 0);
@@ -86,13 +85,14 @@ namespace AcadLib.Blocks.Dublicate
 
             if (AllDublicBlRefInfos.Count == 0)
             {
-                Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\nДубликаты блоков не найдены.");
+                Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\nДубликаты блоков не найдены.");
             }
             else
             {
                 foreach (var dublBlRefInfo in AllDublicBlRefInfos)
                 {
-                    var err = new Error($"Дублирование блоков '{dublBlRefInfo.Name}' - {dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
+                    var err = new Error($"Дублирование блоков '{dublBlRefInfo.Name}' - " +
+                                        $"{dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
                        dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error)
                     {
                         Tag = dublBlRefInfo
@@ -108,15 +108,31 @@ namespace AcadLib.Blocks.Dublicate
                     Inspector.Show(_errors);
                     throw new OperationCanceledException();
                 }
-                //var formDublicates = new FormError(_errors, true);
-                //formDublicates.Text = "Дублирование блоков";
-                //formDublicates.EnableDublicateButtons();
-                //if (Application.ShowModalDialog(formDublicates) != System.Windows.Forms.DialogResult.OK)
-                //{
-                //    formDublicates.EnableDialog(false);
-                //    Application.ShowModelessDialog(formDublicates);
-                //    throw new Exception("Отменено пользователем.");
-                //}                
+            }
+        }
+
+        public static void DeleteDublicates([CanBeNull] List<IError> errors)
+        {
+            if (errors == null || errors.Count == 0)
+            {
+                return;
+            }
+
+            var blDublicatesToDel = errors.Where(e => e.Tag is BlockRefDublicateInfo)
+                .SelectMany(e => ((BlockRefDublicateInfo)e.Tag).Dublicates).ToList();
+            var doc = Application.DocumentManager.MdiActiveDocument;
+            using (doc.LockDocument())
+            {
+                using (var t = blDublicatesToDel.FirstOrDefault()?.IdBlRef.Database.TransactionManager.StartTransaction())
+                {
+                    if (t == null) return;
+                    foreach (var dublBl in blDublicatesToDel)
+                    {
+                        var blTodel = (BlockReference)dublBl.IdBlRef.GetObject(OpenMode.ForWrite, false, true);
+                        blTodel.Erase();
+                    }
+                    t.Commit();
+                }
             }
         }
 
@@ -132,7 +148,7 @@ namespace AcadLib.Blocks.Dublicate
                 var idEnt = (ObjectId)item;
                 if (!idEnt.IsValidEx()) continue;
                 var dbo = idEnt.GetObject(OpenMode.ForRead, false, true);
-                // Проверялся ли уже такое определение блока                            
+                // Проверялся ли уже такое определение блока
                 if (isFirstDbo)
                 {
                     isFirstDbo = false;
@@ -165,7 +181,8 @@ namespace AcadLib.Blocks.Dublicate
                 }
                 listBiAtPoint.Add(blRefInfo);
 
-                idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(item1: blRef.BlockTableRecord, item2: blRef.BlockTransform * transToModel, item3: blRef.Rotation + rotate));
+                idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(
+                    blRef.BlockTableRecord, blRef.BlockTransform * transToModel, blRef.Rotation + rotate));
             }
 
             // Нырок глубже
@@ -174,38 +191,8 @@ namespace AcadLib.Blocks.Dublicate
                 curDepth++;
                 foreach (var btrNext in idsBtrNext)
                 {
-                    var btr = btrNext.Item1.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                    var btr = (BlockTableRecord)btrNext.Item1.GetObject(OpenMode.ForRead);
                     GetDublicateBlocks(btr, btrNext.Item2, btrNext.Item3);
-                }
-            }
-        }
-
-        //private static void AddTransformedToModelDublic(List<BlockRefDublicateInfo> dublicBlRefInfos)
-        //{
-        //   // Трансформированные копии инфоблоков и добавление в результирующий список дубликатов
-        //   var trancDublicBlRefInfos = dublicBlRefInfos.Select(b => b.TransCopy()).ToList();
-        //   AllDublicBlRefInfos.AddRange(trancDublicBlRefInfos);
-        //}
-
-        public static void DeleteDublicates([CanBeNull] List<IError> errors)
-        {
-            if (errors == null || errors.Count == 0)
-            {
-                return;
-            }
-
-            var blDublicatesToDel = errors.Where(e => e.Tag != null && e.Tag is BlockRefDublicateInfo).SelectMany(e => ((BlockRefDublicateInfo)e.Tag).Dublicates);
-            var doc = Application.DocumentManager.MdiActiveDocument;
-            using (doc.LockDocument())
-            {
-                using (var t = blDublicatesToDel.FirstOrDefault()?.IdBlRef.Database.TransactionManager.StartTransaction())
-                {
-                    foreach (var dublBl in blDublicatesToDel)
-                    {
-                        var blTodel = dublBl.IdBlRef.GetObject(OpenMode.ForWrite, false, true) as BlockReference;
-                        blTodel.Erase();
-                    }
-                    t.Commit();
                 }
             }
         }

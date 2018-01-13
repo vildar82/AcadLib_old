@@ -3,7 +3,7 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:AcadLib.PaletteCommands.UI"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:acwt="clr-namespace:Autodesk.Windows.Themes;assembly=AdUiPalettes"
+		xmlns:acwt="clr-namespace:Autodesk.Windows.Themes;assembly=AdUiPalettes"
 		d:DataContext="{d:DesignInstance local:DesignTimePalette,IsDesignTimeCreatable=True}"
 		Background="{Binding CurrentTheme.TabBackgroundBrush, Source={x:Static acwt:ThemeManager.PaletteSettings}}"
 		mc:Ignorable="d">

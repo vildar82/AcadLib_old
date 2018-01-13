@@ -12,6 +12,8 @@ using System.Windows;
 
 namespace AcadLib.Errors
 {
+    [PublicAPI]
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class Error : IError
     {
         private readonly Dictionary<Icon, ErrorStatus> dictErrorIcons = new Dictionary<Icon, ErrorStatus>() {
@@ -21,6 +23,7 @@ namespace AcadLib.Errors
             { SystemIcons.Information, ErrorStatus.Info },
             { SystemIcons.Warning, ErrorStatus.Error }
         };
+
         protected string _msg;
         protected string _shortMsg;
         protected ObjectId _idEnt;
@@ -106,7 +109,10 @@ namespace AcadLib.Errors
                     else MessageBox.Show($"Должен быть активен чертеж {IdEnt.Database.Filename}");
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         public Error()

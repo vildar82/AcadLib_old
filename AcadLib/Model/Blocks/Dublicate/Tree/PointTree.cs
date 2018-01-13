@@ -1,7 +1,11 @@
 ﻿using System;
+using JetBrains.Annotations;
+
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace AcadLib.Blocks.Dublicate.Tree
 {
+    [PublicAPI]
     public struct PointTree : IEquatable<PointTree>
     {
         public static double tolerance = CheckDublicateBlocks.Tolerance.EqualPoint;

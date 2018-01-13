@@ -18,7 +18,7 @@ namespace AcadLib.Editors
                 Matrix3d.PlaneToWorld(view.ViewDirection);
         }
 
-        public static Matrix3d WorldToEye(this ViewTableRecord view)
+        public static Matrix3d WorldToEye([NotNull] this ViewTableRecord view)
         {
             return view.EyeToWorld().Inverse();
         }

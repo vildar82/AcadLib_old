@@ -41,7 +41,9 @@ namespace AcadLib.Blocks
         // Private method
         private void SetProperties([NotNull] BlockReference br)
         {
+#pragma warning disable 618
             Name = br.GetEffectiveName();
+#pragma warning restore 618
             Attributes = new Dictionary<string, string>();
             br.AttributeCollection
                 .GetObjects<AttributeReference>()

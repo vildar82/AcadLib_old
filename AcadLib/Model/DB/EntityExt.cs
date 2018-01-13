@@ -1,10 +1,27 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Extensions
 {
+    [PublicAPI]
     public static class EntityExt
     {
+        /// <summary>
+        /// Видим на чертеже, слой включен и разморожен
+        /// </summary>
+        /// <param name="ent">Объект чертежа</param>
+        /// <returns>Да - видим, Нет - не видим, слой выключен или заморожен</returns>
+        public static bool IsVisibleLayerOnAndUnfrozen([NotNull] this Entity ent)
+        {
+            if (!ent.Visible) return false;
+            using (var lt = (LayerTable)ent.Database.LayerTableId.GetObject(OpenMode.ForRead))
+            using (var lay = (LayerTableRecord)lt[ent.Layer].GetObject(OpenMode.ForRead))
+            {
+                return !lay.IsOff && !lay.IsFrozen; // Слой включен и разморожен  и объект видимый
+            }
+        }
+
         /// <summary>
         /// Установка аннотативности объекту и масштаба с удалением текущего масштаба чертежа.
         /// </summary>
@@ -35,21 +52,6 @@ namespace AcadLib.Extensions
             ent.Annotative = AnnotativeStates.True;
             ent.AddContext(contextAnnoScale);
             ent.RemoveContext(ent.Database.Cannoscale);
-        }
-
-        /// <summary>
-        /// Видим на чертеже, слой включен и разморожен
-        /// </summary>
-        /// <param name="ent">Объект чертежа</param>
-        /// <returns>Да - видим, Нет - не видим, слой выключен или заморожен</returns>
-        public static bool IsVisibleLayerOnAndUnfrozen([NotNull] this Entity ent)
-        {
-            if (!ent.Visible) return false;
-            using (var lt = (LayerTable)ent.Database.LayerTableId.GetObject(OpenMode.ForRead))
-            using (var lay = (LayerTableRecord)lt[ent.Layer].GetObject(OpenMode.ForRead))
-            {
-                return !lay.IsOff && !lay.IsFrozen; // Слой включен и разморожен  и объект видимый
-            }
         }
     }
 }

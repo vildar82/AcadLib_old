@@ -89,7 +89,7 @@
       <HintPath>..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="Equals, Version=1.0.0.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Equals.Fody.1.8.1\lib\net452\Equals.dll</HintPath>
+      <HintPath>..\packages\Equals.Fody.1.8.2\lib\net452\Equals.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.7.3.4\lib\net45\FluentValidation.dll</HintPath>
@@ -174,6 +174,9 @@
     <Reference Include="UnitsNet, Version=3.86.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UnitsNet.3.86.0\lib\net40\UnitsNet.dll</HintPath>
     </Reference>
+    <Reference Include="Visualize, Version=0.0.0.0, Culture=neutral, PublicKeyToken=409b3227471b0f0d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Visualize.Fody.1.0.0\lib\net452\Visualize.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="Xceed.Wpf.AvalonDock, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
@@ -205,6 +208,8 @@
     <Compile Include="Model\Blocks\BlockPropertiesTableExt.cs" />
     <Compile Include="Model\Blocks\DictBlockName.cs" />
     <Compile Include="Model\Blocks\Visual\VisualGroup.cs" />
+    <Compile Include="Model\DB\DataExtensions.cs" />
+    <Compile Include="Model\DB\GenericExtensions.cs" />
     <Compile Include="Model\DB\SystemVariableExt.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
@@ -377,10 +382,12 @@
     </Compile>
     <Compile Include="Model\WPF\Converters\BooleanToHidingVisibilityConverter.cs" />
     <Compile Include="Model\WPF\Converters\BooleanToOppositeBooleanConverter.cs" />
+    <Compile Include="Model\WPF\Converters\BooleanToOppositeVisibilityConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorNameConverter.cs" />
     <Compile Include="Model\WPF\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Model\WPF\Converters\ConvertorBase.cs" />
     <Compile Include="Model\WPF\Converters\EnumDescriptionConverter.cs" />
+    <Compile Include="Model\WPF\Converters\EnumDescriptionTypeConverter.cs" />
     <Compile Include="Model\WPF\Converters\TransparenceInvertConverter.cs" />
     <Compile Include="Model\WPF\Converters\TransparenceToOpacityConverter.cs" />
     <Compile Include="Model\WPF\Converters\MinToHoursConverter.cs" />

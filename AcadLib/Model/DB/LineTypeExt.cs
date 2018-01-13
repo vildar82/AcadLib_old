@@ -5,14 +5,37 @@ using System.IO;
 
 namespace AcadLib
 {
+    [PublicAPI]
     public static class LineTypeExt
     {
+        [Obsolete("Опечатка - используй GetLineTypeId")]
+        public static ObjectId GetLayerId([NotNull] this Database db, string lineTypeName)
+        {
+            using (var lt = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))
+            {
+                return lt.Has(lineTypeName) ? lt[lineTypeName] : ObjectId.Null;
+            }
+        }
+
+        public static ObjectId GetLineTypeId([NotNull] this Database db, string lineTypeName)
+        {
+#pragma warning disable 618
+            using (var lt = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))
+#pragma warning restore 618
+            {
+                return lt.Has(lineTypeName) ? lt[lineTypeName] : ObjectId.Null;
+            }
+        }
+
         /// <summary>
         /// Загрузка типа линии из файла поддержи lin в папке Support PIK
         /// Если файл не найден или тип линии, то вернется текущий тип линии чертежа
         /// </summary>
         /// <param name="db"></param>
-        public static ObjectId LoadLineTypePIK(this Database db, string lineTypeName, string fileName = "GOST 2.303-68.lin")
+        /// <param name="lineTypeName">тип линии</param>
+        /// <param name="fileName">Имя файла</param>
+        public static ObjectId LoadLineTypePIK([NotNull] this Database db,
+            string lineTypeName, string fileName = "GOST 2.303-68.lin")
         {
             var id = db.GetLineTypeId(lineTypeName);
             if (!id.IsNull) return id;
@@ -36,31 +59,6 @@ namespace AcadLib
                 Logger.Log.Error($"Не найден файл типов линий '{file}'");
             }
             return db.Celtype;
-        }
-
-        [Obsolete("Опечатка - используй GetLineTypeId")]
-        public static ObjectId GetLayerId([NotNull] this Database db, string lineTypeName)
-        {
-            using (var lt = db.LinetypeTableId.Open(OpenMode.ForRead) as LinetypeTable)
-            {
-                if (lt.Has(lineTypeName))
-                {
-                    return lt[lineTypeName];
-                }
-                return ObjectId.Null;
-            }
-        }
-
-        public static ObjectId GetLineTypeId([NotNull] this Database db, string lineTypeName)
-        {
-            using (var lt = db.LinetypeTableId.Open(OpenMode.ForRead) as LinetypeTable)
-            {
-                if (lt.Has(lineTypeName))
-                {
-                    return lt[lineTypeName];
-                }
-                return ObjectId.Null;
-            }
         }
     }
 }

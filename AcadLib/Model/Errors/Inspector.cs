@@ -11,6 +11,7 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Errors
 {
+    [PublicAPI]
     public static class Inspector
     {
         private static Database _db;
@@ -43,16 +44,20 @@ namespace AcadLib.Errors
         {
             Errors.Add(err);
         }
+
         public static void AddError(Error err)
         {
             Errors.Add(err);
         }
 
+        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, icon);
             Errors.Add(err);
         }
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, icon) { Group = group };
@@ -64,6 +69,7 @@ namespace AcadLib.Errors
             var err = new Error(msg, SystemIcons.Error);
             Errors.Add(err);
         }
+
         public static void AddError(string group, string msg)
         {
             var err = new Error(msg, SystemIcons.Error);
@@ -77,111 +83,140 @@ namespace AcadLib.Errors
             Errors.Add(err);
         }
 
-        public static void AddError(string msg, Entity ent, [CanBeNull] Icon icon = null)
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        public static void AddError(string msg, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, icon);
             Errors.Add(err);
         }
-        public static void AddError(string group, string msg, Entity ent, [CanBeNull] Icon icon = null)
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        public static void AddError(string group, string msg, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, icon) { Group = group };
             Errors.Add(err);
         }
-        public static void AddError(string msg, Entity ent)
+
+        public static void AddError(string msg, [NotNull] Entity ent)
         {
             var err = new Error(msg, ent);
             Errors.Add(err);
         }
-        public static void AddError(string group, string msg, Entity ent)
+
+        public static void AddError(string group, string msg, [NotNull] Entity ent)
         {
             var err = new Error(msg, ent) { Group = group };
             Errors.Add(err);
         }
-        public static void AddError(string msg, Entity ent, Matrix3d trans, [CanBeNull] Icon icon = null)
+
+        public static void AddError(string msg, [NotNull] Entity ent, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, trans, icon);
             Errors.Add(err);
         }
-        public static void AddError(string group, string msg, Entity ent, Matrix3d trans, [CanBeNull] Icon icon = null)
+
+        public static void AddError(string group, string msg, [NotNull] Entity ent, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, trans, icon) { Group = group };
             Errors.Add(err);
         }
-        public static void AddError(string msg, Entity ent, Extents3d ext, [CanBeNull] Icon icon = null)
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        public static void AddError(string msg, [NotNull] Entity ent, Extents3d ext, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, ent, icon);
             Errors.Add(err);
         }
-        public static void AddError(string group, string msg, Entity ent, Extents3d ext, [CanBeNull] Icon icon = null)
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        public static void AddError(string group, string msg, [NotNull] Entity ent, Extents3d ext, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, ent, icon) { Group = group };
             Errors.Add(err);
         }
-        public static void AddError(string msg, Entity ent, Extents3d ext)
+
+        public static void AddError(string msg, [NotNull] Entity ent, Extents3d ext)
         {
             var err = new Error(msg, ext, ent);
             Errors.Add(err);
         }
-        public static void AddError(string group, string msg, Entity ent, Extents3d ext)
+
+        public static void AddError(string group, string msg, [NotNull] Entity ent, Extents3d ext)
         {
             var err = new Error(msg, ext, ent) { Group = group };
             Errors.Add(err);
         }
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, Extents3d ext, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, idEnt, icon);
             Errors.Add(err);
         }
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, Extents3d ext, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, idEnt, icon) { Group = group };
             Errors.Add(err);
         }
+
         public static void AddError(string msg, Extents3d ext, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, trans, icon);
             Errors.Add(err);
         }
+
         public static void AddError(string group, string msg, Extents3d ext, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, trans, icon) { Group = group };
             Errors.Add(err);
         }
+
         public static void AddError(string msg, Extents3d ext, ObjectId idEnt)
         {
             var err = new Error(msg, ext, idEnt);
             Errors.Add(err);
         }
+
         public static void AddError(string group, string msg, Extents3d ext, ObjectId idEnt)
         {
             var err = new Error(msg, ext, idEnt) { Group = group };
             Errors.Add(err);
         }
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, icon);
             Errors.Add(err);
         }
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, icon) { Group = group };
             Errors.Add(err);
         }
+
         public static void AddError(string msg, ObjectId idEnt)
         {
             var err = new Error(msg, idEnt);
             Errors.Add(err);
         }
+
         public static void AddError(string group, string msg, ObjectId idEnt)
         {
             var err = new Error(msg, idEnt) { Group = group };
             Errors.Add(err);
         }
+
         public static void AddError(string msg, ObjectId idEnt, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, trans, icon);
             Errors.Add(err);
         }
+
         public static void AddError(string group, string msg, ObjectId idEnt, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, trans, icon) { Group = group };
@@ -198,25 +233,28 @@ namespace AcadLib.Errors
                 Show(Errors);
             }
         }
-        public static void Show(List<IError> errors)
+
+        public static void Show([NotNull] List<IError> errors)
         {
             var errVM = new ErrorsViewModel(errors) { IsDialog = false };
             var errView = new ErrorsView(errVM);
             errView.Show();
+#pragma warning disable 618
             Clear();
+#pragma warning restore 618
         }
 
         [NotNull]
         private static List<IError> SortErrors([NotNull] List<IError> errors)
         {
-            var comparer = Comparers.AlphanumComparator.New;
+            var comparer = NetLib.Comparers.AlphanumComparator.New;
             return errors.OrderBy(o => o.Message, comparer).ToList();
         }
 
         /// <summary>
         /// При прерывании вызывает исключение "Отменено пользователем.".
         /// Т.е. можно не обрабатывает DialogResult.
-        /// </summary>      
+        /// </summary>
         public static System.Windows.Forms.DialogResult ShowDialog()
         {
             if (HasErrors)
@@ -233,11 +271,15 @@ namespace AcadLib.Errors
             return System.Windows.Forms.DialogResult.OK;
         }
 
-        public static bool? ShowDialog(List<IError> errors)
+        public static bool? ShowDialog([NotNull] List<IError> errors)
         {
             var errVM = new ErrorsViewModel(errors) { IsDialog = true };
             var errView = new ErrorsView(errVM);
-            return errView.ShowDialog();
+            var res = errView.ShowDialog();
+#pragma warning disable 618
+            Clear();
+#pragma warning restore 618
+            return res;
         }
     }
 }

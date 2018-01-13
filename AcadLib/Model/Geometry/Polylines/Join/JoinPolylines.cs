@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace AcadLib.Geometry.Polylines.Join
 {
+    [PublicAPI]
     public static class JoinPolylines
     {
         /// <summary>
@@ -14,6 +15,8 @@ namespace AcadLib.Geometry.Polylines.Join
         /// <param name="lines">Полилинии</param>
         /// <param name="joined">Объекдиненные полилинии</param>
         /// <param name="disposePls">Очищать объекдиненные полилинии?</param>
+        /// <param name="wedding">Прополка</param>
+        /// <param name="tolerance"></param>
         public static void Join([NotNull] this List<Polyline> lines, ref List<Polyline> joined, bool disposePls = true,
             bool wedding = true, Tolerance tolerance = default)
         {
@@ -27,8 +30,8 @@ namespace AcadLib.Geometry.Polylines.Join
             List<int> icol;
             try
             {
-                icol = fl.JoinEntities(lines.ToArray()).Cast<int>().ToList();
-                if (wedding) fl.Wedding(tolerance, close: false, onSomeLine: true);
+                icol = fl.JoinEntities(lines.ToArray<Entity>()).Cast<int>().ToList();
+                if (wedding) fl.Wedding(tolerance, false, true);
             }
             catch
             {

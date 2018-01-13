@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,37 +9,37 @@ using System.Windows.Media.Imaging;
 using MicroMvvm;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
     public class PaletteCommand : IPaletteCommand
     {
-        public string Description { get; set; }
-        public ImageSource Image { get; set; }
-        /// <summary>
-        /// Короткое название кнопки
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
-        /// Имя команды AutoCAD
-        /// </summary>
-        public string CommandName { get; set; }
-        /// <summary>
-        /// Группа команд - для объекдинения в палитры
-        /// </summary>
-        public string Group { get; set; }
         /// <summary>
         /// Ограниечение доступа по логину
         /// </summary>
         public List<string> Access { get; set; }
+        public ICommand Command { get; set; }
+        /// <summary>
+        /// Имя команды AutoCAD
+        /// </summary>
+        public string CommandName { get; set; }
+        public List<MenuItemCommand> ContexMenuItems { get; set; }
+        public string Description { get; set; }
+        /// <summary>
+        /// Группа команд - для объекдинения в палитры
+        /// </summary>
+        public string Group { get; set; }
+        public string HelpMedia { get; set; }
+        public ImageSource Image { get; set; }
         /// <summary>
         /// Индекс кнопки на палитре
         /// </summary>
         public int Index { get; set; }
-        public string HelpMedia { get; set; }
-        public List<MenuItemCommand> ContexMenuItems { get; set; }
-        public ICommand Command { get; set; }
         public bool IsTest { get; set; }
-
+        /// <summary>
+        /// Короткое название кнопки
+        /// </summary>
+        public string Name { get; set; }
         //public PaletteCommand() { }
 
         public PaletteCommand(string name, Bitmap image, string command, string description, string group = "",
@@ -83,6 +82,19 @@ namespace AcadLib.PaletteCommands
             }
         }
 
+        private static void AddTestWaterMark([NotNull] Image image)
+        {
+            using (var watermarkImage = Properties.Resources.test)
+            using (var imageGraphics = Graphics.FromImage(image))
+            using (var watermarkBrush = new TextureBrush(watermarkImage))
+            {
+                var x = image.Width / 2 - watermarkImage.Width / 2;
+                var y = image.Height / 2 - watermarkImage.Height / 2;
+                watermarkBrush.TranslateTransform(x, y);
+                imageGraphics.FillRectangle(watermarkBrush, new Rectangle(new Point(x, y), new Size(watermarkImage.Width + 1, watermarkImage.Height)));
+            }
+        }
+
         [NotNull]
         private static ImageSource GetSource(Bitmap image, bool isTest)
         {
@@ -99,19 +111,6 @@ namespace AcadLib.PaletteCommands
                     IntPtr.Zero,
                     System.Windows.Int32Rect.Empty,
                     BitmapSizeOptions.FromEmptyOptions());
-        }
-
-        private static void AddTestWaterMark([NotNull] Image image)
-        {
-            using (var watermarkImage = Properties.Resources.test)
-            using (var imageGraphics = Graphics.FromImage(image))
-            using (var watermarkBrush = new TextureBrush(watermarkImage))
-            {
-                var x = image.Width / 2 - watermarkImage.Width / 2;
-                var y = image.Height / 2 - watermarkImage.Height / 2;
-                watermarkBrush.TranslateTransform(x, y);
-                imageGraphics.FillRectangle(watermarkBrush, new Rectangle(new Point(x, y), new Size(watermarkImage.Width + 1, watermarkImage.Height)));
-            }
         }
     }
 }

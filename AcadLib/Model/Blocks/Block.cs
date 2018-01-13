@@ -4,17 +4,17 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.AutoCAD.Internal;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks
 {
+    [PublicAPI]
     public static class Block
     {
         public static Tolerance Tolerance01 = new Tolerance(0.01, 0.01);
 
         /// <summary>
-        /// Создание блока из объектов чертежа. 
+        /// Создание блока из объектов чертежа.
         /// Должна быть запусщена транзакция. блок добавляется в таблицу блоков.
         /// </summary>
         /// <param name="entIds">Объекты чертежа</param>
@@ -64,7 +64,7 @@ namespace AcadLib.Blocks
 
         /// <summary>
         /// Это пользовательский блок, а не лист, ссылка, анонимный или спец.блок(*).
-        /// </summary>        
+        /// </summary>
         public static bool IsUserBlock([NotNull] this BlockTableRecord btr)
         {
             return !btr.IsLayout && !btr.IsAnonymous && !btr.IsFromExternalReference && !btr.Name.StartsWith("*");
@@ -72,16 +72,16 @@ namespace AcadLib.Blocks
 
         /// <summary>
         /// Копирование определения блока из файла с общими блоками оформления
-        /// </summary>        
+        /// </summary>
         public static ObjectId CopyCommonBlockFromTemplate(string blName, Database db)
         {
-            var res = CopyBlockFromExternalDrawing(blName, BlockInsert.fileCommonBlocks, db, DuplicateRecordCloning.Ignore);
+            var res = CopyBlockFromExternalDrawing(blName, BlockInsert.fileCommonBlocks, db);
             return res;
         }
 
         /// <summary>
         /// Определен ли данный блок в активном чертеже
-        /// </summary>        
+        /// </summary>
         public static bool HasBlockThisDrawing(string name)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -107,7 +107,9 @@ namespace AcadLib.Blocks
         {
             if (mode == DuplicateRecordCloning.Ignore)
             {
-                using (var bt = destDb.BlockTableId.Open(OpenMode.ForRead) as BlockTable)
+#pragma warning disable 618
+                using (var bt = (BlockTable)destDb.BlockTableId.Open(OpenMode.ForRead))
+#pragma warning restore 618
                 {
                     if (bt.Has(blName))
                     {
@@ -119,14 +121,15 @@ namespace AcadLib.Blocks
             var resCopy = CopyBlockFromExternalDrawing(blNames, fileDrawing, destDb, mode);
             if (!resCopy.TryGetValue(blName, out var idRes))
             {
-                throw new Autodesk.AutoCAD.Runtime.Exception(Autodesk.AutoCAD.Runtime.ErrorStatus.MissingBlockName, $"Не найден блок {blName}");
+                throw new Autodesk.AutoCAD.Runtime.Exception(Autodesk.AutoCAD.Runtime.ErrorStatus.MissingBlockName,
+                    $"Не найден блок {blName}");
             }
             return idRes;
         }
 
         /// <summary>
         /// Перелопределение блока
-        /// </summary>        
+        /// </summary>
         public static void Redefine(string name, string file, Database destDb)
         {
             var idBtr = CopyBlockFromExternalDrawing(name, file, destDb, DuplicateRecordCloning.Replace);
@@ -142,10 +145,10 @@ namespace AcadLib.Blocks
         /// <param name="destDb">База чертежа в который копируетсяя блок</param>
         /// <param name="mode">Режим для существующих элементов - пропускать или заменять</param>
         /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
-        /// <returns>Список пар значений имени блока и idBtr</returns>        
+        /// <returns>Список пар значений имени блока и idBtr</returns>
         [NotNull]
-        public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing(Predicate<string> filter, string fileDrawing, Database destDb,
-                                                  DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
+        public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing(Predicate<string> filter,
+            string fileDrawing, Database destDb, DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
             var resVal = new Dictionary<string, ObjectId>();
             using (var extDb = new Database(false, true))
@@ -155,11 +158,15 @@ namespace AcadLib.Blocks
 
                 var valToCopy = new Dictionary<ObjectId, string>();
 
+#pragma warning disable 618
                 using (var bt = (BlockTable)extDb.BlockTableId.Open(OpenMode.ForRead))
+#pragma warning restore 618
                 {
                     foreach (var idBtr in bt)
                     {
-                        using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
+#pragma warning disable 618
+                        using (var btr = (BlockTableRecord)idBtr.Open(OpenMode.ForRead))
+#pragma warning restore 618
                         {
                             if (!btr.IsLayout && !btr.IsDependent && !btr.IsAnonymous && filter(btr.Name))
                             {
@@ -196,7 +203,7 @@ namespace AcadLib.Blocks
         /// <param name="destDb">База чертежа в который копируетсяя блок</param>
         /// <param name="mode">Режим для существующих элементов - пропускать или заменять</param>
         /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
-        /// <returns>Список пар значений имени блока и idBtr</returns>        
+        /// <returns>Список пар значений имени блока и idBtr</returns>
         [NotNull]
         public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing([NotNull] IList<string> blNames, string fileDrawing,
             Database destDb, DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
@@ -293,7 +300,7 @@ namespace AcadLib.Blocks
                 {
                     var btrCopy = (BlockTableRecord)btrSource.Clone();
                     btrCopy.Name = name;
-                    bt = bt.Id.GetObject<BlockTable>(OpenMode.ForWrite);
+                    bt = (BlockTable)bt.Id.GetObject(OpenMode.ForWrite);
                     idBtrCopy = bt.Add(btrCopy);
                     t.AddNewlyCreatedDBObject(btrCopy, true);
                     // Копирование объектов блока
@@ -372,7 +379,8 @@ namespace AcadLib.Blocks
         /// </summary>
         /// <param name="name">Имя для блока</param>
         /// <returns>Валидная строка имени</returns>
-        public static string GetValidNameForBlock(string name)
+        [NotNull]
+        public static string GetValidNameForBlock([NotNull] string name)
         {
             return name.GetValidDbSymbolName();
             //string res = name;
@@ -411,7 +419,7 @@ namespace AcadLib.Blocks
             foreach (var idEnt in btr)
             {
 #pragma warning disable 618
-                using (var ent = (Entity)idEnt.Open(OpenMode.ForWrite))
+                using (var ent = (Entity)idEnt.Open(OpenMode.ForWrite, false, true))
 #pragma warning restore 618
                 {
                     ent.Erase();
@@ -422,7 +430,7 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Проверка натуральной трансформации блока - без масштабирования
         /// blRef.ScaleFactors.IsEqualTo(new Scale3d(1), Tolerance01)
-        /// </summary>      
+        /// </summary>
         public static bool CheckNaturalBlockTransform([NotNull] this BlockReference blRef)
         {
             return blRef.ScaleFactors.IsEqualTo(new Scale3d(1), Tolerance01);

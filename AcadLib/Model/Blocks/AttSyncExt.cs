@@ -6,15 +6,14 @@ using System.Collections.Generic;
 
 namespace AcadLib.Blocks
 {
+    [PublicAPI]
     public static class AttSyncExt
     {
-
-
         public static void SynchronizeAttributes(this ObjectId btrId)
         {
             using (var t = btrId.Database.TransactionManager.StartTransaction())
             {
-                var btr = btrId.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                var btr = (BlockTableRecord)btrId.GetObject(OpenMode.ForRead);
                 btr.SynchronizeAttributes();
                 t.Commit();
             }
@@ -22,7 +21,7 @@ namespace AcadLib.Blocks
 
         /// <summary>
         /// Синхронизация атрибутов блока. Требуется запущенная транзакция
-        /// </summary>        
+        /// </summary>
         public static void SynchronizeAttributes([NotNull] this BlockTableRecord target)
         {
             if (target == null) throw new ArgumentNullException(nameof(target));
@@ -65,7 +64,8 @@ namespace AcadLib.Blocks
             return attDefs;
         }
 
-        private static void ResetAttributes([NotNull] this BlockReference br, [NotNull] List<AttributeDefinition> attDefs, Transaction tr)
+        private static void ResetAttributes([NotNull] this BlockReference br, [NotNull] List<AttributeDefinition> attDefs,
+            Transaction tr)
         {
             var attValues = new Dictionary<string, string>();
             foreach (ObjectId id in br.AttributeCollection)

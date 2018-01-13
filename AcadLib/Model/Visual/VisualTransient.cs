@@ -20,6 +20,18 @@ namespace AcadLib.Visual
         {
         }
 
+        public static void EraseAll()
+        {
+            try
+            {
+                TransientManager.CurrentTransientManager.EraseTransients(TransientDrawingMode.Main, 0, vps);
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
         public virtual List<Entity> GetDraws()
         {
             return draws;
@@ -28,13 +40,13 @@ namespace AcadLib.Visual
         /// <summary>
         /// Включение/отключение визуализации (без перестроений)
         /// </summary>
-        protected override void DrawVisuals([CanBeNull] List<Entity> draws)
+        protected override void DrawVisuals([CanBeNull] List<Entity> ents)
         {
-            this.draws = draws;
-            if (draws != null)
+            draws = ents;
+            if (ents != null)
             {
                 var tm = TransientManager.CurrentTransientManager;
-                foreach (var d in draws)
+                foreach (var d in ents)
                 {
                     tm.AddTransient(d, TransientDrawingMode.Main, 0, vps);
                 }
@@ -63,15 +75,6 @@ namespace AcadLib.Visual
             {
                 draw?.Dispose();
             }
-        }
-
-        public static void EraseAll()
-        {
-            try
-            {
-                TransientManager.CurrentTransientManager.EraseTransients(TransientDrawingMode.Main, 0, vps);
-            }
-            catch { }
         }
     }
 }

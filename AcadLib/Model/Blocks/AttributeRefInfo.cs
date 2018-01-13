@@ -9,17 +9,16 @@ namespace AcadLib.Blocks
     /// Описание AttributeReference для хранения
     /// Так же подходит для AttributeDefinition
     /// </summary>
+    [PublicAPI]
     [Obsolete("Лучше используй AttributeInfo.")]
     public class AttributeRefInfo
     {
-        public string Tag { get; set; }
-        public string Text { get; set; }
-
         /// <summary>
         /// AttributeReference или AttributeDefinition
         /// </summary>
         public ObjectId IdAtrRef { get; set; }
-
+        public string Tag { get; set; }
+        public string Text { get; set; }
         //public AttributeRefInfo(AttributeReference attr)
         //{
         //   Tag = attr.Tag;
@@ -58,14 +57,14 @@ namespace AcadLib.Blocks
         {
             var resVal = new List<AttributeRefInfo>();
             if (idBtr.IsNull) return resVal;
-            using (var btr = idBtr.Open(OpenMode.ForRead) as BlockTableRecord)
+            using (var btr = (BlockTableRecord)idBtr.Open(OpenMode.ForRead))
             {
                 foreach (var idEnt in btr)
                 {
-                    using (var attrDef = idEnt.Open(OpenMode.ForRead, false, true) as AttributeDefinition)
+                    using (var attrDef = (AttributeDefinition)idEnt.Open(OpenMode.ForRead, false, true))
                     {
                         if (attrDef == null) continue;
-                        var attrDefInfo = new AttributeRefInfo((DBText)attrDef);
+                        var attrDefInfo = new AttributeRefInfo(attrDef);
                         resVal.Add(attrDefInfo);
                     }
                 }
@@ -81,7 +80,7 @@ namespace AcadLib.Blocks
             {
                 foreach (ObjectId idAttrRef in blRef.AttributeCollection)
                 {
-                    using (var atrRef = idAttrRef.Open(OpenMode.ForRead, false, true) as AttributeReference)
+                    using (var atrRef = (AttributeReference)idAttrRef.Open(OpenMode.ForRead, false, true))
                     {
                         var ai = new AttributeRefInfo(atrRef);
                         resVal.Add(ai);

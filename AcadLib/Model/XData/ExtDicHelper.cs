@@ -8,17 +8,21 @@ using System.Linq;
 
 namespace AcadLib.XData
 {
+    [PublicAPI]
     public static class ExtDicHelper
     {
         public const string PikApp = "PIK";
 
         /// <summary>
+        /// <param name="dicId"></param>
+        /// <param name="key"></param>
+        /// <param name="create"></param>
         /// Получение записи XRecord словаря по имени.
         /// Если такая запись есть в словаре то возвращается ее id, а Data записи очищаются.
         /// То, что id точно XRecord, а не DBDictionary - не проверяется!!!
         /// Если нет, то создается новая если create = true.
         /// <param name="clear">Очищать ли Xrecord если она уже есть.</param>
-        /// </summary>        
+        /// </summary>
         public static ObjectId GetRec(ObjectId dicId, [NotNull] string key, bool create, bool clear)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
@@ -64,7 +68,8 @@ namespace AcadLib.XData
         public static void DeleteDic(ObjectId dicId, DBObject dbo)
         {
             if (!dicId.IsValidEx()) return;
-            using (var dic = dicId.Open(OpenMode.ForWrite) as DBDictionary)
+            // ReSharper disable once IdOpenMode
+            using (var dic = (DBDictionary)dicId.Open(OpenMode.ForWrite))
             {
                 if (dic != null)
                 {
@@ -77,7 +82,7 @@ namespace AcadLib.XData
             using (var dboExtDic = dboExtDicId.Open(OpenMode.ForRead) as DBDictionary)
             {
                 if (dboExtDic == null) return;
-                if (dboExtDic.Count == 0 || (dboExtDic.Count == 1 && dboExtDic.Contains(PikApp)))
+                if (dboExtDic.Count == 0 || dboExtDic.Count == 1 && dboExtDic.Contains(PikApp))
                 {
                     // ReSharper disable once UpgradeOpen
                     dboExtDic.UpgradeOpen();
@@ -106,11 +111,13 @@ namespace AcadLib.XData
                 {
                     res = dic.GetAt(key);
                     if (!clear) return res;
-                    using (var resDic = res.Open(OpenMode.ForWrite) as DBDictionary)
+                    // ReSharper disable once IdOpenMode
+                    using (var resDic = (DBDictionary)res.Open(OpenMode.ForWrite))
                     {
                         if (resDic == null) return res;
                         foreach (var item in resDic)
                         {
+                            // ReSharper disable once IdOpenMode
                             using (var entry = item.Value.Open(OpenMode.ForWrite))
                             {
                                 entry.Erase();
@@ -214,7 +221,7 @@ namespace AcadLib.XData
         /// <summary>
         /// Запись значений из RecED в DBDictionary
         /// В переданном родительском словаре создается вложенный словарь с именем DicED.Name
-        /// </summary>        
+        /// </summary>
         public static void SetDicED(ObjectId idDicParent, [CanBeNull] DicED edDic)
         {
             if (edDic == null) return;
@@ -249,7 +256,8 @@ namespace AcadLib.XData
             if (rec?.Values == null || rec.Values.Count == 0) return;
             var idXrec = GetRec(dicId, rec.Name, true, true);
             if (!idXrec.IsValidEx()) return;
-            using (var xrec = (Xrecord) idXrec.Open(OpenMode.ForWrite))
+            // ReSharper disable once IdOpenMode
+            using (var xrec = (Xrecord)idXrec.Open(OpenMode.ForWrite))
             using (var rb = new ResultBuffer(rec.Values.ToArray()))
             {
                 if (xrec != null) xrec.Data = rb;

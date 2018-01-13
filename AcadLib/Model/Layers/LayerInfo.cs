@@ -76,11 +76,15 @@ namespace AcadLib.Layers
 
         public LayerInfo(ObjectId idLayer)
         {
+#pragma warning disable 618
             using (var layer = (LayerTableRecord)idLayer.Open(OpenMode.ForRead))
+#pragma warning restore 618
             {
                 Name = layer.Name;
                 Color = layer.Color;
+#pragma warning disable 618
                 using (var lt = (LinetypeTableRecord)layer.LinetypeObjectId.Open(OpenMode.ForRead))
+#pragma warning restore 618
                 {
                     LineType = lt.Name;
                 }

@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.UI.Designer
 {
+    [PublicAPI]
     internal class EditableKeyValuePair<TKey, TValue> : CustomTypeDescriptor
     {
-
+        public GenericDictionaryEditorAttribute EditorAttribute { get; set; }
         public TKey Key { get; set; }
         public TValue Value { get; set; }
 
@@ -18,8 +20,7 @@ namespace AcadLib.UI.Designer
             EditorAttribute = editorAttribute ?? throw new ArgumentNullException(nameof(editorAttribute));
         }
 
-        public GenericDictionaryEditorAttribute EditorAttribute { get; set; }
-
+        [NotNull]
         public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
         {
             return GetProperties();
@@ -45,5 +46,4 @@ namespace AcadLib.UI.Designer
             return this;
         }
     }
-
 }

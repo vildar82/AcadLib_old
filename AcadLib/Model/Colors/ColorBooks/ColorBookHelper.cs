@@ -7,18 +7,20 @@ using JetBrains.Annotations;
 using System;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Colors
 {
+    [PublicAPI]
     public static class ColorBookHelper
     {
-        static Document doc;
-        static Editor ed;
-        static Database db;
-        public static ObjectId IdTextStylePik { get; set; }
-        public static double CellWidth { get; set; }
+        private static Database db;
+        private static Document doc;
+        private static Editor ed;
         public static double CellHeight { get; set; }
-        public static double TextHeight { get; set; }
+        public static double CellWidth { get; set; }
+        public static ObjectId IdTextStylePik { get; set; }
         public static double Margin { get; set; }
+        public static double TextHeight { get; set; }
 
         public static void GenerateNCS()
         {
@@ -31,7 +33,7 @@ namespace AcadLib.Colors
 
                 using (var t = db.TransactionManager.StartTransaction())
                 {
-                    //Форма стартовых настроек       
+                    //Форма стартовых настроек
                     Options.Show();
 
                     // Чтение палитры NCS
@@ -42,14 +44,82 @@ namespace AcadLib.Colors
 
                     // Расположение цветов в модели
                     var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
-                    placementColors(cs, colorBookNcs, ptStart);
+                    PlacementColors(cs, colorBookNcs, ptStart);
 
                     t.Commit();
                 }
             }
         }
 
-        private static void placementColors(BlockTableRecord cs, [NotNull] ColorBook colorBookNcs, Point3d ptStart)
+        private static void AddLayout(Point3d pt, int layout, double width, double height, [NotNull] BlockTableRecord cs, [NotNull] Transaction t)
+        {
+            // Полилиния контура листа
+            var pl = new Polyline(4);
+            pl.AddVertexAt(0, new Point2d(pt.X, pt.Y), 0, 0, 0);
+            pl.AddVertexAt(1, new Point2d(pt.X + width, pt.Y), 0, 0, 0);
+            pl.AddVertexAt(2, new Point2d(pt.X + width, pt.Y - height), 0, 0, 0);
+            pl.AddVertexAt(3, new Point2d(pt.X, pt.Y - height), 0, 0, 0);
+            pl.Closed = true;
+            pl.SetDatabaseDefaults();
+
+            cs.AppendEntity(pl);
+            t.AddNewlyCreatedDBObject(pl, true);
+
+            // Подпись номера листа
+            var textHeight = height * 0.008;
+            var ptText = new Point3d(pt.X + textHeight * 0.5, pt.Y - textHeight * 1.5, 0);
+
+            var text = new DBText();
+            text.SetDatabaseDefaults();
+            text.Height = textHeight;
+            text.TextStyleId = IdTextStylePik;
+            text.TextString = layout.ToString();
+            text.Position = ptText;
+
+            cs.AppendEntity(text);
+            t.AddNewlyCreatedDBObject(text, true);
+        }
+
+        private static void CreateLayout([NotNull] Polyline pl, int layout, double widthLay, double heightLay, [NotNull] Transaction t)
+        {
+            var lm = LayoutManager.Current;
+            var idLay = lm.CreateLayout(layout.ToString());
+
+            var extPl = pl.GeometricExtents;
+
+            using (var lay = (Layout)idLay.GetObject(OpenMode.ForWrite))
+            {
+                var btrLay = (BlockTableRecord)lay.BlockTableRecordId.GetObject(OpenMode.ForWrite);
+
+                var view = new Viewport();
+                view.SetDatabaseDefaults();
+
+                btrLay.AppendEntity(view);
+                t.AddNewlyCreatedDBObject(view, true);
+
+                view.Width = widthLay;
+                view.Height = heightLay;
+                view.CenterPoint = new Point3d(widthLay * 0.5, heightLay * 0.5, 0);
+                view.On = true;
+
+                view.ViewCenter = extPl.Center().Convert2d();
+
+                var hvp = extPl.MaxPoint.Y - extPl.MinPoint.Y;
+                var wvp = extPl.MaxPoint.X - extPl.MinPoint.X;
+
+                var aspect = view.Width / view.Height;
+
+                if (wvp / hvp > aspect)
+                {
+                    hvp = wvp / aspect;
+                }
+
+                view.ViewHeight = hvp;
+                view.CustomScale = 1;
+            }
+        }
+
+        private static void PlacementColors(BlockTableRecord cs, [NotNull] ColorBook colorBookNcs, Point3d ptStart)
         {
             var t = db.TransactionManager.TopTransaction;
 
@@ -62,7 +132,7 @@ namespace AcadLib.Colors
             var columns = Options.Instance.Columns;
             var rows = Options.Instance.Rows;
 
-            // Определение длины и высоты для каждой ячейки цвета            
+            // Определение длины и высоты для каждой ячейки цвета
             CellWidth = widthCells / columns;
             CellHeight = heightCells / rows;
 
@@ -82,8 +152,8 @@ namespace AcadLib.Colors
             var index = 0;
             for (var l = 1; l < layCount + 1; l++)
             {
-                // создание рамки листа         
-                addLayout(ptLayout, l, widthLayout, heightLayout, cs, t);
+                // создание рамки листа
+                AddLayout(ptLayout, l, widthLayout, heightLayout, cs, t);
                 var ptCellFirst = new Point2d(ptLayout.X + (widthLayout - widthCells) * 0.5,
                     ptLayout.Y - (heightLayout - heightCells) * 0.5);
 
@@ -112,77 +182,6 @@ namespace AcadLib.Colors
                 ptLayout = new Point3d(ptLayout.X, ptLayout.Y + heightLayout, 0);
             }
             progress.Stop();
-        }
-
-        private static void addLayout(Point3d pt, int layout, double width, double height, [NotNull] BlockTableRecord cs, [NotNull] Transaction t)
-        {
-            // Полилиния контура листа
-            var pl = new Polyline(4);
-            pl.AddVertexAt(0, new Point2d(pt.X, pt.Y), 0, 0, 0);
-            pl.AddVertexAt(1, new Point2d(pt.X + width, pt.Y), 0, 0, 0);
-            pl.AddVertexAt(2, new Point2d(pt.X + width, pt.Y - height), 0, 0, 0);
-            pl.AddVertexAt(3, new Point2d(pt.X, pt.Y - height), 0, 0, 0);
-            pl.Closed = true;
-            pl.SetDatabaseDefaults();
-
-            cs.AppendEntity(pl);
-            t.AddNewlyCreatedDBObject(pl, true);
-
-            // Подпись номера листа
-            var textHeight = height * 0.008;
-            var ptText = new Point3d(pt.X + textHeight * 0.5, pt.Y - textHeight * 1.5, 0);
-
-            var text = new DBText();
-            text.SetDatabaseDefaults();
-            text.Height = textHeight;
-            text.TextStyleId = IdTextStylePik;
-            text.TextString = layout.ToString();
-            text.Position = ptText;
-
-            cs.AppendEntity(text);
-            t.AddNewlyCreatedDBObject(text, true);
-
-            // Layout
-            //createLayout(pl, layout, width, height, t);
-        }
-
-        private static void createLayout([NotNull] Polyline pl, int layout, double widthLay, double heightLay, [NotNull] Transaction t)
-        {
-            var lm = LayoutManager.Current;
-            var idLay = lm.CreateLayout(layout.ToString());
-
-            var extPl = pl.GeometricExtents;
-
-            using (var lay = idLay.GetObject(OpenMode.ForWrite) as Layout)
-            {
-                var btrLay = lay.BlockTableRecordId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
-
-                var view = new Viewport();
-                view.SetDatabaseDefaults();
-
-                btrLay.AppendEntity(view);
-                t.AddNewlyCreatedDBObject(view, true);
-
-                view.Width = widthLay;
-                view.Height = heightLay;
-                view.CenterPoint = new Point3d(widthLay * 0.5, heightLay * 0.5, 0);
-                view.On = true;
-
-                view.ViewCenter = extPl.Center().Convert2d();
-
-                var hvp = extPl.MaxPoint.Y - extPl.MinPoint.Y;
-                var wvp = extPl.MaxPoint.X - extPl.MinPoint.X;
-
-                var aspect = view.Width / view.Height;
-
-                if (wvp / hvp > aspect)
-                {
-                    hvp = wvp / aspect;
-                }
-
-                view.ViewHeight = hvp;
-                view.CustomScale = 1;
-            }
         }
     }
 }

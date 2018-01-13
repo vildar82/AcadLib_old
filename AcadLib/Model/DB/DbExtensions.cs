@@ -7,8 +7,10 @@ using System.IO;
 using System.Linq;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
+// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
 {
+    [PublicAPI]
     public static class DbExtensions
     {
         public const string PIK = General.Company;
@@ -16,31 +18,55 @@ namespace Autodesk.AutoCAD.DatabaseServices
         private static string UserGroup { get; } = PikSettings.UserGroupsCombined.First();
 
         /// <summary>
-        /// Текущий аннотативный масштаб чертежа. 100, 10 и т.п.
+        /// Получение углового размерного стиля ПИК
         /// </summary>
-        public static double Scale(this Database db)
+        public static ObjectId GetDimAngularStylePIK(this Database db)
         {
-            return AcadLib.Scale.ScaleHelper.GetCurrentAnnoScale(db);
+            // Загрузка простого стиля ПИК
+            GetDimStyle(db, PIK, UserGroup);
+            // Загрузка углового стиля ПИК
+            return GetDimStyle(db, PIK + "$2", UserGroup);
         }
 
-        public static IEnumerable<T> IterateDB<T>([NotNull] this Database db) where T : DBObject
+        public static ObjectId GetDimStyle(this Database db, string styleName, string templateName)
         {
-            for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
+            var idStyle = GetDimStyleId(db, styleName);
+            if (idStyle.IsNull)
             {
-                if (!db.TryGetObjectId(new Handle(i), out var id)) continue;
-                var objT = id.GetObject<T>();
-                if (objT != null)
+                // Копирование размерного стиля из шаблона
+                try
                 {
-                    yield return objT;
+                    idStyle = CopyObjectFromTemplate(db, GetDimStyleId, styleName, db.DimStyleTableId, templateName);
+                }
+                catch
+                {
+                    // ignored
+                }
+                if (idStyle.IsNull)
+                {
+                    idStyle = db.Dimstyle;
                 }
             }
+            return idStyle;
+        }
+
+        /// <summary>
+        /// Получение размерного стиля ПИК
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public static ObjectId GetDimStylePIK(this Database db)
+        {
+            return GetDimStyle(db, PIK, UserGroup);
         }
 
         public static ObjectId GetLineTypeIdByName([NotNull] this Database db, string name)
         {
             var resVal = ObjectId.Null;
 
-            using (var ltTable = db.LinetypeTableId.Open(OpenMode.ForRead) as LinetypeTable)
+#pragma warning disable 618
+            using (var ltTable = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))
+#pragma warning restore 618
             {
                 if (ltTable.Has(name))
                 {
@@ -54,7 +80,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return resVal;
         }
 
-        public static ObjectId GetLineTypeIdContinuous(this Database db)
+        public static ObjectId GetLineTypeIdContinuous([NotNull] this Database db)
         {
             return db.GetLineTypeIdByName(SymbolUtilityServices.LinetypeContinuousName);
         }
@@ -74,7 +100,9 @@ namespace Autodesk.AutoCAD.DatabaseServices
                     idStyle = CopyObjectFromTemplate(db, GetMleaderStyleId, styleName, db.MLeaderStyleDictionaryId, template);
                 }
                 catch
-                { }
+                {
+                    // ignored
+                }
                 if (idStyle.IsNull)
                 {
                     idStyle = db.MLeaderstyle;
@@ -85,7 +113,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         /// <summary>
         /// Получение табличного стиля ПИК
-        /// </summary>      
+        /// </summary>
         public static ObjectId GetTableStylePIK(this Database db)
         {
             return GetTableStylePIK(db, PIK, false);
@@ -94,7 +122,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <summary>
         /// Получение табличного стиля ПИК с обновлением (DuplicateRecordCloning.Replace)
         /// Не обновляется существующий стиль ПИК!!!
-        /// </summary>      
+        /// </summary>
         public static ObjectId GetTableStylePIK(this Database db, bool update)
         {
             return GetTableStylePIK(db, PIK, update);
@@ -102,7 +130,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         /// <summary>
         /// Получение табличного стиля ПИК
-        /// </summary>      
+        /// </summary>
         public static ObjectId GetTableStylePIK(this Database db, string styleName)
         {
             return GetTableStylePIK(db, styleName, false);
@@ -110,7 +138,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         /// <summary>
         /// Получение табличного стиля ПИК
-        /// </summary>      
+        /// </summary>
         public static ObjectId GetTableStylePIK(this Database db, string styleName, bool update)
         {
             return GetTableStylePIK(db, styleName, UserGroup, update);
@@ -123,7 +151,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         /// <summary>
         /// Получение табличного стиля ПИК
-        /// </summary>      
+        /// </summary>
         public static ObjectId GetTableStylePIK(this Database db, string styleName, string templateName, bool update)
         {
             var idStyle = ObjectId.Null;
@@ -153,7 +181,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         /// <summary>
         /// Получение текстового стиля ПИК
-        /// </summary>  
+        /// </summary>
         public static ObjectId GetTextStylePIK(this Database db)
         {
             return GetTextStylePIK(db, PIK, UserGroup);
@@ -161,15 +189,15 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         /// <summary>
         /// Получение табличного стиля ПИК
-        /// </summary>      
+        /// </summary>
         public static ObjectId GetTextStylePIK(this Database db, string styleName)
         {
             return GetTextStylePIK(db, styleName, UserGroup);
         }
 
         /// <summary>
-        /// 
-        /// </summary> 
+        ///
+        /// </summary>
         public static ObjectId GetTextStylePIK(this Database db, string styleName, string templateFile)
         {
             var idStyle = GetTextStylePik(db, styleName);
@@ -181,7 +209,9 @@ namespace Autodesk.AutoCAD.DatabaseServices
                     idStyle = CopyObjectFromTemplate(db, GetTextStylePik, styleName, db.TableStyleDictionaryId, templateFile);
                 }
                 catch
-                { }
+                {
+                    // ignored
+                }
                 if (idStyle.IsNull)
                 {
                     idStyle = db.Textstyle;
@@ -190,92 +220,25 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return idStyle;
         }
 
-        public static ObjectId GetDimStyle(this Database db, string styleName, string templateName)
+        public static IEnumerable<T> IterateDB<T>([NotNull] this Database db) where T : DBObject
         {
-            var idStyle = GetDimStyleId(db, styleName);
-            if (idStyle.IsNull)
+            for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
             {
-                // Копирование размерного стиля из шаблона
-                try
+                if (!db.TryGetObjectId(new Handle(i), out var id)) continue;
+                var objT = id.GetObject<T>();
+                if (objT != null)
                 {
-                    idStyle = CopyObjectFromTemplate(db, GetDimStyleId, styleName, db.DimStyleTableId, templateName);
-                }
-                catch
-                { }
-                if (idStyle.IsNull)
-                {
-                    idStyle = db.Dimstyle;
+                    yield return objT;
                 }
             }
-            return idStyle;
         }
 
         /// <summary>
-        /// Получение размерного стиля ПИК
+        /// Текущий аннотативный масштаб чертежа. 100, 10 и т.п.
         /// </summary>
-        /// <param name="db"></param>
-        /// <returns></returns>
-        public static ObjectId GetDimStylePIK(this Database db)
+        public static double Scale(this Database db)
         {
-            return GetDimStyle(db, PIK, UserGroup);
-        }
-
-        /// <summary>
-        /// Получение углового размерного стиля ПИК
-        /// </summary>        
-        public static ObjectId GetDimAngularStylePIK(this Database db)
-        {
-            // Загрузка простого стиля ПИК
-            GetDimStyle(db, PIK, UserGroup);
-            // Загрузка углового стиля ПИК
-            return GetDimStyle(db, PIK + "$2", UserGroup);
-        }
-
-        private static ObjectId GetDimStyleId(Database db, string styleName)
-        {
-            return GetStyleId(db, styleName, d => d.DimStyleTableId);
-        }
-
-        private static ObjectId GetMleaderStyleId(Database db, string styleName)
-        {
-            return GetDictStyleId(db, styleName, d => d.MLeaderStyleDictionaryId);
-        }
-
-        private static ObjectId GetTableStyleId(Database db, string styleName)
-        {
-            return GetDictStyleId(db, styleName, d => d.TableStyleDictionaryId);
-        }
-
-        private static ObjectId GetTextStylePik(Database db, string styleName)
-        {
-            return GetStyleId(db, styleName, d => d.TextStyleTableId);
-        }
-
-        private static ObjectId GetStyleId(Database db, string styleName, [NotNull] Func<Database, ObjectId> idSymbolTable)
-        {
-            var idStyle = ObjectId.Null;
-
-            using (var symbolTable = idSymbolTable(db).Open(OpenMode.ForRead) as SymbolTable)
-            {
-                if (symbolTable.Has(styleName))
-                {
-                    idStyle = symbolTable[styleName];
-                }
-            }
-            return idStyle;
-        }
-
-        private static ObjectId GetDictStyleId(Database db, string styleName, [NotNull] Func<Database, ObjectId> idDictTable)
-        {
-            var idStyle = ObjectId.Null;
-            using (var dictTableStyle = idDictTable(db).Open(OpenMode.ForRead) as DBDictionary)
-            {
-                if (dictTableStyle.Contains(styleName))
-                {
-                    idStyle = dictTableStyle.GetAt(styleName);
-                }
-            }
-            return idStyle;
+            return AcadLib.Scale.ScaleHelper.GetCurrentAnnoScale(db);
         }
 
         // Копирование стиля таблиц ПИК из файла шаблона
@@ -310,6 +273,57 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 }
             }
             return idStyleDest;
+        }
+
+        private static ObjectId GetDictStyleId(Database db, string styleName, [NotNull] Func<Database, ObjectId> idDictTable)
+        {
+            var idStyle = ObjectId.Null;
+#pragma warning disable 618
+            using (var dictTableStyle = (DBDictionary)idDictTable(db).Open(OpenMode.ForRead))
+#pragma warning restore 618
+            {
+                if (dictTableStyle.Contains(styleName))
+                {
+                    idStyle = dictTableStyle.GetAt(styleName);
+                }
+            }
+            return idStyle;
+        }
+
+        private static ObjectId GetDimStyleId(Database db, string styleName)
+        {
+            return GetStyleId(db, styleName, d => d.DimStyleTableId);
+        }
+
+        private static ObjectId GetMleaderStyleId(Database db, string styleName)
+        {
+            return GetDictStyleId(db, styleName, d => d.MLeaderStyleDictionaryId);
+        }
+
+        private static ObjectId GetStyleId(Database db, string styleName, [NotNull] Func<Database, ObjectId> idSymbolTable)
+        {
+            var idStyle = ObjectId.Null;
+
+#pragma warning disable 618
+            using (var symbolTable = (SymbolTable)idSymbolTable(db).Open(OpenMode.ForRead))
+#pragma warning restore 618
+            {
+                if (symbolTable.Has(styleName))
+                {
+                    idStyle = symbolTable[styleName];
+                }
+            }
+            return idStyle;
+        }
+
+        private static ObjectId GetTableStyleId(Database db, string styleName)
+        {
+            return GetDictStyleId(db, styleName, d => d.TableStyleDictionaryId);
+        }
+
+        private static ObjectId GetTextStylePik(Database db, string styleName)
+        {
+            return GetStyleId(db, styleName, d => d.TextStyleTableId);
         }
     }
 }

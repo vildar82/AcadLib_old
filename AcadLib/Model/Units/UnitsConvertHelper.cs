@@ -1,16 +1,20 @@
-﻿using UnitsNet;
+﻿using System;
+using JetBrains.Annotations;
+using UnitsNet;
 
 namespace AcadLib.Units
 {
     /// <summary>
     /// Конвертер единиц
     /// </summary>
+    [PublicAPI]
+    [Obsolete]
     public static class UnitsConvertHelper
     {
         /// <summary>
         /// Преобразование длины из мм в метры.
-        /// </summary>        
-        public static double ConvertMmToMLength (double mm)
+        /// </summary>
+        public static double ConvertMmToMLength(double mm)
         {
             var len = Length.FromMillimeters(mm);
             return len.Meters;

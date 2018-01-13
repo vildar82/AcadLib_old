@@ -7,10 +7,135 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.EditorInput
 {
+    [PublicAPI]
     public static class UserPrompt
     {
+        /// <summary>
+        /// Запрос целого числа
+        /// </summary>
+        /// <param name="ed">ed</param>
+        /// <param name="defaultNumber">Номер по умолчанию</param>
+        /// <param name="msg">Строка запроса</param>
+        /// <exception cref="Exception">Отменено пользователем.</exception>
+        /// <returns>Результат успешного запроса.</returns>
+        public static int GetNumber([NotNull] this Editor ed, int defaultNumber, string msg)
+        {
+            var opt = new PromptIntegerOptions(msg)
+            {
+                DefaultValue = defaultNumber
+            };
+            var res = ed.GetInteger(opt);
+            if (res.Status == PromptStatus.OK)
+            {
+                return res.Value;
+            }
+            throw new OperationCanceledException();
+        }
+
+        /// <summary>
+        /// Простой запрос точки - с преобразованием в WCS
+        /// </summary>
+        /// <param name="ed">ed</param>
+        /// <param name="msg">Строка запроса</param>
+        /// <exception cref="Exception">Отменено пользователем.</exception>
+        /// <returns>Point3d in WCS</returns>
+        public static Point3d GetPointWCS([NotNull] this Editor ed, string msg)
+        {
+            var res = ed.GetPoint(msg);
+            if (res.Status == PromptStatus.OK)
+            {
+                return res.Value.TransformBy(ed.CurrentUserCoordinateSystem);
+            }
+            throw new OperationCanceledException();
+        }
+
+        /// <summary>
+        /// Запрос точки вставки с висящим прямоугольником на курсоре - габариты всталяемого объекта
+        /// Чтобы человек выбрал нашел место на чертежа соответствующих размеров.
+        /// Точка - нижний левый угол
+        /// </summary>
+        public static Point3d GetRectanglePoint([NotNull] this Editor ed, double len, double height)
+        {
+            var jigRect = new RectangleJig(len, height);
+            var res = ed.Drag(jigRect);
+            if (res.Status != PromptStatus.OK)
+                throw new Exception(General.CanceledByUser);
+            return jigRect.Position;
+        }
+
+        public static Extents3d PromptExtents([NotNull] this Editor ed, string msgPromptFirstPoint, string msgPromptsecondPoint)
+        {
+            var extentsPrompted = new Extents3d();
+            var prPtRes = ed.GetPoint(msgPromptFirstPoint);
+            if (prPtRes.Status == PromptStatus.OK)
+            {
+                var prCornerRes = ed.GetCorner(msgPromptsecondPoint, prPtRes.Value);
+                if (prCornerRes.Status == PromptStatus.OK)
+                {
+                    extentsPrompted.AddPoint(prPtRes.Value);
+                    extentsPrompted.AddPoint(prCornerRes.Value);
+                }
+                else
+                {
+                    throw new OperationCanceledException();
+                }
+            }
+            else
+            {
+                throw new OperationCanceledException();
+            }
+            return extentsPrompted;
+        }
+
+        /// <summary>
+        /// Pапрос выбора объектов
+        /// </summary>
+        /// <param name="ed"></param>
+        /// <param name="msg">Строка запроса</param>
+        /// <exception cref="Exception">Отменено пользователем.</exception>
+        /// <returns>Список выбранных объектов</returns>
+        [NotNull]
+        public static List<ObjectId> Select([NotNull] this Editor ed, string msg)
+        {
+            var selOpt = new PromptSelectionOptions
+            {
+                MessageForAdding = msg
+            };
+            var selRes = ed.GetSelection(selOpt);
+            if (selRes.Status == PromptStatus.OK)
+            {
+                return selRes.Value.GetObjectIds().ToList();
+            }
+            throw new OperationCanceledException();
+        }
+
+        /// <summary>
+        /// Pапрос выбора блоков
+        /// </summary>
+        /// <param name="ed"></param>
+        /// <param name="msg">Строка запроса</param>
+        /// <exception cref="Exception">Отменено пользователем.</exception>
+        /// <returns>Список выбранных блоков</returns>
+        [NotNull]
+        public static List<ObjectId> SelectBlRefs([NotNull] this Editor ed, string msg)
+        {
+            var filList = new[] { new TypedValue((int)DxfCode.Start, "INSERT") };
+            var filter = new SelectionFilter(filList);
+            var selOpt = new PromptSelectionOptions()
+            {
+                MessageForAdding = msg
+            };
+            var selRes = ed.GetSelection(selOpt, filter);
+            if (selRes.Status == PromptStatus.OK)
+            {
+                return selRes.Value.GetObjectIds().ToList();
+            }
+            throw new OperationCanceledException();
+        }
+
         /// <summary>
         /// Выбор объекта заданного типа на чертеже. В том числе, на заблокированном слое.
         /// </summary>
@@ -53,125 +178,6 @@ namespace Autodesk.AutoCAD.EditorInput
                 throw new OperationCanceledException();
             }
             return selRes.ObjectId;
-        }
-
-        public static Extents3d PromptExtents([NotNull] this Editor ed, string msgPromptFirstPoint, string msgPromptsecondPoint)
-        {
-            var extentsPrompted = new Extents3d();
-            var prPtRes = ed.GetPoint(msgPromptFirstPoint);
-            if (prPtRes.Status == PromptStatus.OK)
-            {
-                var prCornerRes = ed.GetCorner(msgPromptsecondPoint, prPtRes.Value);
-                if (prCornerRes.Status == PromptStatus.OK)
-                {
-                    extentsPrompted.AddPoint(prPtRes.Value);
-                    extentsPrompted.AddPoint(prCornerRes.Value);
-                }
-                else
-                {
-                    throw new OperationCanceledException();
-                }
-            }
-            else
-            {
-                throw new OperationCanceledException();
-            }
-            return extentsPrompted;
-        }
-
-        /// <summary>
-        /// Простой запрос точки - с преобразованием в WCS
-        /// </summary>      
-        /// <param name="msg">Строка запроса</param>
-        /// <exception cref="Exception">Отменено пользователем.</exception>
-        /// <returns>Point3d in WCS</returns>
-        public static Point3d GetPointWCS([NotNull] this Editor ed, string msg)
-        {
-            var res = ed.GetPoint(msg);
-            if (res.Status == PromptStatus.OK)
-            {
-                return res.Value.TransformBy(ed.CurrentUserCoordinateSystem);
-            }
-            throw new OperationCanceledException();
-        }
-
-        /// <summary>
-        /// Запрос целого числа
-        /// </summary>      
-        /// <param name="defaultNumber">Номер по умолчанию</param>
-        /// <param name="msg">Строка запроса</param>
-        /// <exception cref="Exception">Отменено пользователем.</exception>
-        /// <returns>Результат успешного запроса.</returns>
-        public static int GetNumber([NotNull] this Editor ed, int defaultNumber, string msg)
-        {
-            var opt = new PromptIntegerOptions(msg)
-            {
-                DefaultValue = defaultNumber
-            };
-            var res = ed.GetInteger(opt);
-            if (res.Status == PromptStatus.OK)
-            {
-                return res.Value;
-            }
-            throw new OperationCanceledException();
-        }
-
-        /// <summary>
-        /// Pапрос выбора объектов
-        /// </summary>      
-        /// <param name="msg">Строка запроса</param>
-        /// <exception cref="Exception">Отменено пользователем.</exception>
-        /// <returns>Список выбранных объектов</returns>
-        [NotNull]
-        public static List<ObjectId> Select([NotNull] this Editor ed, string msg)
-        {
-            var selOpt = new PromptSelectionOptions()
-            {
-                MessageForAdding = msg
-            };
-            var selRes = ed.GetSelection(selOpt);
-            if (selRes.Status == PromptStatus.OK)
-            {
-                return selRes.Value.GetObjectIds().ToList();
-            }
-            throw new OperationCanceledException();
-        }
-
-        /// <summary>
-        /// Pапрос выбора блоков
-        /// </summary>      
-        /// <param name="msg">Строка запроса</param>
-        /// <exception cref="Exception">Отменено пользователем.</exception>
-        /// <returns>Список выбранных блоков</returns>
-        [NotNull]
-        public static List<ObjectId> SelectBlRefs([NotNull] this Editor ed, string msg)
-        {
-            var filList = new TypedValue[1] { new TypedValue((int)DxfCode.Start, "INSERT") };
-            var filter = new SelectionFilter(filList);
-            var selOpt = new PromptSelectionOptions()
-            {
-                MessageForAdding = msg
-            };
-            var selRes = ed.GetSelection(selOpt, filter);
-            if (selRes.Status == PromptStatus.OK)
-            {
-                return selRes.Value.GetObjectIds().ToList();
-            }
-            throw new OperationCanceledException();
-        }
-
-        /// <summary>
-        /// Запрос точки вставки с висящим прямоугольником на курсоре - габариты всталяемого объекта
-        /// Чтобы человек выбрал нашел место на чертежа соответствующих размеров.
-        /// Точка - нижний левый угол
-        /// </summary>                
-        public static Point3d GetRectanglePoint([NotNull] this Editor ed, double len, double height)
-        {
-            var jigRect = new RectangleJig(len, height);
-            var res = ed.Drag(jigRect);
-            if (res.Status != PromptStatus.OK)
-                throw new Exception(General.CanceledByUser);
-            return jigRect.Position;
         }
     }
 }

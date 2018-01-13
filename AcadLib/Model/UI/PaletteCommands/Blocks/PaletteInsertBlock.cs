@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Windows;
 using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
     /// <summary>
@@ -34,6 +35,30 @@ namespace AcadLib.PaletteCommands
             BlockInsert.Insert(blName, null, props);
         }
 
+        private bool CanRedefine()
+        {
+            return Block.HasBlockThisDrawing(blName);
+        }
+
+        private void CopyBlock(DuplicateRecordCloning mode)
+        {
+            var doc = DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            var db = doc.Database;
+            using (doc.LockDocument())
+            {
+                // Выбор и вставка блока
+                if (mode == DuplicateRecordCloning.Replace)
+                {
+                    Block.Redefine(blName, file, db);
+                }
+                else
+                {
+                    Block.CopyBlockFromExternalDrawing(new List<string> { blName }, file, db, mode);
+                }
+            }
+        }
+
         private void CreateContexMenu()
         {
             ContexMenuItems = new List<MenuItemCommand>();
@@ -52,30 +77,6 @@ namespace AcadLib.PaletteCommands
                 return;
             }
             CopyBlock(DuplicateRecordCloning.Replace);
-        }
-
-        private bool CanRedefine()
-        {
-            return Block.HasBlockThisDrawing(blName);
-        }
-
-        private void CopyBlock(DuplicateRecordCloning mode)
-        {
-            var doc = DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
-            var db = doc.Database;
-            using (doc.LockDocument())
-            {
-                // Выбор и вставка блока 
-                if (mode == DuplicateRecordCloning.Replace)
-                {
-                    Block.Redefine(blName, file, db);
-                }
-                else
-                {
-                    Block.CopyBlockFromExternalDrawing(new List<string> { blName }, file, db, mode);
-                }
-            }
         }
     }
 }

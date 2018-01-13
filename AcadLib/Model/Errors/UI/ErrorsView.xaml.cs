@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Errors
 {
     /// <summary>
@@ -15,8 +16,8 @@ namespace AcadLib.Errors
     /// </summary>
     public partial class ErrorsView
     {
-        private readonly VisualTransientSimple errorsVisual;
         private readonly Document doc;
+        private readonly VisualTransientSimple errorsVisual;
 
         public ErrorsView([NotNull] ErrorsViewModel errVM) : base(errVM)
         {
@@ -37,6 +38,18 @@ namespace AcadLib.Errors
             Dispose();
         }
 
+        private void Button_Ok_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Dispose();
+        }
+
+        private void Button_Send_Click(object sender, RoutedEventArgs e)
+        {
+            var subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";
+            Process.Start($"mailto:khisyametdinovvt@pik.ru?subject={subject}");
+        }
+
         private void Dispose()
         {
             if (AcadHelper.Doc != doc) return;
@@ -53,27 +66,17 @@ namespace AcadLib.Errors
 
         private void ErrorsView_KeyDown(object sender, [NotNull] KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            switch (e.Key)
             {
-                Close();
-            }
-            else if (e.Key == Key.Delete)
-            {
-                var model = DataContext as ErrorsViewModel;
-                model.DeleteSelectedErrors();
-            }
-        }
+                case Key.Escape:
+                    Close();
+                    break;
 
-        private void Button_Ok_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            Dispose();
-        }
-
-        private void Button_Send_Click(object sender, RoutedEventArgs e)
-        {
-            var subject = $"Обращение по работе команды {CommandStart.CurrentCommand}";
-            Process.Start($"mailto:khisyametdinovvt@pik.ru?subject={subject}");
+                case Key.Delete:
+                    var model = (ErrorsViewModel)DataContext;
+                    model.DeleteSelectedErrors();
+                    break;
+            }
         }
 
         private void HeaderTemplateStretchHack(object sender, RoutedEventArgs e)

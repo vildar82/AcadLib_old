@@ -2,8 +2,10 @@
 using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
 {
+    [PublicAPI]
     public static class BlockExtents
     {
         private static readonly Scale3d scale1 = new Scale3d(1);
@@ -22,13 +24,13 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <summary>
         /// Обновление графики во вхождениях блока для данного определения блока
         /// Должна быть запущена транзакция!!!
-        /// </summary>        
+        /// </summary>
         public static void SetBlRefsRecordGraphicsModified([NotNull] this BlockTableRecord btr)
         {
             var idsBlRef = btr.GetBlockReferenceIds(true, false);
             foreach (ObjectId idBlRefApart in idsBlRef)
             {
-                var blRefApartItem = idBlRefApart.GetObject(OpenMode.ForWrite, false, true) as BlockReference;
+                var blRefApartItem = (BlockReference)idBlRefApart.GetObject(OpenMode.ForWrite, false, true);
                 blRefApartItem.RecordGraphicsModified(true);
             }
         }
@@ -56,7 +58,9 @@ namespace Autodesk.AutoCAD.DatabaseServices
             if (en is BlockReference bref)
             {
                 var matIns = mat * bref.BlockTransform;
-                using (var btr = bref.BlockTableRecord.Open(OpenMode.ForRead) as BlockTableRecord)
+#pragma warning disable 618
+                using (var btr = (BlockTableRecord)bref.BlockTableRecord.Open(OpenMode.ForRead))
+#pragma warning restore 618
                 {
                     foreach (var id in btr)
                     {
@@ -68,7 +72,9 @@ namespace Autodesk.AutoCAD.DatabaseServices
                         {
                             continue;
                         }
-                        using (var obj = id.Open(OpenMode.ForRead))
+#pragma warning disable 618
+                        using (var obj = id.Open(OpenMode.ForRead, false, true))
+#pragma warning restore 618
                         {
                             var enCur = obj as Entity;
                             if (enCur == null || enCur.Visible != true)
@@ -96,29 +102,37 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
                         if (IsEmptyExt(ref ext))
                         {
-                            try { ext = enTr.GeometricExtents; } catch { };
+                            try { ext = enTr.GeometricExtents; }
+                            catch
+                            {
+                                // ignored
+                            }
                         }
                         else
                         {
-                            try { ext.AddExtents(enTr.GeometricExtents); } catch { };
+                            try { ext.AddExtents(enTr.GeometricExtents); }
+                            catch
+                            {
+                                // ignored
+                            }
                         }
                         return ext;
                     }
                 }
-                else
+                try
                 {
-                    try
-                    {
-                        var curExt = en.GeometricExtents;
-                        curExt.TransformBy(mat);
-                        if (IsEmptyExt(ref ext))
-                            ext = curExt;
-                        else
-                            ext.AddExtents(curExt);
-                    }
-                    catch { }
-                    return ext;
+                    var curExt = en.GeometricExtents;
+                    curExt.TransformBy(mat);
+                    if (IsEmptyExt(ref ext))
+                        ext = curExt;
+                    else
+                        ext.AddExtents(curExt);
                 }
+                catch
+                {
+                    // ignored
+                }
+                return ext;
             }
             return ext;
         }

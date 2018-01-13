@@ -1,7 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
-using ReactiveUI;
-using System.Reactive.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using MicroMvvm;

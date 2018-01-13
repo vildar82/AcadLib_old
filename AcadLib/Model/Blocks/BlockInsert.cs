@@ -6,30 +6,45 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AcadLib.Layers;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks
 {
+    [PublicAPI]
     public static class BlockInsert
     {
         // Файл шаблонов блоков
-        internal static string fileCommonBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
+        internal static readonly string fileCommonBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+            @"Blocks\Блоки-оформления.dwg");
 
         /// <summary>
-        /// Вставка общего блока из файла Блоки-Оформления.
-        /// Визуальная вставка с помошью Jig
-        /// </summary>        
-        public static ObjectId InsertCommonBlock(string blName, Database db)
+        /// Добавление атрибутов к вставке блока
+        /// </summary>
+        public static void AddAttributes(BlockReference blRef, [NotNull] BlockTableRecord btrBl, Transaction t)
         {
-            // Выбор и вставка блока                 
-            Block.CopyBlockFromExternalDrawing(blName, fileCommonBlocks, db, DuplicateRecordCloning.Ignore);
-            return Insert(blName);
+            foreach (var idEnt in btrBl)
+            {
+                if (idEnt.ObjectClass.Name == "AcDbAttributeDefinition")
+                {
+                    var atrDef = (AttributeDefinition)t.GetObject(idEnt, OpenMode.ForRead);
+                    if (!atrDef.Constant)
+                    {
+                        using (var atrRef = new AttributeReference())
+                        {
+                            atrRef.SetAttributeFromBlock(atrDef, blRef.BlockTransform);
+                            blRef.AttributeCollection.AppendAttribute(atrRef);
+                            t.AddNewlyCreatedDBObject(atrRef, true);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Вставка блока в чертеж - интерактивная (BlockInsertJig)
-        /// </summary>        
-        public static ObjectId Insert(string blName, Layers.LayerInfo layer, List<Property> props)
+        /// </summary>
+        public static ObjectId Insert(string blName, LayerInfo layer, List<Property> props)
         {
             ObjectId idBlRefInsert;
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -39,7 +54,7 @@ namespace AcadLib.Blocks
             using (doc.LockDocument())
             using (var t = db.TransactionManager.StartTransaction())
             {
-                var bt = (BlockTable) t.GetObject(db.BlockTableId, OpenMode.ForRead);
+                var bt = (BlockTable)t.GetObject(db.BlockTableId, OpenMode.ForRead);
                 if (!bt.Has(blName))
                 {
                     throw new Exception("Блок не определен в чертеже " + blName);
@@ -51,7 +66,7 @@ namespace AcadLib.Blocks
                 br.SetDatabaseDefaults();
                 if (layer != null)
                 {
-                    Layers.LayerExt.CheckLayerState(layer);
+                    layer.CheckLayerState();
                     br.Layer = layer.Name;
                 }
 
@@ -85,7 +100,7 @@ namespace AcadLib.Blocks
                 var pr = ed.Drag(entJig);
                 if (pr.Status == PromptStatus.OK)
                 {
-                    var btrBl = (BlockTableRecord) t.GetObject(idBlBtr, OpenMode.ForRead);
+                    var btrBl = (BlockTableRecord)t.GetObject(idBlBtr, OpenMode.ForRead);
                     if (btrBl.HasAttributeDefinitions)
                         AddAttributes(br, btrBl, t);
                 }
@@ -99,21 +114,20 @@ namespace AcadLib.Blocks
             return idBlRefInsert;
         }
 
-        public static ObjectId Insert(string blName, Layers.LayerInfo layer)
+        public static ObjectId Insert(string blName, LayerInfo layer)
         {
             return Insert(blName, layer, null);
         }
 
         public static ObjectId Insert(string blName, string layer)
         {
-            var layerInfo = new Layers.LayerInfo(layer);
+            var layerInfo = new LayerInfo(layer);
             return Insert(blName, layerInfo);
         }
 
         public static ObjectId Insert(string blName)
         {
-            Layers.LayerInfo layer = null;
-            return Insert(blName, layer);
+            return Insert(blName, (LayerInfo)null);
         }
 
         /// <summary>
@@ -121,7 +135,7 @@ namespace AcadLib.Blocks
         /// </summary>
         /// <param name="blName">Имя блока</param>
         /// <param name="pt">Точка вставки</param>
-        /// <param name="owner">Контейнер</param>        
+        /// <param name="owner">Контейнер</param>
         /// <param name="t"></param>
         /// <param name="scale"></param>
         /// <returns></returns>
@@ -129,8 +143,8 @@ namespace AcadLib.Blocks
         public static BlockReference InsertBlockRef(string blName, Point3d pt, [NotNull] BlockTableRecord owner, [NotNull] Transaction t, double scale = 1)
         {
             var db = owner.Database;
-            var bt = (BlockTable) db.BlockTableId.GetObject(OpenMode.ForRead);
-            var btr = (BlockTableRecord) bt[blName].GetObject(OpenMode.ForRead);
+            var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
+            var btr = (BlockTableRecord)bt[blName].GetObject(OpenMode.ForRead);
             var blRef = new BlockReference(pt, btr.Id)
             {
                 Position = pt
@@ -140,7 +154,7 @@ namespace AcadLib.Blocks
                 // Установка аннотативного масштаба
                 blRef.AddContext(db.Cannoscale);
             }
-            else if (scale != 1)
+            else if (Math.Abs(scale - 1) > 0.001)
             {
                 blRef.TransformBy(Matrix3d.Scaling(scale, pt));
             }
@@ -152,27 +166,14 @@ namespace AcadLib.Blocks
         }
 
         /// <summary>
-        /// Добавление атрибутов к вставке блока
-        /// </summary>        
-        public static void AddAttributes(BlockReference blRef, [NotNull] BlockTableRecord btrBl, Transaction t)
+        /// Вставка общего блока из файла Блоки-Оформления.
+        /// Визуальная вставка с помошью Jig
+        /// </summary>
+        public static ObjectId InsertCommonBlock(string blName, Database db)
         {
-            foreach (var idEnt in btrBl)
-            {
-                if (idEnt.ObjectClass.Name == "AcDbAttributeDefinition")
-                {
-                    var atrDef = t.GetObject(idEnt, OpenMode.ForRead) as AttributeDefinition;
-                    if (!atrDef.Constant)
-                    {
-                        using (var atrRef = new AttributeReference())
-                        {
-                            atrRef.SetAttributeFromBlock(atrDef, blRef.BlockTransform);
-                            //atrRef.TextString = atrDef.TextString;
-                            blRef.AttributeCollection.AppendAttribute(atrRef);
-                            t.AddNewlyCreatedDBObject(atrRef, true);
-                        }
-                    }
-                }
-            }
+            // Выбор и вставка блока
+            Block.CopyBlockFromExternalDrawing(blName, fileCommonBlocks, db);
+            return Insert(blName);
         }
     }
 }

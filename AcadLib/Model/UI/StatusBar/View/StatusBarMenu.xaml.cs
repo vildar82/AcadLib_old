@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
-using Autodesk.AutoCAD.ApplicationServices;
 using JetBrains.Annotations;
 
 namespace AcadLib.UI.StatusBar.View

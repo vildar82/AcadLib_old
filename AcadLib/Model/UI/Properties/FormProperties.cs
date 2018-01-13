@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Windows.Forms;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.UI
 {
     public partial class FormProperties : Form
     {
         public FormProperties()
         {
-            InitializeComponent();                         
+            InitializeComponent();
         }
 
         private void buttonReset_Click(object sender, EventArgs e)
         {
-            propertyGrid1.ResetSelectedProperty();            
+            propertyGrid1.ResetSelectedProperty();
         }
     }
 }

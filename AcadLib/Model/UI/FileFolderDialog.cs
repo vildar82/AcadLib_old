@@ -9,11 +9,25 @@ namespace AcadLib.UI
     /// Диалог выбора файлов с возможностью включания выбора папки IsFolderDialog=true.
     /// Если включить IsFolderDialog, то отключается проверка CheckFileExists и CheckPathExists и dialog.FileName = " ";
     /// </summary>
+    [PublicAPI]
     public class FileFolderDialog : CommonDialog
     {
         public OpenFileDialog Dialog { get; private set; } = new OpenFileDialog();
 
         public bool IsFolderDialog { get; set; }
+
+        /// <summary>
+        /// Helper property. Parses FilePath into either folder path (if Folder Selection. is set)
+        /// or returns file path
+        /// </summary>
+        [NotNull]
+        public string SelectedPath => (IsFolderDialog ? Path.GetDirectoryName(Dialog.FileName) : Dialog.FileName) ??
+                                      throw new InvalidOperationException();
+
+        public override void Reset()
+        {
+            Dialog.Reset();
+        }
 
         public new DialogResult ShowDialog()
         {
@@ -25,39 +39,12 @@ namespace AcadLib.UI
             if (IsFolderDialog)
             {
                 Dialog.FileName = "п";
-                Dialog.Title += " Для выбора текущей папки оставьте в поле имени файла 'п' и нажмите открыть.";
+                Dialog.Title += @" Для выбора текущей папки оставьте в поле имени файла 'п' и нажмите открыть.";
                 Dialog.CheckFileExists = false;
                 Dialog.CheckPathExists = false;
                 Dialog.ValidateNames = false;
             }
-
-            if (owner == null)
-                return Dialog.ShowDialog();
-            else
-                return Dialog.ShowDialog(owner);
-        }
-
-        /// <summary>
-        /// Helper property. Parses FilePath into either folder path (if Folder Selection. is set)
-        /// or returns file path
-        /// </summary>
-        public string SelectedPath
-        {
-            get {
-                if (IsFolderDialog)
-                {
-                    return Path.GetDirectoryName(Dialog.FileName);
-                }
-                else
-                {
-                    return Dialog.FileName;
-                }
-            }
-        }
-
-        public override void Reset()
-        {
-            Dialog.Reset();
+            return owner == null ? Dialog.ShowDialog() : Dialog.ShowDialog(owner);
         }
 
         protected override bool RunDialog(IntPtr hwndOwner)

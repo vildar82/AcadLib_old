@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 
 namespace AcadLib.Blocks.Visual
 {
+    [PublicAPI]
     public static class BlockPreviewHelper
     {
         public static ImageSource GetPreview(BlockTableRecord btr)
@@ -15,19 +16,20 @@ namespace AcadLib.Blocks.Visual
             return CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
         }
 
-        public static System.Drawing.Image GetPreviewImage(BlockTableRecord btr)
-        {
-            var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
-            return ImageSourceToGDI((BitmapSource)imgsrc);
-        }
-
         [NotNull]
         public static Icon GetPreviewIcon(BlockTableRecord btr)
         {
             var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
-            var bitmap = ImageSourceToGDI((BitmapSource)imgsrc) as Bitmap;
+            var bitmap = (Bitmap)ImageSourceToGDI((BitmapSource)imgsrc);
             var iconPtr = bitmap.GetHicon();
             return Icon.FromHandle(iconPtr);
+        }
+
+        [NotNull]
+        public static System.Drawing.Image GetPreviewImage(BlockTableRecord btr)
+        {
+            var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
+            return ImageSourceToGDI((BitmapSource)imgsrc);
         }
 
         [NotNull]
@@ -44,4 +46,3 @@ namespace AcadLib.Blocks.Visual
         }
     }
 }
-

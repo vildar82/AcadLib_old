@@ -5,30 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Extensions
 {
     /// <summary>
     /// Расширенные методы AttributeReference
     /// </summary>
+    [PublicAPI]
     public static class AttributeExt
     {
-        /// <summary>
-        /// Поворот атрибута в 0
-        /// </summary>        
-        public static void Normalize([NotNull] this AttributeReference atr)
-        {
-            if (atr.Rotation != 0)
-            {
-                if (!atr.IsWriteEnabled) atr.UpgradeOpen();
-                atr.Rotation = 0;
-            }
-        }
-
-        public static bool Is([NotNull] this AttributeReference attr, string tag)
-        {
-            return string.Equals(attr.Tag, tag, StringComparison.CurrentCultureIgnoreCase);
-        }
-
         public static IEnumerable<AttributeInfo> EnumerateAttributes([CanBeNull] this BlockReference blRef)
         {
             if (blRef == null) yield break;
@@ -57,11 +42,17 @@ namespace AcadLib.Extensions
             }
         }
 
+        [NotNull]
+        public static Dictionary<string, DBText> GetAttributeDictionary([NotNull] this BlockReference blockref)
+        {
+            return blockref.GetAttributes().Where(a => a.Visible).ToDictionary(a => GetTag(a), StringComparer.OrdinalIgnoreCase);
+        }
+
         /// <summary>
         /// Requires a transaction (not an OpenCloseTransaction) to be active when called:
         /// Returns an enumeration of all AttributeDefinitions whose Constant property is
         /// true, and all AttributeReferences attached to the block reference.
-        /// </summary>      
+        /// </summary>
         public static IEnumerable<DBText> GetAttributes([NotNull] this BlockReference blockRef)
         {
             var tr = blockRef.GetTransaction();
@@ -90,13 +81,6 @@ namespace AcadLib.Extensions
         // Requires an active transaction (not an OpenCloseTransaction)
         // Returns a dictionary whose values are either constant AttributeDefinitions
         // or AttributeReferences, keyed to their tags:
-
-        [NotNull]
-        public static Dictionary<string, DBText> GetAttributeDictionary(this BlockReference blockref)
-        {
-            return blockref.GetAttributes().Where(a => a.Visible).ToDictionary(a => GetTag(a), StringComparer.OrdinalIgnoreCase);
-        }
-
         [NotNull]
         public static Transaction GetTransaction([NotNull] this DBObject obj)
         {
@@ -108,7 +92,25 @@ namespace AcadLib.Extensions
             return tr;
         }
 
-        static string GetTag([NotNull] DBText dbtext)
+        public static bool Is([NotNull] this AttributeReference attr, string tag)
+        {
+            return string.Equals(attr.Tag, tag, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Поворот атрибута в 0
+        /// </summary>
+        public static void Normalize([NotNull] this AttributeReference atr)
+        {
+            if (Math.Abs(atr.Rotation) > 0.0001)
+            {
+                // ReSharper disable once UpgradeOpen
+                if (!atr.IsWriteEnabled) atr.UpgradeOpen();
+                atr.Rotation = 0;
+            }
+        }
+
+        private static string GetTag([NotNull] DBText dbtext)
         {
             if (dbtext is AttributeDefinition attdef)
                 return attdef.Tag;

@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace AcadLib.Layers
 {
+    [PublicAPI]
     public static class LayerExt
     {
         private static string groupLayerPrefix;
@@ -13,54 +14,8 @@ namespace AcadLib.Layers
         /// <summary>
         /// Префикс слоев - группа пользователя
         /// </summary>
+        [NotNull]
         public static string GroupLayerPrefix => groupLayerPrefix ?? (groupLayerPrefix = GetGroupLayerPrefix());
-
-        /// <summary>
-        /// Получение слоя.
-        /// Если его нет в базе, то создается.      
-        /// </summary>
-        /// <param name="layerInfo">параметры слоя</param>
-        /// <returns></returns>
-        public static ObjectId GetLayerOrCreateNew([NotNull] this LayerInfo layerInfo)
-        {
-            ObjectId idLayer;
-            var db = HostApplicationServices.WorkingDatabase;
-            // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.                           
-            using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
-            {
-                if (lt.Has(layerInfo.Name))
-                {
-                    idLayer = lt[layerInfo.Name];
-                }
-                else
-                {
-                    idLayer = CreateLayer(layerInfo, lt);
-                }
-            }
-            return idLayer;
-        }
-
-        /// <summary>
-        /// Создание слоя.
-        /// Слоя не должно быть в таблице слоев.
-        /// </summary>
-        /// <param name="layerInfo">параметры слоя</param>
-        /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
-        public static ObjectId CreateLayer([NotNull] this LayerInfo layerInfo, [NotNull] LayerTable lt)
-        {
-            if (layerInfo?.Name.IsNullOrEmpty() == true) return lt.Database.Clayer;
-            ObjectId idLayer;
-            // Если слоя нет, то он создается.            
-            using (var newLayer = new LayerTableRecord())
-            {
-                layerInfo.SetProp(newLayer, lt.Database);
-                // ReSharper disable once UpgradeOpen
-                lt.UpgradeOpen();
-                idLayer = lt.Add(newLayer);
-                lt.DowngradeOpen();
-            }
-            return idLayer;
-        }
 
         /// <summary>
         /// Проверка блокировки слоя IsOff IsLocked IsFrozen.
@@ -68,12 +23,15 @@ namespace AcadLib.Layers
         /// Если слоя нет - то он создается.
         /// </summary>
         /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
+        /// <param name="checkProps"></param>
         [NotNull]
         public static Dictionary<string, ObjectId> CheckLayerState([NotNull] this List<LayerInfo> layers, bool checkProps)
         {
             var resVal = new Dictionary<string, ObjectId>();
             var db = HostApplicationServices.WorkingDatabase;
-            using (var lt = db.LayerTableId.Open(OpenMode.ForRead) as LayerTable)
+#pragma warning disable 618
+            using (var lt = (LayerTable)db.LayerTableId.Open(OpenMode.ForRead))
+#pragma warning restore 618
             {
                 foreach (var layer in layers.Where(w => w != null))
                 {
@@ -92,7 +50,10 @@ namespace AcadLib.Layers
                         CheckLayerState(layId, out _);
                         if (checkProps)
                         {
-                            using (var lay = layId.Open(OpenMode.ForWrite) as LayerTableRecord)
+                            // ReSharper disable once IdOpenMode
+#pragma warning disable 618
+                            using (var lay = (LayerTableRecord)layId.Open(OpenMode.ForWrite))
+#pragma warning restore 618
                             {
                                 layer.SetProp(lay, db);
                             }
@@ -108,15 +69,105 @@ namespace AcadLib.Layers
             return resVal;
         }
 
+        /// <summary>
+        /// Проверка блокировки слоя IsOff IsLocked IsFrozen.
+        /// Если заблокировано - то разблокируется.
+        /// Если слоя нет - то он создается.
+        /// </summary>
+        /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
+        [NotNull]
+        public static Dictionary<string, ObjectId> CheckLayerState([NotNull] this List<LayerInfo> layers)
+        {
+            return CheckLayerState(layers, false);
+        }
+
+        public static ObjectId CheckLayerState(this LayerInfo layer, bool checkProps)
+        {
+            var layers = new List<LayerInfo> { layer };
+            var dictLays = CheckLayerState(layers, checkProps);
+            return dictLays.First().Value;
+        }
+
+        public static ObjectId CheckLayerState(this LayerInfo layer)
+        {
+            return CheckLayerState(layer, false);
+        }
+
+        public static ObjectId CheckLayerState([NotNull] string layer)
+        {
+            var li = new LayerInfo(layer);
+            var layersInfo = new List<LayerInfo> { li };
+            var dictLays = CheckLayerState(layersInfo);
+            dictLays.TryGetValue(layer, out var res);
+            return res;
+        }
+
+        [NotNull]
+        public static Dictionary<string, ObjectId> CheckLayerState([NotNull] string[] layers)
+        {
+            var layersInfo = new List<LayerInfo>();
+            foreach (var item in layers)
+            {
+                var li = new LayerInfo(item);
+                layersInfo.Add(li);
+            }
+            return CheckLayerState(layersInfo);
+        }
+
+        /// <summary>
+        /// Создание слоя.
+        /// Слоя не должно быть в таблице слоев.
+        /// </summary>
+        /// <param name="layerInfo">параметры слоя</param>
+        /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
+        public static ObjectId CreateLayer([NotNull] this LayerInfo layerInfo, [NotNull] LayerTable lt)
+        {
+            if (layerInfo.Name.IsNullOrEmpty()) return lt.Database.Clayer;
+            ObjectId idLayer;
+            // Если слоя нет, то он создается.
+            using (var newLayer = new LayerTableRecord())
+            {
+                layerInfo.SetProp(newLayer, lt.Database);
+                // ReSharper disable once UpgradeOpen
+                lt.UpgradeOpen();
+                idLayer = lt.Add(newLayer);
+                lt.DowngradeOpen();
+            }
+            return idLayer;
+        }
+
+        /// <summary>
+        /// Получение слоя.
+        /// Если его нет в базе, то создается.
+        /// </summary>
+        /// <param name="layerInfo">параметры слоя</param>
+        /// <returns></returns>
+        public static ObjectId GetLayerOrCreateNew([NotNull] this LayerInfo layerInfo)
+        {
+            ObjectId idLayer;
+            var db = HostApplicationServices.WorkingDatabase;
+            // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.
+#pragma warning disable 618
+            using (var lt = (LayerTable)db.LayerTableId.Open(OpenMode.ForRead))
+#pragma warning restore 618
+            {
+                idLayer = lt.Has(layerInfo.Name) ? lt[layerInfo.Name] : CreateLayer(layerInfo, lt);
+            }
+            return idLayer;
+        }
+
         private static void CheckLayerState(ObjectId layerId, out string layerName)
         {
             layerName = null;
             if (!layerId.IsValidEx()) return;
-            using (var lay = layerId.Open(OpenMode.ForRead) as LayerTableRecord)
+#pragma warning disable 618
+            using (var lay = (LayerTableRecord)layerId.Open(OpenMode.ForRead))
+#pragma warning restore 618
             {
                 layerName = lay.Name;
                 if (lay.IsLocked || lay.IsOff || lay.IsFrozen)
                 {
+                    // ReSharper disable once UpgradeOpen
                     lay.UpgradeOpen();
                     if (lay.IsOff)
                     {
@@ -134,48 +185,6 @@ namespace AcadLib.Layers
             }
         }
 
-        /// <summary>
-        /// Проверка блокировки слоя IsOff IsLocked IsFrozen.
-        /// Если заблокировано - то разблокируется.
-        /// Если слоя нет - то он создается.
-        /// </summary>
-        /// <param name="layers">Список слоев для проверкм в текущей рабочей базе</param>
-        public static Dictionary<string, ObjectId> CheckLayerState(this List<LayerInfo> layers)
-        {
-            return CheckLayerState(layers, false);
-        }
-
-        public static ObjectId CheckLayerState(this LayerInfo layer, bool checkProps)
-        {
-            var layers = new List<LayerInfo> { layer };
-            var dictLays = CheckLayerState(layers, checkProps);
-            return dictLays.First().Value;
-        }
-        public static ObjectId CheckLayerState(this LayerInfo layer)
-        {
-            return CheckLayerState(layer, false);
-        }
-
-        public static ObjectId CheckLayerState([NotNull] string layer)
-        {
-            var li = new LayerInfo(layer);
-            var layersInfo = new List<LayerInfo> { li };
-            var dictLays = CheckLayerState(layersInfo);
-            dictLays.TryGetValue(layer, out var res);
-            return res;
-        }
-
-        public static Dictionary<string, ObjectId> CheckLayerState([NotNull] string[] layers)
-        {
-            var layersInfo = new List<LayerInfo>();
-            foreach (var item in layers)
-            {
-                var li = new LayerInfo(item);
-                layersInfo.Add(li);
-            }
-            return CheckLayerState(layersInfo);
-        }
-
         [NotNull]
         private static string GetGroupLayerPrefix()
         {
@@ -184,10 +193,13 @@ namespace AcadLib.Layers
             {
                 case "КР-МН":
                     return "КР";
+
                 case "КР-МН_Тест":
                     return "КР";
+
                 case "КР-СБ":
                     return "СБ";
+
                 case "КР-СБ-ГК":
                     return string.Empty;
             }

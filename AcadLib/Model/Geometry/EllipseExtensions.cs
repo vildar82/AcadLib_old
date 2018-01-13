@@ -2,11 +2,13 @@
 using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
 {
     /// <summary>
     /// Provides extension methods for the Ellipse type.
     /// </summary>
+    [PublicAPI]
     public static class EllipseExtensions
     {
         /// <summary>

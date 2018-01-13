@@ -5,19 +5,11 @@ using System.Collections.Generic;
 
 namespace AcadLib.Visual
 {
+    [PublicAPI]
     public abstract class VisualBase : IVisualService
     {
         protected bool isOn;
         public string LayerForUser { get; set; }
-
-        public VisualBase([CanBeNull] string layer = null)
-        {
-            LayerForUser = layer ?? SymbolUtilityServices.LayerZeroName;
-        }
-
-        public abstract List<Entity> CreateVisual();
-        protected abstract void DrawVisuals(List<Entity> draws);
-        protected abstract void EraseDraws();
 
         public bool VisualIsOn
         {
@@ -25,6 +17,30 @@ namespace AcadLib.Visual
             set {
                 isOn = value;
                 VisualUpdate();
+            }
+        }
+
+        public VisualBase([CanBeNull] string layer = null)
+        {
+            LayerForUser = layer ?? SymbolUtilityServices.LayerZeroName;
+        }
+
+        public abstract List<Entity> CreateVisual();
+
+        public virtual void Dispose()
+        {
+            EraseDraws();
+        }
+
+        public virtual void VisualsDelete()
+        {
+            try
+            {
+                EraseDraws();
+            }
+            catch
+            {
+                // ignored
             }
         }
 
@@ -38,24 +54,14 @@ namespace AcadLib.Visual
             }
         }
 
-        public virtual void VisualsDelete()
-        {
-            try
-            {
-                EraseDraws();
-            }
-            catch { }
-        }
+        protected abstract void DrawVisuals(List<Entity> draws);
+
+        protected abstract void EraseDraws();
 
         protected ObjectId GetLayerForVisual([CanBeNull] string layer)
         {
             var lay = new LayerInfo(layer ?? SymbolUtilityServices.LayerZeroName);
             return lay.CheckLayerState();
-        }
-
-        public virtual void Dispose()
-        {
-            EraseDraws();
         }
     }
 }

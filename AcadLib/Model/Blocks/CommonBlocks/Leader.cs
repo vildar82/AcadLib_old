@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 
 namespace AcadLib.Blocks.CommonBlocks
 {
@@ -8,12 +9,13 @@ namespace AcadLib.Blocks.CommonBlocks
         public const string ParamName = "ОБОЗНАЧЕНИЕ";
 
         public string Name { get; set; }
-        public Leader (BlockReference blRef, string blName) : base(blRef, blName)
+
+        public Leader([NotNull] BlockReference blRef, string blName) : base(blRef, blName)
         {
             Name = GetPropValue<string>(ParamName);
         }
 
-        public void SetName (string value)
+        public void SetName(string value)
         {
             FillPropValue(ParamName, value);
         }

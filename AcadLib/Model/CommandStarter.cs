@@ -20,7 +20,10 @@ namespace AcadLib
         public string Doc { get; set; }
         public Assembly Assembly { get; private set; }
 
-        public CommandStart() { }
+        public CommandStart()
+        {
+        }
+
         public CommandStart(string commandName, Assembly asm)
         {
             CommandName = commandName;
@@ -96,7 +99,6 @@ namespace AcadLib
                 Logger.Log.StartCommand(commandStart);
                 Logger.Log.Info($"Document={doc.Name}");
                 PluginStatisticsHelper.PluginStart(commandStart);
-                Inspector.Clear();
             }
             catch (System.Exception ex)
             {

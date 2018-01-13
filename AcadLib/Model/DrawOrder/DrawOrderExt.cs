@@ -1,8 +1,10 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    [PublicAPI]
     public static class DrawOrderExt
     {
         public static void DrawOrder([NotNull] this BlockTableRecord btr, ObjectId top, ObjectId bot)

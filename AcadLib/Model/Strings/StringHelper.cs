@@ -1,8 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using System.Text.RegularExpressions;
 
 namespace AcadLib.Strings
 {
+    [Obsolete]
     public static class StringHelper
     {
         /// <summary>
@@ -11,15 +13,15 @@ namespace AcadLib.Strings
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
+        [NotNull]
         public static Result<int> GetStartInteger([CanBeNull] string input)
         {
             if (input != null)
             {
-                var value = 0;
                 var match = Regex.Match(input, @"^\d*");
                 if (match.Success)
                 {
-                    if (int.TryParse(match.Value, out value))
+                    if (int.TryParse(match.Value, out var value))
                     {
                         return Result.Ok(value);
                     }

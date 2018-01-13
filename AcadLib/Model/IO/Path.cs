@@ -4,51 +4,34 @@ using System.IO;
 
 namespace AcadLib.IO
 {
+    [PublicAPI]
     public static class Path
     {
         /// <summary>
-        /// Путь к пользовательскому файлу настроек плагина
+        /// Копирование папки - рекурсивно. Папка создается.
         /// </summary>
-        /// <param name="plugin">Имя плагина</param>
-        /// <param name="fileName">Имя файла</param>
-        /// <returns>Полный путь к файлу</returns>
-        [NotNull]
-        public static string GetUserPluginFile(string plugin, [NotNull] string fileName)
+        /// <param name="source">Откуда</param>
+        /// <param name="target">Куда</param>
+        [Obsolete]
+        public static void CopyDirTo([NotNull] this DirectoryInfo source, [NotNull] DirectoryInfo target)
         {
-            var pluginFolder = GetUserPluginFolder(plugin);
-            return System.IO.Path.Combine(pluginFolder, fileName);
-        }
-
-        /// <summary>
-        /// Путь к папке плагина
-        /// </summary>
-        /// <param name="plugin">Имя плагина - имя папки</param>
-        /// <returns>Полный путь</returns>
-        [NotNull]
-        public static string GetUserPluginFolder([NotNull] string plugin)
-        {
-            var pikFolder = GetUserPikFolder();
-            var pluginFolder = System.IO.Path.Combine(pikFolder, plugin);
-            if (!Directory.Exists(pluginFolder))
-                Directory.CreateDirectory(pluginFolder);
-            return pluginFolder;
-        }
-
-        /// <summary>
-        /// Пользовательская папка настроек
-        /// </summary>
-        /// <returns></returns>
-        [NotNull]
-        public static string GetUserPikFolder()
-        {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create);
-            var pikFolder = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
-            var pikAppDataFolder = System.IO.Path.Combine(appData, pikFolder, "AutoCAD");
-            if (!Directory.Exists(pikAppDataFolder))
+            Directory.CreateDirectory(target.FullName);
+            foreach (var fi in source.GetFiles())
             {
-                Directory.CreateDirectory(pikAppDataFolder);
+                Console.WriteLine($@"Copying {target.FullName}\{fi.Name}");
+                fi.CopyTo(System.IO.Path.Combine(target.FullName, fi.Name), true);
             }
-            return pikAppDataFolder;
+            foreach (var diSourceSubDir in source.GetDirectories())
+            {
+                var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyDirTo(diSourceSubDir, nextTargetSubDir);
+            }
+        }
+
+        [Obsolete]
+        public static void CopyDirTo([NotNull] string sourceDir, [NotNull] string targetDir)
+        {
+            CopyDirTo(new DirectoryInfo(sourceDir), new DirectoryInfo(targetDir));
         }
 
         /// <summary>
@@ -74,7 +57,7 @@ namespace AcadLib.IO
                 {
                     Directory.CreateDirectory(pluginFolder);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.Log.Error(ex, $"GetSharedpluginFolder - pluginName={pluginName}");
                 }
@@ -84,8 +67,9 @@ namespace AcadLib.IO
 
         /// <summary>
         /// Создает папку в темпе и возрвращает полный путь
-        /// </summary>        
+        /// </summary>
         [NotNull]
+        [Obsolete]
         public static string GetTemporaryDirectory()
         {
             var tempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
@@ -94,28 +78,48 @@ namespace AcadLib.IO
         }
 
         /// <summary>
-        /// Копирование папки - рекурсивно. Папка создается.
+        /// Пользовательская папка настроек
         /// </summary>
-        /// <param name="source">Откуда</param>
-        /// <param name="target">Куда</param>
-        public static void CopyDirTo([NotNull] this DirectoryInfo source, [NotNull] DirectoryInfo target)
+        /// <returns></returns>
+        [NotNull]
+        public static string GetUserPikFolder()
         {
-            Directory.CreateDirectory(target.FullName);
-            foreach (var fi in source.GetFiles())
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create);
+            var pikFolder = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
+            var pikAppDataFolder = System.IO.Path.Combine(appData, pikFolder, "AutoCAD");
+            if (!Directory.Exists(pikAppDataFolder))
             {
-                Console.WriteLine($@"Copying {target.FullName}\{fi.Name}");
-                fi.CopyTo(System.IO.Path.Combine(target.FullName, fi.Name), true);
+                Directory.CreateDirectory(pikAppDataFolder);
             }
-            foreach (var diSourceSubDir in source.GetDirectories())
-            {
-                var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyDirTo(diSourceSubDir, nextTargetSubDir);
-            }
+            return pikAppDataFolder;
         }
 
-        public static void CopyDirTo([NotNull] string sourceDir, [NotNull] string targetDir)
+        /// <summary>
+        /// Путь к пользовательскому файлу настроек плагина
+        /// </summary>
+        /// <param name="plugin">Имя плагина</param>
+        /// <param name="fileName">Имя файла</param>
+        /// <returns>Полный путь к файлу</returns>
+        [NotNull]
+        public static string GetUserPluginFile([NotNull] string plugin, [NotNull] string fileName)
         {
-            CopyDirTo(new DirectoryInfo(sourceDir), new DirectoryInfo(targetDir));
+            var pluginFolder = GetUserPluginFolder(plugin);
+            return System.IO.Path.Combine(pluginFolder, fileName);
+        }
+
+        /// <summary>
+        /// Путь к папке плагина
+        /// </summary>
+        /// <param name="plugin">Имя плагина - имя папки</param>
+        /// <returns>Полный путь</returns>
+        [NotNull]
+        public static string GetUserPluginFolder([NotNull] string plugin)
+        {
+            var pikFolder = GetUserPikFolder();
+            var pluginFolder = System.IO.Path.Combine(pikFolder, plugin);
+            if (!Directory.Exists(pluginFolder))
+                Directory.CreateDirectory(pluginFolder);
+            return pluginFolder;
         }
     }
 }

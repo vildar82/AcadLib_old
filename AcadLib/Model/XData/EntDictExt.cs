@@ -7,48 +7,18 @@ using System.Linq;
 namespace AcadLib.XData
 {
     /// <summary>
-    /// Расширенные данные примитива.    
+    /// Расширенные данные примитива.
     /// </summary>
+    [PublicAPI]
     public class EntDictExt : IDisposable
     {
-
-        readonly DBObject dbo;
-        readonly string pluginName;
+        private readonly DBObject dbo;
+        private readonly string pluginName;
 
         public EntDictExt([NotNull] DBObject dbo, string pluginName)
         {
-            if (dbo != null)
-            {
-                this.dbo = dbo;
-                this.pluginName = pluginName;
-            }
-            else
-            {
-                throw new ArgumentNullException();
-            }
-        }
-
-        /// <summary>
-        /// Сохранение словаря в объект.
-        /// dbo\ExtDic\Pik\Plugin\dic
-        /// </summary>
-        /// <param name="dic">Словарь для сохранения</param>
-        public void Save(DicED dic)
-        {
-            var dicId = GetDicPlugin(true);
-            ExtDicHelper.SetDicED(dicId, dic);
-        }
-
-
-        /// <summary>
-        /// Чтение словаря плагина
-        /// </summary>
-        /// <returns>Словарь плагина. Имя DicED.Name - не заполняется.</returns>
-        [CanBeNull]
-        public DicED Load()
-        {
-            var dicId = GetDicPlugin(false);
-            return ExtDicHelper.GetDicEd(dicId);
+            this.dbo = dbo;
+            this.pluginName = pluginName;
         }
 
         /// <summary>
@@ -61,7 +31,7 @@ namespace AcadLib.XData
             {
                 // Проверить. Если в словаре объекта есть только удаляемый словарь по имени, то удалить весь словарь объекта
                 var dicDbo = ExtDicHelper.GetDicEd(dicId);
-                var dicDelete = dicDbo.GetInner(dicName);
+                var dicDelete = dicDbo?.GetInner(dicName);
                 if (dicDelete != null)
                 {
                     if (dicDbo.Inners.Count != 1 || dicDbo.Recs.Any())
@@ -75,30 +45,23 @@ namespace AcadLib.XData
             ExtDicHelper.DeleteDic(dicId, dbo);
         }
 
-        /// <summary>
-        /// Сохранение данных в объекте. 
-        /// Можно передать только string, int, double
-        /// </summary>            
-        [Obsolete("Используй `DicED`")]
-        public void Save(string rec, object value)
+        public void Dispose()
         {
-            var values = new List<TypedValue> { TypedValueExt.GetTvExtData(value) };
-            Save(values, rec);
+            if (dbo != null && !dbo.IsDisposed)
+            {
+                dbo.Dispose();
+            }
         }
 
-        [Obsolete("Используй `DicED`", true)]
-        public void Save(List<TypedValue> values, string rec)
+        /// <summary>
+        /// Чтение словаря плагина
+        /// </summary>
+        /// <returns>Словарь плагина. Имя DicED.Name - не заполняется.</returns>
+        [CanBeNull]
+        public DicED Load()
         {
-            var idRec = GetXRecord(rec, true);
-            if (idRec.IsNull) return;
-            using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
-            {
-                if (xRec == null) return;
-                using (var rb = new ResultBuffer(values.ToArray()))
-                {
-                    xRec.Data = rb;
-                }
-            }
+            var dicId = GetDicPlugin(false);
+            return ExtDicHelper.GetDicEd(dicId);
         }
 
         /// <summary>
@@ -106,7 +69,7 @@ namespace AcadLib.XData
         /// </summary>
         /// <typeparam name="T">Хранимый тип - может быть string, int, double, List/<TypedValue/></typeparam>
         [Obsolete("Используй `DicED`")]
-        public T Load<T>(string rec)
+        public T Load<T>([NotNull] string rec)
         {
             var res = default(T);
             var typeT = typeof(T);
@@ -134,7 +97,7 @@ namespace AcadLib.XData
 
         /// <summary>
         /// Чтение всех Xrecord из словаря плагина
-        /// </summary>   
+        /// </summary>
         [CanBeNull]
         [Obsolete("Используй `DicED`")]
         public Dictionary<string, List<TypedValue>> LoadAllXRecords()
@@ -161,27 +124,53 @@ namespace AcadLib.XData
             return res;
         }
 
-        private ObjectId GetXRecord([NotNull] string key, bool create)
+        /// <summary>
+        /// Сохранение словаря в объект.
+        /// dbo\ExtDic\Pik\Plugin\dic
+        /// </summary>
+        /// <param name="dic">Словарь для сохранения</param>
+        public void Save(DicED dic)
         {
-            var res = ObjectId.Null;
-            // Словарь плагина
-            var idDicPlugin = GetDicPlugin(create);
-            // Запись key
-            var idRecKey = ExtDicHelper.GetRec(idDicPlugin, key, create, create);
-            res = idRecKey;
-            return res;
+            var dicId = GetDicPlugin(true);
+            ExtDicHelper.SetDicED(dicId, dic);
+        }
+
+        /// <summary>
+        /// Сохранение данных в объекте.
+        /// Можно передать только string, int, double
+        /// </summary>
+        [Obsolete("Используй `DicED`")]
+        public void Save([NotNull] string rec, object value)
+        {
+            var values = new List<TypedValue> { TypedValueExt.GetTvExtData(value) };
+            Save(values, rec);
+        }
+
+        [Obsolete("Используй `DicED`", true)]
+        public void Save(List<TypedValue> values, [NotNull] string rec)
+        {
+            var idRec = GetXRecord(rec, true);
+            if (idRec.IsNull) return;
+            // ReSharper disable once IdOpenMode
+            using (var xRec = (Xrecord)idRec.Open(OpenMode.ForWrite))
+            {
+                if (xRec == null) return;
+                using (var rb = new ResultBuffer(values.ToArray()))
+                {
+                    xRec.Data = rb;
+                }
+            }
         }
 
         private ObjectId GetDicPlugin(bool create)
         {
-            var res = ObjectId.Null;
             // Словарь объекта
             var idDboDic = ExtDicHelper.GetDboExtDic(dbo, create);
             // Словарь ПИК
             var idDicPik = ExtDicHelper.GetDic(idDboDic, ExtDicHelper.PikApp, create, false);
             // Словарь плагина
             var idDicPlugin = ExtDicHelper.GetDic(idDicPik, pluginName, create, false);
-            res = idDicPlugin;
+            var res = idDicPlugin;
             return res;
         }
 
@@ -192,26 +181,25 @@ namespace AcadLib.XData
             {
                 return (int)DxfCode.ExtendedDataAsciiString;
             }
-            else if (value == typeof(int))
+            if (value == typeof(int))
             {
                 return (int)DxfCode.ExtendedDataInteger32;
             }
-            else if (value == typeof(double))
+            if (value == typeof(double))
             {
                 return (int)DxfCode.ExtendedDataReal;
             }
-            else
-            {
-                throw new ArgumentException($"В расшир.данные можно сохранять только string, int, double, а тип '{value.GetType()}' нет.");
-            }
+            throw new ArgumentException($"В расшир.данные можно сохранять только string, int, double, а тип '{value}' нет.");
         }
 
-        public void Dispose()
+        private ObjectId GetXRecord([NotNull] string key, bool create)
         {
-            if (dbo != null && !dbo.IsDisposed)
-            {
-                dbo.Dispose();
-            }
+            // Словарь плагина
+            var idDicPlugin = GetDicPlugin(create);
+            // Запись key
+            var idRecKey = ExtDicHelper.GetRec(idDicPlugin, key, create, create);
+            var res = idRecKey;
+            return res;
         }
     }
 }

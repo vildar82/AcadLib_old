@@ -11,12 +11,18 @@ namespace AcadLib
 
         static Logger()
         {
-            Log = new LoggAddinExt(UserGroup);
+            Log = new LoggAddinExt();
         }
     }
 
     public class LoggAddinExt : AutoCAD_PIK_Manager.LogAddin
     {
+        public LoggAddinExt()
+        {
+        }
+
+        // ReSharper disable once UnusedParameter.Local
+        [Obsolete]
         public LoggAddinExt(string plugin)
         {
         }

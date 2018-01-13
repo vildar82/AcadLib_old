@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    [PublicAPI]
     [Serializable]
     public class CommandInfo
     {
@@ -15,7 +18,10 @@ namespace AcadLib
         /// </summary>
         public List<DateTime> DatesStart { get; set; }
 
-        public CommandInfo() { }
+        public CommandInfo()
+        {
+        }
+
         public CommandInfo(string name)
         {
             CommandName = name;

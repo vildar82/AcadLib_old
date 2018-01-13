@@ -7,6 +7,7 @@ namespace AcadLib.Geometry
     /// <summary>
     /// Provides extension methods for the CircularArc2dType
     /// </summary>
+    [PublicAPI]
     public static class CircularArc3dExtensions
     {
         /// <summary>
@@ -24,7 +25,7 @@ namespace AcadLib.Geometry
         /// <remarks>
         /// Tangents start points are on the object to which this method applies, end points on the point passed as argument.
         /// Tangents are always returned in the same order: the tangent on the left side of the line from the circular arc center
-        /// to the point before the one on the right side. 
+        /// to the point before the one on the right side.
         /// </remarks>
         /// <param name="arc">The instance to which this method applies.</param>
         /// <param name="pt">The Point3d to which tangents are searched</param>
@@ -43,7 +44,6 @@ namespace AcadLib.Geometry
                     Autodesk.AutoCAD.Runtime.ErrorStatus.NonCoplanarGeometry);
 
             var plane = new Plane(Point3d.Origin, normal);
-            var OCS2WCS = Matrix3d.PlaneToWorld(plane);
             var ca2d = new CircularArc2d(arc.Center.Convert2d(plane), arc.Radius);
             var lines2d = ca2d.GetTangentsTo(pt.Convert2d(plane));
 
@@ -65,7 +65,7 @@ namespace AcadLib.Geometry
         /// <remarks>
         /// Tangents start points are on the object to which this method applies, end points on the one passed as argument.
         /// Tangents are always returned in the same order: outer tangents before inner tangents, and for both,
-        /// the tangent on the left side of the line from this circular arc center to the other one before the one on the right side. 
+        /// the tangent on the left side of the line from this circular arc center to the other one before the one on the right side.
         /// </remarks>
         /// <param name="arc">The instance to which this method applies.</param>
         /// <param name="other">The CircularArc3d to which searched for tangents.</param>
@@ -86,7 +86,6 @@ namespace AcadLib.Geometry
                     Autodesk.AutoCAD.Runtime.ErrorStatus.NonCoplanarGeometry);
 
             var plane = new Plane(Point3d.Origin, normal);
-            var OCS2WCS = Matrix3d.PlaneToWorld(plane);
             var ca2d1 = new CircularArc2d(arc.Center.Convert2d(plane), arc.Radius);
             var ca2d2 = new CircularArc2d(other.Center.Convert2d(plane), other.Radius);
             var lines2d = ca2d1.GetTangentsTo(ca2d2, flags);

@@ -3,33 +3,54 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.UI.Designer
 {
     internal class KeyValueDescriptor : PropertyDescriptor
     {
-        private PropertyDescriptor _pd;
+        private readonly PropertyDescriptor _pd;
 
-        private Type m_ConverterType;
-        private Type m_EditorType;
-        private Type m_AttributeProviderType;
-        private string m_DisplayName;
+        private readonly Type m_AttributeProviderType;
+        private readonly Type m_ConverterType;
+        private readonly Type m_EditorType;
+        public override AttributeCollection Attributes
+        {
+            get {
+                if (m_AttributeProviderType != null)
+                {
+                    return (Activator.CreateInstance(m_AttributeProviderType) as AttributeProvider)?.GetAttributes(
+                               PropertyType) ?? throw new InvalidOperationException();
+                }
+                return TypeDescriptor.GetAttributes(PropertyType);
+            }
+        }
+
+        public override Type ComponentType => _pd.ComponentType;
+
+        public override TypeConverter Converter
+        {
+            get {
+                if (m_ConverterType != null)
+                    return Activator.CreateInstance(m_ConverterType) as TypeConverter;
+                return TypeDescriptor.GetConverter(PropertyType);
+            }
+        }
+
+        public override string DisplayName { get; }
+
+        public override bool IsReadOnly => _pd.IsReadOnly;
+
+        public override Type PropertyType => _pd.PropertyType;
 
         public KeyValueDescriptor([NotNull] PropertyDescriptor pd, Type converterType, Type editorType, Type attributeProviderType, string displayName)
-            : base(pd)
+                                                            : base(pd)
         {
             _pd = pd;
 
             m_ConverterType = converterType;
             m_EditorType = editorType;
             m_AttributeProviderType = attributeProviderType;
-            m_DisplayName = displayName;
-        }
-
-        public override string DisplayName
-        {
-            get {
-                return m_DisplayName;
-            }
+            DisplayName = displayName;
         }
 
         public override bool CanResetValue(object component)
@@ -37,24 +58,16 @@ namespace AcadLib.UI.Designer
             return _pd.CanResetValue(component);
         }
 
-        public override Type ComponentType
+        public override object GetEditor(Type editorBaseType)
         {
-            get { return _pd.ComponentType; }
+            if (m_EditorType != null)
+                return Activator.CreateInstance(m_EditorType) as UITypeEditor;
+            return TypeDescriptor.GetEditor(PropertyType, typeof(UITypeEditor));
         }
 
         public override object GetValue(object component)
         {
             return _pd.GetValue(component);
-        }
-
-        public override bool IsReadOnly
-        {
-            get { return _pd.IsReadOnly; }
-        }
-
-        public override Type PropertyType
-        {
-            get { return _pd.PropertyType; }
         }
 
         public override void ResetValue(object component)
@@ -70,40 +83,6 @@ namespace AcadLib.UI.Designer
         public override bool ShouldSerializeValue(object component)
         {
             return _pd.ShouldSerializeValue(component);
-        }
-
-        public override TypeConverter Converter
-        {
-            get {
-                if (m_ConverterType != null)
-                    return Activator.CreateInstance(m_ConverterType) as TypeConverter;
-                else
-                {
-                    return TypeDescriptor.GetConverter(PropertyType);
-                }
-            }
-        }
-
-        public override object GetEditor(Type editorBaseType)
-        {
-            if (m_EditorType != null)
-                return Activator.CreateInstance(m_EditorType) as UITypeEditor;
-            else
-                return TypeDescriptor.GetEditor(PropertyType, typeof(UITypeEditor));
-        }
-
-        public override AttributeCollection Attributes
-        {
-            get {
-                if (m_AttributeProviderType != null)
-                {
-                    return (Activator.CreateInstance(m_AttributeProviderType) as AttributeProvider).GetAttributes(PropertyType);
-                }
-                else
-                {
-                    return TypeDescriptor.GetAttributes(PropertyType);
-                }
-            }
         }
     }
 }

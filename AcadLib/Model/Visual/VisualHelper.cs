@@ -9,36 +9,25 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Visual
 {
+    [PublicAPI]
     public static class VisualHelper
     {
-        private const string textStyleName = "PIK-Visual";
         private const string textStyleFontFile = "Arial.ttf";
-
-        public static ObjectId GetTextStyleId([NotNull] Document doc)
-        {
-            var db = doc.Database;
-            return db.GetTextStylePIK();
-        }
+        private const string textStyleName = "PIK-Visual";
 
         [NotNull]
-        public static Polyline CreatePolyline(List<Point2d> points, VisualOption opt)
+        public static Circle CreateCircle(double radius, [NotNull] VisualOption opt)
         {
-            var pts = DistincPoints(points);
-            var pl = new Polyline();
-            for (var i = 0; i < pts.Length; i++)
-            {
-                pl.AddVertexAt(i, pts[i], 0, 0, 0);
-            }
-            pl.Closed = true;
-            SetEntityOpt(pl, opt);
-            return pl;
+            var c = new Circle(opt.Position, Vector3d.ZAxis, radius);
+            SetEntityOpt(c, opt);
+            return c;
         }
 
         [NotNull]
         public static Hatch CreateHatch([NotNull] List<Point2d> points, VisualOption opt)
         {
             var pts = DistincPoints(points);
-            // Штриховка            
+            // Штриховка
             var ptCol = new Point2dCollection(pts) { points[0] };
             var dCol = new DoubleCollection(new double[points.Count]);
             var h = new Hatch();
@@ -49,10 +38,32 @@ namespace AcadLib.Visual
         }
 
         [NotNull]
-        private static Point2d[] DistincPoints([NotNull] List<Point2d> points)
+        public static MText CreateMText(string text, [NotNull] VisualOption opt, double height, AttachmentPoint justify)
         {
-            //  Отсеивание одинаковых точек
-            return points.Distinct(new Comparers.Point2dEqualityComparer()).ToArray();
+            var mtext = new MText
+            {
+                Location = opt.Position,
+                TextStyleId = GetTextStyleId(Application.DocumentManager.MdiActiveDocument),
+                Attachment = justify,
+                TextHeight = height,
+                Contents = text,
+                Color = opt.Color
+            };
+            return mtext;
+        }
+
+        [NotNull]
+        public static Polyline CreatePolyline([NotNull] List<Point2d> points, VisualOption opt)
+        {
+            var pts = DistincPoints(points);
+            var pl = new Polyline();
+            for (var i = 0; i < pts.Length; i++)
+            {
+                pl.AddVertexAt(i, pts[i], 0, 0, 0);
+            }
+            pl.Closed = true;
+            SetEntityOpt(pl, opt);
+            return pl;
         }
 
         [NotNull]
@@ -72,27 +83,10 @@ namespace AcadLib.Visual
             return dbText;
         }
 
-        [NotNull]
-        public static MText CreateMText(string text, [NotNull] VisualOption opt, double height, AttachmentPoint justify)
+        public static ObjectId GetTextStyleId([NotNull] Document doc)
         {
-            var mtext = new MText
-            {
-                Location = opt.Position,
-                TextStyleId = GetTextStyleId(Application.DocumentManager.MdiActiveDocument),
-                Attachment = justify,
-                TextHeight = height,
-                Contents = text,
-                Color = opt.Color
-            };
-            return mtext;
-        }
-
-        [NotNull]
-        public static Circle CreateCircle(double radius, [NotNull] VisualOption opt)
-        {
-            var c = new Circle(opt.Position, Vector3d.ZAxis, radius);
-            SetEntityOpt(c, opt);
-            return c;
+            var db = doc.Database;
+            return db.GetTextStylePIK();
         }
 
         public static void SetEntityOpt([CanBeNull] this Entity ent, VisualOption opt)
@@ -119,8 +113,15 @@ namespace AcadLib.Visual
             if (!textStyle.FileName.Equals(textStyleFontFile, StringComparison.OrdinalIgnoreCase))
             {
                 textStyle = textStyle.Id.GetObject<TextStyleTableRecord>(OpenMode.ForWrite);
-                textStyle.FileName = textStyleFontFile;
+                if (textStyle != null) textStyle.FileName = textStyleFontFile;
             }
+        }
+
+        [NotNull]
+        private static Point2d[] DistincPoints([NotNull] List<Point2d> points)
+        {
+            //  Отсеивание одинаковых точек
+            return points.Distinct(new Comparers.Point2dEqualityComparer()).ToArray();
         }
     }
 }

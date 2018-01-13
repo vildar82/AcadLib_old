@@ -11,14 +11,17 @@ namespace AcadLib.Layouts
         {
             var layouts = new List<Layout>();
             var dictLayout = db.LayoutDictionaryId.GetObject<DBDictionary>();
-            foreach (var entry in dictLayout)
+            if (dictLayout != null)
             {
-                if (entry.Key != "Model")
+                foreach (var entry in dictLayout)
                 {
-                    var layout = entry.Value.GetObject<Layout>();
-                    if (layout != null)
+                    if (entry.Key != "Model")
                     {
-                        layouts.Add(layout);
+                        var layout = entry.Value.GetObject<Layout>();
+                        if (layout != null)
+                        {
+                            layouts.Add(layout);
+                        }
                     }
                 }
             }

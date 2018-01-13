@@ -10,6 +10,7 @@ namespace AcadLib.Jigs
     /// <summary>
     /// Перемещение (drag) группы объектов за мышкой
     /// </summary>
+    [PublicAPI]
     public static class DragSel
     {
         /// <summary>
@@ -69,9 +70,10 @@ namespace AcadLib.Jigs
 
         /// <summary>
         /// Вставка объектов в текущее пространство и перемещение в указанную пользователем точку (Drag)
-        /// </summary>        
+        /// </summary>
+        /// <param name="ed"></param>
         /// <param name="ents">Объекты не резиденты чертежа (будут вставленны в текущее пространство листа)</param>
-        /// <param name="height">Высота разбиения объектов по высоте (вставка в столбик, пока высота столбца меньше заданной высоты)</param>        
+        /// <param name="height">Высота разбиения объектов по высоте (вставка в столбик, пока высота столбца меньше заданной высоты)</param>
         public static void Drag([NotNull] this Editor ed, [NotNull] List<Entity> ents, double height = 10000)
         {
             var db = ed.Document.Database;

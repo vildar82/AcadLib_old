@@ -10,13 +10,42 @@ namespace AcadLib.Geometry
     /// <summary>
     /// Provides extension methods for the Point3dCollection type.
     /// </summary>
+    [PublicAPI]
     public static class Point3dCollectionExtensions
     {
+        /// <summary>
+        /// Gets a value indicating whether the specified point belongs to the collection.
+        /// </summary>
+        /// <param name="pts">The instance to which the method applies.</param>
+        /// <param name="pt">The point to search.</param>
+        /// <returns>true if the point is found; otherwise, false.</returns>
+        public static bool Contains([NotNull] this Point3dCollection pts, Point3d pt)
+        {
+            return pts.Contains(pt, Tolerance.Global);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the specified point belongs to the collection.
+        /// </summary>
+        /// <param name="pts">The instance to which the method applies.</param>
+        /// <param name="pt">The point to search.</param>
+        /// <param name="tol">The tolerance to use in comparisons.</param>
+        /// <returns>true if the point is found; otherwise, false.</returns>
+        public static bool Contains([NotNull] this Point3dCollection pts, Point3d pt, Tolerance tol)
+        {
+            for (var i = 0; i < pts.Count; i++)
+            {
+                if (pt.IsEqualTo(pts[i], tol))
+                    return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Removes duplicated points in the collection.
         /// </summary>
         /// <param name="pts">The instance to which the method applies.</param>
-        public static void RemoveDuplicate(this Point3dCollection pts)
+        public static void RemoveDuplicate([NotNull] this Point3dCollection pts)
         {
             pts.RemoveDuplicate(Tolerance.Global);
         }
@@ -38,7 +67,7 @@ namespace AcadLib.Geometry
             {
                 for (var j = i + 1; j < ptlst.Count;)
                 {
-                    if ((ptlst[j].X - ptlst[i].X) > tol.EqualPoint)
+                    if (ptlst[j].X - ptlst[i].X > tol.EqualPoint)
                         break;
                     if (ptlst[i].IsEqualTo(ptlst[j], tol))
                     {
@@ -49,34 +78,6 @@ namespace AcadLib.Geometry
                         j++;
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the specified point belongs to the collection.
-        /// </summary>
-        /// <param name="pts">The instance to which the method applies.</param>
-        /// <param name="pt">The point to search.</param>
-        /// <returns>true if the point is found; otherwise, false.</returns>
-        public static bool Contains(this Point3dCollection pts, Point3d pt)
-        {
-            return pts.Contains(pt, Tolerance.Global);
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the specified point belongs to the collection.
-        /// </summary>
-        /// <param name="pts">The instance to which the method applies.</param>
-        /// <param name="pt">The point to search.</param>
-        /// <param name="tol">The tolerance to use in comparisons.</param>
-        /// <returns>true if the point is found; otherwise, false.</returns>
-        public static bool Contains([NotNull] this Point3dCollection pts, Point3d pt, Tolerance tol)
-        {
-            for (var i = 0; i < pts.Count; i++)
-            {
-                if (pt.IsEqualTo(pts[i], tol))
-                    return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -100,9 +101,11 @@ namespace AcadLib.Geometry
         /// ArgumentException is thrown if the sequence is null or empty.</exception>
         public static Extents3d ToExtents3d([NotNull] this IEnumerable<Point3d> pts)
         {
-            if (pts == null || !pts.Any())
-                throw new ArgumentException("Null or empty sequence");
+            // ReSharper disable once PossibleMultipleEnumeration
+            if (pts.Any() != true) throw new ArgumentException("Null or empty sequence");
+            // ReSharper disable once PossibleMultipleEnumeration
             var pt = pts.First();
+            // ReSharper disable once PossibleMultipleEnumeration
             return pts.Aggregate(new Extents3d(pt, pt), (e, p) => { e.AddPoint(p); return e; });
         }
     }

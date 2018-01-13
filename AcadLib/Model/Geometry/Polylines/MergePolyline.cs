@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Geometry
 {
+    [PublicAPI]
     public static class MergePolyline
     {
         /// <summary>
@@ -38,7 +40,6 @@ namespace AcadLib.Geometry
             {
                 var plsRemove = new List<Polyline>();
                 var fpl = plsList[0];
-                var countMergePl = 0;
                 foreach (var item in plsList.Skip(1))
                 {
                     var plMerge = MergeTwoPl(fpl, item, tolerancePoint);
@@ -48,17 +49,6 @@ namespace AcadLib.Geometry
                         plsRemove.Add(fpl);
                         fpl = plMerge;
                         merge = plMerge;
-                        countMergePl++;
-
-                        //                        // Test
-                        //#if DRAW
-                        //                        plMerge.ColorIndex = countMergePl;
-                        //                        EntityHelper.AddEntityToCurrentSpace(plMerge);
-                        //                        var dbText = EntityHelper.CreateText(countMergePl.ToString(), plMerge.GetPoint3dAt(0));
-                        //                        dbText.ColorIndex = countMergePl;
-                        //                        EntityHelper.AddEntityToCurrentSpace(dbText);
-                        //                        var textPlMerge = new DBText();
-                        //#endif
                     }
                 }
                 if (plsRemove.Count > 0)
@@ -81,8 +71,37 @@ namespace AcadLib.Geometry
             return merge;
         }
 
+        [NotNull]
+        private static Polyline AddVertex([NotNull] Polyline pl1, [NotNull] Polyline pl2, int indexInPl1, int indexInPl2, Point2d ptInPl2, int dir = 1)
+        {
+            var plNew = (Polyline)pl1.Clone();
+            for (var i = 0; i < pl2.NumberOfVertices; i++)
+            {
+                plNew.AddVertexAt(indexInPl1++, ptInPl2, 0, 0, 0);
+                // След вершина на второй линии
+                indexInPl2 = NextIndex(indexInPl2, pl2, dir);
+                ptInPl2 = pl2.GetPoint2dAt(indexInPl2);
+            }
+            return plNew;
+        }
+
+        [NotNull]
+        private static Polyline Merge([NotNull] Polyline pl1, [NotNull] Polyline pl2, [NotNull] PolylineVertex ptInPl1, [NotNull] PolylineVertex ptInPl2)
+        {
+            var indexInPl1 = ptInPl1.Index + 1;
+            var indexInPl2 = ptInPl2.Index;
+            var pt = ptInPl2.Pt;
+            var plMerged = AddVertex(pl1, pl2, indexInPl1, indexInPl2, pt);
+            if (!plMerged.CheckCross())
+            {
+                plMerged.Dispose();
+                plMerged = AddVertex(pl1, pl2, indexInPl1, indexInPl2, pt, -1);
+            }
+            return plMerged;
+        }
+
         [CanBeNull]
-        private static Polyline MergeTwoPl(Polyline pl1, Polyline pl2, double tolerance)
+        private static Polyline MergeTwoPl([NotNull] Polyline pl1, [NotNull] Polyline pl2, double tolerance)
         {
             Polyline plMerged = null;
             // Точки полилиний
@@ -91,7 +110,8 @@ namespace AcadLib.Geometry
 
             // группировка совпадающих точек на обоих полилиниях
             var comparer = new Comparers.Point2dEqualityComparer(tolerance);
-            var nearsPts = plVertexes.GroupBy(g => g.Pt, comparer).Where(w => w.Any(p => p.Name == "1") && w.Any(p => p.Name == "2"));
+            var nearsPts = plVertexes.GroupBy(g => g.Pt, comparer)
+                .Where(w => w.Any(p => p.Name == "1") && w.Any(p => p.Name == "2")).ToList();
             if (!nearsPts.Any())
             {
                 return null;
@@ -104,7 +124,7 @@ namespace AcadLib.Geometry
                 var ptInPl2 = fpt.First(f => f.Name == "2");
                 plMerged = Merge(pl1, pl2, ptInPl1, ptInPl2);
             }
-            if (!plMerged.CheckCross())
+            if (plMerged != null && !plMerged.CheckCross())
             {
                 // Вторая попытка - от последней общей точки
                 plMerged.Dispose();
@@ -123,35 +143,6 @@ namespace AcadLib.Geometry
                 throw new Exception("Ошибка объединения полининий без самопересечения.");
             }
             return plMerged;
-        }
-
-        private static Polyline Merge(Polyline pl1, Polyline pl2, [NotNull] PolylineVertex ptInPl1, [NotNull] PolylineVertex ptInPl2)
-        {
-            Polyline plMerged;
-            var indexInPl1 = ptInPl1.Index + 1;
-            var indexInPl2 = ptInPl2.Index;
-            var pt = ptInPl2.Pt;
-            plMerged = AddVertex(pl1, pl2, indexInPl1, indexInPl2, pt, 1);
-            if (!plMerged.CheckCross())
-            {
-                plMerged.Dispose();
-                plMerged = AddVertex(pl1, pl2, indexInPl1, indexInPl2, pt, -1);
-            }
-            return plMerged;
-        }
-
-        [NotNull]
-        private static Polyline AddVertex([NotNull] Polyline pl1, [NotNull] Polyline pl2, int indexInPl1, int indexInPl2, Point2d ptInPl2, int dir = 1)
-        {
-            var plNew = (Polyline)pl1.Clone();
-            for (var i = 0; i < pl2.NumberOfVertices; i++)
-            {
-                plNew.AddVertexAt(indexInPl1++, ptInPl2, 0, 0, 0);
-                // След вершина на второй линии
-                indexInPl2 = NextIndex(indexInPl2, pl2, dir);
-                ptInPl2 = pl2.GetPoint2dAt(indexInPl2);
-            }
-            return plNew;
         }
 
         private static int NextIndex(int index, [NotNull] Polyline pl, int step)

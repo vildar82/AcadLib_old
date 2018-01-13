@@ -7,15 +7,15 @@ namespace AcadLib.Comparers
     /// <summary>
     /// Сравнение точек с заданным допуском
     /// </summary>
+    [PublicAPI]
     public class Point2dEqualityComparer : IEqualityComparer<Point2d>
     {
-        public Tolerance Tolerance { get; set; } = Tolerance.Global;
-
         /// <summary>
         /// Допуск 1.
         /// </summary>
         [NotNull]
         public static Point2dEqualityComparer Comparer1 => new Point2dEqualityComparer(1);
+        public Tolerance Tolerance { get; set; } = Tolerance.Global;
 
         /// <summary>
         /// С допуском поумолчанию - Global
@@ -24,7 +24,7 @@ namespace AcadLib.Comparers
 
         /// <summary>
         /// Задается допуск для точек
-        /// </summary>        
+        /// </summary>
         public Point2dEqualityComparer(double equalPoint)
         {
             Tolerance = new Tolerance(Tolerance.Global.EqualVector, equalPoint);

@@ -14,7 +14,7 @@ namespace AcadLib.Exceptions
             Error = err;
         }
 
-        public ErrorException(string msg, Entity ent, Icon icon) : base(msg)
+        public ErrorException(string msg, [NotNull] Entity ent, Icon icon) : base(msg)
         {
             Error = new Errors.Error(msg, ent, icon);
         }

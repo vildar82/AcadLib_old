@@ -7,73 +7,43 @@ namespace AcadLib.Geometry
     /// <summary>
     /// Represents a Polyline segment.
     /// </summary>
+    [PublicAPI]
     public class PolylineSegment
     {
-        #region Fields
-
-        private Point2d _startPoint, _endPoint;
-        private double _bulge, _startWidth, _endWidth;
-
-        #endregion
-
-        #region Properties
-
+        private Point2d _endPoint;
+        private Point2d _startPoint;
         /// <summary>
-        /// Gets or sets the segment start point.
+        /// Gets or sets the segment bulge.
         /// </summary>
-        public Point2d StartPoint
-        {
-            get { return _startPoint; }
-            set { _startPoint = value; }
-        }
-
+        public double Bulge { get; set; }
         /// <summary>
         /// Gets or sets the segment end point.
         /// </summary>
         public Point2d EndPoint
         {
-            get { return _endPoint; }
-            set { _endPoint = value; }
+            get => _endPoint;
+            set => _endPoint = value;
         }
-
-        /// <summary>
-        /// Gets or sets the segment bulge.
-        /// </summary>
-        public double Bulge
-        {
-            get { return _bulge; }
-            set { _bulge = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the segment start width.
-        /// </summary>
-        public double StartWidth
-        {
-            get { return _startWidth; }
-            set { _startWidth = value; }
-        }
-
         /// <summary>
         /// Gets or sets the segment end width.
         /// </summary>
-        public double EndWidth
-        {
-            get { return _endWidth; }
-            set { _endWidth = value; }
-        }
-
+        public double EndWidth { get; set; }
         /// <summary>
         /// Gets true if the segment is linear.
         /// </summary>
-        public bool IsLinear
+        public bool IsLinear => Math.Abs(Bulge) < 0.0001;
+        /// <summary>
+        /// Gets or sets the segment start point.
+        /// </summary>
+        public Point2d StartPoint
         {
-            get { return _bulge == 0.0; }
+            get => _startPoint;
+            set => _startPoint = value;
         }
-
-        #endregion
-
-        #region Constructors
+        /// <summary>
+        /// Gets or sets the segment start width.
+        /// </summary>
+        public double StartWidth { get; set; }
 
         /// <summary>
         /// Creates a new instance of PolylineSegment from two points.
@@ -84,9 +54,9 @@ namespace AcadLib.Geometry
         {
             _startPoint = startPoint;
             _endPoint = endPoint;
-            _bulge = 0.0;
-            _startWidth = 0.0;
-            _endWidth = 0.0;
+            Bulge = 0.0;
+            StartWidth = 0.0;
+            EndWidth = 0.0;
         }
 
         /// <summary>
@@ -99,9 +69,9 @@ namespace AcadLib.Geometry
         {
             _startPoint = startPoint;
             _endPoint = endPoint;
-            _bulge = bulge;
-            _startWidth = 0.0;
-            _endWidth = 0.0;
+            Bulge = bulge;
+            StartWidth = 0.0;
+            EndWidth = 0.0;
         }
 
         /// <summary>
@@ -115,9 +85,9 @@ namespace AcadLib.Geometry
         {
             _startPoint = startPoint;
             _endPoint = endPoint;
-            _bulge = bulge;
-            _startWidth = constantWidth;
-            _endWidth = constantWidth;
+            Bulge = bulge;
+            StartWidth = constantWidth;
+            EndWidth = constantWidth;
         }
 
         /// <summary>
@@ -132,9 +102,9 @@ namespace AcadLib.Geometry
         {
             _startPoint = startPoint;
             _endPoint = endPoint;
-            _bulge = bulge;
-            _startWidth = startWidth;
-            _endWidth = endWidth;
+            Bulge = bulge;
+            StartWidth = startWidth;
+            EndWidth = endWidth;
         }
 
         /// <summary>
@@ -145,9 +115,9 @@ namespace AcadLib.Geometry
         {
             _startPoint = line.StartPoint;
             _endPoint = line.EndPoint;
-            _bulge = 0.0;
-            _startWidth = 0.0;
-            _endWidth = 0.0;
+            Bulge = 0.0;
+            StartWidth = 0.0;
+            EndWidth = 0.0;
         }
 
         /// <summary>
@@ -158,15 +128,11 @@ namespace AcadLib.Geometry
         {
             _startPoint = arc.StartPoint;
             _endPoint = arc.EndPoint;
-            _bulge = Math.Tan((arc.EndAngle - arc.StartAngle) / 4.0);
-            if (arc.IsClockWise) _bulge = -_bulge;
-            _startWidth = 0.0;
-            _endWidth = 0.0;
+            Bulge = Math.Tan((arc.EndAngle - arc.StartAngle) / 4.0);
+            if (arc.IsClockWise) Bulge = -Bulge;
+            StartWidth = 0.0;
+            EndWidth = 0.0;
         }
-
-        #endregion
-
-        #region Methods
 
         /// <summary>
         /// Returns a copy of the PolylineSegment
@@ -179,6 +145,40 @@ namespace AcadLib.Geometry
         }
 
         /// <summary>
+        /// Determines whether the specified PolylineSegment instances are considered equal.
+        /// </summary>
+        /// <param name="obj">The object to compare.</param>
+        /// <returns>true if the objects are considered equal; otherwise, nil.</returns>
+        public override bool Equals(object obj)
+        {
+            if (!(obj is PolylineSegment seg)) return false;
+            if (seg.GetHashCode() != GetHashCode()) return false;
+            if (!_startPoint.IsEqualTo(seg.StartPoint)) return false;
+            if (!_endPoint.IsEqualTo(seg.EndPoint)) return false;
+            if (Math.Abs(Bulge - seg.Bulge) > 0.0001) return false;
+            if (Math.Abs(StartWidth - seg.StartWidth) > 0.0001) return false;
+            return !(Math.Abs(EndWidth - seg.EndWidth) > 0.0001);
+        }
+
+        /// <summary>
+        /// Serves as a hash function for the PolylineSegment type.
+        /// </summary>
+        /// <returns>A hash code for the current PolylineSegemnt.</returns>
+        public override int GetHashCode()
+        {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
+            return _startPoint.GetHashCode() ^
+                // ReSharper disable once NonReadonlyMemberInGetHashCode
+                _endPoint.GetHashCode() ^
+                // ReSharper disable once NonReadonlyMemberInGetHashCode
+                Bulge.GetHashCode() ^
+                // ReSharper disable once NonReadonlyMemberInGetHashCode
+                StartWidth.GetHashCode() ^
+                // ReSharper disable once NonReadonlyMemberInGetHashCode
+                EndWidth.GetHashCode();
+        }
+
+        /// <summary>
         /// Returns the parameter value of point.
         /// </summary>
         /// <param name="pt">The Point 2d whose get the PolylineSegment parameter at.</param>
@@ -188,16 +188,13 @@ namespace AcadLib.Geometry
             if (IsLinear)
             {
                 var line = ToLineSegment();
-                return line.IsOn(pt) ? _startPoint.GetDistanceTo(pt) / line.Length : -1.0;
+                return line != null && line.IsOn(pt) ? _startPoint.GetDistanceTo(pt) / line.Length : -1.0;
             }
-            else
-            {
-                var arc = ToCircularArc();
-                return arc.IsOn(pt) ?
-                    arc.GetLength(arc.GetParameterOf(_startPoint), arc.GetParameterOf(pt)) /
-                    arc.GetLength(arc.GetParameterOf(_startPoint), arc.GetParameterOf(_endPoint)) :
-                    -1.0;
-            }
+            var arc = ToCircularArc();
+            return arc != null && arc.IsOn(pt) ?
+                arc.GetLength(arc.GetParameterOf(_startPoint), arc.GetParameterOf(pt)) /
+                arc.GetLength(arc.GetParameterOf(_startPoint), arc.GetParameterOf(_endPoint)) :
+                -1.0;
         }
 
         /// <summary>
@@ -209,9 +206,31 @@ namespace AcadLib.Geometry
             var tmpWidth = StartWidth;
             _startPoint = EndPoint;
             _endPoint = tmpPoint;
-            _bulge = -Bulge;
-            _startWidth = EndWidth;
-            _endWidth = tmpWidth;
+            Bulge = -Bulge;
+            StartWidth = EndWidth;
+            EndWidth = tmpWidth;
+        }
+
+        /// <summary>
+        /// Converts the PolylineSegment into a CircularArc2d.
+        /// </summary>
+        /// <returns>A new CircularArc2d instance or null if the PolylineSegment bulge is equal to 0.0.</returns>
+        [CanBeNull]
+        public CircularArc2d ToCircularArc()
+        {
+            return IsLinear ? null : new CircularArc2d(_startPoint, _endPoint, Bulge, false);
+        }
+
+        /// <summary>
+        /// Converts the PolylineSegment into a Curve2d.
+        /// </summary>
+        /// <returns>A new Curve2d instance.</returns>
+        [NotNull]
+        public Curve2d ToCurve2d()
+        {
+            return IsLinear ?
+                new LineSegment2d(_startPoint, _endPoint) as Curve2d :
+                new CircularArc2d(_startPoint, _endPoint, Bulge, false);
         }
 
         /// <summary>
@@ -225,68 +244,12 @@ namespace AcadLib.Geometry
         }
 
         /// <summary>
-        /// Converts the PolylineSegment into a CircularArc2d.
-        /// </summary>
-        /// <returns>A new CircularArc2d instance or null if the PolylineSegment bulge is equal to 0.0.</returns>
-        [CanBeNull]
-        public CircularArc2d ToCircularArc()
-        {
-            return IsLinear ? null : new CircularArc2d(_startPoint, _endPoint, _bulge, false);
-        }
-
-        /// <summary>
-        /// Converts the PolylineSegment into a Curve2d.
-        /// </summary>
-        /// <returns>A new Curve2d instance.</returns>
-        [NotNull]
-        public Curve2d ToCurve2d()
-        {
-            return IsLinear ?
-                (Curve2d)(new LineSegment2d(_startPoint, _endPoint)) :
-                (Curve2d)(new CircularArc2d(_startPoint, _endPoint, _bulge, false));
-        }
-
-        /// <summary>
-        /// Determines whether the specified PolylineSegment instances are considered equal. 
-        /// </summary>
-        /// <param name="obj">The object to compare.</param>
-        /// <returns>true if the objects are considered equal; otherwise, nil.</returns>
-        public override bool Equals(object obj)
-        {
-            var seg = obj as PolylineSegment;
-            if (seg == null) return false;
-            if (seg.GetHashCode() != GetHashCode()) return false;
-            if (!_startPoint.IsEqualTo(seg.StartPoint)) return false;
-            if (!_endPoint.IsEqualTo(seg.EndPoint)) return false;
-            if (_bulge != seg.Bulge) return false;
-            if (_startWidth != seg.StartWidth) return false;
-            if (_endWidth != seg.EndWidth) return false;
-            return true;
-        }
-
-        /// <summary>
-        /// Serves as a hash function for the PolylineSegment type. 
-        /// </summary>
-        /// <returns>A hash code for the current PolylineSegemnt.</returns>
-        public override int GetHashCode()
-        {
-            return _startPoint.GetHashCode() ^
-                _endPoint.GetHashCode() ^
-                _bulge.GetHashCode() ^
-                _startWidth.GetHashCode() ^
-                _endWidth.GetHashCode();
-        }
-
-        /// <summary>
         /// Applies ToString() to each property and concatenate the results separted with commas.
         /// </summary>
         /// <returns>A string containing the current PolylineSegemnt properties separated with commas.</returns>
         public override string ToString()
         {
-            return
-                $"{_startPoint.ToString()}, {_endPoint.ToString()}, {_bulge.ToString()}, {_startWidth.ToString()}, {_endWidth.ToString()}";
+            return $"{_startPoint.ToString()}, {_endPoint.ToString()}, {Bulge}, {StartWidth}, {EndWidth}";
         }
-
-        #endregion
     }
 }

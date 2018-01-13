@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.UI.Designer
 {
     /// <summary>
@@ -9,7 +10,7 @@ namespace AcadLib.UI.Designer
     public abstract class AttributeProvider
     {
         /// <summary>
-        /// Returns a collection of attributes for the specified type. 
+        /// Returns a collection of attributes for the specified type.
         /// </summary>
         /// <param name="type">The type of the key or value to provide attributes for.</param>
         /// <returns>An <see cref="AttributeCollection"/> with the attributes for the component.</returns>

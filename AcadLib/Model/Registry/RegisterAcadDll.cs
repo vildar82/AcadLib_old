@@ -5,8 +5,10 @@ using Microsoft.Win32;
 using System;
 using System.Reflection;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    [PublicAPI]
     public static class RegisterAcadDll
     {
         /// <summary>
@@ -24,7 +26,7 @@ namespace AcadLib
         }
 
         /// <summary>
-        /// Регистрация в реестре автозагрузки текущей сборки в текущем автокаде. 
+        /// Регистрация в реестре автозагрузки текущей сборки в текущем автокаде.
         /// </summary>
         /// <param name="loadctrls">Управление загрузкой сборки</param>
         /// <param name="UserOrMachine">True - User (HKCU); False - Local machine (HKLM)</param>
@@ -41,8 +43,10 @@ namespace AcadLib
                 using (var regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
                                                              Microsoft.Win32.Registry.LocalMachine.OpenSubKey(sProdKey))
                 {
+                    if (regAcadProdKey == null) throw new InvalidOperationException();
                     using (var regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
                     {
+                        if (regAcadAppKey == null) throw new InvalidOperationException();
                         // Check to see if the "MyApp" key exists
                         var subKeys = regAcadAppKey.GetSubKeyNames();
                         foreach (var subKey in subKeys)
@@ -56,6 +60,7 @@ namespace AcadLib
                         // Register the application
                         using (var regAppAddInKey = regAcadAppKey.CreateSubKey(sAppName))
                         {
+                            if (regAppAddInKey == null) throw new InvalidOperationException();
                             var desc = curAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>().Description;
                             if (desc == "") desc = sAppName;
                             regAppAddInKey.SetValue("DESCRIPTION", desc, RegistryValueKind.String);
@@ -77,27 +82,6 @@ namespace AcadLib
             }
         }
 
-        private static void SetCommands(Microsoft.Win32.RegistryKey regAppAddInKey, [NotNull] Assembly curAssembly)
-        {
-            // Создание раздела Commands в переданной ветке реестра и создание записей команд в этом разделе.
-            // Команды определяются по атрибутам переданной сборки, в которой должен быть определен атрибут класса команд
-            // из которого получаются методы с атрибутами CommandMethod.
-            using (regAppAddInKey = regAppAddInKey.CreateSubKey("Commands"))
-            {
-                var attClass = curAssembly.GetCustomAttribute<CommandClassAttribute>();
-                var members = attClass.Type.GetMembers();
-                foreach (var member in members)
-                {
-                    if (member.MemberType == MemberTypes.Method)
-                    {
-                        var att = member.GetCustomAttribute<CommandMethodAttribute>();
-                        if (att != null)
-                            regAppAddInKey.SetValue(att.GlobalName, att.GlobalName);
-                    }
-                }
-            }
-        }
-
         /// <summary>
         /// Удаление записи из реестра, автозагрузки текущего приложения из текущей версии автокада.
         /// </summary>
@@ -110,7 +94,7 @@ namespace AcadLib
 
             // HKCU
             DeleteApp(sProdKey, sAppName, true);
-            // HKLM         
+            // HKLM
             DeleteApp(sProdKey, sAppName, false);
         }
 
@@ -119,17 +103,42 @@ namespace AcadLib
             using (var regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
                                                       Microsoft.Win32.Registry.LocalMachine.OpenSubKey(sProdKey))
             {
+                if (regAcadProdKey == null) return;
                 using (var regAcadAppKey = regAcadProdKey.OpenSubKey("Applications", true))
                 {
+                    if (regAcadAppKey == null) throw new InvalidOperationException();
                     // Delete the key for the application
                     try
                     {
                         regAcadAppKey.DeleteSubKeyTree(sAppName);
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+            }
+        }
+
+        private static void SetCommands(Microsoft.Win32.RegistryKey regAppAddInKey, [NotNull] Assembly curAssembly)
+        {
+            // Создание раздела Commands в переданной ветке реестра и создание записей команд в этом разделе.
+            // Команды определяются по атрибутам переданной сборки, в которой должен быть определен атрибут класса команд
+            // из которого получаются методы с атрибутами CommandMethod.
+            using (regAppAddInKey = regAppAddInKey.CreateSubKey("Commands"))
+            {
+                if (regAppAddInKey == null) return;
+                var attClass = curAssembly.GetCustomAttribute<CommandClassAttribute>();
+                var members = attClass.Type.GetMembers();
+                foreach (var member in members)
+                {
+                    if (member.MemberType == MemberTypes.Method)
+                    {
+                        var att = member.GetCustomAttribute<CommandMethodAttribute>();
+                        if (att != null) regAppAddInKey.SetValue(att.GlobalName, att.GlobalName);
+                    }
                 }
             }
         }
     }
 }
-

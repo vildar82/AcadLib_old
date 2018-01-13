@@ -5,22 +5,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Point2d type.
     /// </summary>
+    [PublicAPI]
     public static class Point2dExtensions
     {
-        /// <summary>
-        /// Отсеивание одинаковых точек
-        /// </summary>
-        /// <param name="points"></param>        
-        [NotNull]
-        public static List<Point2d> DistinctPoints([NotNull] this List<Point2d> points)
+        public static Point2d Center(this Point2d pt, Point2d other)
         {
-            //  Отсеивание одинаковых точек            
-            return points.Distinct(new AcadLib.Comparers.Point2dEqualityComparer()).ToList();
+            return new Point2d(
+                    pt.X + (other.X - pt.X) * 0.5,
+                    pt.Y + (other.Y - pt.Y) * 0.5);
         }
 
         /// <summary>
@@ -55,6 +53,17 @@ namespace Autodesk.AutoCAD.Geometry
         public static Point3d Convert3d(this Point2d pt, Vector3d normal, double elevation)
         {
             return new Point3d(pt.X, pt.Y, elevation).TransformBy(Matrix3d.PlaneToWorld(normal));
+        }
+
+        /// <summary>
+        /// Отсеивание одинаковых точек
+        /// </summary>
+        /// <param name="points"></param>
+        [NotNull]
+        public static List<Point2d> DistinctPoints([NotNull] this List<Point2d> points)
+        {
+            //  Отсеивание одинаковых точек
+            return points.Distinct(new AcadLib.Comparers.Point2dEqualityComparer()).ToList();
         }
 
         /// <summary>
@@ -120,15 +129,8 @@ namespace Autodesk.AutoCAD.Geometry
         public static Point2d Polar(this Point2d org, double angle, double distance)
         {
             return new Point2d(
-                org.X + (distance * Math.Cos(angle)),
-                org.Y + (distance * Math.Sin(angle)));
-        }
-
-        public static Point2d Center(this Point2d pt, Point2d other)
-        {
-            return new Point2d(
-                    pt.X + (other.X - pt.X) * 0.5,
-                    pt.Y + (other.Y - pt.Y) * 0.5);
+                org.X + distance * Math.Cos(angle),
+                org.Y + distance * Math.Sin(angle));
         }
 
         [NotNull]

@@ -3,14 +3,16 @@ using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Geometry
 {
+    [PublicAPI]
     public class PolylineVertex
     {
+        public double Bulge { get; set; }
         public int Index { get; set; }
         public string Name { get; set; }
         public Point2d Pt { get; set; }
-        public double Bulge { get; set; }
 
         public PolylineVertex(string name, int index, Point2d pt)
         {

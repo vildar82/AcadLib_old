@@ -18,6 +18,7 @@ namespace AcadLib.Blocks
     /// <summary>
     /// Базовое описание блока
     /// </summary>
+    [PublicAPI]
     public class BlockBase : IBlock
     {
         private bool _alreadyCalcExtents;
@@ -71,10 +72,11 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Блок - по имени и ссылке на вхождение блока
         /// Заполняются параметры блока. и граница Bounds
-        /// </summary>        
+        /// </summary>
         public BlockBase([NotNull] BlockReference blRef, string blName)
         {
             BlName = blName;
+            // ReSharper disable once VirtualMemberCallInConstructor
             Update(blRef);
         }
 
@@ -88,7 +90,7 @@ namespace AcadLib.Blocks
                 if (!_alreadyCalcExtents)
                 {
 #pragma warning disable CS0618
-                    using (var blRef = IdBlRef.Open(OpenMode.ForRead, false, true) as BlockReference)
+                    using (var blRef = (BlockReference)IdBlRef.Open(OpenMode.ForRead, false, true))
                     {
                         try
                         {
@@ -147,9 +149,10 @@ namespace AcadLib.Blocks
             blRef.Erase();
         }
 
+        [CanBeNull]
         public T GetPropValue<T>(string propMatch, bool isRequired = true, bool exactMatch = true)
         {
-            return GetPropValue<T>(propMatch, out var hasProperty, isRequired, exactMatch);
+            return GetPropValue<T>(propMatch, out var _, isRequired, exactMatch);
         }
 
         [CanBeNull]
@@ -194,7 +197,8 @@ namespace AcadLib.Blocks
         /// <param name="exactMatch">Точное соответствие имени свойства</param>
         /// <param name="writeDefaultValue">Требуется транзакция! Записывать ли значение поумолчанию в свойство, если оно есть и если его значение является дефолтным для данного типа (например:0 для чисел)</param>
         /// <returns>Значение свойства</returns>
-        public T GetPropValue<T>(string propName, T defaultValue, bool isrequired = false, bool exactMatch = true, bool writeDefaultValue = false)
+        public T GetPropValue<T>(string propName, T defaultValue, bool isrequired = false, bool exactMatch = true,
+            bool writeDefaultValue = false)
         {
             var res = GetPropValue<T>(propName, out var hasProp, isrequired, exactMatch);
             if (EqualityComparer<T>.Default.Equals(res, default))
@@ -240,7 +244,7 @@ namespace AcadLib.Blocks
             if (prop == null) return;
             if (prop.Type == PropertyType.Attribute && !prop.IdAtrRef.IsNull)
             {
-                var atr = prop.IdAtrRef.GetObject(OpenMode.ForWrite, false, true) as AttributeReference;
+                var atr = (AttributeReference)prop.IdAtrRef.GetObject(OpenMode.ForWrite, false, true);
                 var text = value?.ToString() ?? "";
                 if (atr.IsMTextAttribute)
                 {
@@ -257,7 +261,7 @@ namespace AcadLib.Blocks
             else if (prop.Type == PropertyType.Dynamic)
             {
                 if (value == null) return;
-                var blRef = IdBlRef.GetObject(OpenMode.ForWrite) as BlockReference;
+                var blRef = (BlockReference)IdBlRef.GetObject(OpenMode.ForWrite, false, true);
                 var dynProp = blRef.DynamicBlockReferencePropertyCollection.Cast<DynamicBlockReferenceProperty>()
                     .FirstOrDefault(p => p.PropertyName.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
                 if (dynProp != null)
@@ -268,7 +272,8 @@ namespace AcadLib.Blocks
                     }
                     catch
                     {
-                        Inspector.AddError($"Не удалосось установить динамический параметр {prop.Name} со значением {prop.Value} в блок {BlName}",
+                        Inspector.AddError($"Не удалосось установить динамический параметр {prop.Name} " +
+                                           $"со значением {prop.Value} в блок {BlName}",
                             IdBlRef, System.Drawing.SystemIcons.Error);
                     }
                 }
@@ -290,12 +295,12 @@ namespace AcadLib.Blocks
 
         /// <summary>
         /// Поиск полилинии в этом блоке на слое
-        /// </summary>        
+        /// </summary>
         [NotNull]
         public List<Polyline> FindPolylineInLayer(string layer)
         {
             var idBtr = IdBtrAnonym.IsNull ? IdBtr : IdBtrAnonym;
-            var btr = idBtr.GetObject(OpenMode.ForRead) as BlockTableRecord;
+            var btr = (BlockTableRecord)idBtr.GetObject(OpenMode.ForRead);
             var allPls = btr.GetObjects<Polyline>(OpenMode.ForRead);
             var pls = allPls.Where(p => p.Visible && p.Layer.Equals(layer, StringComparison.OrdinalIgnoreCase)).ToList();
             return pls;
@@ -304,7 +309,7 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Копирование объекта из этого блока в модель (btr)
         /// </summary>
-        /// <param name="idBtrNew">Куда копировать</param>        
+        /// <param name="idBtrNew">Куда копировать</param>
         /// <param name="idEnt">Что копировать</param>
         /// <returns>Скопированный объект</returns>
         public ObjectId CopyEntToModel(ObjectId idBtrNew, ObjectId idEnt)
@@ -312,7 +317,7 @@ namespace AcadLib.Blocks
             if (!idEnt.IsNull)
             {
                 var idCopy = idEnt.CopyEnt(idBtrNew);
-                using (var entCopy = idCopy.GetObject(OpenMode.ForWrite, false, true) as Entity)
+                using (var entCopy = (Entity)idCopy.GetObject(OpenMode.ForWrite, false, true))
                 {
                     entCopy.TransformBy(Transform);
                     return entCopy.Id;
@@ -332,6 +337,7 @@ namespace AcadLib.Blocks
 
         public override int GetHashCode()
         {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return BlName.GetHashCode();
         }
 
@@ -371,7 +377,7 @@ namespace AcadLib.Blocks
             {
                 // ReSharper disable once IdOpenMode
 #pragma warning disable 618
-                using (var lay = (LayerTableRecord) blRef.LayerId.Open(OpenMode.ForRead))
+                using (var lay = (LayerTableRecord)blRef.LayerId.Open(OpenMode.ForRead))
 #pragma warning restore 618
                 {
                     if (lay.IsFrozen || !blRef.Visible)

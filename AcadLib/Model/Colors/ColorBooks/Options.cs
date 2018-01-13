@@ -1,21 +1,25 @@
-﻿using AcadLib.Files;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
 using JetBrains.Annotations;
 using System;
 using System.ComponentModel;
 using System.IO;
+using NetLib;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Colors
 {
+    [PublicAPI]
     [Serializable]
     public class Options
     {
         private static readonly string fileOptions = Path.Combine(
                        AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
                        "АР\\Палитры цветов\\ColorOptions.xml");
+
         //@"z:\AutoCAD_server\ShareSettings\АР\Палитры цветов\ColorOptions.xml";
 
         private static Options _instance;
+        [NotNull]
         public static Options Instance
         {
             get {
@@ -27,25 +31,14 @@ namespace AcadLib.Colors
             }
         }
 
-        private Options() { }
-
         /// <summary>
-        /// Путь к файлу палитры NCS
-        /// </summary>
-        [Category("Главное")]
-        [DisplayName("Файл палитры NCS")]
-        [Description("Имя Excel-файла палитры цветов.")]
-        [DefaultValue(@"z:\AutoCAD_server\ShareSettings\АР\Палитры цветов\Цвета NCS в RGB.xlsx")]
-        public string NCSFile { get; set; } = @"z:\AutoCAD_server\ShareSettings\АР\Палитры цветов\Цвета NCS в RGB.xlsx";
-
-        /// <summary>
-        /// Ширина листа
+        /// Кол столбцов
         /// </summary>
         [Category("Размещение")]
-        [DisplayName("Ширина листа")]
-        [Description("Ширина листа.")]
-        [DefaultValue(210)]
-        public int Width { get; set; } = 210;
+        [DisplayName("Столбцов")]
+        [Description("Столбцов.")]
+        [DefaultValue(7)]
+        public int Columns { get; set; } = 7;
 
         /// <summary>
         /// Высота листа
@@ -57,13 +50,13 @@ namespace AcadLib.Colors
         public int Height { get; set; } = 297;
 
         /// <summary>
-        /// Кол столбцов
+        /// Путь к файлу палитры NCS
         /// </summary>
-        [Category("Размещение")]
-        [DisplayName("Столбцов")]
-        [Description("Столбцов.")]
-        [DefaultValue(7)]
-        public int Columns { get; set; } = 7;
+        [Category("Главное")]
+        [DisplayName("Файл палитры NCS")]
+        [Description("Имя Excel-файла палитры цветов.")]
+        [DefaultValue(@"z:\AutoCAD_server\ShareSettings\АР\Палитры цветов\Цвета NCS в RGB.xlsx")]
+        public string NCSFile { get; set; } = @"z:\AutoCAD_server\ShareSettings\АР\Палитры цветов\Цвета NCS в RGB.xlsx";
 
         /// <summary>
         /// Рядов
@@ -74,10 +67,23 @@ namespace AcadLib.Colors
         [DefaultValue(18)]
         public int Rows { get; set; } = 18;
 
+        /// <summary>
+        /// Ширина листа
+        /// </summary>
+        [Category("Размещение")]
+        [DisplayName("Ширина листа")]
+        [Description("Ширина листа.")]
+        [DefaultValue(210)]
+        public int Width { get; set; } = 210;
+
+        private Options()
+        {
+        }
+
         [NotNull]
         public static Options Load()
         {
-            Options options = null;
+            Options options;
             // загрузка из файла настроек
             if (File.Exists(fileOptions))
             {
@@ -100,33 +106,6 @@ namespace AcadLib.Colors
             return options;
         }
 
-        public void Save()
-        {
-            try
-            {
-                if (!File.Exists(fileOptions))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(fileOptions));
-                }
-                var xmlSer = new SerializerXml(fileOptions);
-                xmlSer.SerializeList(this);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, $"Не удалось сериализовать настройки в {fileOptions}");
-            }
-        }
-
-        //private static Options DefaultOptions()
-        //{
-        //   Options options = new Options();
-
-        //   options.LogFileName = "AR_ExportApartment_Log.xlsx";
-        //   options.BlockApartmentNameMatch = "квартира";
-
-        //   return options;
-        //}      
-
         public static void Show()
         {
             var formOpt = new FormOptions((Options)Instance.MemberwiseClone());
@@ -134,6 +113,23 @@ namespace AcadLib.Colors
             {
                 _instance = formOpt.Options;
                 _instance.Save();
+            }
+        }
+
+        public void Save()
+        {
+            try
+            {
+                if (!File.Exists(fileOptions))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(fileOptions) ?? throw new InvalidOperationException());
+                }
+                var xmlSer = new SerializerXml(fileOptions);
+                xmlSer.SerializeList(this);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"Не удалось сериализовать настройки в {fileOptions}");
             }
         }
     }

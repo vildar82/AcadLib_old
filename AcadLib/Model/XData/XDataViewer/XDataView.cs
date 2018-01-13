@@ -5,8 +5,10 @@ using JetBrains.Annotations;
 using System;
 using System.Text;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.XData.Viewer
 {
+    [PublicAPI]
     public static class XDataView
     {
         public static void View()
@@ -21,23 +23,23 @@ namespace AcadLib.XData.Viewer
             if (res.Status == PromptStatus.OK)
             {
                 var sbInfo = new StringBuilder();
-                var entName = string.Empty;
+                string entName;
                 using (var t = db.TransactionManager.StartTransaction())
                 {
-                    var ent = res.ObjectId.GetObject(OpenMode.ForRead, false, true) as Entity;
+                    var ent = (Entity)res.ObjectId.GetObject(OpenMode.ForRead, false, true);
                     entName = ent.ToString();
                     if (ent.XData != null)
                     {
                         sbInfo.AppendLine("XData:");
                         foreach (var item in ent.XData)
                         {
-                            sbInfo.AppendLine($"    {getTypeCodeName(item.TypeCode)} = {item.Value}");
+                            sbInfo.AppendLine($"    {GetTypeCodeName(item.TypeCode)} = {item.Value}");
                         }
                     }
                     if (!ent.ExtensionDictionary.IsNull)
                     {
                         sbInfo.AppendLine("\nExtensionDictionary:");
-                        exploreDictionary(ent.ExtensionDictionary, ref sbInfo);
+                        ExploreDictionary(ent.ExtensionDictionary, ref sbInfo);
                     }
 
                     if (sbInfo.Length == 0)
@@ -52,32 +54,34 @@ namespace AcadLib.XData.Viewer
             }
         }
 
-        [CanBeNull]
-        private static string getTypeCodeName(short typeCode)
-        {
-            return Enum.GetName(typeof(DxfCode), typeCode);
-        }
-
-        private static void exploreDictionary(ObjectId idDict, ref StringBuilder sbInfo, string tab = "    ")
+        private static void ExploreDictionary(ObjectId idDict, ref StringBuilder sbInfo, string tab = "    ")
         {
             var entry = idDict.GetObject(OpenMode.ForRead);
-            if (entry is DBDictionary)
+            switch (entry)
             {
-                var dict = entry as DBDictionary;
-                foreach (var item in dict)
-                {
-                    sbInfo.AppendLine($"{tab}{item.Key}");
-                    exploreDictionary(item.Value, ref sbInfo, tab + "    ");
-                }
+                case DBDictionary _:
+                    var dict = (DBDictionary)entry;
+                    foreach (var item in dict)
+                    {
+                        sbInfo.AppendLine($"{tab}{item.Key}");
+                        ExploreDictionary(item.Value, ref sbInfo, tab + "    ");
+                    }
+                    break;
+
+                case Xrecord _:
+                    var xrec = (Xrecord)entry;
+                    foreach (var item in xrec)
+                    {
+                        sbInfo.AppendLine($"{tab}    {GetTypeCodeName(item.TypeCode)} = {item.Value}");
+                    }
+                    break;
             }
-            else if (entry is Xrecord)
-            {
-                var xrec = entry as Xrecord;
-                foreach (var item in xrec)
-                {
-                    sbInfo.AppendLine($"{tab}    {getTypeCodeName(item.TypeCode)} = {item.Value}");
-                }
-            }
+        }
+
+        [CanBeNull]
+        private static string GetTypeCodeName(short typeCode)
+        {
+            return Enum.GetName(typeof(DxfCode), typeCode);
         }
     }
 }

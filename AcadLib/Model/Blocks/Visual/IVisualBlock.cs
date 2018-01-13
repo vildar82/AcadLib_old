@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using ReactiveUI;
 using System.Windows.Media;
 
 namespace AcadLib.Blocks.Visual

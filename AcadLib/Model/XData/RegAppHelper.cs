@@ -1,8 +1,10 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    [PublicAPI]
     public static class RegAppHelper
     {
         public static void RegApp([NotNull] this Database db, string regAppName)

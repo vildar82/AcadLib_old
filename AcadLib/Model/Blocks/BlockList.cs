@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using Path = NetLib.IO.Path;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
     public static class BlockList
@@ -16,10 +17,11 @@ namespace AcadLib
             var list = new List<string>();
             using (var t = db.TransactionManager.StartTransaction())
             {
-                var bt = db.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
+                var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
                 foreach (var item in bt)
                 {
-                    if (item.GetObject(OpenMode.ForRead) is BlockTableRecord btr && !btr.IsLayout && !btr.IsAnonymous && !btr.IsDependent)
+                    if (item.GetObject(OpenMode.ForRead) is BlockTableRecord btr &&
+                        !btr.IsLayout && !btr.IsAnonymous && !btr.IsDependent)
                     {
                         list.Add(btr.Name);
                     }

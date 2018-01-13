@@ -5,19 +5,23 @@ using JetBrains.Annotations;
 
 namespace AcadLib.Jigs
 {
+    [PublicAPI]
     public class TableJig : EntityJig
     {
-        Point3d _position;
-        Table _table;
-        string _msg;
+        private readonly string _msg;
+        private Point3d _position;
 
         public TableJig([NotNull] Table table, double scale, string msg) : base(table)
         {
             _msg = msg;
-            _table = table;
-            _position = _table.Position;
-            _table.TransformBy(Matrix3d.Scaling(scale, table.Position));
-            //_table.ScaleFactors = new Scale3d(scale);
+            var table1 = table;
+            _position = table1.Position;
+            table1.TransformBy(Matrix3d.Scaling(scale, table.Position));
+        }
+
+        public Entity GetEntity()
+        {
+            return Entity;
         }
 
         protected override SamplerStatus Sampler([NotNull] JigPrompts prompts)
@@ -35,26 +39,18 @@ namespace AcadLib.Jigs
                 else
                     return SamplerStatus.NoChange;
             }
-            if (res.Status == PromptStatus.Cancel)
-                return SamplerStatus.Cancel;
-            else
-                return SamplerStatus.OK;
+            return res.Status == PromptStatus.Cancel ? SamplerStatus.Cancel : SamplerStatus.OK;
         }
 
         protected override bool Update()
         {
-            var table = Entity as Table;
+            var table = (Table)Entity;
             if (table.Position.DistanceTo(_position) > 1.0e-2)
             {
                 table.Position = _position;
                 return true;
             }
             return false;
-        }
-
-        public Entity GetEntity()
-        {
-            return Entity;
         }
     }
 }

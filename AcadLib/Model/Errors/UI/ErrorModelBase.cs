@@ -6,15 +6,53 @@ using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using JetBrains.Annotations;
 using Visibility = System.Windows.Visibility;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Errors
 {
+    [PublicAPI]
     public abstract class ErrorModelBase : ReactiveObject
     {
-        private bool isSelected;
         protected IError firstErr;
+        private bool isSelected;
+
         public event EventHandler<bool> SelectionChanged;
+
+        public List<ErrorAddButton> AddButtons { get; set; }
+
+        public Color Background { get; set; }
+
+        public IError Error => firstErr;
+
+        public bool HasAddButtons => AddButtons?.Any() == true;
+
+        public bool HasShow { get; set; }
+
+        public bool HasVisuals => Error?.Visuals?.Any() == true;
+
+        public BitmapSource Image { get; set; }
+
+        public bool IsSelected
+        {
+            get => isSelected;
+            set {
+                isSelected = value;
+                this.RaisePropertyChanged();
+                SelectionChanged?.Invoke(this, value);
+            }
+        }
+
+        public Thickness MarginHeader { get; set; }
+
+        public string Message { get; set; }
+
+        public ReactiveCommand Show { get; set; }
+
+        public bool ShowCount { get; set; }
+
+        public Visibility VisibilityCount { get; set; }
 
         public ErrorModelBase(IError err)
         {
@@ -29,31 +67,6 @@ namespace AcadLib.Errors
             HasShow = firstErr.CanShow;
             Background = firstErr.Background;
         }
-
-        public bool ShowCount { get; set; }
-        public IError Error => firstErr;
-        public Thickness MarginHeader { get; set; }
-        public Visibility VisibilityCount { get; set; }
-        public string Message { get; set; }
-        public List<ErrorAddButton> AddButtons { get; set; }
-        public BitmapSource Image { get; set; }
-        public ReactiveCommand Show { get; set; }
-
-        public bool HasShow { get; set; }
-
-        public bool IsSelected
-        {
-            get => isSelected;
-            set {
-                isSelected = value;
-                this.RaisePropertyChanged();
-                SelectionChanged?.Invoke(this, value);
-            }
-        }
-
-        public bool HasAddButtons => AddButtons?.Any() == true;
-        public bool HasVisuals => Error?.Visuals?.Any() == true;
-        public Color Background { get; set; }
 
         protected virtual void OnShowExecute()
         {

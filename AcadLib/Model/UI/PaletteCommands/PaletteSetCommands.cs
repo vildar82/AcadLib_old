@@ -10,32 +10,23 @@ using System.Windows.Media;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Brush = System.Windows.Media.Brush;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
-    class UserGroupPalette
-    {
-        public PaletteSetCommands Palette { get; set; }
-        public string Name { get; set; }
-        public Guid Guid { get; set; }
-        public string VersionPalette { get; set; }
-        public string CommandStartPalette { get; set; }
-        public List<IPaletteCommand> Commands { get; set; }
-    }
-
+    [PublicAPI]
     public class PaletteSetCommands : PaletteSet
     {
         internal static readonly List<UserGroupPalette> _paletteSets = new List<UserGroupPalette>();
         private readonly string versionPalette;
 
         /// <summary>
-        /// Данные для палитры
-        /// </summary>
-        private List<PaletteModel> Models { get; set; }
-
-        /// <summary>
         /// Команды переданные из сборки данного раздела
         /// </summary>
         public List<IPaletteCommand> CommandsAddin { get; set; }
+        /// <summary>
+        /// Данные для палитры
+        /// </summary>
+        private List<PaletteModel> Models { get; set; }
 
         public PaletteSetCommands(string paletteName, Guid paletteGuid, string commandStartPalette,
             List<IPaletteCommand> commandsAddin, string versionPalette) :
@@ -45,7 +36,7 @@ namespace AcadLib.PaletteCommands
             CommandsAddin = commandsAddin;
             Icon = Properties.Resources.pik;
             LoadPalettes();
-            //// Установка фона контрола на палитре - в зависимости от цветовой темы автокада.            
+            //// Установка фона контрола на палитре - в зависимости от цветовой темы автокада.
             //CheckTheme();
             //Autodesk.AutoCAD.ApplicationServices.Core.Application.SystemVariableChanged += (s, e) =>
             //{
@@ -89,6 +80,12 @@ namespace AcadLib.PaletteCommands
             }
         }
 
+        public static bool IsAccess([CanBeNull] List<string> accessLogins)
+        {
+            return accessLogins == null ||
+                   accessLogins.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase);
+        }
+
         /// <summary>
         /// Создание палитры и показ
         /// </summary>
@@ -109,6 +106,41 @@ namespace AcadLib.PaletteCommands
             {
                 Logger.Log.Error(ex, "PaletteSetCommands.Start().");
             }
+        }
+
+        private static void PikTray_MouseDown(Guid paletteGuid)
+        {
+            Start(paletteGuid);
+        }
+
+        private static void SetTrayIcon(string paletteName, Guid paletteGuid, Version ver)
+        {
+            // Добавление иконки в трей
+            try
+            {
+                var p = new Pane
+                {
+                    ToolTipText = $"Палитра {paletteName}, вер. {ver.Revision}",
+                    Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon())
+                };
+                p.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);
+                p.Visible = false;
+                Application.StatusBar.Panes.Insert(0, p);
+                p.Visible = true;
+                Application.StatusBar.Update();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "PaletteSetCommands.SetTrayIcon().");
+            }
+        }
+
+        private void CheckTheme()
+        {
+            var isDarkTheme = (short)Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("COLORTHEME") == 0;
+            Brush colorBkg = isDarkTheme ? new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 92, 92, 92)) :
+                System.Windows.Media.Brushes.White;
+            Models.ForEach(m => m.Background = colorBkg);
         }
 
         private void LoadPalettes()
@@ -144,53 +176,22 @@ namespace AcadLib.PaletteCommands
                     }
                 }
             }
-            // Общие команды для всех отделов определенные в этой сборке            
+            // Общие команды для всех отделов определенные в этой сборке
             var modelCommon = new PaletteModel(commonCommands.GroupBy(g => g.Name).Select(s => s.First()).ToList(),
                 versionPalette);
             var controlCommon = new UI.CommandsControl { DataContext = modelCommon };
             AddVisual(groupCommon, controlCommon);
             Models.Add(modelCommon);
         }
+    }
 
-        private void CheckTheme()
-        {
-            var isDarkTheme = (short)Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("COLORTHEME") == 0;
-            Brush colorBkg = isDarkTheme ? new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 92, 92, 92)) :
-                System.Windows.Media.Brushes.White;
-            Models.ForEach(m => m.Background = colorBkg);
-        }
-
-        private static void SetTrayIcon(string paletteName, Guid paletteGuid, Version ver)
-        {
-            // Добавление иконки в трей    
-            try
-            {
-                var p = new Pane
-                {
-                    ToolTipText = $"Палитра {paletteName}, вер. {ver.Revision}",
-                    Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon())
-                };
-                p.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);
-                p.Visible = false;
-                Application.StatusBar.Panes.Insert(0,p);
-                p.Visible = true;
-                Application.StatusBar.Update();
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "PaletteSetCommands.SetTrayIcon().");
-            }
-        }
-
-        public static bool IsAccess([CanBeNull] List<string> accessLogins)
-        {
-            return accessLogins == null ||
-                   accessLogins.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase);
-        }
-
-        private static void PikTray_MouseDown(Guid paletteGuid)
-        {
-            Start(paletteGuid);
-        }
+    internal class UserGroupPalette
+    {
+        public List<IPaletteCommand> Commands { get; set; }
+        public string CommandStartPalette { get; set; }
+        public Guid Guid { get; set; }
+        public string Name { get; set; }
+        public PaletteSetCommands Palette { get; set; }
+        public string VersionPalette { get; set; }
     }
 }

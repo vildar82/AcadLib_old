@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System.Windows;
-using System.Windows.Controls;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands.UI
 {
     /// <summary>
@@ -15,27 +15,24 @@ namespace AcadLib.PaletteCommands.UI
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
         }
 
-        private void Dispatcher_UnhandledException(object sender, [NotNull] System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private static void Dispatcher_UnhandledException(object sender, [NotNull] System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
+#pragma warning disable 618
             if (e.Exception is UserBreakException)
+#pragma warning restore 618
             {
                 throw e.Exception;
             }
 
             if (e.Exception.HResult != -2146233079)
             {
-                Logger.Log.Error("CommandsControl.Dispatcher_UnhandledException: " + e.Exception.ToString());
+                Logger.Log.Error("CommandsControl.Dispatcher_UnhandledException: " + e.Exception);
             }
             e.Handled = true;
         }
 
-        //private void ListBoxCommands_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        //{
-        //    var selComm = ListBoxCommands.SelectedItem as PaletteCommand;
-        //    if (selComm == null) return;
-        //    selComm.Execute();            
-        //}
-
+        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedParameter.Local
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (!(((FrameworkElement)sender).DataContext is PaletteCommand selComm)) return;

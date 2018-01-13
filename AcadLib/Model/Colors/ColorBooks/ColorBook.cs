@@ -4,12 +4,14 @@ using OfficeOpenXml;
 using System.Collections.Generic;
 using System.IO;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Colors
 {
+    [PublicAPI]
     public class ColorBook
     {
-        public string Name { get; set; }
         public List<ColorItem> Colors { get; set; }
+        public string Name { get; set; }
 
         public ColorBook(string name)
         {
@@ -55,12 +57,12 @@ namespace AcadLib.Colors
 
                     var colorItem = new ColorItem(nameNcs, r.Value, g.Value, b.Value);
                     colorBookNcs.Colors.Add(colorItem);
-
                 } while (true);
             }
             return colorBookNcs;
         }
 
+        [NotNull]
         private static Result<byte> GetByte(string value)
         {
             return !byte.TryParse(value, out var res)

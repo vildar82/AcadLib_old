@@ -17,10 +17,13 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Plot
 {
-    // http://adndevblog.typepad.com/autocad/2012/05/how-to-use-the-autodeskautocadpublishingpublisherpublishdsd-api-in-net.html
+    /// <summary>
+    /// http://adndevblog.typepad.com/autocad/2012/05/how-to-use-the-autodeskautocadpublishingpublisherpublishdsd-api-in-net.html
+    /// </summary>
+    [PublicAPI]
     public class PlotDirToPdf
     {
-        private static readonly Comparers.AlphanumComparator alphaComparer = Comparers.AlphanumComparator.New;
+        private static readonly NetLib.Comparers.AlphanumComparator alphaComparer = NetLib.Comparers.AlphanumComparator.New;
         private string dir;
         private string filePdfOutputName;
         private string[] filesDwg;
@@ -37,9 +40,8 @@ namespace AcadLib.Plot
             this.filePdfOutputName = filePdfOutputName == "" ? Path.GetFileName(dir) : filePdfOutputName;
         }
 
-        public PlotDirToPdf(string dir, string filePdfOutputName = "") : this(dir, false, filePdfOutputName)
+        public PlotDirToPdf([NotNull] string dir, string filePdfOutputName = "") : this(dir, false, filePdfOutputName)
         {
-
         }
 
         public PlotDirToPdf([NotNull] string[] filesDwg, string filePdfOutputName)
@@ -47,98 +49,6 @@ namespace AcadLib.Plot
             dir = Path.GetDirectoryName(filesDwg.First());
             this.filesDwg = filesDwg;
             this.filePdfOutputName = filePdfOutputName;
-        }
-
-        public void Plot()
-        {
-            if (Options == null)
-            {
-                Options = new PlotOptions();
-                PlotFiles();
-            }
-            else
-            {
-                if (!Options.OnePdfOrEachDwg)
-                {
-                    foreach (var file in filesDwg)
-                    {
-                        PlotFileToPdf(file);
-                    }
-                }
-                else
-                {
-                    PlotFiles();
-                }
-            }
-            // открыть проводник с файлом
-            System.Diagnostics.Process.Start("explorer", dir);
-        }
-
-        private void PlotFileToPdf(string file)
-        {
-            dir = Path.GetDirectoryName(file);
-            filePdfOutputName = Path.GetFileNameWithoutExtension(file);
-            filesDwg = new[] { file };
-            PlotFiles();
-        }
-
-        private void PlotFiles()
-        {
-            using (var dsdCol = new DsdEntryCollection())
-            {
-                var indexfile = 0;
-
-                title = $"Печать {filesDwg.Length} файлов dwg...";
-
-                foreach (var fileDwg in filesDwg)
-                {
-                    if (HostApplicationServices.Current.UserBreak())
-                        throw new Exception(General.CanceledByUser);
-
-                    indexfile++;
-                    using (var dbTemp = new Database(false, true))
-                    {
-                        dbTemp.ReadDwgFile(fileDwg, FileOpenMode.OpenForReadAndAllShare, false, "");
-                        dbTemp.CloseInput(true);
-                        using (var t = dbTemp.TransactionManager.StartTransaction())
-                        {
-                            var layouts = dbTemp.GetLayouts();
-                            // Фильтр листов 
-                            if (Options.FilterState)
-                            {
-                                layouts = FilterLayouts(layouts, Options);
-                            }
-
-                            var layoutsDsd = new List<Tuple<Layout, DsdEntry>>();
-                            foreach (var layout in layouts)
-                            {
-                                var dsdEntry = new DsdEntry()
-                                {
-                                    Layout = layout.LayoutName,
-                                    DwgName = fileDwg,
-                                    //dsdEntry.Nps = "Setup1";
-                                    NpsSourceDwg = fileDwg,
-                                    Title = indexfile + "-" + layout.LayoutName
-                                };
-                                layoutsDsd.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
-                                //dsdCol.Add(dsdEntry);
-                            }
-
-                            if (Options.SortTabOrName)
-                            {
-                                layoutsDsd.Sort((l1, l2) => l1.Item1.TabOrder.CompareTo(l2.Item1.TabOrder));
-                            }
-                            else
-                            {
-                                layoutsDsd.Sort((l1, l2) => l1.Item1.LayoutName.CompareTo(l2.Item1.LayoutName));
-                            }
-                            layoutsDsd.ForEach(l => dsdCol.Add(l.Item2));
-                            t.Commit();
-                        }
-                    }
-                }
-                PublisherDSD(dsdCol);
-            }
         }
 
         public static void PromptAndPlot([NotNull] Document doc)
@@ -165,8 +75,10 @@ namespace AcadLib.Plot
                         {
                             throw new Exception("Нужно сохранить текущий чертеж.");
                         }
-                        var filePdfName = Path.Combine(Path.GetDirectoryName(doc.Name), Path.GetFileNameWithoutExtension(doc.Name) + ".pdf");
-                        var plotter = new PlotDirToPdf(new string[] { doc.Name }, filePdfName)
+                        var filePdfName =
+                            Path.Combine(Path.GetDirectoryName(doc.Name) ?? throw new InvalidOperationException(),
+                                Path.GetFileNameWithoutExtension(doc.Name) + ".pdf");
+                        var plotter = new PlotDirToPdf(new[] { doc.Name }, filePdfName)
                         {
                             Options = plotOpt
                         };
@@ -176,22 +88,24 @@ namespace AcadLib.Plot
                     {
                         repeat = false;
                         Logger.Log.Info("Папки");
-                        var dialog = new UI.FileFolderDialog();
-                        dialog.Dialog.Multiselect = true;
-                        dialog.IsFolderDialog = true;
-                        dialog.Dialog.Title = "Выбор папки или файлов для печати чертежей в PDF.";
-                        dialog.Dialog.Filter = "Чертежи|*.dwg";
+                        var dialog = new UI.FileFolderDialog
+                        {
+                            Dialog = { Multiselect = true },
+                            IsFolderDialog = true
+                        };
+                        dialog.Dialog.Title = @"Выбор папки или файлов для печати чертежей в PDF.";
+                        dialog.Dialog.Filter = @"Чертежи|*.dwg";
                         dialog.Dialog.InitialDirectory = Path.GetDirectoryName(doc.Name);
 
                         if (dialog.ShowDialog() == DialogResult.OK)
                         {
                             PlotDirToPdf plotter;
                             var firstFileNameWoExt = Path.GetFileNameWithoutExtension(dialog.Dialog.FileNames.First());
-                            if (dialog.Dialog.FileNames.Count() > 1)
+                            if (dialog.Dialog.FileNames.Length > 1)
                             {
                                 plotter = new PlotDirToPdf(dialog.Dialog.FileNames, Path.GetFileName(dialog.SelectedPath));
                             }
-                            else if (firstFileNameWoExt.Equals("п", StringComparison.OrdinalIgnoreCase))
+                            else if (firstFileNameWoExt != null && firstFileNameWoExt.Equals("п", StringComparison.OrdinalIgnoreCase))
                             {
                                 plotter = new PlotDirToPdf(dialog.SelectedPath, plotOpt.IncludeSubdirs);
                             }
@@ -216,39 +130,6 @@ namespace AcadLib.Plot
                     return;
                 }
             } while (repeat);
-        }
-
-        [NotNull]
-        private List<Layout> FilterLayouts([NotNull] List<Layout> layouts, [NotNull] PlotOptions options)
-        {
-            var resLayouts = new List<Layout>();
-            var filterNums = GetFilterNumbers(layouts.Count, options.FilterByNumbers);
-            foreach (var layout in layouts)
-            {
-                // Номер вкладки
-                var tabIndex = layout.TabOrder;
-                var tabName = layout.LayoutName;
-                bool? filtering = null;
-                // Фильтр по именам                                        
-                if (!string.IsNullOrWhiteSpace(Options.FilterByNames))
-                {
-                    filtering = FilterByName(tabName);
-                }
-                // Фильтр по номеру вкладки
-                if (!string.IsNullOrWhiteSpace(Options.FilterByNumbers) &&
-                    (!filtering.HasValue || !filtering.Value))
-                {
-                    filtering = filterNums.Contains(tabIndex);
-                }
-
-                if (filtering.HasValue && !filtering.Value)
-                {
-                    // Лист не прошел фильтр
-                    continue;
-                }
-                resLayouts.Add(layout);
-            }
-            return resLayouts;
         }
 
         [NotNull]
@@ -289,9 +170,29 @@ namespace AcadLib.Plot
             return resNums;
         }
 
-        private bool FilterByName([NotNull] string tabName)
+        public void Plot()
         {
-            return Regex.IsMatch(tabName, Options.FilterByNames, RegexOptions.IgnoreCase);
+            if (Options == null)
+            {
+                Options = new PlotOptions();
+                PlotFiles();
+            }
+            else
+            {
+                if (!Options.OnePdfOrEachDwg)
+                {
+                    foreach (var file in filesDwg)
+                    {
+                        PlotFileToPdf(file);
+                    }
+                }
+                else
+                {
+                    PlotFiles();
+                }
+            }
+            // открыть проводник с файлом
+            System.Diagnostics.Process.Start("explorer", dir);
         }
 
         public void PublisherDSD(DsdEntryCollection collection)
@@ -382,7 +283,9 @@ namespace AcadLib.Plot
                 }
                 catch (Exception ex)
                 {
+                    // ReSharper disable once LocalizableElement
                     var dlgRes = MessageBox.Show($"{ex.Message}\n\rУстраните причину и нажмите продолжить.",
+                        // ReSharper disable once LocalizableElement
                         "Печать", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
                     if (dlgRes == DialogResult.Cancel)
                     {
@@ -394,41 +297,124 @@ namespace AcadLib.Plot
             throw new Exception("Превышено число попыток доступа к файлу. Выход.");
         }
 
-        private void Publisher_BeginSheet(object sender, PublishSheetEventArgs e)
+        private bool FilterByName([NotNull] string tabName)
         {
-            //throw new NotImplementedException();
+            return Regex.IsMatch(tabName, Options.FilterByNames, RegexOptions.IgnoreCase);
         }
 
-        //public static string GetLayoutSortName(EnumLayoutsSort layoutSort)
-        //{
-        //    switch (layoutSort)
-        //    {
-        //        case EnumLayoutsSort.DatabaseOrder:
-        //            return "Создание";
-        //        case EnumLayoutsSort.TabOrder:
-        //            return "Вкладки";
-        //        case EnumLayoutsSort.LayoutNames:
-        //            return "Имена";
-        //        default:
-        //            return "";
-        //    }
-        //}
+        [NotNull]
+        private List<Layout> FilterLayouts([NotNull] List<Layout> layouts, [NotNull] PlotOptions options)
+        {
+            var resLayouts = new List<Layout>();
+            var filterNums = GetFilterNumbers(layouts.Count, options.FilterByNumbers);
+            foreach (var layout in layouts)
+            {
+                // Номер вкладки
+                var tabIndex = layout.TabOrder;
+                var tabName = layout.LayoutName;
+                bool? filtering = null;
+                // Фильтр по именам
+                if (!string.IsNullOrWhiteSpace(Options.FilterByNames))
+                {
+                    filtering = FilterByName(tabName);
+                }
+                // Фильтр по номеру вкладки
+                if (!string.IsNullOrWhiteSpace(Options.FilterByNumbers) &&
+                    (!filtering.HasValue || !filtering.Value))
+                {
+                    filtering = filterNums.Contains(tabIndex);
+                }
+
+                if (filtering.HasValue && !filtering.Value)
+                {
+                    // Лист не прошел фильтр
+                    continue;
+                }
+                resLayouts.Add(layout);
+            }
+            return resLayouts;
+        }
+
+        private void PlotFiles()
+        {
+            using (var dsdCol = new DsdEntryCollection())
+            {
+                var indexfile = 0;
+
+                title = $"Печать {filesDwg.Length} файлов dwg...";
+
+                foreach (var fileDwg in filesDwg)
+                {
+                    if (HostApplicationServices.Current.UserBreak())
+                        throw new Exception(General.CanceledByUser);
+
+                    indexfile++;
+                    using (var dbTemp = new Database(false, true))
+                    {
+                        dbTemp.ReadDwgFile(fileDwg, FileOpenMode.OpenForReadAndAllShare, false, "");
+                        dbTemp.CloseInput(true);
+                        using (var t = dbTemp.TransactionManager.StartTransaction())
+                        {
+                            var layouts = dbTemp.GetLayouts();
+                            // Фильтр листов
+                            if (Options.FilterState)
+                            {
+                                layouts = FilterLayouts(layouts, Options);
+                            }
+
+                            var layoutsDsd = new List<Tuple<Layout, DsdEntry>>();
+                            foreach (var layout in layouts)
+                            {
+                                var dsdEntry = new DsdEntry()
+                                {
+                                    Layout = layout.LayoutName,
+                                    DwgName = fileDwg,
+                                    //dsdEntry.Nps = "Setup1";
+                                    NpsSourceDwg = fileDwg,
+                                    Title = indexfile + "-" + layout.LayoutName
+                                };
+                                layoutsDsd.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
+                                //dsdCol.Add(dsdEntry);
+                            }
+
+                            if (Options.SortTabOrName)
+                            {
+                                layoutsDsd.Sort((l1, l2) => l1.Item1.TabOrder.CompareTo(l2.Item1.TabOrder));
+                            }
+                            else
+                            {
+                                layoutsDsd.Sort((l1, l2) => string.Compare(l1.Item1.LayoutName, l2.Item1.LayoutName, StringComparison.Ordinal));
+                            }
+                            layoutsDsd.ForEach(l => dsdCol.Add(l.Item2));
+                            t.Commit();
+                        }
+                    }
+                }
+                PublisherDSD(dsdCol);
+            }
+        }
+
+        private void PlotFileToPdf(string file)
+        {
+            dir = Path.GetDirectoryName(file);
+            filePdfOutputName = Path.GetFileNameWithoutExtension(file);
+            filesDwg = new[] { file };
+            PlotFiles();
+        }
 
         private void PostProcessDSD([NotNull] DsdData dsd, [NotNull] string destFile)
         {
-            string str;
-            string newStr;
             var tmpFile = Path.Combine(dir, "temp.dsd");
-
             dsd.WriteDsd(tmpFile);
-
             using (var reader = new StreamReader(tmpFile, Encoding.Default))
             using (var writer = new StreamWriter(destFile, false, Encoding.Default))
             {
                 var fileDwg = string.Empty;
                 while (!reader.EndOfStream)
                 {
-                    str = reader.ReadLine();
+                    var str = reader.ReadLine();
+                    if (str == null) continue;
+                    string newStr;
                     if (str.StartsWith("Has3DDWF="))
                     {
                         newStr = "Has3DDWF=0";
@@ -458,6 +444,10 @@ namespace AcadLib.Plot
                 }
             }
             File.Delete(tmpFile);
+        }
+
+        private void Publisher_BeginSheet(object sender, PublishSheetEventArgs e)
+        {
         }
     }
 }

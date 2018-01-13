@@ -7,20 +7,15 @@ namespace AcadLib.Comparers
     /// <summary>
     /// Сравнение точек с заданным допуском
     /// </summary>
+    [PublicAPI]
     public class Point3dEqualityComparer : IEqualityComparer<Point3d>
     {
-        public Tolerance Tolerance { get; set; } = Tolerance.Global;
-
         /// <summary>
         /// Допуск 1 мм.
         /// </summary>
         [NotNull]
-        public static Point3dEqualityComparer Comparer1
-        {
-            get {
-                return new Point3dEqualityComparer(1);
-            }
-        }
+        public static Point3dEqualityComparer Comparer1 => new Point3dEqualityComparer(1);
+        public Tolerance Tolerance { get; set; } = Tolerance.Global;
 
         /// <summary>
         /// С допуском поумолчанию - Global
@@ -29,7 +24,7 @@ namespace AcadLib.Comparers
 
         /// <summary>
         /// Задается допуск для точек
-        /// </summary>        
+        /// </summary>
         public Point3dEqualityComparer(double equalPoint)
         {
             Tolerance = new Tolerance(Tolerance.Global.EqualVector, equalPoint);

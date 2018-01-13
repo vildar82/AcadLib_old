@@ -13,25 +13,39 @@ namespace AcadLib
     /// <summary>
     /// Загрузка вспомогательных сборок
     /// </summary>
+    [PublicAPI]
     public static class LoadService
     {
         public static readonly string dllLocalPackages = IO.Path.GetUserPluginFolder("packages");
 
-        public static void LoadScreenshotToSlack()
+        public static void CopyPackagesLocal()
         {
-
-            LoadPackages("CloudinaryDotNet.dll");
-            LoadPackages("ScreenshotToSlack.dll");
+            try
+            {
+                var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, "packages");
+                NetLib.IO.Path.CopyDirectory(dllServer, dllLocalPackages);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "CopyPackagesLocal");
+            }
         }
 
-        /// <summary>
-        /// Morelinq
-        /// </summary>
-        [Obsolete("Нафиг")]
-        public static void LoadMorelinq()
+        public static void DeleteTry(string file)
         {
-            LoadPackages("MoreLinq.dll");
+            if (File.Exists(file))
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
         }
+
         /// <summary>
         /// EntityFramework
         /// </summary>
@@ -39,17 +53,6 @@ namespace AcadLib
         {
             LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.dll"));
             LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.SqlServer.dll"));
-        }
-
-        public static void LoadMDM()
-        {
-            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll"));
-        }
-
-        public static void LoadPackages([NotNull] string name)
-        {
-            var dllLocal = Path.Combine(IO.Path.GetUserPluginFolder("packages"), name);
-            LoadFromTry(dllLocal);
         }
 
         public static void LoadFrom([NotNull] string dll)
@@ -65,6 +68,19 @@ namespace AcadLib
             }
         }
 
+        /// <summary>
+        /// Загрузка сборок из папки.
+        /// </summary>
+        public static void LoadFromFolder(string dir, SearchOption mode)
+        {
+            if (!Directory.Exists(dir)) return;
+            var dlls = GetDllsForCurVerAcad(Directory.GetFiles(dir, "*.dll", mode).ToList());
+            foreach (var dll in dlls)
+            {
+                LoadFromTry(dll);
+            }
+        }
+
         public static void LoadFromTry(string dll)
         {
             try
@@ -77,42 +93,30 @@ namespace AcadLib
             }
         }
 
-        public static void DeleteTry(string file)
+        public static void LoadMDM()
         {
-            if (File.Exists(file))
-            {
-                try
-                {
-                    File.Delete(file);
-                }
-                catch { }
-            }
-        }
-
-        public static void CopyPackagesLocal()
-        {
-            try
-            {
-                var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, "packages");
-                NetLib.IO.Path.CopyDirectory(dllServer, dllLocalPackages);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "CopyPackagesLocal");
-            }
+            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll"));
         }
 
         /// <summary>
-        /// Загрузка сборок из папки.
+        /// Morelinq
         /// </summary>
-        public static void LoadFromFolder(string dir, SearchOption mode)
+        [Obsolete("Нафиг")]
+        public static void LoadMorelinq()
         {
-            if (!Directory.Exists(dir)) return;
-            var dlls = GetDllsForCurVerAcad(Directory.GetFiles(dir, "*.dll", mode).ToList());
-            foreach (var dll in dlls)
-            {
-                LoadFromTry(dll);
-            }
+            LoadPackages("MoreLinq.dll");
+        }
+
+        public static void LoadPackages([NotNull] string name)
+        {
+            var dllLocal = Path.Combine(IO.Path.GetUserPluginFolder("packages"), name);
+            LoadFromTry(dllLocal);
+        }
+
+        public static void LoadScreenshotToSlack()
+        {
+            LoadPackages("CloudinaryDotNet.dll");
+            LoadPackages("ScreenshotToSlack.dll");
         }
 
         [NotNull]
@@ -146,6 +150,7 @@ namespace AcadLib
         }
     }
 
+    [PublicAPI]
     internal class DllVer
     {
         public string Dll { get; set; }

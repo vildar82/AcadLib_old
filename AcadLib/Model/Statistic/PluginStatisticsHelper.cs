@@ -7,30 +7,20 @@ using System.Threading.Tasks;
 
 namespace AcadLib.Statistic
 {
+    [PublicAPI]
     public static class PluginStatisticsHelper
     {
-        public static void StartAutoCAD()
+        public static void AddStatistic()
         {
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    if (!General.IsCadManager() && !General.IsBimUser)
-                    {
-                        var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                        using (var pg = new C_PluginStatisticTableAdapter())
-                        {
-                            var appRun = IsCivilGroup() ? "Civil Run" : "AutoCAD Run";
-                            pg.Insert(appRun, "AcadLib", appRun, version,
-                                "", Environment.UserName, DateTime.Now, null);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log.Error(ex, "PluginStatisticsHelper.StartAutoCAD");
-                }
-            });
+                var caller = new StackTrace().GetFrame(1).GetMethod();
+                PluginStart(CommandStart.GetCallerCommand(caller));
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "PluginStatisticsHelper.AddStatistic");
+            }
         }
 
         public static void PluginStart(CommandStart command)
@@ -59,28 +49,39 @@ namespace AcadLib.Statistic
             });
         }
 
+        public static void StartAutoCAD()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    if (!General.IsCadManager() && !General.IsBimUser)
+                    {
+                        var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                        using (var pg = new C_PluginStatisticTableAdapter())
+                        {
+                            var appRun = IsCivilGroup() ? "Civil Run" : "AutoCAD Run";
+                            pg.Insert(appRun, "AcadLib", appRun, version,
+                                "", Environment.UserName, DateTime.Now, null);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Error(ex, "PluginStatisticsHelper.StartAutoCAD");
+                }
+            });
+        }
+
         private static bool IsCivilAssembly([CanBeNull] Assembly assm)
         {
-            return assm?.GetName()?.Name?.Contains("Civil") == true;
+            return assm?.GetName().Name?.Contains("Civil") == true;
         }
 
         private static bool IsCivilGroup()
         {
             return AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup.StartsWith("ГП") ||
                    AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup == "НС";
-        }
-
-        public static void AddStatistic()
-        {
-            try
-            {
-                var caller = new StackTrace().GetFrame(1).GetMethod();
-                PluginStart(CommandStart.GetCallerCommand(caller));
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "PluginStatisticsHelper.AddStatistic");
-            }
         }
     }
 }

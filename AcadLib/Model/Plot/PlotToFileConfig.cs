@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using System;
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.PlottingServices;
 using JetBrains.Annotations;
 using System.Collections.Generic;
@@ -6,28 +7,55 @@ using System.IO;
 using System.Text;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
+// ReSharper disable once CheckNamespace
 namespace Gile.Publish
 {
+    // Class to plot a multi-sheet DWF file
+    [PublicAPI]
+    public class MultiSheetsDwf : PlotToFileConfig
+    {
+        public MultiSheetsDwf(string outputFile, IEnumerable<Layout> layouts)
+            : base(outputFile, layouts, "1")
+        {
+        }
+    }
+
+    // Class to plot a multi-sheet PDF file
+    public class MultiSheetsPdf : PlotToFileConfig
+    {
+        public MultiSheetsPdf(string outputFile, IEnumerable<Layout> layouts)
+            : base(outputFile, layouts, "6")
+        {
+        }
+    }
+
     // Base class for the different configurations
+    [PublicAPI]
     public abstract class PlotToFileConfig
     {
-        // Private fields
-        private string dsdFile, dwgFile, outputDir, outputFile, plotType;
-        private int sheetNum;
-        private IEnumerable<Layout> layouts;
         private const string LOG = "publish.log";
+        private readonly IEnumerable<Layout> _layouts;
+        // Private fields
+        private readonly string dsdFile;
+
+        private readonly string dwgFile;
+        private readonly string outputDir;
+        private readonly string outputFile;
+        private readonly string plotType;
+        private int sheetNum;
 
         // Base constructor
+        // ReSharper disable once PublicConstructorInAbstractClass
         public PlotToFileConfig([CanBeNull] string outputFile, IEnumerable<Layout> layouts, string plotType)
         {
             var db = HostApplicationServices.WorkingDatabase;
             dwgFile = db.Filename;
             outputDir = Path.GetDirectoryName(outputFile);
             dsdFile = Path.ChangeExtension(outputFile, "dsd");
-            this.layouts = layouts;
+            _layouts = layouts;
             this.plotType = plotType;
             var ext = plotType == "0" || plotType == "1" ? "dwf" : "pdf";
-            this.outputFile = Path.Combine(outputDir, Path.ChangeExtension(Path.GetFileName(outputFile), ext));
+            this.outputFile = Path.Combine(outputDir ?? throw new InvalidOperationException(), Path.ChangeExtension(Path.GetFileName(outputFile), ext));
         }
 
         // Plot the layouts
@@ -35,58 +63,29 @@ namespace Gile.Publish
         {
             if (TryCreateDSD())
             {
-                var bgp = Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("BACKGROUNDPLOT");
-                var ctab = Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable("CTAB");
+                var bgp = Application.GetSystemVariable("BACKGROUNDPLOT");
+                var ctab = Application.GetSystemVariable("CTAB");
                 try
                 {
-                    Autodesk.AutoCAD.ApplicationServices.Core.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
+                    Application.SetSystemVariable("BACKGROUNDPLOT", 0);
 
-                    var publisher = Autodesk.AutoCAD.ApplicationServices.Core.Application.Publisher;
+                    var publisher = Application.Publisher;
                     var plotDlg = new PlotProgressDialog(false, sheetNum, false);
                     publisher.PublishDsd(dsdFile, plotDlg);
                     plotDlg.Destroy();
                 }
-                catch (System.Exception exn)
+                catch (Exception exn)
                 {
-                    var ed = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor;
+                    var ed = Application.DocumentManager.MdiActiveDocument.Editor;
                     ed.WriteMessage("\nError: {0}\n{1}", exn.Message, exn.StackTrace);
                     throw;
                 }
                 finally
                 {
-                    Autodesk.AutoCAD.ApplicationServices.Core.Application.SetSystemVariable("BACKGROUNDPLOT", bgp);
+                    Application.SetSystemVariable("BACKGROUNDPLOT", bgp);
                     Application.SetSystemVariable("CTAB", ctab);
                     File.Delete(dsdFile);
                 }
-            }
-        }
-
-        // Creates the DSD file from a template (default options)
-        private bool TryCreateDSD()
-        {
-            using (var dsd = new DsdData())
-            using (var dsdEntries = CreateDsdEntryCollection(layouts))
-            {
-                if (dsdEntries == null || dsdEntries.Count <= 0) return false;
-
-                if (!Directory.Exists(outputDir))
-                {
-                    Directory.CreateDirectory(outputDir);
-                }
-                sheetNum = dsdEntries.Count;
-
-                dsd.SetDsdEntryCollection(dsdEntries);
-
-                dsd.SetUnrecognizedData("PwdProtectPublishedDWF", "FALSE");
-                dsd.SetUnrecognizedData("PromptForPwd", "FALSE");
-                dsd.NoOfCopies = 1;
-                dsd.DestinationName = outputFile;
-                dsd.IsHomogeneous = false;
-                dsd.LogFilePath = Path.Combine(outputDir, LOG);
-
-                PostProcessDSD(dsd);
-
-                return true;
             }
         }
 
@@ -112,19 +111,18 @@ namespace Gile.Publish
         // Writes the definitive DSD file from the templates and additional informations
         private void PostProcessDSD(DsdData dsd)
         {
-            string str, newStr;
             var tmpFile = Path.Combine(outputDir, "temp.dsd");
-
             try
             {
                 dsd.WriteDsd(tmpFile);
-
                 using (var reader = new StreamReader(tmpFile, Encoding.Default))
                 using (var writer = new StreamWriter(dsdFile, false, Encoding.Default))
                 {
                     while (!reader.EndOfStream)
                     {
-                        str = reader.ReadLine();
+                        var str = reader.ReadLine();
+                        if (str == null) continue;
+                        string newStr;
                         if (str.Contains("Has3DDWF"))
                         {
                             newStr = "Has3DDWF=0";
@@ -163,9 +161,34 @@ namespace Gile.Publish
             }
             catch
             {
-
+                // ignored
             }
             File.Delete(tmpFile);
+        }
+
+        // Creates the DSD file from a template (default options)
+        private bool TryCreateDSD()
+        {
+            using (var dsd = new DsdData())
+            using (var dsdEntries = CreateDsdEntryCollection(_layouts))
+            {
+                if (dsdEntries.Count <= 0) return false;
+
+                if (!Directory.Exists(outputDir))
+                {
+                    Directory.CreateDirectory(outputDir);
+                }
+                sheetNum = dsdEntries.Count;
+                dsd.SetDsdEntryCollection(dsdEntries);
+                dsd.SetUnrecognizedData("PwdProtectPublishedDWF", "FALSE");
+                dsd.SetUnrecognizedData("PromptForPwd", "FALSE");
+                dsd.NoOfCopies = 1;
+                dsd.DestinationName = outputFile;
+                dsd.IsHomogeneous = false;
+                dsd.LogFilePath = Path.Combine(outputDir, LOG);
+                PostProcessDSD(dsd);
+                return true;
+            }
         }
     }
 
@@ -175,17 +198,6 @@ namespace Gile.Publish
         public SingleSheetDwf(string outputFile, IEnumerable<Layout> layouts)
             : base(outputFile, layouts, "0")
         {
-
-        }
-    }
-
-    // Class to plot a multi-sheet DWF file
-    public class MultiSheetsDwf : PlotToFileConfig
-    {
-        public MultiSheetsDwf(string outputFile, IEnumerable<Layout> layouts)
-            : base(outputFile, layouts, "1")
-        {
-
         }
     }
 
@@ -195,17 +207,6 @@ namespace Gile.Publish
         public SingleSheetPdf(string outputFile, IEnumerable<Layout> layouts)
             : base(outputFile, layouts, "5")
         {
-
-        }
-    }
-
-    // Class to plot a multi-sheet PDF file
-    public class MultiSheetsPdf : PlotToFileConfig
-    {
-        public MultiSheetsPdf(string outputFile, IEnumerable<Layout> layouts)
-            : base(outputFile, layouts, "6")
-        {
-
         }
     }
 }

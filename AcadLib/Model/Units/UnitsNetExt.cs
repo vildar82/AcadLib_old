@@ -6,6 +6,8 @@ using UnitsNet;
 
 namespace AcadLib.Units
 {
+    [Obsolete]
+    [PublicAPI]
     public static class UnitsNetExt
     {
         public static Area Sum<TSource>([NotNull] this IEnumerable<TSource> source, [NotNull] Func<TSource, Area> selector)

@@ -1,17 +1,17 @@
 //   Node.java
 //   Java Spatial Index Library
 //   Copyright (C) 2002 Infomatiq Limited
-//  
+//
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
 //  License as published by the Free Software Foundation; either
 //  version 2.1 of the License, or (at your option) any later version.
-//  
+//
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 //  Lesser General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -20,25 +20,27 @@
 
 using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace RTreeLib
 {
-
     //import com.infomatiq.jsi.Rectangle;
 
     /**
      * <p>Used by RTree. There are no public methods in this class.</p>
-     * 
+     *
      * @author aled@sourceforge.net
      * @version 1.0b2p1
      */
+
+    [PublicAPI]
     public class Node<T>
     {
-        internal int nodeId = 0;
-        internal Rectangle mbr = null;
-        internal Rectangle[] entries = null;
-        internal int[] ids = null;
-        internal int level;
+        internal Rectangle[] entries;
         internal int entryCount;
+        internal int[] ids;
+        internal int level;
+        internal Rectangle mbr;
+        internal int nodeId;
 
         public Node(int nodeId, int level, int maxNodeEntries)
         {
@@ -48,7 +50,37 @@ namespace RTreeLib
             ids = new int[maxNodeEntries];
         }
 
-        internal void addEntry([NotNull] Rectangle r, int id)
+        [CanBeNull]
+        public Rectangle GetEntry(int index)
+        {
+            return index < entryCount ? entries[index] : null;
+        }
+
+        public int GetEntryCount()
+        {
+            return entryCount;
+        }
+
+        public int GetId(int index)
+        {
+            if (index < entryCount)
+            {
+                return ids[index];
+            }
+            return -1;
+        }
+
+        public int GetLevel()
+        {
+            return level;
+        }
+
+        public Rectangle GetMBR()
+        {
+            return mbr;
+        }
+
+        internal void AddEntry([NotNull] Rectangle r, int id)
         {
             ids[entryCount] = id;
             entries[entryCount] = r.copy();
@@ -63,7 +95,7 @@ namespace RTreeLib
             }
         }
 
-        internal void addEntryNoCopy(Rectangle r, int id)
+        internal void AddEntryNoCopy(Rectangle r, int id)
         {
             ids[entryCount] = id;
             entries[entryCount] = r;
@@ -78,21 +110,8 @@ namespace RTreeLib
             }
         }
 
-        // Return the index of the found entry, or -1 if not found
-        internal int findEntry(Rectangle r, int id)
-        {
-            for (var i = 0; i < entryCount; i++)
-            {
-                if (id == ids[i] && r.Equals(entries[i]))
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
         // delete entry. This is done by setting it to null and copying the last entry into its space.
-        internal void deleteEntry(int i, int minNodeEntries)
+        internal void DeleteEntry(int i, int minNodeEntries)
         {
             var lastIndex = entryCount - 1;
             var deletedRectangle = entries[i];
@@ -106,21 +125,39 @@ namespace RTreeLib
             entryCount--;
 
             // if there are at least minNodeEntries, adjust the MBR.
-            // otherwise, don't bother, as the Node<T> will be 
+            // otherwise, don't bother, as the Node<T> will be
             // eliminated anyway.
             if (entryCount >= minNodeEntries)
             {
-                recalculateMBR(deletedRectangle);
+                RecalculateMBR(deletedRectangle);
             }
+        }
+
+        // Return the index of the found entry, or -1 if not found
+        internal int FindEntry(Rectangle r, int id)
+        {
+            for (var i = 0; i < entryCount; i++)
+            {
+                if (id == ids[i] && r.Equals(entries[i]))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        internal bool IsLeaf()
+        {
+            return level == 1;
         }
 
         // oldRectangle is a rectangle that has just been deleted or made smaller.
         // Thus, the MBR is only recalculated if the OldRectangle influenced the old MBR
-        internal void recalculateMBR(Rectangle deletedRectangle)
+        internal void RecalculateMBR(Rectangle deletedRectangle)
         {
             if (mbr.edgeOverlaps(deletedRectangle))
             {
-                mbr.set(entries[0].min, entries[0].max);
+                mbr.set(entries[0]._min, entries[0]._max);
 
                 for (var i = 1; i < entryCount; i++)
                 {
@@ -129,33 +166,14 @@ namespace RTreeLib
             }
         }
 
-        public int getEntryCount()
-        {
-            return entryCount;
-        }
-
-        public Rectangle getEntry(int index)
-        {
-            if (index < entryCount)
-            {
-                return entries[index];
-            }
-            return null;
-        }
-
-        public int getId(int index)
-        {
-            if (index < entryCount)
-            {
-                return ids[index];
-            }
-            return -1;
-        }
-
         /**
          * eliminate null entries, move all entries to the start of the source node
          */
-        internal void reorganize([NotNull] RTree<T> rtree)
+
+#pragma warning disable 618
+
+        internal void Reorganize([NotNull] RTree<T> rtree)
+#pragma warning restore 618
         {
             var countdownIndex = rtree.maxNodeEntries - 1;
             for (var index = 0; index < entryCount; index++)
@@ -171,21 +189,6 @@ namespace RTreeLib
                     entries[countdownIndex] = null;
                 }
             }
-        }
-
-        internal bool isLeaf()
-        {
-            return (level == 1);
-        }
-
-        public int getLevel()
-        {
-            return level;
-        }
-
-        public Rectangle getMBR()
-        {
-            return mbr;
         }
     }
 }

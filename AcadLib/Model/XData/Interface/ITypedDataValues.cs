@@ -1,20 +1,25 @@
 ﻿using System.Collections.Generic;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.XData
 {
+    [PublicAPI]
     public interface ITypedDataValues
     {
         /// <summary>
         /// Список сохраняемяхъ значений
         /// </summary>
         /// <returns></returns>
-        List<TypedValue> GetDataValues (Document doc);
+        List<TypedValue> GetDataValues(Document doc);
+
         /// <summary>
         /// Установка значений
         /// </summary>
         /// <param name="values"></param>
-        void SetDataValues (List<TypedValue> values, Document doc);
+        /// <param name="doc"></param>
+        void SetDataValues(List<TypedValue> values, Document doc);
     }
 }

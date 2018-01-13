@@ -7,31 +7,15 @@ using System.Globalization;
 using AcRx = Autodesk.AutoCAD.Runtime;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
+// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Point3d type.
     /// </summary>
+    [PublicAPI]
     public static class Point3dExtensions
     {
-        public static Point3d FromUcsToWcs(this Point3d pt)
-        {
-            return pt.Trans(CoordSystem.UCS, CoordSystem.WCS);
-        }
-
-        /// <summary>
-        /// Получение квадрата от центральной точки
-        /// </summary>
-        /// <param name="center"></param>
-        /// <param name="side"></param>
-        /// <returns></returns>
-        public static Extents3d GetRectangleFromCenter(this Point3d center, double side)
-        {
-            var hs = side * 0.5;
-            return new Extents3d(new Point3d(center.X - hs, center.Y - hs, 0),
-                                 new Point3d(center.X + hs, center.Y + hs, 0));
-        }
-
         public static Point3d Center(this Point3d pt, Point3d other)
         {
             return new Point3d(
@@ -58,6 +42,24 @@ namespace Autodesk.AutoCAD.Geometry
         public static Point3d Flatten(this Point3d pt)
         {
             return new Point3d(pt.X, pt.Y, 0.0);
+        }
+
+        public static Point3d FromUcsToWcs(this Point3d pt)
+        {
+            return pt.Trans(CoordSystem.UCS, CoordSystem.WCS);
+        }
+
+        /// <summary>
+        /// Получение квадрата от центральной точки
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="side"></param>
+        /// <returns></returns>
+        public static Extents3d GetRectangleFromCenter(this Point3d center, double side)
+        {
+            var hs = side * 0.5;
+            return new Extents3d(new Point3d(center.X - hs, center.Y - hs, 0),
+                                 new Point3d(center.X + hs, center.Y + hs, 0));
         }
 
         /// <summary>
@@ -112,9 +114,15 @@ namespace Autodesk.AutoCAD.Geometry
         public static Point3d Polar(this Point3d org, double angle, double distance)
         {
             return new Point3d(
-                org.X + (distance * Math.Cos(angle)),
-                org.Y + (distance * Math.Sin(angle)),
+                org.X + distance * Math.Cos(angle),
+                org.Y + distance * Math.Sin(angle),
                 org.Z);
+        }
+
+        [NotNull]
+        public static string ToStringEx(this Point3d pt)
+        {
+            return pt.ToString("0.00", CultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -128,7 +136,7 @@ namespace Autodesk.AutoCAD.Geometry
         /// eInvalidInput is thrown if 3 (CoordSystem.PSDCS) is used with other than 2 (CoordSystem.DCS).</exception>
         public static Point3d Trans(this Point3d pt, int from, int to)
         {
-            var ed = ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor;
+            var ed = Application.DocumentManager.MdiActiveDocument.Editor;
             return pt.Trans(ed, (CoordSystem)from, (CoordSystem)to);
         }
 
@@ -140,12 +148,9 @@ namespace Autodesk.AutoCAD.Geometry
         /// <param name="from">The origin coordinate system flag.</param>
         /// <param name="to">The target coordinate system flag.</param>
         /// <returns>The corresponding 3d point.</returns>
-        /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
+        /// <exception cref="Runtime.Exception">
         /// eInvalidInput is thrown if 3 (CoordSystem.PSDCS) is used with other than 2 (CoordSystem.DCS).</exception>
-        public static Point3d Trans(this Point3d pt, Editor ed, int from, int to)
-        {
-            return pt.Trans(ed, (CoordSystem)from, (CoordSystem)to);
-        }
+        public static Point3d Trans(this Point3d pt, Editor ed, int from, int to) => pt.Trans(ed, (CoordSystem)from, (CoordSystem)to);
 
         /// <summary>
         /// Transforms a point from a coordinate system to another one in the current editor.
@@ -154,7 +159,7 @@ namespace Autodesk.AutoCAD.Geometry
         /// <param name="from">The origin coordinate system.</param>
         /// <param name="to">The target coordinate system.</param>
         /// <returns>The corresponding 3d point.</returns>
-        /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
+        /// <exception cref="Runtime.Exception">
         /// eInvalidInput is thrown if CoordSystem.PSDCS is used with other than CoordSystem.DCS.</exception>
         public static Point3d Trans(this Point3d pt, CoordSystem from, CoordSystem to)
         {
@@ -170,7 +175,7 @@ namespace Autodesk.AutoCAD.Geometry
         /// <param name="from">The origin coordinate system.</param>
         /// <param name="to">The target coordinate system.</param>
         /// <returns>The corresponding 3d point.</returns>
-        /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
+        /// <exception cref="Runtime.Exception">
         /// eInvalidInput is thrown if CoordSystem.PSDCS is used with other than CoordSystem.DCS.</exception>
         public static Point3d Trans(this Point3d pt, Editor ed, CoordSystem from, CoordSystem to)
         {
@@ -183,9 +188,11 @@ namespace Autodesk.AutoCAD.Geometry
                         case CoordSystem.UCS:
                             mat = ed.WCS2UCS();
                             break;
+
                         case CoordSystem.DCS:
                             mat = ed.WCS2DCS();
                             break;
+
                         case CoordSystem.PSDCS:
                             throw new AcRx.Exception(
                                 AcRx.ErrorStatus.InvalidInput,
@@ -195,15 +202,18 @@ namespace Autodesk.AutoCAD.Geometry
                             break;
                     }
                     break;
+
                 case CoordSystem.UCS:
                     switch (to)
                     {
                         case CoordSystem.WCS:
                             mat = ed.UCS2WCS();
                             break;
+
                         case CoordSystem.DCS:
                             mat = ed.UCS2WCS() * ed.WCS2DCS();
                             break;
+
                         case CoordSystem.PSDCS:
                             throw new AcRx.Exception(
                                 AcRx.ErrorStatus.InvalidInput,
@@ -213,23 +223,28 @@ namespace Autodesk.AutoCAD.Geometry
                             break;
                     }
                     break;
+
                 case CoordSystem.DCS:
                     switch (to)
                     {
                         case CoordSystem.WCS:
                             mat = ed.DCS2WCS();
                             break;
+
                         case CoordSystem.UCS:
                             mat = ed.DCS2WCS() * ed.WCS2UCS();
                             break;
+
                         case CoordSystem.PSDCS:
                             mat = ed.DCS2PSDCS();
                             break;
+
                         default:
                             mat = Matrix3d.Identity;
                             break;
                     }
                     break;
+
                 case CoordSystem.PSDCS:
                     switch (to)
                     {
@@ -244,6 +259,7 @@ namespace Autodesk.AutoCAD.Geometry
                         case CoordSystem.DCS:
                             mat = ed.PSDCS2DCS();
                             break;
+
                         default:
                             mat = Matrix3d.Identity;
                             break;
@@ -251,12 +267,6 @@ namespace Autodesk.AutoCAD.Geometry
                     break;
             }
             return pt.TransformBy(mat);
-        }
-
-        [NotNull]
-        public static string ToStringEx(this Point3d pt)
-        {
-            return pt.ToString("0.00", CultureInfo.CurrentCulture);
         }
     }
 }

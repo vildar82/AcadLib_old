@@ -14,9 +14,11 @@ namespace AcadLib.Geometry
     /// Enumeration of offset side options
     /// </summary>
     public enum OffsetSide { In, Out, Left, Right, Both }
+
     /// <summary>
     /// Provides extension methods for the Polyline type.
     /// </summary>
+    [PublicAPI]
     public static class PolylineExtensions
     {
         public enum PolygonValidateResult
@@ -25,230 +27,6 @@ namespace AcadLib.Geometry
             NotClosed = 1,
             DuplicateVertices = 2,
             SelfIntersection = 4,
-        }
-
-        public static List<PolylineVertex> GetVertexes(this Polyline pl)
-        {
-            return PolylineVertex.GetVertexes(pl, string.Empty);
-        }
-
-        /// <summary>
-        /// Пересечение полилиний (штатный IntersectWith)
-        /// </summary>
-        [NotNull]
-        public static List<Point3d> Intersects([NotNull] this Polyline pl1, Polyline pl2)
-        {
-            var pts = new Point3dCollection();
-            pl1.IntersectWith(pl2, Intersect.OnBothOperands, new Plane(), pts, IntPtr.Zero, IntPtr.Zero);
-            return pts.Cast<Point3d>().ToList();
-        }
-
-        /// <summary>
-        /// Проверка самопересечения полилинии
-        /// </summary>
-        public static PolygonValidateResult IsValidPolygon([NotNull] this Polyline pline, [NotNull] out List<Point3d> intersections,
-            double tolerance = 0.01)
-        {
-            intersections = new List<Point3d>();
-            var result = PolygonValidateResult.OK;
-            if (!pline.Closed)
-            {
-                result += 1;
-            }
-            var t = new Tolerance(tolerance, tolerance);
-            using (var curve1 = pline.GetGeCurve(t))
-            using (var curve2 = pline.GetGeCurve(t))
-            using (var curveInter = new CurveCurveIntersector3d(curve1, curve2, pline.Normal, t))
-            {
-                var interCount = curveInter.NumberOfIntersectionPoints;
-                var overlaps = curveInter.OverlapCount();
-                if (!pline.Closed) overlaps += 1;
-                if (overlaps < pline.NumberOfVertices) result += 2;
-                if (interCount > overlaps)
-                {
-                    result += 4;
-                    var plPts = pline.GetPoints().DistinctPoints().Select(s => s.Convert3d()).ToList();
-                    for (var i = 0; i < interCount; i++) intersections.Add(curveInter.GetIntersectionPoint(i));
-                    var onlyIntersects = intersections.Except(plPts).ToList();
-                    if (onlyIntersects.Any())
-                    {
-                        intersections = onlyIntersects;
-                    }
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Минимальное расстояние от точки до полилинии
-        /// </summary>
-        public static double GetClosesLengthToPoint([NotNull] this Polyline pl, Point3d pt)
-        {
-            var ptClosest = pl.GetClosestPointTo(pt, false);
-            return (pt - ptClosest).Length;
-        }
-
-        /// <summary>
-        /// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
-        /// </summary>
-        /// <param name="pl">Полилиния</param>
-        /// <param name="pt">Точка</param>
-        /// <param name="extend">Input whether or not to extend curve in search for nearest point.</param>
-        /// <returns></returns>
-        public static double GetParameterAtPointTry([NotNull] this Polyline pl, Point3d pt, bool extend = false)
-        {
-            try
-            {
-                return pl.GetParameterAtPoint(pt);
-            }
-            catch
-            {
-                var ptCorrect = pl.GetClosestPointTo(pt, extend);
-                return pl.GetParameterAtPoint(ptCorrect);
-            }
-        }
-
-        /// <summary>
-        /// Подписывание вершин полилинии
-        /// </summary>        
-        public static void TestDrawVertexNumbers([NotNull] this Polyline pl, Color color)
-        {
-            var scale = ScaleHelper.GetCurrentAnnoScale(HostApplicationServices.WorkingDatabase);
-            var texts = new List<Entity>();
-            for (var i = 0; i < pl.NumberOfVertices; i++)
-            {
-                var text = new DBText
-                {
-                    TextString = i.ToString(),
-                    Position = pl.GetPoint2dAt(i).Convert3d(),
-                    Height = 2.5 * scale,
-                    Color = color
-                };
-                texts.Add(text);
-            }
-            texts.AddEntityToCurrentSpace();
-        }
-
-        public static void Wedding(this Polyline pl, Tolerance tolerance)
-        {
-            Wedding(pl, tolerance, false);
-        }
-
-        public static void Wedding([NotNull] this Polyline pl, Tolerance tolerance, bool close = true, bool onSomeLine = false)
-        {
-            //var iPrew = pl.NextVertexIndex(0, -1);
-            var prew = pl.GetPoint2dAt(0);
-            for (var i = 1; i < pl.NumberOfVertices; i++)
-            {
-                var cur = pl.GetPoint2dAt(i);
-                if (prew.IsEqualTo(cur, tolerance))
-                {
-                    if (pl.HasBulges)
-                    {
-                        var bulge = pl.GetBulgeAt(i);
-                        pl.SetBulgeAt(pl.NextVertexIndex(i, -1), bulge);
-                    }
-                    pl.RemoveVertexAt(i--);
-                }
-                else if (onSomeLine && pl.NumberOfVertices > 2)
-                {
-                    // Проверка если точки на одной прямой
-                    var iNext = pl.NextVertexIndex(i);
-                    var next = pl.GetPoint2dAt(iNext);
-                    if (!next.IsEqualTo(prew, tolerance) && IsPointsOnSomeLine(prew, cur, next, tolerance))
-                    {
-                        pl.RemoveVertexAt(i--);
-                    }
-                    else
-                    {
-                        prew = cur;
-                    }
-                }
-                else
-                {
-                    prew = cur;
-                }
-            }
-            if (close && !pl.Closed) pl.Closed = true;
-        }
-
-        private static bool IsPointsOnSomeLine(Point2d pt1, Point2d pt2, Point2d pt3, Tolerance tolerance)
-        {
-            var vec1 = pt2 - pt1;
-            var vec2 = pt3 - pt1;
-            return vec1.IsParallelTo(vec2, tolerance);
-        }
-
-        [NotNull]
-        public static List<Point2d> GetPoints([NotNull] this Polyline pl)
-        {
-            var points = new List<Point2d>();
-            for (var i = 0; i < pl.NumberOfVertices; i++)
-            {
-                points.Add(pl.GetPoint2dAt(i));
-            }
-            return points;
-        }
-
-        public static IEnumerable<Point2d> EnumeratePoints([NotNull] this Polyline pl)
-        {
-            for (var i = 0; i < pl.NumberOfVertices; i++)
-            {
-                yield return pl.GetPoint2dAt(i);
-            }
-        }
-
-        public static List<Point2d> GetApproximatePoints([NotNull] this Polyline pl, int arcDivisionCount)
-        {
-            if (!pl.HasBulges)
-            {
-                return pl.GetPoints();
-            }
-            var points = new List<Point2d>();
-            for (var i = 0; i < pl.NumberOfVertices; i++)
-            {
-                points.Add(pl.GetPoint2dAt(i));
-                var segType = pl.GetSegmentType(i);
-                if (segType != SegmentType.Arc) continue;
-                var seg = pl.GetArcSegment2dAt(i);
-                var arcPts = seg.GetSamplePoints(arcDivisionCount).ToList();
-                arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
-                points.AddRange(arcPts);
-            }
-            return points;
-        }
-
-        /// <summary>
-        /// Апроксимация полилинии по высоте отступа сегментов от дуги
-        /// </summary>
-        /// <param name="pl">Полилиния</param>
-        /// <param name="chordHeight">Высота отклонения от дуги</param>
-        public static List<Point2d> GetApproximatePoints([NotNull] this Polyline pl, double chordHeight)
-        {
-            if (!pl.HasBulges)
-            {
-                return pl.GetPoints();
-            }
-            var points = new List<Point2d>();
-            for (var i = 0; i < pl.NumberOfVertices; i++)
-            {
-                points.Add(pl.GetPoint2dAt(i));
-                var segType = pl.GetSegmentType(i);
-                if (segType != SegmentType.Arc) continue;
-                var seg = pl.GetArcSegment2dAt(i);
-                var chordLength = GetChordLength(seg.Radius, chordHeight);
-                var segLength = seg.GetLength(seg.GetParameterOf(seg.StartPoint), seg.GetParameterOf(seg.EndPoint));
-                var numSeg = Convert.ToInt32(segLength / chordLength);
-                var arcPts = seg.GetSamplePoints(numSeg).ToList();
-                arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
-                points.AddRange(arcPts);
-            }
-            return points;
-        }
-
-        private static double GetChordLength(double r, double h)
-        {
-            return Math.Sqrt(r * r - (r - h) * (r - h)) * 2;
         }
 
         /// <summary>
@@ -287,7 +65,7 @@ namespace AcadLib.Geometry
             var pl2 = (Polyline)pl1.Clone();
 
             // le point spécifié est sur un sommet de la polyligne
-            if (Math.Round(param, 6) == index)
+            if (Math.Abs(Math.Round(param, 6) - index) < 0.0001)
             {
                 for (var i = pl1.NumberOfVertices - 1; i > index; i--)
                 {
@@ -312,13 +90,23 @@ namespace AcadLib.Geometry
                 pl2.RemoveVertexAt(0);
             }
             pl2.SetPointAt(0, pt);
-            if (pline.GetBulgeAt(index) != 0.0)
+            if (Math.Abs(pline.GetBulgeAt(index)) > 0.0001)
             {
                 var bulge = pline.GetBulgeAt(index);
                 pl1.SetBulgeAt(index, MultiplyBulge(bulge, param - index));
                 pl2.SetBulgeAt(0, MultiplyBulge(bulge, index + 1 - param));
             }
             return new[] { pl1, pl2 };
+        }
+
+        /// <summary>
+        /// Gets the centroid of the polyline.
+        /// </summary>
+        /// <param name="pl">The instance to which the method applies.</param>
+        /// <returns>The centroid of the polyline (WCS coordinates).</returns>
+        public static Point3d Centroid([NotNull] this Polyline pl)
+        {
+            return pl.Centroid2d().Convert3d(pl.Normal, pl.Elevation);
         }
 
         /// <summary>
@@ -378,13 +166,57 @@ namespace AcadLib.Geometry
         }
 
         /// <summary>
-        /// Gets the centroid of the polyline.
+        /// Проверка наличия самопересечений в полилинии
+        /// True - нет самопересечений
         /// </summary>
-        /// <param name="pl">The instance to which the method applies.</param>
-        /// <returns>The centroid of the polyline (WCS coordinates).</returns>
-        public static Point3d Centroid([NotNull] this Polyline pl)
+        public static bool CheckCross(this Polyline pline)
         {
-            return pl.Centroid2d().Convert3d(pl.Normal, pl.Elevation);
+            using (var mpoly = new MPolygon())
+            {
+                var isValidBoundary = false;
+                try
+                {
+                    mpoly.AppendLoopFromBoundary(pline, true, Tolerance.Global.EqualPoint);
+                    if (mpoly.NumMPolygonLoops != 0)
+                    {
+                        isValidBoundary = true;
+                    }
+                }
+                catch
+                {
+                    // Самопересечение
+                }
+                return isValidBoundary;
+            }
+        }
+
+        [NotNull]
+        public static Polyline CreatePolyline(this List<Point2d> pts)
+        {
+            var pl = new Polyline();
+            pts = pts.DistinctPoints();
+            for (var i = 0; i < pts.Count; i++)
+            {
+                pl.AddVertexAt(i, pts[i], 0, 0, 0);
+            }
+            pl.Closed = true;
+            return pl;
+        }
+
+        public static void Dispose([NotNull] this IEnumerable<Polyline> plines)
+        {
+            foreach (var pline in plines)
+            {
+                pline.Dispose();
+            }
+        }
+
+        public static IEnumerable<Point2d> EnumeratePoints([NotNull] this Polyline pl)
+        {
+            for (var i = 0; i < pl.NumberOfVertices; i++)
+            {
+                yield return pl.GetPoint2dAt(i);
+            }
         }
 
         /// <summary>
@@ -420,7 +252,7 @@ namespace AcadLib.Geometry
             var vec2 = seg2.EndPoint - seg2.StartPoint;
             var angle = (Math.PI - vec1.GetAngleTo(vec2)) / 2.0;
             var dist = radius * Math.Tan(angle);
-            if (dist == 0.0 || dist > seg1.Length || dist > seg2.Length)
+            if (Math.Abs(dist) < 0.0001 || dist > seg1.Length || dist > seg2.Length)
             {
                 return 0;
             }
@@ -436,16 +268,106 @@ namespace AcadLib.Geometry
             return 1;
         }
 
-        /// <summary>
-        /// Evaluates if the points are clockwise.
-        /// </summary>
-        /// <param name="p1">First point.</param>
-        /// <param name="p2">Second point</param>
-        /// <param name="p3">Third point</param>
-        /// <returns>True if points are clockwise, False otherwise.</returns>
-        private static bool Clockwise(Point2d p1, Point2d p2, Point2d p3)
+        [NotNull]
+        public static List<Point2d> GetApproximatePoints([NotNull] this Polyline pl, int arcDivisionCount)
         {
-            return (p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X) < 1e-8;
+            if (!pl.HasBulges)
+            {
+                return pl.GetPoints();
+            }
+            var points = new List<Point2d>();
+            for (var i = 0; i < pl.NumberOfVertices; i++)
+            {
+                points.Add(pl.GetPoint2dAt(i));
+                var segType = pl.GetSegmentType(i);
+                if (segType != SegmentType.Arc) continue;
+                var seg = pl.GetArcSegment2dAt(i);
+                var arcPts = seg.GetSamplePoints(arcDivisionCount).ToList();
+                arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
+                points.AddRange(arcPts);
+            }
+            return points;
+        }
+
+        /// <summary>
+        /// Апроксимация полилинии по высоте отступа сегментов от дуги
+        /// </summary>
+        /// <param name="pl">Полилиния</param>
+        /// <param name="chordHeight">Высота отклонения от дуги</param>
+        [NotNull]
+        public static List<Point2d> GetApproximatePoints([NotNull] this Polyline pl, double chordHeight)
+        {
+            if (!pl.HasBulges)
+            {
+                return pl.GetPoints();
+            }
+            var points = new List<Point2d>();
+            for (var i = 0; i < pl.NumberOfVertices; i++)
+            {
+                points.Add(pl.GetPoint2dAt(i));
+                var segType = pl.GetSegmentType(i);
+                if (segType != SegmentType.Arc) continue;
+                var seg = pl.GetArcSegment2dAt(i);
+                var chordLength = GetChordLength(seg.Radius, chordHeight);
+                var segLength = seg.GetLength(seg.GetParameterOf(seg.StartPoint), seg.GetParameterOf(seg.EndPoint));
+                var numSeg = Convert.ToInt32(segLength / chordLength);
+                var arcPts = seg.GetSamplePoints(numSeg).ToList();
+                arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
+                points.AddRange(arcPts);
+            }
+            return points;
+        }
+
+        /// <summary>
+        /// Минимальное расстояние от точки до полилинии
+        /// </summary>
+        public static double GetClosesLengthToPoint([NotNull] this Polyline pl, Point3d pt)
+        {
+            var ptClosest = pl.GetClosestPointTo(pt, false);
+            return (pt - ptClosest).Length;
+        }
+
+        /// <summary>
+        /// Creates a new Polyline that is the result of projecting the curve along the given plane.
+        /// </summary>
+        /// <param name="pline">The polyline to project.</param>
+        /// <param name="plane">The plane onto which the curve is to be projected.</param>
+        /// <returns>The projected polyline</returns>
+        [CanBeNull]
+        public static Polyline GetOrthoProjectedPolyline(this Polyline pline, [NotNull] Plane plane)
+        {
+            return pline.GetProjectedPolyline(plane, plane.Normal);
+        }
+
+        /// <summary>
+        /// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
+        /// </summary>
+        /// <param name="pl">Полилиния</param>
+        /// <param name="pt">Точка</param>
+        /// <param name="extend">Input whether or not to extend curve in search for nearest point.</param>
+        /// <returns></returns>
+        public static double GetParameterAtPointTry([NotNull] this Polyline pl, Point3d pt, bool extend = false)
+        {
+            try
+            {
+                return pl.GetParameterAtPoint(pt);
+            }
+            catch
+            {
+                var ptCorrect = pl.GetClosestPointTo(pt, extend);
+                return pl.GetParameterAtPoint(ptCorrect);
+            }
+        }
+
+        [NotNull]
+        public static List<Point2d> GetPoints([NotNull] this Polyline pl)
+        {
+            var points = new List<Point2d>();
+            for (var i = 0; i < pl.NumberOfVertices; i++)
+            {
+                points.Add(pl.GetPoint2dAt(i));
+            }
+            return points;
         }
 
         /// <summary>
@@ -455,6 +377,7 @@ namespace AcadLib.Geometry
         /// <param name="plane">The plane onto which the curve is to be projected.</param>
         /// <param name="direction">Direction (in WCS coordinates) of the projection.</param>
         /// <returns>The projected Polyline.</returns>
+        [CanBeNull]
         public static Polyline GetProjectedPolyline(this Polyline pline, [NotNull] Plane plane, Vector3d direction)
         {
             var tol = new Tolerance(1e-9, 1e-9);
@@ -464,6 +387,7 @@ namespace AcadLib.Geometry
             if (pline.Normal.IsPerpendicularTo(direction, tol))
             {
                 var dirPlane = new Plane(Point3d.Origin, direction);
+                // ReSharper disable once UpgradeOpen
                 if (!pline.IsWriteEnabled) pline.UpgradeOpen();
                 pline.TransformBy(Matrix3d.WorldToPlane(dirPlane));
                 var extents = pline.GeometricExtents;
@@ -474,31 +398,119 @@ namespace AcadLib.Geometry
             return GeomExt.ProjectPolyline(pline, plane, direction);
         }
 
-        /// <summary>
-        /// Creates a new Polyline that is the result of projecting the curve along the given plane.
-        /// </summary>
-        /// <param name="pline">The polyline to project.</param>
-        /// <param name="plane">The plane onto which the curve is to be projected.</param>
-        /// <returns>The projected polyline</returns>
-        public static Polyline GetOrthoProjectedPolyline(this Polyline pline, [NotNull] Plane plane)
+        [NotNull]
+        public static List<PolylineVertex> GetVertexes([NotNull] this Polyline pl)
         {
-            return pline.GetProjectedPolyline(plane, plane.Normal);
+            return PolylineVertex.GetVertexes(pl, string.Empty);
         }
 
         /// <summary>
-        /// Applies a factor to a polyline bulge.
+        /// Пересечение полилиний (штатный IntersectWith)
         /// </summary>
-        /// <param name="bulge">The bulge this method applies to.</param>
-        /// <param name="factor">the factor to apply to the bulge.</param>
-        /// <returns>The new bulge.</returns>
-        public static double MultiplyBulge(double bulge, double factor)
+        [NotNull]
+        public static List<Point3d> Intersects([NotNull] this Polyline pl1, Polyline pl2)
         {
-            return Math.Tan(Math.Atan(bulge) * factor);
+            var pts = new Point3dCollection();
+            pl1.IntersectWith(pl2, Intersect.OnBothOperands, new Plane(), pts, IntPtr.Zero, IntPtr.Zero);
+            return pts.Cast<Point3d>().ToList();
         }
 
-        private struct Point
+        /// <summary>
+        /// Попадает ли точка внутрь полигона (все линейные сегменты)
+        /// Но, работает быстрее, чем IsPointInsidePolyline. Примерно в 10раз.
+        /// </summary>
+        [Obsolete("Используй IsPointInsidePolyline(), подходящий для дуговых полилиний.")]
+        public static bool IsPointInsidePolygon([NotNull] this Polyline polygon, Point3d pt)
         {
-            public double X, Y;
+            var n = polygon.NumberOfVertices;
+            double angle = 0;
+            Point pt1, pt2;
+            for (var i = 0; i < n; i++)
+            {
+                pt1.X = polygon.GetPoint2dAt(i).X - pt.X;
+                pt1.Y = polygon.GetPoint2dAt(i).Y - pt.Y;
+                pt2.X = polygon.GetPoint2dAt((i + 1) % n).X - pt.X;
+                pt2.Y = polygon.GetPoint2dAt((i + 1) % n).Y - pt.Y;
+                angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
+            }
+            return !(Math.Abs(angle) < Math.PI);
+        }
+
+        /// <summary>
+        /// Попадает ли точка внутрь полилинии.
+        /// Предполагается, что полилиния имеет замкнутый контур.
+        /// Подходит для полилиний с дуговыми сегментами.
+        /// Работает медленнее чем IsPointInsidePolygon(), примерно в 10 раз.
+        /// </summary>
+        /// <param name="pt"></param>
+        /// <param name="onIsInside">Если исходная точка лежит на полилинии, то считать, что она внутри или нет: True - внутри, False - снаружи.</param>
+        /// <param name="pl"></param>
+        /// <exception cref="Exceptions.ErrorException">Не удалось определить за несколько попыток.</exception>
+        public static bool IsPointInsidePolyline([NotNull] this Polyline pl, Point3d pt, bool onIsInside = false)
+        {
+            using (var ray = new Ray())
+            {
+                ray.BasePoint = pt;
+                var vec = new Vector3d(0, 1, pt.Z);
+                ray.SecondPoint = pt + vec;
+                using (var ptsIntersects = new Point3dCollection())
+                {
+                    bool isContinue;
+                    var isPtOnPolyline = false;
+                    var countWhile = 0;
+                    do
+                    {
+                        using (var plane = new Plane())
+                        {
+                            pl.IntersectWith(ray, Intersect.OnBothOperands, plane, ptsIntersects, IntPtr.Zero, IntPtr.Zero);
+                        }
+                        isContinue = ptsIntersects.Cast<Point3d>().Any(p =>
+                        {
+                            if (pt.IsEqualTo(p))
+                            {
+                                isPtOnPolyline = true;
+                                return true;
+                            }
+                            var param = pl.GetParameterAtPointTry(p);
+                            return Math.Abs(param % 1) < 0.0001;
+                        });
+
+                        if (isPtOnPolyline)
+                        {
+                            return onIsInside;
+                        }
+
+                        if (isContinue)
+                        {
+                            vec = vec.RotateBy(0.01, Vector3d.ZAxis);
+                            ray.SecondPoint = pt + vec;
+                            ptsIntersects.Clear();
+                            countWhile++;
+                            if (countWhile > 3)
+                            {
+                                throw new Exceptions.ErrorException(new Errors.Error(
+                                    "Не определено попадает ли точка внутрь полилинии.",
+                                    pt.GetRectangleFromCenter(3), Matrix3d.Identity,
+                                    System.Drawing.SystemIcons.Error));
+                            }
+                        }
+                    } while (isContinue);
+                    return NetLib.MathExt.IsOdd(ptsIntersects.Count);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Проверка попадания точки в полилинию, с допуском
+        /// Попвдвет - если точка внутри или на полилинии.
+        /// Способ - по нечетному кол-ву точек пересечения луча из точки с полилинией.
+        /// </summary>
+        public static bool IsPointInsidePolylineByRay(this Polyline pl, Point3d pt, Tolerance tolerance)
+        {
+            using (var ray = new Ray { BasePoint = pt, UnitDir = Vector3d.YAxis })
+            {
+                return CurveExt.IsPointInsidePolylineByRay(ray, pt, pl, tolerance);
+            }
         }
 
         [Obsolete("Используй новую перегрузку с параметром допуска, она работает быстрее.")]
@@ -532,8 +544,8 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pl">Полилиния</param>
         /// <param name="pt">Точка</param>
-        /// <param name="gap">Допуск. Если 0, то используется Tolerance.Global</param>        
-        public static bool IsPointOnPolyline(this Polyline pl, Point3d pt, double gap)
+        /// <param name="gap">Допуск. Если 0, то используется Tolerance.Global</param>
+        public static bool IsPointOnPolyline([NotNull] this Polyline pl, Point3d pt, double gap)
         {
             var tolerance = Math.Abs(gap) < 0.0001 ? Tolerance.Global : new Tolerance(gap, gap);
             return IsPointOnPolyline(pl, pt, tolerance);
@@ -546,129 +558,76 @@ namespace AcadLib.Geometry
         }
 
         /// <summary>
-        /// Попадает ли точка внутрь полигона (все линейные сегменты)
-        /// Но, работает быстрее, чем IsPointInsidePolyline. Примерно в 10раз.
-        /// </summary>      
-        [Obsolete("Используй IsPointInsidePolyline(), подходящий для дуговых полилиний.")]
-        public static bool IsPointInsidePolygon([NotNull] this Polyline polygon, Point3d pt)
-        {
-            var n = polygon.NumberOfVertices;
-            double angle = 0;
-            Point pt1, pt2;
-            for (var i = 0; i < n; i++)
-            {
-                pt1.X = polygon.GetPoint2dAt(i).X - pt.X;
-                pt1.Y = polygon.GetPoint2dAt(i).Y - pt.Y;
-                pt2.X = polygon.GetPoint2dAt((i + 1) % n).X - pt.X;
-                pt2.Y = polygon.GetPoint2dAt((i + 1) % n).Y - pt.Y;
-                angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
-            }
-            return !(Math.Abs(angle) < Math.PI);
-        }
-
-        /// <summary>
-        /// Проверка попадания точки в полилинию, с допуском
-        /// Попвдвет - если точка внутри или на полилинии.
-        /// Способ - по нечетному кол-ву точек пересечения луча из точки с полилинией.
+        /// Проверка самопересечения полилинии
         /// </summary>
-        public static bool IsPointInsidePolylineByRay(this Polyline pl, Point3d pt, Tolerance tolerance)
+        public static PolygonValidateResult IsValidPolygon([NotNull] this Polyline pline, [NotNull] out List<Point3d> intersections,
+            double tolerance = 0.01)
         {
-            using (var ray = new Ray { BasePoint = pt, UnitDir = Vector3d.YAxis })
+            intersections = new List<Point3d>();
+            var result = PolygonValidateResult.OK;
+            if (!pline.Closed)
             {
-                return CurveExt.IsPointInsidePolylineByRay(ray, pt, pl, tolerance);
+                result += 1;
             }
+            var t = new Tolerance(tolerance, tolerance);
+            using (var curve1 = pline.GetGeCurve(t))
+            using (var curve2 = pline.GetGeCurve(t))
+            using (var curveInter = new CurveCurveIntersector3d(curve1, curve2, pline.Normal, t))
+            {
+                var interCount = curveInter.NumberOfIntersectionPoints;
+                var overlaps = curveInter.OverlapCount();
+                if (!pline.Closed) overlaps += 1;
+                if (overlaps < pline.NumberOfVertices) result += 2;
+                if (interCount > overlaps)
+                {
+                    result += 4;
+                    var plPts = pline.GetPoints().DistinctPoints().Select(s => s.Convert3d()).ToList();
+                    for (var i = 0; i < interCount; i++) intersections.Add(curveInter.GetIntersectionPoint(i));
+                    var onlyIntersects = intersections.Except(plPts).ToList();
+                    if (onlyIntersects.Any())
+                    {
+                        intersections = onlyIntersects;
+                    }
+                }
+            }
+            return result;
         }
 
-        public static bool IsVertex(this Polyline pl, Point3d pt, double tolerance = 0.0001)
+        public static bool IsVertex([NotNull] this Polyline pl, Point3d pt, double tolerance = 0.0001)
         {
             return NetLib.MathExt.IsWholeNumber(pl.GetParameterAtPointTry(pt), tolerance);
         }
 
         /// <summary>
-        /// Попадает ли точка внутрь полилинии. 
-        /// Предполагается, что полилиния имеет замкнутый контур.
-        /// Подходит для полилиний с дуговыми сегментами.
-        /// Работает медленнее чем IsPointInsidePolygon(), примерно в 10 раз.
-        /// </summary>        
-        /// <param name="onIsInside">Если исходная точка лежит на полилинии, то считать, что она внутри или нет: True - внутри, False - снаружи.</param>
-        /// <exception cref="Exceptions.ErrorException">Не удалось определить за несколько попыток.</exception>
-        public static bool IsPointInsidePolyline([NotNull] this Polyline pl, Point3d pt, bool onIsInside = false)
+        /// Applies a factor to a polyline bulge.
+        /// </summary>
+        /// <param name="bulge">The bulge this method applies to.</param>
+        /// <param name="factor">the factor to apply to the bulge.</param>
+        /// <returns>The new bulge.</returns>
+        public static double MultiplyBulge(double bulge, double factor)
         {
-            using (var ray = new Ray())
-            {
-                ray.BasePoint = pt;
-                var vec = new Vector3d(0, 1, pt.Z);
-                ray.SecondPoint = pt + vec;
-                using (var ptsIntersects = new Point3dCollection())
-                {
-                    var isContinue = false;
-                    var isPtOnPolyline = false;
-                    var countWhile = 0;
-                    do
-                    {
-                        using (var plane = new Plane())
-                        {
-                            pl.IntersectWith(ray, Intersect.OnBothOperands, plane, ptsIntersects, IntPtr.Zero, IntPtr.Zero);
-                        }
-                        isContinue = ptsIntersects.Cast<Point3d>().Any(p =>
-                        {
-                            if (pt.IsEqualTo(p))
-                            {
-                                isPtOnPolyline = true;
-                                return true;
-                            }
-                            var param = pl.GetParameterAtPointTry(p);
-                            return param % 1 == 0;
-                        });
-
-                        if (isPtOnPolyline)
-                        {
-                            return onIsInside;
-                        }
-
-                        if (isContinue)
-                        {
-                            vec = vec.RotateBy(0.01, Vector3d.ZAxis);
-                            ray.SecondPoint = pt + vec;
-                            ptsIntersects.Clear();
-                            countWhile++;
-                            if (countWhile > 3)
-                            {
-                                throw new Exceptions.ErrorException(new Errors.Error(
-                                    "Не определено попадает ли точка внутрь полилинии.",
-                                    pt.GetRectangleFromCenter(3), Matrix3d.Identity,
-                                    System.Drawing.SystemIcons.Error));
-                            }
-                        }
-                    } while (isContinue);
-                    return ptsIntersects.Count.IsOdd();
-                }
-            }
+            return Math.Tan(Math.Atan(bulge) * factor);
         }
 
-        [NotNull]
-        public static Polyline CreatePolyline(this List<Point2d> pts)
+        /// <summary>
+        /// Следующий индекс полилинии
+        /// </summary>
+        /// <param name="pl">Полилиния</param>
+        /// <param name="index">Текущий индек</param>
+        /// <param name="dir">Величина сдвига индекса. 1 - на ед вверх, -1 на ед. вниз, и т.д.</param>
+        /// <returns>Текущий индекс + сдвиг. С проверкой попадания индекса в кол-во вершин полилинии.</returns>
+        public static int NextVertexIndex([NotNull] this Polyline pl, int index, int dir = 1)
         {
-            var pl = new Polyline();
-            pts = pts.DistinctPoints();
-            for (var i = 0; i < pts.Count; i++)
+            var res = index + dir;
+            if (res < 0)
             {
-                pl.AddVertexAt(i, pts[i], 0, 0, 0);
+                res = pl.NumberOfVertices - 1;
             }
-            pl.Closed = true;
-            return pl;
-        }
-
-        private static double Angle2D(double x1, double y1, double x2, double y2)
-        {
-            var theta1 = Math.Atan2(y1, x1);
-            var theta2 = Math.Atan2(y2, x2);
-            var dtheta = theta2 - theta1;
-            while (dtheta > Math.PI)
-                dtheta -= Math.PI * 2;
-            while (dtheta < -Math.PI)
-                dtheta += Math.PI * 2;
-            return dtheta;
+            else if (res >= pl.NumberOfVertices)
+            {
+                res = 0;
+            }
+            return res;
         }
 
         /// <summary>
@@ -682,9 +641,9 @@ namespace AcadLib.Geometry
         public static IEnumerable<Polyline> Offset([NotNull] this Polyline source, double offsetDist, OffsetSide side)
         {
             offsetDist = Math.Abs(offsetDist);
-            var offsetRight = source.GetOffsetCurves(offsetDist).Cast<Polyline>();
+            var offsetRight = source.GetOffsetCurves(offsetDist).Cast<Polyline>().ToList();
             var areaRight = offsetRight.Select(pline => pline.Area).Sum();
-            var offsetLeft = source.GetOffsetCurves(-offsetDist).Cast<Polyline>();
+            var offsetLeft = source.GetOffsetCurves(-offsetDist).Cast<Polyline>().ToList();
             var areaLeft = offsetLeft.Select(pline => pline.Area).Sum();
             switch (side)
             {
@@ -713,67 +672,123 @@ namespace AcadLib.Geometry
                 case OffsetSide.Left:
                     offsetRight.Dispose();
                     return offsetLeft;
+
                 case OffsetSide.Right:
                     offsetLeft.Dispose();
                     return offsetRight;
+
                 case OffsetSide.Both:
                     return offsetRight.Concat(offsetLeft);
+
                 default:
                     return null;
             }
         }
-        public static void Dispose([NotNull] this IEnumerable<Polyline> plines)
-        {
-            foreach (var pline in plines)
-            {
-                pline.Dispose();
-            }
-        }
 
         /// <summary>
-        /// Проверка наличия самопересечений в полилинии
-        /// True - нет самопересечений
-        /// </summary>        
-        public static bool CheckCross(this Polyline pline)
+        /// Подписывание вершин полилинии
+        /// </summary>
+        public static void TestDrawVertexNumbers([NotNull] this Polyline pl, Color color)
         {
-            using (var mpoly = new MPolygon())
+            var scale = ScaleHelper.GetCurrentAnnoScale(HostApplicationServices.WorkingDatabase);
+            var texts = new List<Entity>();
+            for (var i = 0; i < pl.NumberOfVertices; i++)
             {
-                var isValidBoundary = false;
-                try
+                var text = new DBText
                 {
-                    mpoly.AppendLoopFromBoundary(pline, true, Tolerance.Global.EqualPoint);
-                    if (mpoly.NumMPolygonLoops != 0)
+                    TextString = i.ToString(),
+                    Position = pl.GetPoint2dAt(i).Convert3d(),
+                    Height = 2.5 * scale,
+                    Color = color
+                };
+                texts.Add(text);
+            }
+            texts.AddEntityToCurrentSpace();
+        }
+
+        public static void Wedding([NotNull] this Polyline pl, Tolerance tolerance)
+        {
+            Wedding(pl, tolerance, false);
+        }
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        public static void Wedding([NotNull] this Polyline pl, Tolerance tolerance, bool close = true, bool onSomeLine = false)
+        {
+            //var iPrew = pl.NextVertexIndex(0, -1);
+            var prew = pl.GetPoint2dAt(0);
+            for (var i = 1; i < pl.NumberOfVertices; i++)
+            {
+                var cur = pl.GetPoint2dAt(i);
+                if (prew.IsEqualTo(cur, tolerance))
+                {
+                    if (pl.HasBulges)
                     {
-                        isValidBoundary = true;
+                        var bulge = pl.GetBulgeAt(i);
+                        pl.SetBulgeAt(pl.NextVertexIndex(i, -1), bulge);
+                    }
+                    pl.RemoveVertexAt(i--);
+                }
+                else if (onSomeLine && pl.NumberOfVertices > 2)
+                {
+                    // Проверка если точки на одной прямой
+                    var iNext = pl.NextVertexIndex(i);
+                    var next = pl.GetPoint2dAt(iNext);
+                    if (!next.IsEqualTo(prew, tolerance) && IsPointsOnSomeLine(prew, cur, next, tolerance))
+                    {
+                        pl.RemoveVertexAt(i--);
+                    }
+                    else
+                    {
+                        prew = cur;
                     }
                 }
-                catch
+                else
                 {
-                    // Самопересечение
+                    prew = cur;
                 }
-                return isValidBoundary;
             }
+            if (close && !pl.Closed) pl.Closed = true;
+        }
+
+        private static double Angle2D(double x1, double y1, double x2, double y2)
+        {
+            var theta1 = Math.Atan2(y1, x1);
+            var theta2 = Math.Atan2(y2, x2);
+            var dtheta = theta2 - theta1;
+            while (dtheta > Math.PI)
+                dtheta -= Math.PI * 2;
+            while (dtheta < -Math.PI)
+                dtheta += Math.PI * 2;
+            return dtheta;
         }
 
         /// <summary>
-        /// Следующий индекс полилинии
+        /// Evaluates if the points are clockwise.
         /// </summary>
-        /// <param name="pl">Полилиния</param>
-        /// <param name="index">Текущий индек</param>
-        /// <param name="dir">Величина сдвига индекса. 1 - на ед вверх, -1 на ед. вниз, и т.д.</param>
-        /// <returns>Текущий индекс + сдвиг. С проверкой попадания индекса в кол-во вершин полилинии.</returns>
-        public static int NextVertexIndex([NotNull] this Polyline pl, int index, int dir = 1)
+        /// <param name="p1">First point.</param>
+        /// <param name="p2">Second point</param>
+        /// <param name="p3">Third point</param>
+        /// <returns>True if points are clockwise, False otherwise.</returns>
+        private static bool Clockwise(Point2d p1, Point2d p2, Point2d p3)
         {
-            var res = index + dir;
-            if (res < 0)
-            {
-                res = pl.NumberOfVertices - 1;
-            }
-            else if (res >= pl.NumberOfVertices)
-            {
-                res = 0;
-            }
-            return res;
+            return (p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X) < 1e-8;
+        }
+
+        private static double GetChordLength(double r, double h)
+        {
+            return Math.Sqrt(r * r - (r - h) * (r - h)) * 2;
+        }
+
+        private static bool IsPointsOnSomeLine(Point2d pt1, Point2d pt2, Point2d pt3, Tolerance tolerance)
+        {
+            var vec1 = pt2 - pt1;
+            var vec2 = pt3 - pt1;
+            return vec1.IsParallelTo(vec2, tolerance);
+        }
+
+        private struct Point
+        {
+            public double X, Y;
         }
     }
 }

@@ -1,11 +1,19 @@
 ﻿using MongoDblib.UsersData.Data;
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace AcadLib
 {
+    [PublicAPI]
     public static class UserInfo
     {
+        public static string FioAD { get; set; }
+
+        public static UserData UserData { get; set; }
+
+        public static List<string> UserGroupsAd { get; set; }
+
         static UserInfo()
         {
             try
@@ -22,10 +30,6 @@ namespace AcadLib
                 Logger.Log.Error(ex, "adUtils");
             }
         }
-
-        public static UserData UserData { get; set; }
-        public static string FioAD { get; set; }
-        public static List<string> UserGroupsAd { get; set; }
 
         public static void ShowUserProfileRegister()
         {

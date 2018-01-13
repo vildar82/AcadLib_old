@@ -7,15 +7,16 @@ namespace AcadLib
     /// <summary>
     /// Automates saving/changing/restoring system variables
     /// </summary>
+    [PublicAPI]
     public class ManagedSystemVariable : IDisposable
     {
-        string name = null;
-        object oldval = null;
+        private string name;
+        private object oldval;
 
-        public ManagedSystemVariable(string name, object value)
+        public ManagedSystemVariable([NotNull] string name, object value)
            : this(name)
         {
-            Autodesk.AutoCAD.ApplicationServices.Core.Application.SetSystemVariable(name, value);
+            Application.SetSystemVariable(name, value);
         }
 
         public ManagedSystemVariable([NotNull] string name)
@@ -23,7 +24,7 @@ namespace AcadLib
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(name);
             this.name = name;
-            oldval = Autodesk.AutoCAD.ApplicationServices.Core.Application.GetSystemVariable(name);
+            oldval = Application.GetSystemVariable(name);
         }
 
         public void Dispose()

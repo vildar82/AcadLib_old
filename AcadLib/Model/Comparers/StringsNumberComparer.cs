@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace AcadLib.Comparers
 {
     /// <summary>
     /// Сравнение строк как чисел
     /// </summary>
+    [PublicAPI]
+    [Obsolete]
     public class StringsNumberComparer : IComparer<string>
     {
         public int Compare(string x, string y)
@@ -17,26 +21,12 @@ namespace AcadLib.Comparers
                     // y - число numberY
                     return numberX.CompareTo(numberY);
                 }
-                else
-                {
-                    // y - строка.
-                    return -1; // число numberX меньше строки y
-                }
+                // y - строка.
+                return -1; // число numberX меньше строки y
             }
-            else
-            {
-                // x - строка
-                if (int.TryParse(y, out var numberY))
-                {
-                    // y - число numberY
-                    return 1; // число numberY меньше строки x
-                }
-                else
-                {
-                    // y - строка.               
-                    return x.CompareTo(y);
-                }
-            }
+            // x - строка
+            return int.TryParse(y, out var _) ? 1 : string.CompareOrdinal(x, y);
+            // y - строка.
         }
     }
 }

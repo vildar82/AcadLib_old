@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace AcadLib.Images
 {
+    [PublicAPI]
     public static class ImageExt
     {
+        [Obsolete("Пустой метод", true)]
         public static void AddWatermark(this Bitmap bitmap, string watermarkText)
         {
             //var font = new Font("Arial", 20, FontStyle.Bold, GraphicsUnit.Pixel);

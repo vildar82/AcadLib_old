@@ -13,11 +13,11 @@ namespace AcadLib
     /// Работает с HostApplicationServices.WorkingDatabase при каждом вызове метода сохранения или считывания значения.
     /// Или нужно задать Database в поле Db.
     /// </summary>
+    [PublicAPI]
     public class DictNOD
     {
-        private readonly string dictName;
         private readonly string dictInnerName;
-
+        private readonly string dictName;
         public Database Db { get; set; }
 
         [Obsolete("Используй `innerDict` конструктор.")]
@@ -43,57 +43,13 @@ namespace AcadLib
         }
 
         /// <summary>
-        /// Сохранение словаря
-        /// </summary>
-        /// <param name="dicEd">Словарь для сохранения</param>
-        public void Save([CanBeNull] DicED dicEd)
-        {
-            if (string.IsNullOrEmpty(dicEd?.Name)) return;
-            var dicId = GetDicPlugin(true);
-            ExtDicHelper.SetDicED(dicId, dicEd);
-        }
-
-        /// <summary>
-        /// Чтение вложенного словаря плагина - по имени вложенного словаря
-        /// </summary>
-        /// <param name="dicName">Имя словаря</param>
-        /// <returns>Словарь по ключу `dicName` если он есть.</returns>
-        [CanBeNull]
-        public DicED LoadED(string dicName)
-        {
-            var dicPluginId = GetDicPlugin(false);
-            var dicResId = ExtDicHelper.GetDic(dicPluginId, dicName, false, false);
-            var res = ExtDicHelper.GetDicEd(dicResId);
-            if (res != null)
-            {
-                res.Name = dicName;
-            }
-            return res;
-        }
-
-        /// <summary>
-        /// Чтение всего словаря плагина
-        /// </summary>        
-        [CanBeNull]
-        public DicED LoadED()
-        {
-            var dicPluginId = GetDicPlugin(false);
-            var res = ExtDicHelper.GetDicEd(dicPluginId);
-            if (res != null)
-            {
-                res.Name = dictInnerName;
-            }
-            return res;
-        }
-
-        /// <summary>
         /// Чтение списка записей для заданной XRecord по имени
         /// </summary>
         /// <param name="recName">Имя XRecord в словаре</param>
         /// <returns>Список значений в XRecord или null</returns>
         [CanBeNull]
         [Obsolete("Используй `DicED`")]
-        public List<TypedValue> Load(string recName)
+        public List<TypedValue> Load([NotNull] string recName)
         {
             List<TypedValue> values;
             var recId = GetRec(recName, false);
@@ -118,7 +74,7 @@ namespace AcadLib
         /// <param name="defValue">Возвращаемое значение если такой записи нет в словаре.</param>
         /// <returns></returns>
         [Obsolete("Используй `DicED`")]
-        public bool Load(string recName, bool defValue)
+        public bool Load([NotNull] string recName, bool defValue)
         {
             var res = defValue; // default
             var idRec = GetRec(recName, false);
@@ -158,7 +114,7 @@ namespace AcadLib
         /// <param name="defaultValue">Возвращаемое значение если такой записи нет в словаре.</param>
         /// <returns></returns>
         [Obsolete("Используй `DicED`")]
-        public int Load(string recName, int defaultValue)
+        public int Load([NotNull] string recName, int defaultValue)
         {
             var res = defaultValue;
             var idRec = GetRec(recName, false);
@@ -198,7 +154,7 @@ namespace AcadLib
         /// <param name="defaultValue">Возвращаемое значение если такой записи нет в словаре.</param>
         /// <returns></returns>
         [Obsolete("Используй `DicED`")]
-        public double Load(string recName, double defaultValue)
+        public double Load([NotNull] string recName, double defaultValue)
         {
             var res = defaultValue;
             var idRec = GetRec(recName, false);
@@ -238,7 +194,7 @@ namespace AcadLib
         /// <param name="defaultValue">Возвращаемое значение если такой записи нет в словаре.</param>
         ///<returns></returns>
         [Obsolete("Используй `DicED`")]
-        public string Load(string recName, string defaultValue)
+        public string Load([NotNull] string recName, string defaultValue)
         {
             var res = defaultValue;
             var idRec = GetRec(recName, false);
@@ -263,18 +219,62 @@ namespace AcadLib
         }
 
         /// <summary>
+        /// Чтение вложенного словаря плагина - по имени вложенного словаря
+        /// </summary>
+        /// <param name="dicName">Имя словаря</param>
+        /// <returns>Словарь по ключу `dicName` если он есть.</returns>
+        [CanBeNull]
+        public DicED LoadED(string dicName)
+        {
+            var dicPluginId = GetDicPlugin(false);
+            var dicResId = ExtDicHelper.GetDic(dicPluginId, dicName, false, false);
+            var res = ExtDicHelper.GetDicEd(dicResId);
+            if (res != null)
+            {
+                res.Name = dicName;
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Чтение всего словаря плагина
+        /// </summary>
+        [CanBeNull]
+        public DicED LoadED()
+        {
+            var dicPluginId = GetDicPlugin(false);
+            var res = ExtDicHelper.GetDicEd(dicPluginId);
+            if (res != null)
+            {
+                res.Name = dictInnerName;
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Сохранение словаря
+        /// </summary>
+        /// <param name="dicEd">Словарь для сохранения</param>
+        public void Save([CanBeNull] DicED dicEd)
+        {
+            if (string.IsNullOrEmpty(dicEd?.Name)) return;
+            var dicId = GetDicPlugin(true);
+            ExtDicHelper.SetDicED(dicId, dicEd);
+        }
+
+        /// <summary>
         /// Сохранение булевого значения в словарь
         /// </summary>
         /// <param name="value">Сохраняемое значение</param>
         /// <param name="key">Имя записи XRecord с одним TypedValue</param>
         [Obsolete("Используй `DicED`")]
-        public void Save(bool value, string key)
+        public void Save(bool value, [NotNull] string key)
         {
             var idRec = GetRec(key, true);
-            if (idRec.IsNull)
-                return;
+            if (idRec.IsNull) return;
 
-            using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
+            // ReSharper disable once IdOpenMode
+            using (var xRec = (Xrecord)idRec.Open(OpenMode.ForWrite))
             {
                 using (var rb = new ResultBuffer())
                 {
@@ -290,13 +290,14 @@ namespace AcadLib
         /// <param name="number">Значение</param>
         /// <param name="keyName">Имя записи XRecord с одним TypedValue</param>
         [Obsolete("Используй `DicED`")]
-        public void Save(int number, string keyName)
+        public void Save(int number, [NotNull] string keyName)
         {
             var idRec = GetRec(keyName, true);
             if (idRec.IsNull)
                 return;
 
-            using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
+            // ReSharper disable once IdOpenMode
+            using (var xRec = (Xrecord)idRec.Open(OpenMode.ForWrite))
             {
                 using (var rb = new ResultBuffer())
                 {
@@ -312,13 +313,14 @@ namespace AcadLib
         /// <param name="number">Значение</param>
         /// <param name="keyName">Имя записи XRecord с одним TypedValue</param>
         [Obsolete("Используй `DicED`")]
-        public void Save(double number, string keyName)
+        public void Save(double number, [NotNull] string keyName)
         {
             var idRec = GetRec(keyName, true);
             if (idRec.IsNull)
                 return;
 
-            using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
+            // ReSharper disable once IdOpenMode
+            using (var xRec = (Xrecord)idRec.Open(OpenMode.ForWrite))
             {
                 using (var rb = new ResultBuffer())
                 {
@@ -334,13 +336,14 @@ namespace AcadLib
         /// <param name="text">Значение</param>
         /// <param name="key">Имя записи XRecord с одним TypedValue</param>
         [Obsolete("Используй `DicED`")]
-        public void Save(string text, string key)
+        public void Save(string text, [NotNull] string key)
         {
             var idRec = GetRec(key, true);
             if (idRec.IsNull)
                 return;
 
-            using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
+            // ReSharper disable once IdOpenMode
+            using (var xRec = (Xrecord)idRec.Open(OpenMode.ForWrite))
             {
                 using (var rb = new ResultBuffer())
                 {
@@ -358,7 +361,8 @@ namespace AcadLib
             if (idRec.IsNull)
                 return;
 
-            using (var xRec = idRec.Open(OpenMode.ForWrite) as Xrecord)
+            // ReSharper disable once IdOpenMode
+            using (var xRec = (Xrecord)idRec.Open(OpenMode.ForWrite))
             {
                 using (var rb = new ResultBuffer(values.ToArray()))
                 {

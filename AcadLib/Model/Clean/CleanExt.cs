@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
     public static class CleanExt
@@ -33,7 +34,7 @@ namespace AcadLib
                         if (isZombie)
                         {
                             btr = btr.Id.GetObject<BlockTableRecord>(OpenMode.ForWrite);
-                            btr.Erase();
+                            if (btr != null) btr.Erase();
                         }
                     }
                 }

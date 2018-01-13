@@ -3,12 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    [PublicAPI]
     public interface IDisposableCollection<T> : ICollection<T>, IDisposable
       where T : IDisposable
     {
         void AddRange(IEnumerable<T> items);
+
         IEnumerable<T> RemoveRange(IEnumerable<T> items);
     }
 
@@ -24,6 +27,13 @@ namespace AcadLib
             AddRange(items);
         }
 
+        public void AddRange([CanBeNull] IEnumerable<T> items)
+        {
+            if (items == null)
+                return;
+            UnionWith(items);
+        }
+
         public void Dispose()
         {
             if (Count > 0)
@@ -33,6 +43,7 @@ namespace AcadLib
                 Clear();
                 foreach (var item in list)
                 {
+                    // ReSharper disable once CompareNonConstrainedGenericWithNull
                     if (item != null)
                     {
                         try
@@ -50,18 +61,13 @@ namespace AcadLib
             }
         }
 
-        public void AddRange([CanBeNull] IEnumerable<T> items)
-        {
-            if (items == null)
-                return;
-            UnionWith(items);
-        }
-
         [CanBeNull]
         public IEnumerable<T> RemoveRange([CanBeNull] IEnumerable<T> items)
         {
             if (items == null) return null;
+            // ReSharper disable once PossibleMultipleEnumeration
             ExceptWith(items);
+            // ReSharper disable once PossibleMultipleEnumeration
             return items;
         }
     }

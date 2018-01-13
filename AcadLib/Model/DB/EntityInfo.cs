@@ -2,8 +2,10 @@
 using JetBrains.Annotations;
 using System;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.DB
 {
+    [PublicAPI]
     public class EntityInfo : IEquatable<EntityInfo>
     {
         public string Layer { get; set; }
@@ -32,8 +34,8 @@ namespace AcadLib.DB
 
         public bool Equals(EntityInfo other)
         {
-            if (ReferenceEquals(other, null)) return false;
             if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
             var res = Extents.Equals(other.Extents) &&
                ClassId.Equals(other.ClassId) &&
                Color.Equals(other.Color) &&
@@ -43,7 +45,6 @@ namespace AcadLib.DB
 #if DEBUG
             if (!res)
             {
-
             }
 #endif
             return res;
@@ -56,6 +57,7 @@ namespace AcadLib.DB
 
         public override int GetHashCode()
         {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return Extents.GetHashCode();
         }
     }

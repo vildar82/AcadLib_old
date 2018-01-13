@@ -13,8 +13,10 @@ using System.Linq;
 using Region = Autodesk.AutoCAD.DatabaseServices.Region;
 using Surface = Autodesk.AutoCAD.DatabaseServices.Surface;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    [PublicAPI]
     public static class BrepExtensions
     {
         private static List<ObjectId> hatchEditAppendIds;
@@ -22,7 +24,8 @@ namespace AcadLib
         /// <summary>
         /// Определение контура для набора полилиний - объекдинением в регион и извлечением внешнего его контура.
         /// Должна быть запущена транзакция
-        /// </summary>        
+        /// </summary>
+        [CanBeNull]
         public static Polyline3d GetExteriorContour([NotNull] this List<Polyline> idsPl)
         {
             var colReg = new List<Region>();
@@ -97,7 +100,7 @@ namespace AcadLib
         [NotNull]
         public static List<KeyValuePair<Polyline, BrepLoopType>> GetPolylines(this Region reg)
         {
-            var resVal = new List<KeyValuePair<Polyline, BrepLoopType>>(); ;
+            var resVal = new List<KeyValuePair<Polyline, BrepLoopType>>();
             using (var brep = new Brep(reg))
             {
                 foreach (var face in brep.Faces)
@@ -198,6 +201,7 @@ namespace AcadLib
             return h;
         }
 
+        [CanBeNull]
         [Obsolete("Use CreateSurface")]
         public static Hatch CreateHatch(this Region region)
         {
@@ -220,11 +224,14 @@ namespace AcadLib
         /// <summary>
         /// Объекдинение полилиний.
         /// Полилинии должны быть замкнуты!
-        /// </summary>        
+        /// </summary>
+        /// <param name="pls">Поли</param>
         /// <param name="over">Контур который должен быть "над" объединенными полилиниями. Т.е. контур этой полилинии вырезается из полученного контура, если попадает на него.</param>
         public static Region Union([CanBeNull] this IEnumerable<Polyline> pls, Region over)
         {
-            if (pls == null || !pls.Any()) return null;
+            // ReSharper disable once PossibleMultipleEnumeration
+            if (pls?.Any() != true) return null;
+            // ReSharper disable once PossibleMultipleEnumeration
             var regions = CreateRegion(pls);
             Region union = null;
             try
@@ -368,6 +375,7 @@ namespace AcadLib
             }
         }
 
+        [NotNull]
         public static List<Region> CreateRegion([NotNull] this IEnumerable<Polyline> pls)
         {
             return CreateRegion(pls.Cast<Curve>());

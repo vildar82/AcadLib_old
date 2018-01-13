@@ -1,26 +1,29 @@
-﻿using AcadLib.Comparers;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NetLib.Comparers;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    [PublicAPI]
     public static class MathExt
     {
-        public static Random Rnd { get; } = new Random();
-        public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
         public const double PI2 = Math.PI * 2;
         public const double PIHalf = Math.PI * 0.5;
         public const double PIQuart = Math.PI * 25;
         public const double RatioDegreeToRadian = Math.PI / 180;
         public const double RatioRadianToDegree = 180 / Math.PI;
+        public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
+        public static Random Rnd { get; } = new Random();
 
         /// <summary>
         /// Приведение угла к значению от 0 до 2PI (один оборот)
         /// </summary>
         /// <param name="angle">Исходный угол в радианах</param>
         /// <returns>Угол в радианах соответствующий исходному углу, но в пределах от 0 до 2pi (круг)</returns>
+        [Obsolete]
         public static double FixedAngle(this double angle)
         {
             if (angle < 0)
@@ -34,152 +37,42 @@ namespace AcadLib
             return angle;
         }
 
-        public static string ToHours(this int min)
+        [Obsolete]
+        public static int GetStartInt(this string input)
         {
-            //return Math.Round(min * 0.01667, 1);
-            return ToHours((double)min);
+            var res = Strings.StringHelper.GetStartInteger(input);
+            if (res.Success)
+            {
+                return res.Value;
+            }
+            throw new Exception(res.Error);
         }
+
+        /// <summary>
+        /// Список чисел в строку, с групперовкой последовательных номеров
+        /// ints = 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109
+        /// res = "1-8, 10, 15, 16, 100-107, 109"
+        /// </summary>
         [NotNull]
-        public static string ToHours(this double min)
+        [Obsolete]
+        public static string IntsToStringSequence([NotNull] int[] ints)
         {
-            //return Math.Round(min *0.01667, 1);
-            var span = TimeSpan.FromMinutes(min);
-            var label = $"{span.Hours}ч.{span.Minutes}м.";
-            return label;
-        }
-
-        public static double ToMin(this double h)
-        {
-            return h * 60;
-        }
-
-        /// <summary>
-        /// Это целое число
-        /// </summary>
-        /// <param name="value">Проверяемое значение</param>
-        /// <param name="tolerance">Допуск</param>
-        /// <returns>Да или нет - если от заданного значения до целого числа меньше либо равно допуску</returns>
-        [Obsolete("Используй NetLib")]
-        public static bool IsWholeNumber(this double value, double tolerance = 0.001)
-        {
-            return NetLib.MathExt.IsWholeNumber(value, tolerance);
-        }
-
-        /// <summary>
-        /// Это нечетное число
-        /// </summary>        
-        public static bool IsOdd(this int value)
-        {
-            return value % 2 != 0;
-        }
-
-        /// <summary>
-        /// Это четное число
-        /// </summary>        
-        public static bool IsEven(this int value)
-        {
-            return value % 2 == 0;
-        }
-
-        /// <summary>
-        /// Сравнение десятичных чисел с допуском
-        /// </summary>
-        /// <param name="d">Первое число</param>
-        /// <param name="other">Второе число</param>
-        /// <param name="precision">Допуск разницы</param>
-        /// <returns>true - равны, false - не равны</returns>
-        public static bool IsEqual(this double d, double other, double precision = double.Epsilon)
-        {
-            return Math.Abs(d - other) <= precision;
-        }
-
-        /// <summary>
-        /// Превращает строки с диапазоном чисел в последовательность чисел.
-        /// Например "1-5, 8,9" - {1,2,3,4,5,8,9}
-        /// </summary>        
-        [NotNull]
-        public static List<int> ParseRangeNumbers([NotNull] string text)
-        {
-            var query =
-                from x in text.Split(',')
-                let y = x.Split('-')
-                let b = int.Parse(y[0].Trim())
-                let e = int.Parse(y[y.Length - 1].Trim())
-                from n in Enumerable.Range(b, e - b + 1)
-                select n;
-            return query.ToList();
-        }
-
-        /// <summary>
-        /// Проверка - это ортогональный угол - 0,90,180,270,360 градусов.
-        /// Допуск по умолчанию 1 градус - AngleComparer
-        /// </summary>
-        /// <param name="angleDeg">Угол в градусах</param>
-        /// <returns>True если угол ортогональный, False - если нет.</returns>
-        public static bool IsOrthoAngle(this double angleDeg)
-        {
-            return AngleComparer.Equals(angleDeg, 0) ||
-                   AngleComparer.Equals(angleDeg, 90) ||
-                   AngleComparer.Equals(angleDeg, 180) ||
-                   AngleComparer.Equals(angleDeg, 270) ||
-                   AngleComparer.Equals(angleDeg, 360);
-        }
-
-        /// <summary>
-        /// Преобразование градусов в радианы (Math.PI / 180.0)*angleDegrees
-        /// </summary>
-        /// <param name="degrees">Угол в градусах</param>
-        /// <returns>Угол в радианах</returns>
-        public static double ToRadians(this double degrees)
-        {
-            return degrees * RatioDegreeToRadian;// (Math.PI / 180.0);
-        }
-
-        /// <summary>
-        /// Преобразование радиан в градусы (180.0*angleDegrees/Math.PI)
-        /// </summary>
-        /// <param name="radian">Угол в радианах</param>
-        /// <returns>Угол в градусах</returns>
-        public static double ToDegrees(this double radian)
-        {
-            return (radian % PI2) * RatioRadianToDegree;// 180.0 / Math.PI;
-        }
-
-        /// <summary>
-        /// Округление до 5 - вверх
-        /// </summary>        
-        public static int RoundTo5(int i)
-        {
-            if (i % 5 != 0)
+            var uniqints = ints.Distinct().ToList();
+            var res = string.Empty;
+            var seq = new IntSequence(uniqints.First());
+            foreach (var n in uniqints.Skip(1))
             {
-                var temp = ((i + 5) / 5);
-                i = ((i + 5) / 5) * 5;
+                if (!seq.AddInt(n))
+                {
+                    SetSeq(ref res, ref seq);
+                    seq = new IntSequence(n);
+                }
             }
-            return i;
-        }
-
-        /// <summary>
-        /// Округление до 10
-        /// </summary>        
-        public static int RoundTo10(int i)
-        {
-            if (i % 10 != 0)
+            if (!seq.IsNull())
             {
-                i = ((i + 5) / 10) * 10;
+                SetSeq(ref res, ref seq);
             }
-            return i;
-        }
-
-        /// <summary>
-        /// Округление до 100
-        /// </summary>        
-        public static int RoundTo100(int i)
-        {
-            if (i % 100 != 0)
-            {
-                i = ((i + 50) / 100) * 100;
-            }
-            return i;
+            return res;
         }
 
         /// <summary>
@@ -190,6 +83,7 @@ namespace AcadLib
         /// <param name="ints"></param>
         /// <returns></returns>
         [NotNull]
+        [Obsolete]
         public static string IntsToStringSequenceAnton([NotNull] int[] ints)
         {
             // int[] paleNumbersInt = new[] { 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109 };
@@ -209,9 +103,8 @@ namespace AcadLib
                     if (mark[mark.Length - 1] != '-') mark += ",";
                     mark += ints[i];
                     break;
-
                 }
-                if ((i == 0) || (isFirstEnter))
+                if (i == 0 || isFirstEnter)
                 {
                     mark += ints[i].ToString();
                     isFirstEnter = false;
@@ -221,18 +114,16 @@ namespace AcadLib
                 {
                     if (mark[mark.Length - 1] != '-') mark += "-";// "," + ints[i] + "-";
                     isWas = true;
-                    continue;
                 }
                 else
                 {
                     if (mark[mark.Length - 1] != '-') mark += ",";
-                    if (!isWas) mark += ints[i].ToString() + ",";
+                    if (!isWas) mark += ints[i] + ",";
                     else
                     {
                         isWas = false;
-                        mark += ints[i].ToString() + ",";
+                        mark += ints[i] + ",";
                     }
-
                     isFirstEnter = true;
                 }
             }
@@ -241,31 +132,178 @@ namespace AcadLib
         }
 
         /// <summary>
-        /// Список чисел в строку, с групперовкой последовательных номеров
-        /// ints = 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109
-        /// res = "1-8, 10, 15, 16, 100-107, 109"
-        /// </summary>        
-        public static string IntsToStringSequence([NotNull] int[] ints)
+        /// Сравнение десятичных чисел с допуском
+        /// </summary>
+        /// <param name="d">Первое число</param>
+        /// <param name="other">Второе число</param>
+        /// <param name="precision">Допуск разницы</param>
+        /// <returns>true - равны, false - не равны</returns>
+        [Obsolete]
+        public static bool IsEqual(this double d, double other, double precision = double.Epsilon)
         {
-            var uniqints = ints.Distinct();
-            var res = string.Empty;
-            var seq = new IntSequence(uniqints.First());
-            foreach (var n in uniqints.Skip(1))
-            {
-                if (!seq.AddInt(n))
-                {
-                    SetSeq(ref res, ref seq);
-                    seq = new IntSequence(n);
-                }
-            }
-            if (!seq.IsNull())
-            {
-                SetSeq(ref res, ref seq);
-            }
-            return res;
+            return Math.Abs(d - other) <= precision;
         }
 
-        private static void SetSeq(ref string res, ref IntSequence seq)
+        /// <summary>
+        /// Это четное число
+        /// </summary>
+        [Obsolete]
+        public static bool IsEven(this int value)
+        {
+            return value % 2 == 0;
+        }
+
+        /// <summary>
+        /// Это нечетное число
+        /// </summary>
+        [Obsolete]
+        public static bool IsOdd(this int value)
+        {
+            return value % 2 != 0;
+        }
+
+        /// <summary>
+        /// Проверка - это ортогональный угол - 0,90,180,270,360 градусов.
+        /// Допуск по умолчанию 1 градус - AngleComparer
+        /// </summary>
+        /// <param name="angleDeg">Угол в градусах</param>
+        /// <returns>True если угол ортогональный, False - если нет.</returns>
+        [Obsolete]
+        public static bool IsOrthoAngle(this double angleDeg)
+        {
+            return AngleComparer.Equals(angleDeg, 0) ||
+                   AngleComparer.Equals(angleDeg, 90) ||
+                   AngleComparer.Equals(angleDeg, 180) ||
+                   AngleComparer.Equals(angleDeg, 270) ||
+                   AngleComparer.Equals(angleDeg, 360);
+        }
+
+        /// <summary>
+        /// Это целое число
+        /// </summary>
+        /// <param name="value">Проверяемое значение</param>
+        /// <param name="tolerance">Допуск</param>
+        /// <returns>Да или нет - если от заданного значения до целого числа меньше либо равно допуску</returns>
+        [Obsolete("Используй NetLib")]
+        public static bool IsWholeNumber(this double value, double tolerance = 0.001)
+        {
+            return NetLib.MathExt.IsWholeNumber(value, tolerance);
+        }
+
+        /// <summary>
+        /// Превращает строки с диапазоном чисел в последовательность чисел.
+        /// Например "1-5, 8,9" - {1,2,3,4,5,8,9}
+        /// </summary>
+        [NotNull]
+        [Obsolete]
+        public static List<int> ParseRangeNumbers([NotNull] string text)
+        {
+            var query =
+                from x in text.Split(',')
+                let y = x.Split('-')
+                let b = int.Parse(y[0].Trim())
+                let e = int.Parse(y[y.Length - 1].Trim())
+                from n in Enumerable.Range(b, e - b + 1)
+                select n;
+            return query.ToList();
+        }
+
+        /// <summary>
+        /// Округление до 10
+        /// </summary>
+        [Obsolete]
+        public static int RoundTo10(int i)
+        {
+            if (i % 10 != 0)
+            {
+                i = (i + 5) / 10 * 10;
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// Округление до 100
+        /// </summary>
+        [Obsolete]
+        public static int RoundTo100(int i)
+        {
+            if (i % 100 != 0)
+            {
+                i = (i + 50) / 100 * 100;
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// Округление до 5 - вверх
+        /// </summary>
+        [Obsolete]
+        public static int RoundTo5(int i)
+        {
+            if (i % 5 != 0)
+            {
+                i = (i + 5) / 5 * 5;
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// Преобразование радиан в градусы (180.0*angleDegrees/Math.PI)
+        /// </summary>
+        /// <param name="radian">Угол в радианах</param>
+        /// <returns>Угол в градусах</returns>
+        [Obsolete]
+        public static double ToDegrees(this double radian)
+        {
+            return radian % PI2 * RatioRadianToDegree;// 180.0 / Math.PI;
+        }
+
+        /// <summary>
+        /// Парсинг десятичного числа из строки - замена , на . (в англ. культуре)
+        /// </summary>
+        [Obsolete]
+        public static double ToDouble(this string val)
+        {
+            return NetLib.MathExt.ToDouble(val);
+        }
+
+        [NotNull]
+        [Obsolete]
+        public static string ToHours(this int min)
+        {
+            //return Math.Round(min * 0.01667, 1);
+            return ToHours((double)min);
+        }
+
+        [NotNull]
+        [Obsolete]
+        public static string ToHours(this double min)
+        {
+            //return Math.Round(min *0.01667, 1);
+            var span = TimeSpan.FromMinutes(min);
+            var label = $"{span.Hours}ч.{span.Minutes}м.";
+            return label;
+        }
+
+        [Obsolete]
+        public static double ToMin(this double h)
+        {
+            return h * 60;
+        }
+
+        /// <summary>
+        /// Преобразование градусов в радианы (Math.PI / 180.0)*angleDegrees
+        /// </summary>
+        /// <param name="degrees">Угол в градусах</param>
+        /// <returns>Угол в радианах</returns>
+        [Obsolete]
+        public static double ToRadians(this double degrees)
+        {
+            return degrees * RatioDegreeToRadian;// (Math.PI / 180.0);
+        }
+
+        [Obsolete]
+        private static void SetSeq([NotNull] ref string res, ref IntSequence seq)
         {
             if (res == string.Empty)
             {
@@ -277,22 +315,18 @@ namespace AcadLib
             }
         }
 
-        struct IntSequence
+        [Obsolete]
+        private struct IntSequence
         {
-            int start;
-            int end;
-            bool has;
+            private readonly int start;
+            private int end;
+            private bool has;
 
             public IntSequence(int start)
             {
                 this.start = start;
                 end = start;
                 has = true;
-            }
-
-            public bool IsNull()
-            {
-                return !has;
             }
 
             public bool AddInt(int next)
@@ -302,16 +336,13 @@ namespace AcadLib
                     end = next;
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
 
             [NotNull]
             public string GetSeq()
             {
-                var res = string.Empty;
+                string res;
                 has = false;
                 if (end == start)
                 {
@@ -327,26 +358,10 @@ namespace AcadLib
                 }
                 return res;
             }
-        }
 
-        /// <summary>
-        /// Парсинг десятичного числа из строки - замена , на . (в англ. культуре)
-        /// </summary>        
-        public static double ToDouble(this string val)
-        {
-            return NetLib.MathExt.ToDouble(val);
-        }
-
-        public static int GetStartInt(this string input)
-        {
-            var res = Strings.StringHelper.GetStartInteger(input);
-            if (res.Success)
+            public bool IsNull()
             {
-                return res.Value;
-            }
-            else
-            {
-                throw new Exception(res.Error);
+                return !has;
             }
         }
     }

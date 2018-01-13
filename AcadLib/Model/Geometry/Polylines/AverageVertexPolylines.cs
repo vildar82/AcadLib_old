@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Geometry
 {
     /// <summary>
@@ -12,6 +13,7 @@ namespace AcadLib.Geometry
     /// Только для полилиний с линейными сегментами.
     /// Усредняются вершины на обоих полилиниях
     /// </summary>
+    [PublicAPI]
     public static class AverageVertexPolylines
     {
         /// <summary>
@@ -21,13 +23,13 @@ namespace AcadLib.Geometry
         /// <param name="plOther">Вторая полилиния</param>
         /// <param name="tolerance">Определение совпадения вершин для их усреднения</param>
         [Obsolete("Используй вариант с приклеиванием вершин к сегментам.", true)]
-        public static void AverageVertexes([NotNull] this Polyline pl, ref Polyline plOther, Tolerance tolerance)
+        public static void AverageVertexes([NotNull] this Polyline pl, [NotNull] ref Polyline plOther, Tolerance tolerance)
         {
             var ptsOther = plOther.GetPoints();
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 var pt = pl.GetPoint2dAt(i);
-                var nearestPtOther = ptsOther.Where(p => p.IsEqualTo(pt, tolerance));
+                var nearestPtOther = ptsOther.Where(p => p.IsEqualTo(pt, tolerance)).ToList();
                 // усреднение вершин
                 if (nearestPtOther.Any())
                 {
@@ -54,7 +56,7 @@ namespace AcadLib.Geometry
         /// <param name="plOther">Вторая полилиния</param>
         /// <param name="tolerance">Допуск - поиск совпадающих вершин и ближайших сегментов</param>
         /// <param name="stickToSegment">Делать ли "прилипание" вершин к сегментам соседней полилинии (для обеих полилиний)</param>
-        public static void AverageVertexes([NotNull] this Polyline pl, ref Polyline plOther, Tolerance tolerance, bool stickToSegment)
+        public static void AverageVertexes([NotNull] this Polyline pl, [NotNull] ref Polyline plOther, Tolerance tolerance, bool stickToSegment)
         {
             var ptsOther = plOther.GetPoints();
             // Индексы вершин второй полилинии совпадающие с первой
@@ -63,7 +65,7 @@ namespace AcadLib.Geometry
             {
                 var pt = pl.GetPoint3dAt(i);
                 var pt2d = pt.Convert2d();
-                var nearestPtOther = ptsOther.Where(p => p.IsEqualTo(pt2d, tolerance));
+                var nearestPtOther = ptsOther.Where(p => p.IsEqualTo(pt2d, tolerance)).ToList();
                 // усреднение вершин
                 if (nearestPtOther.Any())
                 {
@@ -97,15 +99,6 @@ namespace AcadLib.Geometry
             }
         }
 
-        private static void StickVertexToPl(this Polyline plModify, int indexVertex, Point3d ptVertex, [NotNull] Polyline plOther, Tolerance tolerance)
-        {
-            var ptStick = plOther.GetClosestPointTo(ptVertex, false);
-            if ((ptVertex - ptStick).Length <= tolerance.EqualPoint)
-            {
-                MoveVertex(plModify, indexVertex, ptStick.Convert2d());
-            }
-        }
-
         /// <summary>
         /// Перенос вершины
         /// </summary>
@@ -116,6 +109,15 @@ namespace AcadLib.Geometry
         {
             pl.RemoveVertexAt(indexVertex);
             pl.AddVertexAt(indexVertex, newPlacePt, 0, 0, 0);
+        }
+
+        private static void StickVertexToPl(this Polyline plModify, int indexVertex, Point3d ptVertex, [NotNull] Polyline plOther, Tolerance tolerance)
+        {
+            var ptStick = plOther.GetClosestPointTo(ptVertex, false);
+            if ((ptVertex - ptStick).Length <= tolerance.EqualPoint)
+            {
+                MoveVertex(plModify, indexVertex, ptStick.Convert2d());
+            }
         }
     }
 }

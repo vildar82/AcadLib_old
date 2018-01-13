@@ -34,15 +34,16 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace AcadLib
 {
+    [PublicAPI]
     public class Commands : IExtensionApplication
     {
-        private static bool isRibbonColorStoped;
         internal static readonly string fileCommonBlocks = Path.Combine(PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
         //public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";
         public const string CommandXDataView = "PIK_XDataView";
+
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
         /// <summary>
         /// Общие команды для всех отделов определенные в этой сборке
@@ -201,11 +202,11 @@ namespace AcadLib
         {
             Logger.Log.Info("Terminate AcadLib");
         }
-        
+
         [CommandMethod(Group, nameof(PIK_Ribbon), CommandFlags.Modal)]
         public void PIK_Ribbon()
         {
-            CommandStart.Start(d=>RibbonBuilder.CreateRibbon());
+            CommandStart.Start(d => RibbonBuilder.CreateRibbon());
         }
 
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
@@ -263,7 +264,7 @@ namespace AcadLib
                 using (var t = db.TransactionManager.StartTransaction())
                 {
                     var allTypes = new Dictionary<string, int>();
-                    var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject<BlockTableRecord>();
+                    var ms = (BlockTableRecord)SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
                     foreach (var id in ms)
                     {
                         if (allTypes.ContainsKey(id.ObjectClass.Name))
@@ -353,6 +354,7 @@ namespace AcadLib
                 doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}");
             });
         }
+
         [CommandMethod(Group, nameof(PIK_AutoLayersStop), CommandFlags.Modal)]
         public void PIK_AutoLayersStop()
         {
@@ -362,6 +364,7 @@ namespace AcadLib
                 doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}");
             });
         }
+
         [CommandMethod(Group, nameof(PIK_AutoLayersStatus), CommandFlags.Modal)]
         public void PIK_AutoLayersStatus()
         {
@@ -386,8 +389,10 @@ namespace AcadLib
                 var db = doc.Database;
                 using (var t = db.TransactionManager.StartTransaction())
                 {
-                    var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject<BlockTableRecord>();
+                    var ms = (BlockTableRecord)SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
+#pragma warning disable 618
                     var entId = ms.Cast<ObjectId>().FirstOrDefault(f => f.OldId == id);
+#pragma warning restore 618
                     if (entId.IsNull)
                     {
                         "Элемент не найден в Моделе.".WriteToCommandLine();

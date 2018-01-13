@@ -16,8 +16,40 @@ namespace AcadLib.Layers.AutoLayers
         private static AutoLayer curAutoLayer;
         private static List<ObjectId> idAddedEnts;
 
-        public static bool IsStarted { get; private set; }
         public static List<AutoLayer> AutoLayers { get; set; } = GetAutoLayers();
+        public static bool IsStarted { get; private set; }
+
+        /// <summary>
+        /// Автослои для всех объектов чертежа
+        /// </summary>
+        public static void AutoLayersAll()
+        {
+            var document = Application.DocumentManager.MdiActiveDocument;
+            using (var t = document.TransactionManager.StartTransaction())
+            {
+                var db = document.Database;
+                var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
+                foreach (var btr in bt.GetObjects<BlockTableRecord>())
+                {
+                    AutoLayersBtr(btr);
+                }
+                t.Commit();
+            }
+        }
+
+        [NotNull]
+        public static string GetInfo()
+        {
+            var info = string.Empty;
+            info += IsStarted ? "Автослои включены" : "Автослои выключены";
+            if (!IsStarted || AutoLayers == null) return info;
+            info += Environment.NewLine;
+            foreach (var autoLayer in AutoLayers)
+            {
+                info += autoLayer.GetInfo() + Environment.NewLine;
+            }
+            return info;
+        }
 
         public static void Init()
         {
@@ -36,7 +68,7 @@ namespace AcadLib.Layers.AutoLayers
                     Start();
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "AutoLayersService Init");
             }
@@ -63,28 +95,56 @@ namespace AcadLib.Layers.AutoLayers
             Save();
         }
 
-        private static void DocumentManager_DocumentActivated(object sender, [NotNull] DocumentCollectionEventArgs e)
+        private static void AutoLayerEntities([NotNull] AutoLayer autoLayer, [NotNull] IEnumerable<ObjectId> autoLayerEnts)
         {
-            SubscribeDocument(e.Document);
+            var layId = autoLayer.Layer.CheckLayerState();
+            foreach (var idEnt in autoLayerEnts)
+            {
+                var ent = idEnt.GetObject<Entity>(OpenMode.ForWrite);
+                if (ent != null && ent.LayerId != layId)
+                {
+                    ent.LayerId = layId;
+                }
+            }
         }
 
-        private static void SubscribeDocument(Document document)
+        private static void AutoLayersBtr([CanBeNull] BlockTableRecord btr)
         {
-            // Отписка в старом документе
-            UnsubscribeDocument(_doc);
-            _doc = document;
-            if (_doc == null) return;
-            // Подписка на события команды нового документа
-            _doc.CommandWillStart -= Doc_CommandWillStart;
-            _doc.CommandWillStart += Doc_CommandWillStart;
+            if (btr == null) return;
+            var idEnts = btr.Cast<ObjectId>().ToList();
+            var idBlRefs = idEnts.Where(w => w.ObjectClass == General.ClassBlRef).ToList();
+            idEnts = idEnts.Except(idBlRefs).ToList();
+            foreach (var idBlRef in idBlRefs)
+            {
+                var blRef = idBlRef.GetObject<BlockReference>();
+                if (blRef == null) continue;
+                AutoLayersBtr(blRef.BlockTableRecord.GetObject<BlockTableRecord>());
+            }
+            foreach (var autoLayer in AutoLayers)
+            {
+                var autoLayerEnts = autoLayer.GetAutoLayerEnts(idEnts);
+                AutoLayerEntities(autoLayer, autoLayerEnts);
+                idEnts = idEnts.Except(autoLayerEnts).ToList();
+            }
         }
-        private static void UnsubscribeDocument([CanBeNull] Document document)
+
+        private static void Database_ObjectAppended(object sender, ObjectEventArgs e)
         {
-            if (document == null) return;
-            document.CommandWillStart -= Doc_CommandWillStart;
-            document.CommandEnded -= Doc_CommandEnded;
-            if (document.Database != null) document.Database.ObjectAppended -= Database_ObjectAppended;
-            document.CommandCancelled -= Doc_CommandCancelled;
+            // Сбор всех id добавляемых объектов
+            if (curAutoLayer != null)
+            {
+                idAddedEnts?.Add(e.DBObject.Id);
+            }
+        }
+
+        private static void Doc_CommandCancelled(object sender, [NotNull] CommandEventArgs e)
+        {
+            EndCommand(sender as Document, e.GlobalCommandName);
+        }
+
+        private static void Doc_CommandEnded(object sender, [NotNull] CommandEventArgs e)
+        {
+            EndCommand(sender as Document, e.GlobalCommandName);
         }
 
         private static void Doc_CommandWillStart(object sender, CommandEventArgs e)
@@ -105,13 +165,9 @@ namespace AcadLib.Layers.AutoLayers
             document.CommandCancelled += Doc_CommandCancelled;
         }
 
-        private static void Doc_CommandEnded(object sender, [NotNull] CommandEventArgs e)
+        private static void DocumentManager_DocumentActivated(object sender, [NotNull] DocumentCollectionEventArgs e)
         {
-            EndCommand(sender as Document, e.GlobalCommandName);
-        }
-        private static void Doc_CommandCancelled(object sender, [NotNull] CommandEventArgs e)
-        {
-            EndCommand(sender as Document, e.GlobalCommandName);
+            SubscribeDocument(e.Document);
         }
 
         private static void EndCommand([CanBeNull] Document document, string globalCommandName)
@@ -127,13 +183,9 @@ namespace AcadLib.Layers.AutoLayers
             curAutoLayer = null;
         }
 
-        private static void Database_ObjectAppended(object sender, ObjectEventArgs e)
+        private static AutoLayer GetAutoLayerCommand(string globalCommandName)
         {
-            // Сбор всех id добавляемых объектов            
-            if (curAutoLayer != null)
-            {
-                idAddedEnts?.Add(e.DBObject.Id);
-            }
+            return AutoLayers.Find(f => f.IsAutoLayerCommand(globalCommandName));
         }
 
         [NotNull]
@@ -145,9 +197,26 @@ namespace AcadLib.Layers.AutoLayers
             return als;
         }
 
-        private static AutoLayer GetAutoLayerCommand(string globalCommandName)
+        [NotNull]
+        private static RegExt GetReg()
         {
-            return AutoLayers.Find(f => f.IsAutoLayerCommand(globalCommandName));
+            return new RegExt("AutoLayers");
+        }
+
+        private static bool IsUserGroupAutoLayersAllowed()
+        {
+            var userGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined.First();
+            // Кроме ГП и КР-СБ-ГК
+            // В ГП - будет настраиваться индивидуально.
+            return !userGroup.StartsWith(General.UserGroupGP) && userGroup != General.UserGroupKRSBGK;
+        }
+
+        private static void Load()
+        {
+            using (var reg = GetReg())
+            {
+                IsStarted = reg.Load("IsStarted", true);
+            }
         }
 
         private static void ProcessingAutoLayers([NotNull] AutoLayer currentAutoLayerAutoLayer, List<ObjectId> idsAddedEnt)
@@ -161,84 +230,6 @@ namespace AcadLib.Layers.AutoLayers
             }
         }
 
-        private static void AutoLayerEntities([NotNull] AutoLayer autoLayer, [NotNull] IEnumerable<ObjectId> autoLayerEnts)
-        {
-            var layId = autoLayer.Layer.CheckLayerState();
-            foreach (var idEnt in autoLayerEnts)
-            {
-                var ent = idEnt.GetObject<Entity>(OpenMode.ForWrite);
-                if (ent != null && ent.LayerId != layId)
-                {
-                    ent.LayerId = layId;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Автослои для всех объектов чертежа
-        /// </summary>
-        public static void AutoLayersAll()
-        {
-            var document = Application.DocumentManager.MdiActiveDocument;
-            using (var t = document.TransactionManager.StartTransaction())
-            {
-                var db = document.Database;
-                foreach (var idBtr in db.BlockTableId.GetObject<BlockTable>())
-                {
-                    var btr = idBtr.GetObject<BlockTableRecord>();
-                    AutoLayersBtr(btr);
-                }
-                t.Commit();
-            }
-        }
-
-        private static void AutoLayersBtr([CanBeNull] BlockTableRecord btr)
-        {
-            if (btr == null) return;
-            var idEnts = btr.Cast<ObjectId>().ToList();
-            var idBlRefs = idEnts.Where(w => w.ObjectClass == General.ClassBlRef);
-            idEnts = idEnts.Except(idBlRefs).ToList();
-            foreach (var idBlRef in idBlRefs)
-            {
-                var blRef = idBlRef.GetObject<BlockReference>();
-                AutoLayersBtr(blRef.BlockTableRecord.GetObject<BlockTableRecord>());
-            }
-            foreach (var autoLayer in AutoLayers)
-            {
-                var autoLayerEnts = autoLayer.GetAutoLayerEnts(idEnts);
-                AutoLayerEntities(autoLayer, autoLayerEnts);
-                idEnts = idEnts.Except(autoLayerEnts).ToList();
-            }
-        }
-
-        [NotNull]
-        public static string GetInfo()
-        {
-            var info = string.Empty;
-            info += IsStarted ? "Автослои включены" : "Автослои выключены";
-            if (!IsStarted || AutoLayers == null) return info;
-            info += Environment.NewLine;
-            foreach (var autoLayer in AutoLayers)
-            {
-                info += autoLayer.GetInfo() + Environment.NewLine;
-            }
-            return info;
-        }
-
-        [NotNull]
-        private static RegExt GetReg()
-        {
-            return new RegExt("AutoLayers");
-        }
-
-        private static void Load()
-        {
-            using (var reg = GetReg())
-            {
-                IsStarted = reg.Load("IsStarted", true);
-            }
-        }
-
         private static void Save()
         {
             using (var reg = GetReg())
@@ -247,12 +238,24 @@ namespace AcadLib.Layers.AutoLayers
             }
         }
 
-        private static bool IsUserGroupAutoLayersAllowed()
+        private static void SubscribeDocument(Document document)
         {
-            var userGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroupsCombined.First();
-            // Кроме ГП и КР-СБ-ГК
-            // В ГП - будет настраиваться индивидуально.
-            return !userGroup.StartsWith(General.UserGroupGP) && userGroup != General.UserGroupKRSBGK;
+            // Отписка в старом документе
+            UnsubscribeDocument(_doc);
+            _doc = document;
+            if (_doc == null) return;
+            // Подписка на события команды нового документа
+            _doc.CommandWillStart -= Doc_CommandWillStart;
+            _doc.CommandWillStart += Doc_CommandWillStart;
+        }
+
+        private static void UnsubscribeDocument([CanBeNull] Document document)
+        {
+            if (document == null) return;
+            document.CommandWillStart -= Doc_CommandWillStart;
+            document.CommandEnded -= Doc_CommandEnded;
+            if (document.Database != null) document.Database.ObjectAppended -= Database_ObjectAppended;
+            document.CommandCancelled -= Doc_CommandCancelled;
         }
     }
 }

@@ -11,8 +11,97 @@ using System.Linq;
 
 namespace AcadLib.Hatches
 {
+    [PublicAPI]
     public static class HatchExt
     {
+        /// <summary>
+        /// Создание ассоциативной штриховки по полилинии
+        /// Полилиния должна быть в базе чертежа
+        /// </summary>
+        [CanBeNull]
+        public static Hatch CreateAssociativeHatch([NotNull] Curve loop, [NotNull] BlockTableRecord cs, [NotNull] Transaction t,
+            string pattern = "SOLID", [CanBeNull] string layer = null, LineWeight lw = LineWeight.LineWeight015)
+        {
+            var h = new Hatch();
+            h.SetDatabaseDefaults();
+            if (layer != null)
+            {
+                Layers.LayerExt.CheckLayerState(layer);
+                h.Layer = layer;
+            }
+            h.LineWeight = lw;
+            h.Linetype = SymbolUtilityServices.LinetypeContinuousName;
+            h.SetHatchPattern(HatchPatternType.PreDefined, pattern);
+            cs.AppendEntity(h);
+            t.AddNewlyCreatedDBObject(h, true);
+            h.Associative = true;
+            h.HatchStyle = HatchStyle.Normal;
+
+            // добавление контура полилинии в гштриховку
+            var ids = new ObjectIdCollection { loop.Id };
+            try
+            {
+                h.AppendLoop(HatchLoopTypes.Default, ids);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"CreateAssociativeHatch");
+                h.Erase();
+                return null;
+            }
+            h.EvaluateHatch(true);
+            var orders = (DrawOrderTable)cs.DrawOrderTableId.GetObject(OpenMode.ForWrite);
+            orders.MoveToBottom(new ObjectIdCollection(new[] { h.Id }));
+            return h;
+        }
+
+        [NotNull]
+        public static Hatch CreateHatch(this List<Point2d> pts)
+        {
+            pts = pts.DistinctPoints();
+            var ptCol = new Point2dCollection(pts.ToArray()) { pts[0] };
+            var dCol = new DoubleCollection(new double[pts.Count]);
+            var h = new Hatch();
+            h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+            h.AppendLoop(HatchLoopTypes.Default, ptCol, dCol);
+            h.EvaluateHatch(false);
+            return h;
+        }
+
+        [CanBeNull]
+        public static Hatch CreateHatch([CanBeNull] this List<PolylineVertex> pts)
+        {
+            if (pts?.Any() != true) return null;
+            if (!pts[0].Pt.IsEqualTo(pts[pts.Count - 1].Pt))
+            {
+                pts.Add(pts[0]);
+            }
+            var ptCol = new Point2dCollection(pts.Select(s => s.Pt).ToArray());
+            var dCol = new DoubleCollection(pts.Select(s => s.Bulge).ToArray());
+            var h = new Hatch();
+            h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+            h.AppendLoop(HatchLoopTypes.Default, ptCol, dCol);
+            h.EvaluateHatch(false);
+            return h;
+        }
+
+        [NotNull]
+        public static Hatch CreateHatch([NotNull] this List<Point3d> pts)
+        {
+            return CreateHatch(pts.ConvertAll(Point3dExtensions.Convert2d));
+        }
+
+        /// <summary>
+        /// Создание штриховки по точкам полилинии
+        /// </summary>
+        [CanBeNull]
+        public static Hatch CreateHatch([CanBeNull] this Polyline pl)
+        {
+            if (pl == null) return null;
+            var vertexes = pl.GetVertexes();
+            return CreateHatch(vertexes);
+        }
+
         public static double GetHatchArea([NotNull] this Hatch hatch)
         {
             double area = 0;
@@ -66,7 +155,7 @@ namespace AcadLib.Hatches
                                 }
                                 catch
                                 {
-                                    // Разбиваем кривую на 1000000 точек. Надеюсь, что такой точности 
+                                    // Разбиваем кривую на 1000000 точек. Надеюсь, что такой точности
                                     // будет достаточно.
                                     var pts = compCurve.GetSamplePoints(1000);
                                     var np = pts.Length;
@@ -90,26 +179,21 @@ namespace AcadLib.Hatches
         [CanBeNull]
         public static HatchOptions GetHatchOptions([CanBeNull] this Hatch h)
         {
-            if (h == null) return null;
-            return new HatchOptions(h);
+            return h == null ? null : new HatchOptions(h);
         }
 
-        public static void SetHatchOptions([CanBeNull] this Hatch h, [CanBeNull] HatchOptions opt)
+        /// <summary>
+        /// Полилинии в штриховке
+        /// </summary>
+        /// <param name="ht">Штриховка</param>
+        /// <param name="loopType">Из каких типов островков</param>
+        [NotNull]
+        public static DisposableSet<Polyline> GetPolylines([NotNull] this Hatch ht, HatchLoopTypes loopType = HatchLoopTypes.External)
         {
-            if (h == null || opt == null) return;
-            if (opt.PatternAngle != null && opt.PatternAngle.Value > 0)
-            {
-                h.PatternAngle = opt.PatternScale.Value;
-            }
-            if (opt.PatternScale != null && opt.PatternScale.Value > 0)
-            {
-                h.PatternScale = opt.PatternScale.Value;
-            }
-            if (!opt.PatternName.IsNullOrEmpty())
-            {
-                h.SetHatchPattern(opt.PatternType, opt.PatternName);
-            }
-            h.BackgroundColor = opt.BackgroundColor ?? Color.FromColorIndex(ColorMethod.None, 257);
+            var loops = GetPolylines2(ht, Tolerance.Global, loopType);
+            var res = new DisposableSet<Polyline>(loops.Select(s => s.GetPolyline()));
+            loops.Clear();
+            return res;
         }
 
         [NotNull]
@@ -182,111 +266,27 @@ namespace AcadLib.Hatches
             return loops;
         }
 
+        public static void SetHatchOptions([CanBeNull] this Hatch h, [CanBeNull] HatchOptions opt)
+        {
+            if (h == null || opt == null) return;
+            if (!opt.PatternName.IsNullOrEmpty())
+            {
+                h.SetHatchPattern(opt.PatternType, opt.PatternName);
+            }
+            if (opt.PatternAngle != null && opt.PatternAngle.Value > 0)
+            {
+                h.PatternAngle = opt.PatternAngle.Value;
+            }
+            if (opt.PatternScale != null && opt.PatternScale.Value > 0)
+            {
+                h.PatternScale = opt.PatternScale.Value;
+            }
+            h.BackgroundColor = opt.BackgroundColor ?? Color.FromColorIndex(ColorMethod.None, 257);
+        }
+
         private static bool NeedAddVertexToPl(Polyline poly, int prewVertex, Point2d vertex, Tolerance tolerance)
         {
             return prewVertex <= 0 || !poly.GetPoint2dAt(prewVertex - 1).IsEqualTo(vertex, tolerance);
-        }
-
-        /// <summary>
-        /// Полилинии в штриховке
-        /// </summary>
-        /// <param name="ht">Штриховка</param>
-        /// <param name="loopType">Из каких типов островков</param>    
-        [NotNull]
-        public static DisposableSet<Polyline> GetPolylines(this Hatch ht, HatchLoopTypes loopType = HatchLoopTypes.External)
-        {
-            var loops = GetPolylines2(ht, Tolerance.Global, loopType);
-            var res = new DisposableSet<Polyline>(loops.Select(s => s.GetPolyline()));
-            loops.Clear();
-            return res;
-        }
-
-        /// <summary>
-        /// Создание ассоциативной штриховки по полилинии
-        /// Полилиния должна быть в базе чертежа
-        /// </summary>        
-        [CanBeNull]
-        public static Hatch CreateAssociativeHatch([NotNull] Curve loop, [NotNull] BlockTableRecord cs, [NotNull] Transaction t,
-            string pattern = "SOLID", [CanBeNull] string layer = null, LineWeight lw = LineWeight.LineWeight015)
-        {
-            var h = new Hatch();
-            h.SetDatabaseDefaults();
-            if (layer != null)
-            {
-                Layers.LayerExt.CheckLayerState(layer);
-                h.Layer = layer;
-            }
-            h.LineWeight = lw;
-            h.Linetype = SymbolUtilityServices.LinetypeContinuousName;
-            h.SetHatchPattern(HatchPatternType.PreDefined, pattern);
-            cs.AppendEntity(h);
-            t.AddNewlyCreatedDBObject(h, true);
-            h.Associative = true;
-            h.HatchStyle = HatchStyle.Normal;
-
-            // добавление контура полилинии в гштриховку
-            var ids = new ObjectIdCollection { loop.Id };
-            try
-            {
-                h.AppendLoop(HatchLoopTypes.Default, ids);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, $"CreateAssociativeHatch");
-                h.Erase();
-                return null;
-            }
-            h.EvaluateHatch(true);
-
-            var orders = cs.DrawOrderTableId.GetObject(OpenMode.ForWrite) as DrawOrderTable;
-            orders.MoveToBottom(new ObjectIdCollection(new[] { h.Id }));
-
-            return h;
-        }
-
-        [NotNull]
-        public static Hatch CreateHatch(this List<Point2d> pts)
-        {
-            pts = pts.DistinctPoints();
-            var ptCol = new Point2dCollection(pts.ToArray()) { pts[0] };
-            var dCol = new DoubleCollection(new double[pts.Count]);
-            var h = new Hatch();
-            h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
-            h.AppendLoop(HatchLoopTypes.Default, ptCol, dCol);
-            h.EvaluateHatch(false);
-            return h;
-        }
-
-        [CanBeNull]
-        public static Hatch CreateHatch([CanBeNull] this List<PolylineVertex> pts)
-        {
-            if (pts?.Any() != true) return null;
-            if (!pts[0].Pt.IsEqualTo(pts[pts.Count - 1].Pt))
-            {
-                pts.Add(pts[0]);
-            }
-            var ptCol = new Point2dCollection(pts.Select(s => s.Pt).ToArray());
-            var dCol = new DoubleCollection(pts.Select(s => s.Bulge).ToArray());
-            var h = new Hatch();
-            h.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
-            h.AppendLoop(HatchLoopTypes.Default, ptCol, dCol);
-            h.EvaluateHatch(false);
-            return h;
-        }
-
-        public static Hatch CreateHatch([NotNull] this List<Point3d> pts)
-        {
-            return CreateHatch(pts.ConvertAll(Point3dExtensions.Convert2d));
-        }
-
-        /// <summary>
-        /// Создание штриховки по точкам полилинии
-        /// </summary>
-        public static Hatch CreateHatch([CanBeNull] this Polyline pl)
-        {
-            if (pl == null) return null;
-            var vertexes = pl.GetVertexes();
-            return CreateHatch(vertexes);
         }
     }
 }

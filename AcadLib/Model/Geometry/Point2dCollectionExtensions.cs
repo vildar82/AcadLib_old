@@ -10,10 +10,38 @@ namespace AcadLib.Geometry
     public static class Point2dCollectionExtensions
     {
         /// <summary>
+        /// Gets a value indicating whether the specified point belongs to the collection.
+        /// </summary>
+        /// <param name="pts">The instance to which the method applies.</param>
+        /// <param name="pt">The point to search.</param>
+        /// <returns>true if the point is found; otherwise, false.</returns>
+        public static bool Contains([NotNull] this Point2dCollection pts, Point2d pt)
+        {
+            return pts.Contains(pt, Tolerance.Global);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the specified point belongs to the collection.
+        /// </summary>
+        /// <param name="pts">The instance to which the method applies.</param>
+        /// <param name="pt">The point to search.</param>
+        /// <param name="tol">The tolerance to use in comparisons.</param>
+        /// <returns>true if the point is found; otherwise, false.</returns>
+        public static bool Contains([NotNull] this Point2dCollection pts, Point2d pt, Tolerance tol)
+        {
+            for (var i = 0; i < pts.Count; i++)
+            {
+                if (pt.IsEqualTo(pts[i], tol))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Removes duplicated points in the collection.
         /// </summary>
         /// <param name="pts">The instance to which the method applies.</param>
-        public static void RemoveDuplicate(this Point2dCollection pts)
+        public static void RemoveDuplicate([NotNull] this Point2dCollection pts)
         {
             pts.RemoveDuplicate(Tolerance.Global);
         }
@@ -35,7 +63,7 @@ namespace AcadLib.Geometry
             {
                 for (var j = i + 1; j < ptlst.Count;)
                 {
-                    if ((ptlst[j].X - ptlst[i].X) > tol.EqualPoint)
+                    if (ptlst[j].X - ptlst[i].X > tol.EqualPoint)
                         break;
                     if (ptlst[i].IsEqualTo(ptlst[j], tol))
                     {
@@ -46,34 +74,6 @@ namespace AcadLib.Geometry
                         j++;
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the specified point belongs to the collection.
-        /// </summary>
-        /// <param name="pts">The instance to which the method applies.</param>
-        /// <param name="pt">The point to search.</param>
-        /// <returns>true if the point is found; otherwise, false.</returns>
-        public static bool Contains(this Point2dCollection pts, Point2d pt)
-        {
-            return pts.Contains(pt, Tolerance.Global);
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the specified point belongs to the collection.
-        /// </summary>
-        /// <param name="pts">The instance to which the method applies.</param>
-        /// <param name="pt">The point to search.</param>
-        /// <param name="tol">The tolerance to use in comparisons.</param>
-        /// <returns>true if the point is found; otherwise, false.</returns>
-        public static bool Contains([NotNull] this Point2dCollection pts, Point2d pt, Tolerance tol)
-        {
-            for (var i = 0; i < pts.Count; i++)
-            {
-                if (pt.IsEqualTo(pts[i], tol))
-                    return true;
-            }
-            return false;
         }
     }
 }

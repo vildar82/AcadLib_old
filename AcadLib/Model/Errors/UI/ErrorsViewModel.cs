@@ -14,20 +14,44 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
 
+// ReSharper disable once CheckNamespace
 namespace AcadLib.Errors
 {
     public class ErrorsViewModel : BaseViewModel
     {
+        public ReactiveCommand CollapseAll { get; set; }
+
+        [Reactive] public int CountSelectedErrors { get; set; }
+
+        public ReactiveCommand DeleteError { get; set; }
+
+        public ReactiveCommand DeleteSelectedDublicateBlocks { get; set; }
+
+        public new ReactiveList<ErrorModelBase> Errors { get; set; }
+
+        [Reactive] public int ErrorsCountInfo { get; set; }
+
+        public List<IError> ErrorsOrig { get; set; }
+
+        public ReactiveCommand ExpandeAll { get; set; }
+
+        public ReactiveCommand ExportToExcel { get; set; }
+
+        public ReactiveCommand ExportToTxt { get; set; }
+
+        public bool IsDialog { get; set; }
+
+        public bool IsDublicateBlocksEnabled { get; set; }
+
         public ErrorsViewModel()
         {
-
         }
 
         public ErrorsViewModel([NotNull] List<IError> errors)
         {
             ErrorsOrig = errors;
             // Группировка ошибок
-            //"Дублирование блоков"                        
+            //"Дублирование блоков"
             Errors = new ReactiveList<ErrorModelBase>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).
                 GroupBy(g => g.Group).Select(s =>
                 {
@@ -59,24 +83,14 @@ namespace AcadLib.Errors
             DeleteError = CreateCommand<ErrorModelBase>(DeleteErrorExec);
         }
 
-        private void ErrModel_SelectionChanged(object sender, bool e)
+        /// <summary>
+        /// Удаление выделенных ошибок
+        /// </summary>
+        public void DeleteSelectedErrors()
         {
-            CountSelectedErrors += e ? 1 : -1;
+            var selectedErrors = GetSelectedErrors(out var _);
+            RemoveErrors(selectedErrors);
         }
-
-        public List<IError> ErrorsOrig { get; set; }
-        public ReactiveList<ErrorModelBase> Errors { get; set; }
-        public bool IsDialog { get; set; }
-
-        public ReactiveCommand CollapseAll { get; set; }
-        public ReactiveCommand ExpandeAll { get; set; }
-        public ReactiveCommand ExportToExcel { get; set; }
-        public ReactiveCommand ExportToTxt { get; set; }
-        public ReactiveCommand DeleteSelectedDublicateBlocks { get; set; }
-        public ReactiveCommand DeleteError { get; set; }
-        [Reactive] public int ErrorsCountInfo { get; set; }
-        public bool IsDublicateBlocksEnabled { get; set; }
-        [Reactive] public int CountSelectedErrors { get; set; }
 
         private void CollapseExecute()
         {
@@ -84,6 +98,52 @@ namespace AcadLib.Errors
             {
                 item.IsExpanded = false;
             }
+        }
+
+        private void DeleteErrorExec([NotNull] ErrorModelBase errorBase)
+        {
+            if (errorBase is ErrorModelOne errOne && errOne.Parent != null)
+            {
+                errOne.Parent.SameErrors.Remove(errorBase);
+            }
+            else
+            {
+                Errors.Remove(errorBase);
+            }
+            if (errorBase.Error == null)
+            {
+                throw new ArgumentException("Ошибка не найдена.");
+            }
+            if (!errorBase.Error.IdEnt.IsValidEx() && errorBase.Error.HasEntity)
+            {
+                throw new Exception("Элемент ошибки не валидный. Возможно был удален.");
+            }
+            var doc = AcadHelper.Doc;
+            var db = doc.Database;
+            if (errorBase.Error.IdEnt.Database != db)
+            {
+                throw new Exception($"Переключитесь на чертеж '{Path.GetFileName(doc.Name)}'");
+            }
+            using (doc.LockDocument())
+            using (var t = db.TransactionManager.StartTransaction())
+            {
+                var ent = errorBase.Error.IdEnt.GetObject<Entity>(OpenMode.ForWrite);
+                ent?.Erase();
+                if (errorBase is ErrorModelList errList)
+                {
+                    foreach (var error in errList.SameErrors)
+                    {
+                        ent = error.Error.IdEnt.GetObject<Entity>(OpenMode.ForWrite);
+                        ent?.Erase();
+                    }
+                }
+                t.Commit();
+            }
+        }
+
+        private void ErrModel_SelectionChanged(object sender, bool e)
+        {
+            CountSelectedErrors += e ? 1 : -1;
         }
 
         private void ExpandedExecute()
@@ -129,7 +189,7 @@ namespace AcadLib.Errors
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show(ex.Message, "Ошибка");
+                System.Windows.Forms.MessageBox.Show(ex.Message, @"Ошибка");
                 AcadLib.Logger.Log.Error(ex, "Сохранение ошибок в Excel");
             }
         }
@@ -157,49 +217,6 @@ namespace AcadLib.Errors
             Process.Start(fileTxt);
         }
 
-        private void OnDeleteSelectedDublicateBlocksExecute()
-        {
-            var selectedErrors = GetSelectedErrors(out var errors);
-            try
-            {
-                Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
-                RemoveErrors(selectedErrors);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка удаления дубликатов блоков - {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Удаление выделенных ошибок
-        /// </summary>
-        public void DeleteSelectedErrors()
-        {
-            var selectedErrors = GetSelectedErrors(out var _);
-            RemoveErrors(selectedErrors);
-        }
-
-        private void RemoveErrors([NotNull] List<ErrorModelBase> selectedErrors)
-        {
-            var countIsSelectedErr = 0;
-            foreach (var item in selectedErrors)
-            {
-                if (item is ErrorModelOne errOne)
-                {
-                    errOne.Parent.SameErrors.Remove(item);
-                }
-                else
-                {
-                    Errors.Remove(item);
-
-                }
-                if (item.IsSelected) countIsSelectedErr++;
-            }
-            ErrorsCountInfo -= selectedErrors.Count;
-            CountSelectedErrors -= countIsSelectedErr;
-        }
-
         [NotNull]
         private List<ErrorModelBase> GetSelectedErrors([NotNull] out List<IError> errors)
         {
@@ -225,45 +242,37 @@ namespace AcadLib.Errors
             return selectedErrors;
         }
 
-        private void DeleteErrorExec([NotNull] ErrorModelBase errorBase)
+        private void OnDeleteSelectedDublicateBlocksExecute()
         {
-            if (errorBase is ErrorModelOne errOne && errOne.Parent != null)
+            var selectedErrors = GetSelectedErrors(out var errors);
+            try
             {
-                errOne.Parent.SameErrors.Remove(errorBase);
+                Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
+                RemoveErrors(selectedErrors);
             }
-            else
+            catch (Exception ex)
             {
-                Errors.Remove(errorBase);
+                MessageBox.Show($"Ошибка удаления дубликатов блоков - {ex.Message}");
             }
-            if (errorBase.Error == null)
+        }
+
+        private void RemoveErrors([NotNull] List<ErrorModelBase> selectedErrors)
+        {
+            var countIsSelectedErr = 0;
+            foreach (var item in selectedErrors)
             {
-                throw new ArgumentException("Ошибка не найдена.");
-            }
-            if (!errorBase.Error.IdEnt.IsValidEx() && errorBase.Error.HasEntity)
-            {
-                throw new Exception("Элемент ошибки не валидный. Возможно был удален.");
-            }
-            var doc = AcadHelper.Doc;
-            var db = doc.Database;
-            if (errorBase.Error.IdEnt.Database != db)
-            {
-                throw new Exception($"Переключитесь на чертеж '{Path.GetFileName(doc.Name)}'");
-            }
-            using (doc.LockDocument())
-            using (var t = db.TransactionManager.StartTransaction())
-            {
-                var ent = errorBase.Error.IdEnt.GetObject<Entity>(OpenMode.ForWrite);
-                ent?.Erase();
-                if (errorBase is ErrorModelList errList)
+                if (item is ErrorModelOne errOne)
                 {
-                    foreach (var error in errList.SameErrors)
-                    {
-                        ent = error.Error.IdEnt.GetObject<Entity>(OpenMode.ForWrite);
-                        ent?.Erase();
-                    }
+                    errOne.Parent.SameErrors.Remove(item);
                 }
-                t.Commit();
+                else
+                {
+                    Errors.Remove(item);
+                }
+                if (item.IsSelected) countIsSelectedErr++;
             }
+            ErrorsCountInfo -= selectedErrors.Count;
+            CountSelectedErrors -= countIsSelectedErr;
         }
     }
 }

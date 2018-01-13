@@ -10,62 +10,16 @@ namespace AcadLib.Geometry
     /// </summary>
     public class Triangle2d : Triangle<Point2d>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of Triangle2d that is empty.
-        /// </summary>
-        public Triangle2d() : base() { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle2d that contains elements copied from the specified array.
-        /// </summary>
-        /// <param name="pts">The Point2d array whose elements are copied to the new Triangle2d.</param>
-        public Triangle2d(Point2d[] pts) : base(pts) { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle2d that contains the specified elements.
-        /// </summary>
-        /// <param name="a">The first vertex of the new Triangle2d (origin).</param>
-        /// <param name="b">The second vertex of the new Triangle2d (2nd vertex).</param>
-        /// <param name="c">The third vertex of the new Triangle2d (3rd vertex).</param>
-        public Triangle2d(Point2d a, Point2d b, Point2d c) : base(a, b, c) { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle2d according to an origin and two vectors.
-        /// </summary>
-        /// <param name="org">The origin of the Triangle2d (1st vertex).</param>
-        /// <param name="v1">The vector from origin to the second vertex.</param>
-        /// <param name="v2">The vector from origin to the third vertex.</param>
-        public Triangle2d(Point2d org, Vector2d v1, Vector2d v2)
-        {
-            _pts[0] = _pt0 = org;
-            _pts[1] = _pt1 = org + v1;
-            _pts[2] = _pt2 = org + v2;
-        }
-
-        #endregion
-
-        #region Properties
-
         /// <summary>
         /// Gets the triangle algebraic (signed) area.
         /// </summary>
-        public double AlgebricArea
-        {
-            get {
-                return (((_pt1.X - _pt0.X) * (_pt2.Y - _pt0.Y)) -
-                    ((_pt2.X - _pt0.X) * (_pt1.Y - _pt0.Y))) / 2.0;
-            }
-        }
+        public double AlgebricArea => ((_pt1.X - _pt0.X) * (_pt2.Y - _pt0.Y) -
+                                       (_pt2.X - _pt0.X) * (_pt1.Y - _pt0.Y)) / 2.0;
 
         /// <summary>
         /// Gets the triangle centroid.
         /// </summary>
-        public Point2d Centroid
-        {
-            get { return (_pt0 + _pt1.GetAsVector() + _pt2.GetAsVector()) / 3.0; }
-        }
+        public Point2d Centroid => (_pt0 + _pt1.GetAsVector() + _pt2.GetAsVector()) / 3.0;
 
         /// <summary>
         /// Gets the circumscribed circle.
@@ -77,9 +31,7 @@ namespace AcadLib.Geometry
                 var l1 = GetSegmentAt(0).GetBisector();
                 var l2 = GetSegmentAt(1).GetBisector();
                 var inters = l1.IntersectWith(l2);
-                if (inters == null)
-                    return null;
-                return new CircularArc2d(inters[0], inters[0].GetDistanceTo(_pt0));
+                return inters == null ? null : new CircularArc2d(inters[0], inters[0].GetDistanceTo(_pt0));
             }
         }
 
@@ -105,14 +57,40 @@ namespace AcadLib.Geometry
         /// <summary>
         /// Gets a value indicating whether the triangle vertices are clockwise.
         /// </summary>
-        public bool IsClockwise
+        public bool IsClockwise => AlgebricArea < 0.0;
+
+        /// <summary>
+        /// Initializes a new instance of Triangle2d that is empty.
+        /// </summary>
+        public Triangle2d()
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle2d that contains elements copied from the specified array.
+        /// </summary>
+        /// <param name="pts">The Point2d array whose elements are copied to the new Triangle2d.</param>
+        public Triangle2d([NotNull] Point2d[] pts) : base(pts) { }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle2d that contains the specified elements.
+        /// </summary>
+        /// <param name="a">The first vertex of the new Triangle2d (origin).</param>
+        /// <param name="b">The second vertex of the new Triangle2d (2nd vertex).</param>
+        /// <param name="c">The third vertex of the new Triangle2d (3rd vertex).</param>
+        public Triangle2d(Point2d a, Point2d b, Point2d c) : base(a, b, c) { }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle2d according to an origin and two vectors.
+        /// </summary>
+        /// <param name="org">The origin of the Triangle2d (1st vertex).</param>
+        /// <param name="v1">The vector from origin to the second vertex.</param>
+        /// <param name="v2">The vector from origin to the third vertex.</param>
+        public Triangle2d(Point2d org, Vector2d v1, Vector2d v2)
         {
-            get { return (AlgebricArea < 0.0); }
+            _pts[0] = _pt0 = org;
+            _pts[1] = _pt1 = org + v1;
+            _pts[2] = _pt2 = org + v2;
         }
-
-        #endregion
-
-        #region Methods
 
         /// <summary>
         /// Converts the triangle into a Triangle3d according to the specified plane.
@@ -122,8 +100,7 @@ namespace AcadLib.Geometry
         [NotNull]
         public Triangle3d Convert3d(Plane plane)
         {
-            return new Triangle3d(
-                Array.ConvertAll<Point2d, Point3d>(_pts, x => x.Convert3d(plane)));
+            return new Triangle3d(Array.ConvertAll(_pts, x => x.Convert3d(plane)));
         }
 
         /// <summary>
@@ -135,8 +112,7 @@ namespace AcadLib.Geometry
         [NotNull]
         public Triangle3d Convert3d(Vector3d normal, double elevation)
         {
-            return new Triangle3d(
-                Array.ConvertAll<Point2d, Point3d>(_pts, x => x.Convert3d(normal, elevation)));
+            return new Triangle3d(Array.ConvertAll(_pts, x => x.Convert3d(normal, elevation)));
         }
 
         /// <summary>
@@ -146,14 +122,12 @@ namespace AcadLib.Geometry
         /// <returns>The angle expressed in radians.</returns>
         public double GetAngleAt(int index)
         {
-            var pi = 3.141592653589793;
+            const double pi = 3.141592653589793;
             var ang =
                 this[index].GetVectorTo(this[(index + 1) % 3]).GetAngleTo(
                 this[index].GetVectorTo(this[(index + 2) % 3]));
-            if (ang > pi * 2)
-                return pi * 2 - ang;
-            else
-                return ang;
+            if (ang > pi * 2) return pi * 2 - ang;
+            return ang;
         }
 
         /// <summary>
@@ -166,8 +140,7 @@ namespace AcadLib.Geometry
         [NotNull]
         public LineSegment2d GetSegmentAt(int index)
         {
-            if (index > 2)
-                throw new IndexOutOfRangeException("Index out of range");
+            if (index > 2) throw new IndexOutOfRangeException("Index out of range");
             return new LineSegment2d(this[index], this[(index + 1) % 3]);
         }
 
@@ -214,7 +187,7 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="t2d">The triangle2d to compare.</param>
         /// <returns>true if the condition is met; otherwise, false.</returns>
-        public bool IsEqualTo(Triangle2d t2d)
+        public bool IsEqualTo([NotNull] Triangle2d t2d)
         {
             return IsEqualTo(t2d, Tolerance.Global);
         }
@@ -283,10 +256,8 @@ namespace AcadLib.Geometry
         [NotNull]
         public Triangle2d TransformBy(Matrix2d mat)
         {
-            return new Triangle2d(Array.ConvertAll<Point2d, Point2d>(
-                _pts, new Converter<Point2d, Point2d>(p => p.TransformBy(mat))));
+            return new Triangle2d(Array.ConvertAll(
+                _pts, p => p.TransformBy(mat)));
         }
-
-        #endregion
     }
 }

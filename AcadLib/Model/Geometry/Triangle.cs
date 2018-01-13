@@ -3,16 +3,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+// ReSharper disable NonReadonlyMemberInGetHashCode
+
 namespace AcadLib.Geometry
 {
     /// <summary>
     /// Provides methods for the derived classes.
     /// </summary>
     /// <typeparam name="T">The type of elements in the triangle.</typeparam>
+    [PublicAPI]
     public abstract class Triangle<T> : IEnumerable<T>
     {
-        #region Fields
-
         /// <summary>
         /// The first triangle element (origin).
         /// </summary>
@@ -33,10 +34,6 @@ namespace AcadLib.Geometry
         /// </summary>
         protected T[] _pts = new T[3];
 
-        #endregion
-
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of Triangle &lt;T&gt; that is empty.
         /// </summary>
@@ -53,7 +50,7 @@ namespace AcadLib.Geometry
         protected internal Triangle([NotNull] T[] pts)
         {
             if (pts.Length != 3)
-                throw new ArgumentOutOfRangeException("The array must contain 3 items");
+                throw new ArgumentOutOfRangeException(nameof(pts));
             _pts[0] = _pt0 = pts[0];
             _pts[1] = _pt1 = pts[1];
             _pts[2] = _pt2 = pts[2];
@@ -71,10 +68,6 @@ namespace AcadLib.Geometry
             _pts[1] = _pt1 = b;
             _pts[2] = _pt2 = c;
         }
-
-        #endregion
-
-        #region Indexor
 
         /// <summary>
         /// Item
@@ -98,10 +91,6 @@ namespace AcadLib.Geometry
             }
         }
 
-        #endregion
-
-        #region Methods
-
         /// <summary>
         /// Determines whether the specified Triangle&lt;T&gt; derived types instances are considered equal.
         /// </summary>
@@ -109,13 +98,30 @@ namespace AcadLib.Geometry
         /// <returns>true if every corresponding element in both Triangle&lt;T&gt; are considered equal; otherwise, nil.</returns>
         public override bool Equals(object obj)
         {
-            var trgl = obj as Triangle<T>;
             return
-                trgl != null &&
+                obj is Triangle<T> trgl &&
                 trgl.GetHashCode() == GetHashCode() &&
                 trgl[0].Equals(_pt0) &&
                 trgl[1].Equals(_pt1) &&
                 trgl[2].Equals(_pt2);
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the triangle.
+        /// </summary>
+        /// <returns>An IEnumerable&lt;T&gt; enumerator for the Triangle&lt;T&gt;.</returns>
+        public IEnumerator<T> GetEnumerator()
+        {
+            foreach (var item in _pts) yield return item;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -143,8 +149,7 @@ namespace AcadLib.Geometry
         /// ArgumentOutOfRangeException is thrown if the array do not contains three items.</exception>
         public void Set([NotNull] T[] pts)
         {
-            if (pts.Length != 3)
-                throw new IndexOutOfRangeException("The array must contain 3 items");
+            if (pts.Length != 3) throw new IndexOutOfRangeException("The array must contain 3 items");
             _pts[0] = _pt0 = pts[0];
             _pts[1] = _pt1 = pts[1];
             _pts[2] = _pt2 = pts[2];
@@ -180,33 +185,5 @@ namespace AcadLib.Geometry
         {
             return $"{_pt0},{_pt1},{_pt2}";
         }
-
-        #endregion
-
-        #region IEnumerable<T> Members
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the triangle.
-        /// </summary>
-        /// <returns>An IEnumerable&lt;T&gt; enumerator for the Triangle&lt;T&gt;.</returns>
-        public IEnumerator<T> GetEnumerator()
-        {
-            foreach (var item in _pts) yield return item;
-        }
-
-        #endregion
-
-        #region IEnumerable Members
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        #endregion
     }
 }

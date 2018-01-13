@@ -7,30 +7,18 @@ namespace AcadLib.Layers
     /// <summary>
     /// Состояние слоев - для проверки видимости объектов на чертеже
     /// </summary>
+    [PublicAPI]
     public class LayerVisibleState
     {
-        Dictionary<string, bool> layerVisibleDict;
+        private Dictionary<string, bool> layerVisibleDict;
 
         /// <summary>
         /// Нужно создавать новый объект LayerVisibleState после возмоного изменения состояния слоев пользователем.
         /// </summary>
         /// <param name="db"></param>
-        public LayerVisibleState(Database db)
+        public LayerVisibleState([NotNull] Database db)
         {
             layerVisibleDict = GetLayerVisibleState(db);
-        }
-
-        [NotNull]
-        private Dictionary<string, bool> GetLayerVisibleState([NotNull] Database db)
-        {
-            var res = new Dictionary<string, bool>();
-            var lt = db.LayerTableId.GetObject(OpenMode.ForRead) as LayerTable;
-            foreach (var idLayer in lt)
-            {
-                var layer = idLayer.GetObject(OpenMode.ForRead) as LayerTableRecord;
-                res.Add(layer.Name, !layer.IsOff && !layer.IsFrozen);
-            }
-            return res;
         }
 
         /// <summary>
@@ -40,15 +28,28 @@ namespace AcadLib.Layers
         /// <returns></returns>
         public bool IsVisible([NotNull] Entity ent)
         {
-            var res = true;
+            bool res;
             if (!ent.Visible)
             {
                 res = false;
             }
             else
             {
-                // Слой выключен или заморожен                
+                // Слой выключен или заморожен
                 layerVisibleDict.TryGetValue(ent.Layer, out res);
+            }
+            return res;
+        }
+
+        [NotNull]
+        private Dictionary<string, bool> GetLayerVisibleState([NotNull] Database db)
+        {
+            var res = new Dictionary<string, bool>();
+            var lt = (LayerTable)db.LayerTableId.GetObject(OpenMode.ForRead);
+            foreach (var idLayer in lt)
+            {
+                var layer = (LayerTableRecord)idLayer.GetObject(OpenMode.ForRead);
+                res.Add(layer.Name, !layer.IsOff && !layer.IsFrozen);
             }
             return res;
         }

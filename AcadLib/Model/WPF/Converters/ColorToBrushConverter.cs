@@ -14,18 +14,17 @@ namespace AcadLib.WPF.Converters
         [CanBeNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is System.Drawing.Color dc)
+            switch (value)
             {
-                return new SolidColorBrush(Color.FromArgb(dc.A, dc.R, dc.G, dc.B));
-            }
-            if (value is Color mc)
-            {
-                return new SolidColorBrush(mc);
-            }
-            if (value is Autodesk.AutoCAD.Colors.Color ac)
-            {
-                var cv = ac.ColorValue;
-                return new SolidColorBrush(Color.FromRgb(cv.R, cv.G, cv.B));
+                case System.Drawing.Color dc:
+                    return new SolidColorBrush(Color.FromArgb(dc.A, dc.R, dc.G, dc.B));
+
+                case Color mc:
+                    return new SolidColorBrush(mc);
+
+                case Autodesk.AutoCAD.Colors.Color ac:
+                    var cv = ac.ColorValue;
+                    return new SolidColorBrush(Color.FromRgb(cv.R, cv.G, cv.B));
             }
             return null;
         }

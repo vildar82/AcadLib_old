@@ -9,27 +9,30 @@ namespace AcadLib.Geometry
     /// <summary>
     /// Represents a PolylineSegment collection.
     /// </summary>
+    [PublicAPI]
     public class PolylineSegmentCollection : IList<PolylineSegment>
     {
         private List<PolylineSegment> _contents = new List<PolylineSegment>();
 
         /// <summary>
-        /// Gets the first PolylineSegment StartPoint
+        /// Gets the number of elements actually contained in the collection.
         /// </summary>
-        public Point2d StartPoint
-        {
-            get { return _contents[0].StartPoint; }
-        }
+        public int Count => _contents.Count;
 
         /// <summary>
         /// Gets the last PolylineSegment EndPoint
         /// </summary>
-        public Point2d EndPoint
-        {
-            get { return _contents[Count - 1].EndPoint; }
-        }
+        public Point2d EndPoint => _contents[Count - 1].EndPoint;
 
-        #region Constructors
+        /// <summary>
+        /// Gets a value indicating whether the collection is read-only.
+        /// </summary>
+        public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Gets the first PolylineSegment StartPoint
+        /// </summary>
+        public Point2d StartPoint => _contents[0].StartPoint;
 
         /// <summary>
         /// Creates a new instance of PolylineSegmentCollection.
@@ -70,7 +73,7 @@ namespace AcadLib.Geometry
                     pline.GetStartWidthAt(i),
                     pline.GetEndWidthAt(i)));
             }
-            if (pline.Closed == true)
+            if (pline.Closed)
             {
                 _contents.Add(new PolylineSegment(
                     pline.GetPoint2dAt(n),
@@ -99,7 +102,7 @@ namespace AcadLib.Geometry
                     vertex.StartWidth,
                     vertex.EndWidth));
             }
-            if (pline.Closed == true)
+            if (pline.Closed)
             {
                 var vertex = vertices[n];
                 _contents.Add(new PolylineSegment(
@@ -131,7 +134,7 @@ namespace AcadLib.Geometry
         public PolylineSegmentCollection([NotNull] Ellipse ellipse)
         {
             // PolylineSegmentCollection figuring the closed ellipse
-            var pi = Math.PI;
+            const double pi = Math.PI;
             var plane = new Plane(Point3d.Origin, ellipse.Normal);
             var cen3d = ellipse.Center;
             var pt3d0 = cen3d + ellipse.MajorAxis;
@@ -227,17 +230,17 @@ namespace AcadLib.Geometry
                 }
 
                 // if the parameter at start point is not equal to 0.0, calculate the bulge
-                if (startParam != 0.0)
+                if (Math.Abs(startParam) > 0.0001)
                 {
                     _contents[startIndex].StartPoint = startPoint;
                     _contents[startIndex].Bulge = _contents[startIndex].Bulge * (1.0 - startParam);
                 }
 
                 // if the parameter at end point is not equal to 1.0, calculate the bulge
-                if (endParam != 1.0) //(endParam != 0.0)
+                if (Math.Abs(endParam - 1.0) > 0.0001) //(endParam != 0.0)
                 {
                     _contents[endIndex].EndPoint = endPoint;
-                    _contents[endIndex].Bulge = _contents[endIndex].Bulge * (endParam);
+                    _contents[endIndex].Bulge = _contents[endIndex].Bulge * endParam;
                 }
 
                 // if both points are on the same segment
@@ -247,7 +250,6 @@ namespace AcadLib.Geometry
                     _contents.Clear();
                     _contents.Add(segment);
                 }
-
                 else if (startIndex < endIndex)
                 {
                     _contents.RemoveRange(endIndex + 1, 15 - endIndex);
@@ -261,220 +263,16 @@ namespace AcadLib.Geometry
             }
         }
 
-        #endregion
-
-        #region Public methods
-
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, 
-        /// and returns the zero-based index of the first occurrence within the entire collection.
-        /// </summary>
-        /// <param name="match">The Predicate delegate that defines the conditions of the element to search for.</param>
-        /// <returns>The zero-based index of the first occurrence of an element that matches the conditions defined by match, if found; otherwise, –1.</returns>
-        public int FindIndex([NotNull] Predicate<PolylineSegment> match)
-        {
-            return _contents.FindIndex(match);
-        }
-
-        /// <summary>
-        /// Returns the zero-based index of the closest segment to the input point.
-        /// </summary>
-        /// <param name="pt">The Point2d from which the distances to segments are compared.</param>
-        /// <returns>The zero-based index of the segment in the PolylineSegmentCollection.</returns>
-        public int GetClosestSegmentIndexTo(Point2d pt)
-        {
-            var result = 0;
-            var dist = _contents[0].ToCurve2d().GetDistanceTo(pt);
-            for (var i = 1; i < Count; i++)
-            {
-                var tmpDist = _contents[i].ToCurve2d().GetDistanceTo(pt);
-                if (tmpDist < dist)
-                {
-                    result = i;
-                    dist = tmpDist;
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Inserts a segments collection into the collection at the specified index. 
-        /// </summary>
-        /// <param name="index">The zero-based index at which collection should be inserted</param>
-        /// <param name="collection">The collection to insert</param>
-        public void InsertRange(int index, [NotNull] IEnumerable<PolylineSegment> collection)
-        {
-            _contents.InsertRange(index, collection);
-        }
-
-        /// <summary>
-        /// Joins the contiguous segments into one or more PolylineSegment collections.
-        /// Start point and end point of each segment are compared  using the global tolerance.
-        /// </summary>
-        /// <returns>A List of PolylineSegmentCollection instances.</returns>
-        public List<PolylineSegmentCollection> Join()
-        {
-            return Join(Tolerance.Global);
-        }
-
-        /// <summary>
-        /// Joins the contiguous segments into one or more PolylineSegment collections.
-        /// Start point and end point of each segment are compared  using the specified tolerance.
-        /// </summary>
-        /// <param name="tol">The tolerance to use while comparing segments startand end points</param>
-        /// <returns>A List of PolylineSegmentCollection instances.</returns>
-        [NotNull]
-        public List<PolylineSegmentCollection> Join(Tolerance tol)
-        {
-            var result = new List<PolylineSegmentCollection>();
-            var clone = new PolylineSegmentCollection(_contents);
-            while (clone.Count > 0)
-            {
-                var newCol = new PolylineSegmentCollection();
-                var seg = clone[0];
-                newCol.Add(seg);
-                var start = seg.StartPoint;
-                var end = seg.EndPoint;
-                clone.RemoveAt(0);
-                while (true)
-                {
-                    var i = clone.FindIndex(s => s.StartPoint.IsEqualTo(end, tol));
-                    if (i >= 0)
-                    {
-                        seg = clone[i];
-                        newCol.Add(seg);
-                        end = seg.EndPoint;
-                        clone.RemoveAt(i);
-                        continue;
-                    }
-                    i = clone.FindIndex(s => s.EndPoint.IsEqualTo(end, tol));
-                    if (i >= 0)
-                    {
-                        seg = clone[i];
-                        seg.Inverse();
-                        newCol.Add(seg);
-                        end = seg.EndPoint;
-                        clone.RemoveAt(i);
-                        continue;
-                    }
-                    i = clone.FindIndex(s => s.EndPoint.IsEqualTo(start, tol));
-                    if (i >= 0)
-                    {
-                        seg = clone[i];
-                        newCol.Insert(0, seg);
-                        start = seg.StartPoint;
-                        clone.RemoveAt(i);
-                        continue;
-                    }
-                    i = clone.FindIndex(s => s.StartPoint.IsEqualTo(start, tol));
-                    if (i >= 0)
-                    {
-                        seg = clone[i];
-                        seg.Inverse();
-                        newCol.Insert(0, seg);
-                        start = seg.StartPoint;
-                        clone.RemoveAt(i);
-                        continue;
-                    }
-                    break;
-                }
-                result.Add(newCol);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Removes a range of segments from the collection.
-        /// </summary>
-        /// <param name="index">The zero-based starting index of the range of segments to remove.</param>
-        /// <param name="count">The number of segments to remove.</param>
-        public void RemoveRange(int index, int count)
-        {
-            _contents.RemoveRange(index, count);
-        }
-
-        /// <summary>
-        /// Reverses the collection order and all PolylineSegments
-        /// </summary>
-        public void Reverse()
-        {
-            for (var i = 0; i < Count; i++)
-            {
-                _contents[i].Inverse();
-            }
-            _contents.Reverse();
-        }
-
-        /// <summary>
-        /// Creates a new Polyline from the PolylineSegment collection.
-        /// </summary>
-        /// <returns>A Polyline instance.</returns>
-        [NotNull]
-        public Polyline ToPolyline()
-        {
-            var pline = new Polyline();
-            for (var i = 0; i < _contents.Count; i++)
-            {
-                var seg = _contents[i];
-                pline.AddVertexAt(i, seg.StartPoint, seg.Bulge, seg.StartWidth, seg.EndWidth);
-            }
-            var j = _contents.Count;
-            pline.AddVertexAt(j, this[j - 1].EndPoint, 0.0, _contents[j - 1].EndWidth, _contents[0].StartWidth);
-            if (pline.GetPoint2dAt(0).IsEqualTo(pline.GetPoint2dAt(j)))
-            {
-                pline.RemoveVertexAt(j);
-                pline.Closed = true;
-            }
-            return pline;
-        }
-
-        #endregion
-
-        #region IList<PolylineSegment> Members
-
-        /// <summary>
-        /// Returns the zero-based index of the first occurrence of a value in the collection.
-        /// </summary>
-        /// <param name="item">The segment to locate in the collection.</param>
-        /// <returns>The zero-based index of the first occurrence of item within the entire List, if found; otherwise, –1.</returns>
-        public int IndexOf(PolylineSegment item)
-        {
-            return _contents.IndexOf(item);
-        }
-
-        /// <summary>
-        /// Inserts a segment into the collection at the specified index. 
-        /// </summary>
-        /// <param name="index">The zero-based index at which item should be inserted.</param>
-        /// <param name="item">The segment to insert.</param>
-        public void Insert(int index, PolylineSegment item)
-        {
-            _contents.Insert(index, item);
-        }
-
-        /// <summary>
-        /// Removes the element at the specified index of the collection. 
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to remove.</param>
-        public void RemoveAt(int index)
-        {
-            _contents.RemoveAt(index);
-        }
-
-        /// <summary>
-        /// Gets or sets the element at the specified index. 
+        /// Gets or sets the element at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get or set.</param>
         /// <returns>The element at the specified index.</returns>
         public PolylineSegment this[int index]
         {
-            get { return _contents[index]; }
-            set { _contents[index] = value; }
+            get => _contents[index];
+            set => _contents[index] = value;
         }
-
-        #endregion
-
-        #region ICollection<PolylineSegment> Members
 
         /// <summary>
         /// Adds a segment to the end of the collection.
@@ -523,19 +321,164 @@ namespace AcadLib.Geometry
         }
 
         /// <summary>
-        /// Gets the number of elements actually contained in the collection.
+        /// Searches for an element that matches the conditions defined by the specified predicate,
+        /// and returns the zero-based index of the first occurrence within the entire collection.
         /// </summary>
-        public int Count
+        /// <param name="match">The Predicate delegate that defines the conditions of the element to search for.</param>
+        /// <returns>The zero-based index of the first occurrence of an element that matches the conditions defined by match, if found; otherwise, –1.</returns>
+        public int FindIndex([NotNull] Predicate<PolylineSegment> match)
         {
-            get { return _contents.Count; }
+            return _contents.FindIndex(match);
         }
 
         /// <summary>
-        /// Gets a value indicating whether the collection is read-only.
+        /// Returns the zero-based index of the closest segment to the input point.
         /// </summary>
-        public bool IsReadOnly
+        /// <param name="pt">The Point2d from which the distances to segments are compared.</param>
+        /// <returns>The zero-based index of the segment in the PolylineSegmentCollection.</returns>
+        public int GetClosestSegmentIndexTo(Point2d pt)
         {
-            get { return false; }
+            var result = 0;
+            var dist = _contents[0].ToCurve2d().GetDistanceTo(pt);
+            for (var i = 1; i < Count; i++)
+            {
+                var tmpDist = _contents[i].ToCurve2d().GetDistanceTo(pt);
+                if (tmpDist < dist)
+                {
+                    result = i;
+                    dist = tmpDist;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An IEnumerable&lt;PolylineSegment&gt; enumerator for the PolylineSegmentCollection.</returns>
+        public IEnumerator<PolylineSegment> GetEnumerator()
+        {
+            foreach (var seg in _contents) yield return seg;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns the zero-based index of the first occurrence of a value in the collection.
+        /// </summary>
+        /// <param name="item">The segment to locate in the collection.</param>
+        /// <returns>The zero-based index of the first occurrence of item within the entire List, if found; otherwise, –1.</returns>
+        public int IndexOf(PolylineSegment item)
+        {
+            return _contents.IndexOf(item);
+        }
+
+        /// <summary>
+        /// Inserts a segment into the collection at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
+        /// <param name="item">The segment to insert.</param>
+        public void Insert(int index, PolylineSegment item)
+        {
+            _contents.Insert(index, item);
+        }
+
+        /// <summary>
+        /// Inserts a segments collection into the collection at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which collection should be inserted</param>
+        /// <param name="collection">The collection to insert</param>
+        public void InsertRange(int index, [NotNull] IEnumerable<PolylineSegment> collection)
+        {
+            _contents.InsertRange(index, collection);
+        }
+
+        /// <summary>
+        /// Joins the contiguous segments into one or more PolylineSegment collections.
+        /// Start point and end point of each segment are compared  using the global tolerance.
+        /// </summary>
+        /// <returns>A List of PolylineSegmentCollection instances.</returns>
+        [NotNull]
+        public List<PolylineSegmentCollection> Join()
+        {
+            return Join(Tolerance.Global);
+        }
+
+        /// <summary>
+        /// Joins the contiguous segments into one or more PolylineSegment collections.
+        /// Start point and end point of each segment are compared  using the specified tolerance.
+        /// </summary>
+        /// <param name="tol">The tolerance to use while comparing segments startand end points</param>
+        /// <returns>A List of PolylineSegmentCollection instances.</returns>
+        [NotNull]
+        public List<PolylineSegmentCollection> Join(Tolerance tol)
+        {
+            var result = new List<PolylineSegmentCollection>();
+            var clone = new PolylineSegmentCollection(_contents);
+            while (clone.Count > 0)
+            {
+                var newCol = new PolylineSegmentCollection();
+                var seg = clone[0];
+                newCol.Add(seg);
+                var start = seg.StartPoint;
+                var end = seg.EndPoint;
+                clone.RemoveAt(0);
+                while (true)
+                {
+                    // ReSharper disable once AccessToModifiedClosure
+                    var i = clone.FindIndex(s => s.StartPoint.IsEqualTo(end, tol));
+                    if (i >= 0)
+                    {
+                        seg = clone[i];
+                        newCol.Add(seg);
+                        end = seg.EndPoint;
+                        clone.RemoveAt(i);
+                        continue;
+                    }
+                    // ReSharper disable once AccessToModifiedClosure
+                    i = clone.FindIndex(s => s.EndPoint.IsEqualTo(end, tol));
+                    if (i >= 0)
+                    {
+                        seg = clone[i];
+                        seg.Inverse();
+                        newCol.Add(seg);
+                        end = seg.EndPoint;
+                        clone.RemoveAt(i);
+                        continue;
+                    }
+                    // ReSharper disable once AccessToModifiedClosure
+                    i = clone.FindIndex(s => s.EndPoint.IsEqualTo(start, tol));
+                    if (i >= 0)
+                    {
+                        seg = clone[i];
+                        newCol.Insert(0, seg);
+                        start = seg.StartPoint;
+                        clone.RemoveAt(i);
+                        continue;
+                    }
+                    // ReSharper disable once AccessToModifiedClosure
+                    i = clone.FindIndex(s => s.StartPoint.IsEqualTo(start, tol));
+                    if (i >= 0)
+                    {
+                        seg = clone[i];
+                        seg.Inverse();
+                        newCol.Insert(0, seg);
+                        start = seg.StartPoint;
+                        clone.RemoveAt(i);
+                        continue;
+                    }
+                    break;
+                }
+                result.Add(newCol);
+            }
+            return result;
         }
 
         /// <summary>
@@ -548,32 +491,58 @@ namespace AcadLib.Geometry
             return _contents.Remove(item);
         }
 
-        #endregion
-
-        #region IEnumerable<PolylineSegment> Members
-
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Removes the element at the specified index of the collection.
         /// </summary>
-        /// <returns>An IEnumerable&lt;PolylineSegment&gt; enumerator for the PolylineSegmentCollection.</returns>
-        public IEnumerator<PolylineSegment> GetEnumerator()
+        /// <param name="index">The zero-based index of the element to remove.</param>
+        public void RemoveAt(int index)
         {
-            foreach (var seg in _contents) yield return seg;
+            _contents.RemoveAt(index);
         }
 
-        #endregion
-
-        #region IEnumerable Members
-
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Removes a range of segments from the collection.
         /// </summary>
-        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        /// <param name="index">The zero-based starting index of the range of segments to remove.</param>
+        /// <param name="count">The number of segments to remove.</param>
+        public void RemoveRange(int index, int count)
         {
-            return GetEnumerator();
+            _contents.RemoveRange(index, count);
         }
 
-        #endregion
+        /// <summary>
+        /// Reverses the collection order and all PolylineSegments
+        /// </summary>
+        public void Reverse()
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                _contents[i].Inverse();
+            }
+            _contents.Reverse();
+        }
+
+        /// <summary>
+        /// Creates a new Polyline from the PolylineSegment collection.
+        /// </summary>
+        /// <returns>A Polyline instance.</returns>
+        [NotNull]
+        public Polyline ToPolyline()
+        {
+            var pline = new Polyline();
+            for (var i = 0; i < _contents.Count; i++)
+            {
+                var seg = _contents[i];
+                pline.AddVertexAt(i, seg.StartPoint, seg.Bulge, seg.StartWidth, seg.EndWidth);
+            }
+            var j = _contents.Count;
+            pline.AddVertexAt(j, this[j - 1].EndPoint, 0.0, _contents[j - 1].EndWidth, _contents[0].StartWidth);
+            if (pline.GetPoint2dAt(0).IsEqualTo(pline.GetPoint2dAt(j)))
+            {
+                pline.RemoveVertexAt(j);
+                pline.Closed = true;
+            }
+            return pline;
+        }
     }
 }
