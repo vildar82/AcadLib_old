@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 
 namespace AcadLib.Layers
 {
+    [PublicAPI]
     [Serializable]
     [Equals(DoNotAddEqualityOperators = true)]
     public class LayerInfo
