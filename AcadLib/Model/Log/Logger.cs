@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
 using System;
-using Autodesk.AutoCAD.ApplicationServices;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
