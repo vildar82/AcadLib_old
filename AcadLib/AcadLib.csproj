@@ -267,7 +267,7 @@
     <Compile Include="Model\Jokes\JokeHelper.cs" />
     <Compile Include="Model\Layers\LayerVisibleState.cs" />
     <Compile Include="Model\Layouts\LayoutsExt.cs" />
-    <Compile Include="Model\Logger.cs" />
+    <Compile Include="Model\Log\Logger.cs" />
     <Compile Include="Model\Blocks\AttributeExt.cs" />
     <Compile Include="Model\Blocks\AttributeInfo.cs" />
     <Compile Include="Model\Blocks\AttributeRefInfo.cs" />
@@ -404,7 +404,7 @@
     <Compile Include="Model\NET\Extensions.cs" />
     <Compile Include="Model\Math\MathExt.cs" />
     <Compile Include="Model\NET\Result.cs" />
-    <Compile Include="Model\LoadService.cs" />
+    <Compile Include="Model\Dll\LoadService.cs" />
     <Compile Include="Model\Plot\PlotDirToPdf.cs" />
     <Compile Include="Model\RTree\SpatialIndex\Node.cs" />
     <Compile Include="Model\RTree\SpatialIndex\Point.cs" />

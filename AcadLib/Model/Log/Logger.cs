@@ -1,5 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System;
+using Autodesk.AutoCAD.ApplicationServices;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
@@ -15,6 +17,7 @@ namespace AcadLib
         }
     }
 
+    [PublicAPI]
     public class LoggAddinExt : AutoCAD_PIK_Manager.LogAddin
     {
         public LoggAddinExt()
@@ -49,6 +52,12 @@ namespace AcadLib
         public void Error(Exception ex, string msg)
         {
             var newMsg = GetMessage(msg);
+            base.Error(ex, newMsg);
+        }
+
+        public void Error([NotNull] Exception ex)
+        {
+            var newMsg = GetMessage(ex.Message);
             base.Error(ex, newMsg);
         }
 
@@ -129,7 +138,8 @@ namespace AcadLib
         [NotNull]
         private static string GetMessage(string msg)
         {
-            return $"Команда: {CommandStart.CurrentCommand}; Сообщение: {msg}";
+            return $"Команда: {CommandStart.CurrentCommand}; Сообщение: {msg}; " +
+                   $"Doc={Application.DocumentManager.MdiActiveDocument?.Name}";
         }
     }
 }
