@@ -116,7 +116,7 @@ namespace RTreeLib
         /// </summary>
         public RTree()
         {
-            init();
+            Init();
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace RTreeLib
         {
             minNodeEntries = MinNodeEntries;
             maxNodeEntries = MaxNodeEntries;
-            init();
+            Init();
         }
 
         /// <summary>
@@ -192,10 +192,10 @@ namespace RTreeLib
         {
             Rectangle bounds = null;
 
-            var n = getNode(GetRootNodeId());
+            var n = GetNode(GetRootNodeId());
             if (n?.GetMBR() != null)
             {
-                bounds = n.GetMBR().copy();
+                bounds = n.GetMBR().Copy();
             }
             return bounds;
         }
@@ -224,7 +224,7 @@ namespace RTreeLib
         public List<T> Intersects(Rectangle r)
         {
             var retval = new List<T>();
-            intersects(r, delegate (int id)
+            Intersects(r, delegate (int id)
             {
                 retval.Add(IdsToItems[id]);
             });
@@ -241,7 +241,7 @@ namespace RTreeLib
         public List<T> Nearest(Point p, double furthestDistance)
         {
             var retval = new List<T>();
-            nearest(p, delegate (int id)
+            Nearest(p, delegate (int id)
             {
                 retval.Add(IdsToItems[id]);
             }, furthestDistance);
@@ -270,7 +270,7 @@ namespace RTreeLib
             }
             else
             {
-                newLeaf = splitNode(n, r, id);
+                newLeaf = SplitNode(n, r, id);
             }
 
             // I3 [Propagate changes upwards] Invoke AdjustTree on L, also passing LL
@@ -282,9 +282,9 @@ namespace RTreeLib
             if (newNode != null)
             {
                 var oldRootNodeId = rootNodeId;
-                var oldRoot = getNode(oldRootNodeId);
+                var oldRoot = GetNode(oldRootNodeId);
 
-                rootNodeId = getNextNodeId();
+                rootNodeId = GetNextNodeId();
                 treeHeight++;
                 var root = new Node<T>(rootNodeId, treeHeight, maxNodeEntries);
                 root.AddEntry(newNode.mbr, newNode.nodeId);
@@ -295,7 +295,7 @@ namespace RTreeLib
 
         private void Add([NotNull] Rectangle r, int id)
         {
-            Add(r.copy(), id, 1);
+            Add(r.Copy(), id, 1);
             Count++;
         }
 
@@ -311,7 +311,7 @@ namespace RTreeLib
                 // AT3 [Adjust covering rectangle in parent entry] Let P be the parent
                 // Node<T> of N, and let En be N's entry in P. Adjust EnI so that it tightly
                 // encloses all entry rectangles in N.
-                var parent = getNode(parents.Pop());
+                var parent = GetNode(parents.Pop());
                 var entry = parentsEntry.Pop();
 
                 if (parent.ids[entry] != n.nodeId)
@@ -323,11 +323,11 @@ namespace RTreeLib
 
                 if (!parent.entries[entry].Equals(n.mbr))
                 {
-                    parent.entries[entry].set(n.mbr._min, n.mbr._max);
-                    parent.mbr.set(parent.entries[0]._min, parent.entries[0]._max);
+                    parent.entries[entry].Set(n.mbr._min, n.mbr._max);
+                    parent.mbr.Set(parent.entries[0]._min, parent.entries[0]._max);
                     for (var i = 1; i < parent.entryCount; i++)
                     {
-                        parent.mbr.add(parent.entries[i]);
+                        parent.mbr.Add(parent.entries[i]);
                     }
                 }
 
@@ -345,7 +345,7 @@ namespace RTreeLib
                     }
                     else
                     {
-                        newNode = splitNode(parent, nn.mbr.copy(), nn.nodeId);
+                        newNode = SplitNode(parent, nn.mbr.Copy(), nn.nodeId);
                     }
                 }
 
@@ -364,7 +364,7 @@ namespace RTreeLib
 
             for (var i = 1; i < n.entryCount; i++)
             {
-                mbr.add(n.entries[i]);
+                mbr.Add(n.entries[i]);
             }
             return mbr;
         }
@@ -373,7 +373,7 @@ namespace RTreeLib
         {
             // go through the tree, and check that the internal data structures of
             // the tree are not corrupted.
-            var n = getNode(nodeId);
+            var n = GetNode(nodeId);
             for (var i = 0; i < n.entryCount; i++)
             {
                 if (n.level > 1)
@@ -387,7 +387,7 @@ namespace RTreeLib
         private Node<T> ChooseNode(Rectangle r, int level)
         {
             // CL1 [Initialize] Set N to be the root node
-            var n = getNode(rootNodeId);
+            var n = GetNode(rootNodeId);
             parents.Clear();
             parentsEntry.Clear();
 
@@ -402,17 +402,17 @@ namespace RTreeLib
                 // whose rectangle FI needs least enlargement to include EI. Resolve
                 // ties by choosing the entry with the rectangle of smaller area.
                 // ReSharper disable once PossibleNullReferenceException
-                var leastEnlargement = n.GetEntry(0).enlargement(r);
+                var leastEnlargement = n.GetEntry(0).Enlargement(r);
                 var index = 0; // index of rectangle in subtree
                 for (var i = 1; i < n.entryCount; i++)
                 {
                     var tempRectangle = n.GetEntry(i);
                     // ReSharper disable once PossibleNullReferenceException
-                    var tempEnlargement = tempRectangle.enlargement(r);
+                    var tempEnlargement = tempRectangle.Enlargement(r);
                     if (tempEnlargement < leastEnlargement ||
                         Math.Abs(tempEnlargement - leastEnlargement) < 0.0001 &&
                         // ReSharper disable once PossibleNullReferenceException
-                        tempRectangle.area() < n.GetEntry(index).area())
+                        tempRectangle.Area() < n.GetEntry(index).Area())
                     {
                         index = i;
                         leastEnlargement = tempEnlargement;
@@ -424,7 +424,7 @@ namespace RTreeLib
 
                 // CL4 [Descend until a leaf is reached] Set N to be the child Node&lt;T&gt;
                 // pointed to by Fp and repeat from CL2
-                n = getNode(n.ids[index]);
+                n = GetNode(n.ids[index]);
             }
         }
 
@@ -439,7 +439,7 @@ namespace RTreeLib
             // let P be the parent of N, and let En be N's entry in P
             while (n.level != treeHeight)
             {
-                var parent = getNode(parents.Pop());
+                var parent = GetNode(parents.Pop());
                 var parentEntry = parentsEntry.Pop();
 
                 // CT3 [Eliminiate under-full node] If N has too few entries,
@@ -455,8 +455,8 @@ namespace RTreeLib
                     // adjust EnI to tightly contain all entries in N
                     if (!n.mbr.Equals(parent.entries[parentEntry]))
                     {
-                        oldRectangle.set(parent.entries[parentEntry]._min, parent.entries[parentEntry]._max);
-                        parent.entries[parentEntry].set(n.mbr._min, n.mbr._max);
+                        oldRectangle.Set(parent.entries[parentEntry]._min, parent.entries[parentEntry]._max);
+                        parent.entries[parentEntry].Set(n.mbr._min, n.mbr._max);
                         parent.RecalculateMBR(oldRectangle);
                     }
                 }
@@ -471,7 +471,7 @@ namespace RTreeLib
             // level as leaves of the main tree
             while (eliminatedNodeIds.Count > 0)
             {
-                var e = getNode(eliminatedNodeIds.Pop());
+                var e = GetNode(eliminatedNodeIds.Pop());
                 for (var j = 0; j < e.entryCount; j++)
                 {
                     Add(e.entries[j], e.ids[j], e.level);
@@ -498,7 +498,7 @@ namespace RTreeLib
 
             while (parents.Count > 0)
             {
-                var n = getNode(parents.Peek());
+                var n = GetNode(parents.Peek());
                 var startIndex = parentsEntry.Peek() + 1;
 
                 if (!n.IsLeaf())
@@ -509,7 +509,7 @@ namespace RTreeLib
                     var intersects = false;
                     for (var i = startIndex; i < n.entryCount; i++)
                     {
-                        if (r.intersects(n.entries[i]))
+                        if (r.Intersects(n.entries[i]))
                         {
                             parents.Push(n.ids[i]);
                             parentsEntry.Pop();
@@ -530,7 +530,7 @@ namespace RTreeLib
                     // it is contained by the passed rectangle
                     for (var i = 0; i < n.entryCount; i++)
                     {
-                        if (r.contains(n.entries[i]))
+                        if (r.Contains(n.entries[i]))
                         {
                             v(n.ids[i]);
                         }
@@ -564,7 +564,7 @@ namespace RTreeLib
 
             while (foundIndex == -1 && parents.Count > 0)
             {
-                n = getNode(parents.Peek());
+                n = GetNode(parents.Peek());
                 var startIndex = parentsEntry.Peek() + 1;
 
                 if (!n.IsLeaf())
@@ -573,7 +573,7 @@ namespace RTreeLib
                     var contains = false;
                     for (var i = startIndex; i < n.entryCount; i++)
                     {
-                        if (n.entries[i].contains(r))
+                        if (n.entries[i].Contains(r))
                         {
                             parents.Push(n.ids[i]);
                             parentsEntry.Pop();
@@ -607,13 +607,13 @@ namespace RTreeLib
 
             // shrink the tree if possible (i.e. if root Node&lt;T%gt; has exactly one entry,and that
             // entry is not a leaf node, delete the root (it's entry becomes the new root)
-            var root = getNode(rootNodeId);
+            var root = GetNode(rootNodeId);
             while (root.entryCount == 1 && treeHeight > 1)
             {
                 root.entryCount = 0;
                 rootNodeId = root.ids[0];
                 treeHeight--;
-                root = getNode(rootNodeId);
+                root = GetNode(rootNodeId);
             }
 
             return foundIndex != -1;
@@ -623,12 +623,12 @@ namespace RTreeLib
         /// Get the highest used Node&lt;T&gt; ID
         /// </summary>
         /// <returns></returns>
-        private int getHighestUsedNodeId()
+        private int GetHighestUsedNodeId()
         {
             return highestUsedNodeId;
         }
 
-        private int getNextNodeId()
+        private int GetNextNodeId()
         {
             int nextNodeId;
             if (deletedNodeIds.Count > 0)
@@ -647,12 +647,12 @@ namespace RTreeLib
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        private Node<T> getNode(int index)
+        private Node<T> GetNode(int index)
         {
             return nodeMap[index];
         }
 
-        private void init()
+        private void Init()
         {
             // Obviously a Node&lt;T&gt; with less than 2 entries cannot be split.
             // The Node&lt;T&gt; splitting algorithm will work with only 2 entries
@@ -684,12 +684,6 @@ namespace RTreeLib
             //log.Info("init() " + " MaxNodeEntries = " + maxNodeEntries + ", MinNodeEntries = " + minNodeEntries);
         }
 
-        private void intersects(Rectangle r, intproc v)
-        {
-            var rootNode = getNode(rootNodeId);
-            intersects(r, v, rootNode);
-        }
-
         /// <summary>
         /// Recursively searches the tree for all intersecting entries.
         /// Immediately calls execute() on the passed IntProcedure when
@@ -700,11 +694,11 @@ namespace RTreeLib
         /// <param name="r"></param>
         /// <param name="v"></param>
         /// <param name="n"></param>
-        private void intersects(Rectangle r, intproc v, [NotNull] Node<T> n)
+        private void Intersects(Rectangle r, intproc v, [NotNull] Node<T> n)
         {
             for (var i = 0; i < n.entryCount; i++)
             {
-                if (r.intersects(n.entries[i]))
+                if (r.Intersects(n.entries[i]))
                 {
                     if (n.IsLeaf())
                     {
@@ -712,38 +706,29 @@ namespace RTreeLib
                     }
                     else
                     {
-                        var childNode = getNode(n.ids[i]);
-                        intersects(r, v, childNode);
+                        var childNode = GetNode(n.ids[i]);
+                        Intersects(r, v, childNode);
                     }
                 }
             }
         }
 
-        private void nearest(Point p, intproc v, double furthestDistance)
+        private void Intersects(Rectangle r, intproc v)
         {
-            var rootNode = getNode(rootNodeId);
+            var rootNode = GetNode(rootNodeId);
+            Intersects(r, v, rootNode);
+        }
 
-            nearest(p, rootNode, furthestDistance);
+        private void Nearest(Point p, intproc v, double furthestDistance)
+        {
+            var rootNode = GetNode(rootNodeId);
+
+            Nearest(p, rootNode, furthestDistance);
 
             foreach (var id in nearestIds)
                 v(id);
             nearestIds.Clear();
         }
-
-        /**
-        * @see com.infomatiq.jsi.SpatialIndex#getBounds()
-        */
-        /**
-         * @see com.infomatiq.jsi.SpatialIndex#getVersion()
-         */
-        //-------------------------------------------------------------------------
-        // end of SpatialIndex methods
-        //-------------------------------------------------------------------------
-
-        /**
-         * Get the next available Node&lt;T&gt; ID. Reuse deleted Node&lt;T&gt; IDs if
-         * possible
-         */
 
         /// <summary>
         /// Recursively searches the tree for the nearest entry. Other queries
@@ -758,11 +743,11 @@ namespace RTreeLib
         /// <param name="n"></param>
         /// <param name="nearestDistance"></param>
         /// <returns></returns>
-        private double nearest(Point p, [NotNull] Node<T> n, double nearestDistance)
+        private double Nearest(Point p, [NotNull] Node<T> n, double nearestDistance)
         {
             for (var i = 0; i < n.entryCount; i++)
             {
-                var tempDistance = n.entries[i].distance(p);
+                var tempDistance = n.entries[i].Distance(p);
                 if (n.IsLeaf())
                 { // for leaves, the distance is an actual nearest distance
                     if (tempDistance < nearestDistance)
@@ -781,7 +766,7 @@ namespace RTreeLib
                     if (tempDistance <= nearestDistance)
                     {
                         // search the child node
-                        nearestDistance = nearest(p, getNode(n.ids[i]), nearestDistance);
+                        nearestDistance = Nearest(p, GetNode(n.ids[i]), nearestDistance);
                     }
                 }
             }
@@ -797,7 +782,7 @@ namespace RTreeLib
         /// <param name="n"></param>
         /// <param name="newNode"></param>
         /// <returns></returns>
-        private int pickNext([NotNull] Node<T> n, Node<T> newNode)
+        private int PickNext([NotNull] Node<T> n, Node<T> newNode)
         {
             var next = 0;
             var nextGroup = 0;
@@ -814,8 +799,8 @@ namespace RTreeLib
                     }
 
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    var nIncrease = n.mbr.enlargement(n.entries[i]);
-                    var newNodeIncrease = newNode.mbr.enlargement(n.entries[i]);
+                    var nIncrease = n.mbr.Enlargement(n.entries[i]);
+                    var newNodeIncrease = newNode.mbr.Enlargement(n.entries[i]);
                     var difference = Math.Abs(nIncrease - newNodeIncrease);
 
                     if (difference > maxDifference)
@@ -830,11 +815,11 @@ namespace RTreeLib
                         {
                             nextGroup = 1;
                         }
-                        else if (n.mbr.area() < newNode.mbr.area())
+                        else if (n.mbr.Area() < newNode.mbr.Area())
                         {
                             nextGroup = 0;
                         }
-                        else if (newNode.mbr.area() < n.mbr.area())
+                        else if (newNode.mbr.Area() < n.mbr.Area())
                         {
                             nextGroup = 1;
                         }
@@ -855,7 +840,7 @@ namespace RTreeLib
 
             if (nextGroup == 0)
             {
-                n.mbr.add(n.entries[next]);
+                n.mbr.Add(n.entries[next]);
                 n.entryCount++;
             }
             else
@@ -876,7 +861,7 @@ namespace RTreeLib
         /// <param name="newRect"></param>
         /// <param name="newId"></param>
         /// <param name="newNode"></param>
-        private void pickSeeds([NotNull] Node<T> n, Rectangle newRect, int newId, [NotNull] Node<T> newNode)
+        private void PickSeeds([NotNull] Node<T> n, Rectangle newRect, int newId, [NotNull] Node<T> newNode)
         {
             // Find extreme rectangles along all dimension. Along each dimension,
             // find the entry whose rectangle has the highest low side, and the one
@@ -887,7 +872,7 @@ namespace RTreeLib
 
             // for the purposes of picking seeds, take the MBR of the Node&lt;T&gt; to include
             // the new rectangle aswell.
-            n.mbr.add(newRect);
+            n.mbr.Add(newRect);
 
             for (var d = 0; d < Rectangle.DIMENSIONS; d++)
             {
@@ -959,7 +944,7 @@ namespace RTreeLib
 
             entryStatus[lowestHighIndex] = ENTRY_STATUS_ASSIGNED;
             n.entryCount = 1;
-            n.mbr.set(n.entries[lowestHighIndex]._min, n.entries[lowestHighIndex]._max);
+            n.mbr.Set(n.entries[lowestHighIndex]._min, n.entries[lowestHighIndex]._max);
         }
 
         /// <summary>
@@ -971,7 +956,7 @@ namespace RTreeLib
         /// <param name="newId"></param>
         /// <returns>return new Node&lt;T&gt; object.</returns>
         [NotNull]
-        private Node<T> splitNode([NotNull] Node<T> n, Rectangle newRect, int newId)
+        private Node<T> SplitNode([NotNull] Node<T> n, Rectangle newRect, int newId)
         {
             // [Pick first entry for each group] Apply algorithm pickSeeds to
             // choose two entries to be the first elements of the groups. Assign
@@ -981,10 +966,10 @@ namespace RTreeLib
 
             Array.Copy(initialEntryStatus, 0, entryStatus, 0, maxNodeEntries);
 
-            var newNode = new Node<T>(getNextNodeId(), n.level, maxNodeEntries);
+            var newNode = new Node<T>(GetNextNodeId(), n.level, maxNodeEntries);
             nodeMap.Add(newNode.nodeId, newNode);
 
-            pickSeeds(n, newRect, newId, newNode); // this also sets the entryCount to 1
+            PickSeeds(n, newRect, newId, newNode); // this also sets the entryCount to 1
 
             // [Check if done] If all entries have been assigned, stop. If one
             // group has so few entries that all the rest must be assigned to it in
@@ -999,7 +984,7 @@ namespace RTreeLib
                         if (entryStatus[i] == ENTRY_STATUS_UNASSIGNED)
                         {
                             entryStatus[i] = ENTRY_STATUS_ASSIGNED;
-                            n.mbr.add(n.entries[i]);
+                            n.mbr.Add(n.entries[i]);
                             n.entryCount++;
                         }
                     }
@@ -1025,7 +1010,7 @@ namespace RTreeLib
                 // will have to be enlarged least to accommodate it. Resolve ties
                 // by adding the entry to the group with smaller area, then to the
                 // the one with fewer entries, then to either. Repeat from S2
-                pickNext(n, newNode);
+                PickNext(n, newNode);
             }
 
             n.Reorganize(this);
@@ -1033,27 +1018,5 @@ namespace RTreeLib
             // check that the MBR stored for each Node&lt;T&gt; is correct.
             return newNode;
         }
-
-        /**
-         * Used by delete(). Ensures that all nodes from the passed node
-         * up to the root have the minimum number of entries.
-         *
-         * Note that the parent and parentEntry stacks are expected to
-         * contain the nodeIds of all parents up to the root.
-         */
-        /**
-         *  Used by add(). Chooses a leaf to add the rectangle to.
-         */
-        /**
-         * Ascend from a leaf Node&lt;T&gt; L to the root, adjusting covering rectangles and
-         * propagating Node&lt;T&gt; splits as necessary.
-         */
-        /**
-         * Check the consistency of the tree.
-         */
-        /**
-         * Given a Node<T> object, calculate the Node<T> MBR from it's entries.
-         * Used in consistency checking
-         */
     }
 }

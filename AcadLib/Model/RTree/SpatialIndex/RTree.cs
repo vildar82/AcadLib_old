@@ -118,7 +118,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// </summary>
         public RTree()
         {
-            init();
+            Init();
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace AcadLib.RTree.SpatialIndex
         {
             minNodeEntries = MinNodeEntries;
             maxNodeEntries = MaxNodeEntries;
-            init();
+            Init();
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace AcadLib.RTree.SpatialIndex
             IdsToItems.Add(id, item);
             ItemsToIds.Add(item, id);
 
-            add(r, id);
+            Add(r, id);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace AcadLib.RTree.SpatialIndex
         public List<T> Contains(Rectangle r)
         {
             var retval = new List<T>();
-            contains(r, delegate (int id)
+            Contains(r, delegate (int id)
             {
                 retval.Add(IdsToItems[id]);
             });
@@ -181,7 +181,7 @@ namespace AcadLib.RTree.SpatialIndex
         {
             var id = ItemsToIds[item];
 
-            var success = delete(r, id);
+            var success = Delete(r, id);
             if (success)
             {
                 IdsToItems.Remove(id);
@@ -191,14 +191,14 @@ namespace AcadLib.RTree.SpatialIndex
         }
 
         [CanBeNull]
-        public Rectangle getBounds()
+        public Rectangle GetBounds()
         {
             Rectangle bounds = null;
 
-            var n = getNode(getRootNodeId());
+            var n = GetNode(GetRootNodeId());
             if (n?.getMBR() != null)
             {
-                bounds = n.getMBR().copy();
+                bounds = n.getMBR().Copy();
             }
             return bounds;
         }
@@ -207,13 +207,13 @@ namespace AcadLib.RTree.SpatialIndex
         /// Get the root Node&lt;T&gt; ID
         /// </summary>
         /// <returns></returns>
-        public int getRootNodeId()
+        public int GetRootNodeId()
         {
             return rootNodeId;
         }
 
         [NotNull]
-        public string getVersion()
+        public string GetVersion()
         {
             return "RTree-" + version;
         }
@@ -227,7 +227,7 @@ namespace AcadLib.RTree.SpatialIndex
         public List<T> Intersects(Rectangle r)
         {
             var retval = new List<T>();
-            intersects(r, delegate (int id)
+            Intersects(r, delegate (int id)
             {
                 retval.Add(IdsToItems[id]);
             });
@@ -244,23 +244,11 @@ namespace AcadLib.RTree.SpatialIndex
         public List<T> Nearest(Point p, double furthestDistance)
         {
             var retval = new List<T>();
-            nearest(p, delegate (int id)
+            Nearest(p, delegate (int id)
             {
                 retval.Add(IdsToItems[id]);
             }, furthestDistance);
             return retval;
-        }
-
-        private void add([NotNull] Rectangle r, int id)
-        {
-            //if (log.IsDebugEnabled)
-            //{
-            //    log.Debug("Adding rectangle " + r + ", id " + id);
-            //}
-
-            add(r.copy(), id, 1);
-
-            Count++;
         }
 
         /// <summary>
@@ -269,11 +257,11 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="r"></param>
         /// <param name="id"></param>
         /// <param name="level"></param>
-        private void add(Rectangle r, int id, int level)
+        private void Add(Rectangle r, int id, int level)
         {
             // I1 [Find position for new record] Invoke ChooseLeaf to select a
             // leaf Node&lt;T&gt; L in which to place r
-            var n = chooseNode(r, level);
+            var n = ChooseNode(r, level);
             Node<T> newLeaf = null;
 
             // I2 [Add record to leaf node] If L has room for another entry,
@@ -285,21 +273,21 @@ namespace AcadLib.RTree.SpatialIndex
             }
             else
             {
-                newLeaf = splitNode(n, r, id);
+                newLeaf = SplitNode(n, r, id);
             }
 
             // I3 [Propagate changes upwards] Invoke AdjustTree on L, also passing LL
             // if a split was performed
-            var newNode = adjustTree(n, newLeaf);
+            var newNode = AdjustTree(n, newLeaf);
 
             // I4 [Grow tree taller] If Node&lt;T&gt; split propagation caused the root to
             // split, create a new root whose children are the two resulting nodes.
             if (newNode != null)
             {
                 var oldRootNodeId = rootNodeId;
-                var oldRoot = getNode(oldRootNodeId);
+                var oldRoot = GetNode(oldRootNodeId);
 
-                rootNodeId = getNextNodeId();
+                rootNodeId = GetNextNodeId();
                 treeHeight++;
                 var root = new Node<T>(rootNodeId, treeHeight, maxNodeEntries);
                 root.addEntry(newNode.mbr, newNode.nodeId);
@@ -308,8 +296,20 @@ namespace AcadLib.RTree.SpatialIndex
             }
         }
 
+        private void Add([NotNull] Rectangle r, int id)
+        {
+            //if (log.IsDebugEnabled)
+            //{
+            //    log.Debug("Adding rectangle " + r + ", id " + id);
+            //}
+
+            Add(r.Copy(), id, 1);
+
+            Count++;
+        }
+
         [CanBeNull]
-        private Node<T> adjustTree(Node<T> n, Node<T> nn)
+        private Node<T> AdjustTree(Node<T> n, Node<T> nn)
         {
             // AT1 [Initialize] Set N=L. If L was split previously, set NN to be
             // the resulting second node.
@@ -320,7 +320,7 @@ namespace AcadLib.RTree.SpatialIndex
                 // AT3 [Adjust covering rectangle in parent entry] Let P be the parent
                 // Node<T> of N, and let En be N's entry in P. Adjust EnI so that it tightly
                 // encloses all entry rectangles in N.
-                var parent = getNode(parents.Pop());
+                var parent = GetNode(parents.Pop());
                 var entry = parentsEntry.Pop();
 
                 //if (parent.ids[entry] != n.nodeId)
@@ -332,11 +332,11 @@ namespace AcadLib.RTree.SpatialIndex
 
                 if (!parent.entries[entry].Equals(n.mbr))
                 {
-                    parent.entries[entry].set(n.mbr._min, n.mbr._max);
-                    parent.mbr.set(parent.entries[0]._min, parent.entries[0]._max);
+                    parent.entries[entry].Set(n.mbr._min, n.mbr._max);
+                    parent.mbr.Set(parent.entries[0]._min, parent.entries[0]._max);
                     for (var i = 1; i < parent.entryCount; i++)
                     {
-                        parent.mbr.add(parent.entries[i]);
+                        parent.mbr.Add(parent.entries[i]);
                     }
                 }
 
@@ -354,7 +354,7 @@ namespace AcadLib.RTree.SpatialIndex
                     }
                     else
                     {
-                        newNode = splitNode(parent, nn.mbr.copy(), nn.nodeId);
+                        newNode = SplitNode(parent, nn.mbr.Copy(), nn.nodeId);
                     }
                 }
 
@@ -367,36 +367,36 @@ namespace AcadLib.RTree.SpatialIndex
         }
 
         [NotNull]
-        private Rectangle calculateMBR([NotNull] Node<T> n)
+        private Rectangle CalculateMBR([NotNull] Node<T> n)
         {
             var mbr = new Rectangle(n.entries[0]._min, n.entries[0]._max);
 
             for (var i = 1; i < n.entryCount; i++)
             {
-                mbr.add(n.entries[i]);
+                mbr.Add(n.entries[i]);
             }
             return mbr;
         }
 
-        private void checkConsistency(int nodeId, int expectedLevel, Rectangle expectedMBR)
+        private void CheckConsistency(int nodeId, int expectedLevel, Rectangle expectedMBR)
         {
             // go through the tree, and check that the internal data structures of
             // the tree are not corrupted.
-            var n = getNode(nodeId);
+            var n = GetNode(nodeId);
             for (var i = 0; i < n.entryCount; i++)
             {
                 if (n.level > 1)
                 {
-                    checkConsistency(n.ids[i], n.level - 1, n.entries[i]);
+                    CheckConsistency(n.ids[i], n.level - 1, n.entries[i]);
                 }
             }
         }
 
         [NotNull]
-        private Node<T> chooseNode(Rectangle r, int level)
+        private Node<T> ChooseNode(Rectangle r, int level)
         {
             // CL1 [Initialize] Set N to be the root node
-            var n = getNode(rootNodeId);
+            var n = GetNode(rootNodeId);
             parents.Clear();
             parentsEntry.Clear();
             // CL2 [Leaf check] If N is a leaf, return N
@@ -409,15 +409,15 @@ namespace AcadLib.RTree.SpatialIndex
                 // CL3 [Choose subtree] If N is not at the desired level, let F be the entry in N
                 // whose rectangle FI needs least enlargement to include EI. Resolve
                 // ties by choosing the entry with the rectangle of smaller area.
-                var leastEnlargement = n.getEntry(0).enlargement(r);
+                var leastEnlargement = n.getEntry(0).Enlargement(r);
                 var index = 0; // index of rectangle in subtree
                 for (var i = 1; i < n.entryCount; i++)
                 {
                     var tempRectangle = n.getEntry(i);
-                    var tempEnlargement = tempRectangle.enlargement(r);
+                    var tempEnlargement = tempRectangle.Enlargement(r);
                     if (tempEnlargement < leastEnlargement ||
                         Math.Abs(tempEnlargement - leastEnlargement) < 0.0001 &&
-                        tempRectangle.area() < n.getEntry(index).area())
+                        tempRectangle.Area() < n.getEntry(index).Area())
                     {
                         index = i;
                         leastEnlargement = tempEnlargement;
@@ -429,11 +429,11 @@ namespace AcadLib.RTree.SpatialIndex
 
                 // CL4 [Descend until a leaf is reached] Set N to be the child Node&lt;T&gt;
                 // pointed to by Fp and repeat from CL2
-                n = getNode(n.ids[index]);
+                n = GetNode(n.ids[index]);
             }
         }
 
-        private void condenseTree(Node<T> l)
+        private void CondenseTree(Node<T> l)
         {
             // CT1 [Initialize] Set n=l. Set the list of eliminated
             // nodes to be empty.
@@ -446,7 +446,7 @@ namespace AcadLib.RTree.SpatialIndex
             // let P be the parent of N, and let En be N's entry in P
             while (n.level != treeHeight)
             {
-                var parent = getNode(parents.Pop());
+                var parent = GetNode(parents.Pop());
                 var parentEntry = parentsEntry.Pop();
 
                 // CT3 [Eliminiate under-full node] If N has too few entries,
@@ -462,8 +462,8 @@ namespace AcadLib.RTree.SpatialIndex
                     // adjust EnI to tightly contain all entries in N
                     if (!n.mbr.Equals(parent.entries[parentEntry]))
                     {
-                        oldRectangle.set(parent.entries[parentEntry]._min, parent.entries[parentEntry]._max);
-                        parent.entries[parentEntry].set(n.mbr._min, n.mbr._max);
+                        oldRectangle.Set(parent.entries[parentEntry]._min, parent.entries[parentEntry]._max);
+                        parent.entries[parentEntry].Set(n.mbr._min, n.mbr._max);
                         parent.recalculateMBR(oldRectangle);
                     }
                 }
@@ -478,10 +478,10 @@ namespace AcadLib.RTree.SpatialIndex
             // level as leaves of the main tree
             while (eliminatedNodeIds.Count > 0)
             {
-                var e = getNode(eliminatedNodeIds.Pop());
+                var e = GetNode(eliminatedNodeIds.Pop());
                 for (var j = 0; j < e.entryCount; j++)
                 {
-                    add(e.entries[j], e.ids[j], e.level);
+                    Add(e.entries[j], e.ids[j], e.level);
                     e.entries[j] = null;
                 }
                 e.entryCount = 0;
@@ -489,7 +489,7 @@ namespace AcadLib.RTree.SpatialIndex
             }
         }
 
-        private void contains(Rectangle r, intproc v)
+        private void Contains(Rectangle r, intproc v)
         {
             // find all rectangles in the tree that are contained by the passed rectangle
             // written to be non-recursive (should model other searches on this?)
@@ -505,7 +505,7 @@ namespace AcadLib.RTree.SpatialIndex
 
             while (parents.Count > 0)
             {
-                var n = getNode(parents.Peek());
+                var n = GetNode(parents.Peek());
                 var startIndex = parentsEntry.Peek() + 1;
 
                 if (!n.isLeaf())
@@ -516,7 +516,7 @@ namespace AcadLib.RTree.SpatialIndex
                     var intersects = false;
                     for (var i = startIndex; i < n.entryCount; i++)
                     {
-                        if (r.intersects(n.entries[i]))
+                        if (r.Intersects(n.entries[i]))
                         {
                             parents.Push(n.ids[i]);
                             parentsEntry.Pop();
@@ -537,7 +537,7 @@ namespace AcadLib.RTree.SpatialIndex
                     // it is contained by the passed rectangle
                     for (var i = 0; i < n.entryCount; i++)
                     {
-                        if (r.contains(n.entries[i]))
+                        if (r.Contains(n.entries[i]))
                         {
                             v(n.ids[i]);
                         }
@@ -548,7 +548,7 @@ namespace AcadLib.RTree.SpatialIndex
             }
         }
 
-        private bool delete(Rectangle r, int id)
+        private bool Delete(Rectangle r, int id)
         {
             // FindLeaf algorithm inlined here. Note the "official" algorithm
             // searches all overlapping entries. This seems inefficient to me,
@@ -571,7 +571,7 @@ namespace AcadLib.RTree.SpatialIndex
 
             while (foundIndex == -1 && parents.Count > 0)
             {
-                n = getNode(parents.Peek());
+                n = GetNode(parents.Peek());
                 var startIndex = parentsEntry.Peek() + 1;
 
                 if (!n.isLeaf())
@@ -580,7 +580,7 @@ namespace AcadLib.RTree.SpatialIndex
                     var contains = false;
                     for (var i = startIndex; i < n.entryCount; i++)
                     {
-                        if (n.entries[i].contains(r))
+                        if (n.entries[i].Contains(r))
                         {
                             parents.Push(n.ids[i]);
                             parentsEntry.Pop();
@@ -608,19 +608,19 @@ namespace AcadLib.RTree.SpatialIndex
             {
                 // ReSharper disable once PossibleNullReferenceException
                 n.deleteEntry(foundIndex, minNodeEntries);
-                condenseTree(n);
+                CondenseTree(n);
                 Count--;
             }
 
             // shrink the tree if possible (i.e. if root Node&lt;T%gt; has exactly one entry,and that
             // entry is not a leaf node, delete the root (it's entry becomes the new root)
-            var root = getNode(rootNodeId);
+            var root = GetNode(rootNodeId);
             while (root.entryCount == 1 && treeHeight > 1)
             {
                 root.entryCount = 0;
                 rootNodeId = root.ids[0];
                 treeHeight--;
-                root = getNode(rootNodeId);
+                root = GetNode(rootNodeId);
             }
 
             return foundIndex != -1;
@@ -630,12 +630,12 @@ namespace AcadLib.RTree.SpatialIndex
         /// Get the highest used Node&lt;T&gt; ID
         /// </summary>
         /// <returns></returns>
-        private int getHighestUsedNodeId()
+        private int GetHighestUsedNodeId()
         {
             return highestUsedNodeId;
         }
 
-        private int getNextNodeId()
+        private int GetNextNodeId()
         {
             int nextNodeId;
             if (deletedNodeIds.Count > 0)
@@ -654,12 +654,12 @@ namespace AcadLib.RTree.SpatialIndex
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        private Node<T> getNode(int index)
+        private Node<T> GetNode(int index)
         {
             return nodeMap[index];
         }
 
-        private void init()
+        private void Init()
         {
             //initialize logs
             //log = LogManager.GetLogger(typeof(RTree<T>).FullName);
@@ -695,12 +695,6 @@ namespace AcadLib.RTree.SpatialIndex
             //log.Info("init() " + " MaxNodeEntries = " + maxNodeEntries + ", MinNodeEntries = " + minNodeEntries);
         }
 
-        private void intersects(Rectangle r, intproc v)
-        {
-            var rootNode = getNode(rootNodeId);
-            intersects(r, v, rootNode);
-        }
-
         /// <summary>
         /// Recursively searches the tree for all intersecting entries.
         /// Immediately calls execute() on the passed IntProcedure when
@@ -711,11 +705,11 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="r"></param>
         /// <param name="v"></param>
         /// <param name="n"></param>
-        private void intersects(Rectangle r, intproc v, [NotNull] Node<T> n)
+        private void Intersects(Rectangle r, intproc v, [NotNull] Node<T> n)
         {
             for (var i = 0; i < n.entryCount; i++)
             {
-                if (r.intersects(n.entries[i]))
+                if (r.Intersects(n.entries[i]))
                 {
                     if (n.isLeaf())
                     {
@@ -723,38 +717,18 @@ namespace AcadLib.RTree.SpatialIndex
                     }
                     else
                     {
-                        var childNode = getNode(n.ids[i]);
-                        intersects(r, v, childNode);
+                        var childNode = GetNode(n.ids[i]);
+                        Intersects(r, v, childNode);
                     }
                 }
             }
         }
 
-        private void nearest(Point p, intproc v, double furthestDistance)
+        private void Intersects(Rectangle r, intproc v)
         {
-            var rootNode = getNode(rootNodeId);
-
-            nearest(p, rootNode, furthestDistance);
-
-            foreach (var id in nearestIds)
-                v(id);
-            nearestIds.Clear();
+            var rootNode = GetNode(rootNodeId);
+            Intersects(r, v, rootNode);
         }
-
-        /**
-        * @see com.infomatiq.jsi.SpatialIndex#getBounds()
-        */
-        /**
-         * @see com.infomatiq.jsi.SpatialIndex#getVersion()
-         */
-        //-------------------------------------------------------------------------
-        // end of SpatialIndex methods
-        //-------------------------------------------------------------------------
-
-        /**
-         * Get the next available Node&lt;T&gt; ID. Reuse deleted Node&lt;T&gt; IDs if
-         * possible
-         */
 
         /// <summary>
         /// Recursively searches the tree for the nearest entry. Other queries
@@ -769,11 +743,11 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="n"></param>
         /// <param name="nearestDistance"></param>
         /// <returns></returns>
-        private double nearest(Point p, [NotNull] Node<T> n, double nearestDistance)
+        private double Nearest(Point p, [NotNull] Node<T> n, double nearestDistance)
         {
             for (var i = 0; i < n.entryCount; i++)
             {
-                var tempDistance = n.entries[i].distance(p);
+                var tempDistance = n.entries[i].Distance(p);
                 if (n.isLeaf())
                 { // for leaves, the distance is an actual nearest distance
                     if (tempDistance < nearestDistance)
@@ -792,11 +766,22 @@ namespace AcadLib.RTree.SpatialIndex
                     if (tempDistance <= nearestDistance)
                     {
                         // search the child node
-                        nearestDistance = nearest(p, getNode(n.ids[i]), nearestDistance);
+                        nearestDistance = Nearest(p, GetNode(n.ids[i]), nearestDistance);
                     }
                 }
             }
             return nearestDistance;
+        }
+
+        private void Nearest(Point p, intproc v, double furthestDistance)
+        {
+            var rootNode = GetNode(rootNodeId);
+
+            Nearest(p, rootNode, furthestDistance);
+
+            foreach (var id in nearestIds)
+                v(id);
+            nearestIds.Clear();
         }
 
         /// <summary>
@@ -808,35 +793,21 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="n"></param>
         /// <param name="newNode"></param>
         /// <returns></returns>
-        private int pickNext([NotNull] Node<T> n, Node<T> newNode)
+        private int PickNext([NotNull] Node<T> n, Node<T> newNode)
         {
             var next = 0;
             var nextGroup = 0;
-
             var maxDifference = double.NegativeInfinity;
-
-            //if (log.IsDebugEnabled)
-            //{
-            //    log.Debug("pickNext()");
-            //}
-
             for (var i = 0; i < maxNodeEntries; i++)
             {
                 if (entryStatus[i] == ENTRY_STATUS_UNASSIGNED)
                 {
-                    //if (n.entries[i] == null)
-                    //{
-                    //    log.Error("Error: Node<T> " + n.nodeId + ", entry " + i + " is null");
-                    //}
-
-                    var nIncrease = n.mbr.enlargement(n.entries[i]);
-                    var newNodeIncrease = newNode.mbr.enlargement(n.entries[i]);
+                    var nIncrease = n.mbr.Enlargement(n.entries[i]);
+                    var newNodeIncrease = newNode.mbr.Enlargement(n.entries[i]);
                     var difference = Math.Abs(nIncrease - newNodeIncrease);
-
                     if (difference > maxDifference)
                     {
                         next = i;
-
                         if (nIncrease < newNodeIncrease)
                         {
                             nextGroup = 0;
@@ -845,11 +816,11 @@ namespace AcadLib.RTree.SpatialIndex
                         {
                             nextGroup = 1;
                         }
-                        else if (n.mbr.area() < newNode.mbr.area())
+                        else if (n.mbr.Area() < newNode.mbr.Area())
                         {
                             nextGroup = 0;
                         }
-                        else if (newNode.mbr.area() < n.mbr.area())
+                        else if (newNode.mbr.Area() < n.mbr.Area())
                         {
                             nextGroup = 1;
                         }
@@ -863,19 +834,12 @@ namespace AcadLib.RTree.SpatialIndex
                         }
                         maxDifference = difference;
                     }
-                    //if (log.IsDebugEnabled)
-                    //{
-                    //    log.Debug("Entry " + i + " group0 increase = " + nIncrease + ", group1 increase = " + newNodeIncrease +
-                    //              ", diff = " + difference + ", MaxDiff = " + maxDifference + " (entry " + next + ")");
-                    //}
                 }
             }
-
             entryStatus[next] = ENTRY_STATUS_ASSIGNED;
-
             if (nextGroup == 0)
             {
-                n.mbr.add(n.entries[next]);
+                n.mbr.Add(n.entries[next]);
                 n.entryCount++;
             }
             else
@@ -884,7 +848,6 @@ namespace AcadLib.RTree.SpatialIndex
                 newNode.addEntryNoCopy(n.entries[next], n.ids[next]);
                 n.entries[next] = null;
             }
-
             return next;
         }
 
@@ -896,7 +859,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="newRect"></param>
         /// <param name="newId"></param>
         /// <param name="newNode"></param>
-        private void pickSeeds([NotNull] Node<T> n, Rectangle newRect, int newId, [NotNull] Node<T> newNode)
+        private void PickSeeds([NotNull] Node<T> n, Rectangle newRect, int newId, [NotNull] Node<T> newNode)
         {
             // Find extreme rectangles along all dimension. Along each dimension,
             // find the entry whose rectangle has the highest low side, and the one
@@ -904,24 +867,15 @@ namespace AcadLib.RTree.SpatialIndex
             double maxNormalizedSeparation = 0;
             var highestLowIndex = 0;
             var lowestHighIndex = 0;
-
             // for the purposes of picking seeds, take the MBR of the Node&lt;T&gt; to include
             // the new rectangle aswell.
-            n.mbr.add(newRect);
-
-            //if (log.IsDebugEnabled)
-            //{
-            //    log.Debug("pickSeeds(): NodeId = " + n.nodeId + ", newRect = " + newRect);
-            //}
-
+            n.mbr.Add(newRect);
             for (var d = 0; d < Rectangle.DIMENSIONS; d++)
             {
                 var tempHighestLow = newRect._min[d];
                 var tempHighestLowIndex = -1; // -1 indicates the new rectangle is the seed
-
                 var tempLowestHigh = newRect._max[d];
                 var tempLowestHighIndex = -1;
-
                 for (var i = 0; i < n.entryCount; i++)
                 {
                     var tempLow = n.entries[i]._min[d];
@@ -939,23 +893,10 @@ namespace AcadLib.RTree.SpatialIndex
                             tempLowestHighIndex = i;
                         }
                     }
-
                     // PS2 [Adjust for shape of the rectangle cluster] Normalize the separations
                     // by dividing by the widths of the entire set along the corresponding
                     // dimension
                     var normalizedSeparation = (tempHighestLow - tempLowestHigh) / (n.mbr._max[d] - n.mbr._min[d]);
-
-                    //if (normalizedSeparation > 1 || normalizedSeparation < -1)
-                    //{
-                    //    log.Error("Invalid normalized separation");
-                    //}
-
-                    //if (log.IsDebugEnabled)
-                    //{
-                    //    log.Debug("Entry " + i + ", dimension " + d + ": HighestLow = " + tempHighestLow +
-                    //              " (index " + tempHighestLowIndex + ")" + ", LowestHigh = " +
-                    //              tempLowestHigh + " (index " + tempLowestHighIndex + ", NormalizedSeparation = " + normalizedSeparation);
-                    //}
 
                     // PS3 [Select the most extreme pair] Choose the pair with the greatest
                     // normalized separation along any dimension.
@@ -967,7 +908,6 @@ namespace AcadLib.RTree.SpatialIndex
                     }
                 }
             }
-
             // highestLowIndex is the seed for the new node.
             if (highestLowIndex == -1)
             {
@@ -982,16 +922,14 @@ namespace AcadLib.RTree.SpatialIndex
                 n.entries[highestLowIndex] = newRect;
                 n.ids[highestLowIndex] = newId;
             }
-
             // lowestHighIndex is the seed for the original node.
             if (lowestHighIndex == -1)
             {
                 lowestHighIndex = highestLowIndex;
             }
-
             entryStatus[lowestHighIndex] = ENTRY_STATUS_ASSIGNED;
             n.entryCount = 1;
-            n.mbr.set(n.entries[lowestHighIndex]._min, n.entries[lowestHighIndex]._max);
+            n.mbr.Set(n.entries[lowestHighIndex]._min, n.entries[lowestHighIndex]._max);
         }
 
         /// <summary>
@@ -1003,7 +941,7 @@ namespace AcadLib.RTree.SpatialIndex
         /// <param name="newId"></param>
         /// <returns>return new Node&lt;T&gt; object.</returns>
         [NotNull]
-        private Node<T> splitNode([NotNull] Node<T> n, Rectangle newRect, int newId)
+        private Node<T> SplitNode([NotNull] Node<T> n, Rectangle newRect, int newId)
         {
             // [Pick first entry for each group] Apply algorithm pickSeeds to
             // choose two entries to be the first elements of the groups. Assign
@@ -1011,10 +949,10 @@ namespace AcadLib.RTree.SpatialIndex
 
             Array.Copy(initialEntryStatus, 0, entryStatus, 0, maxNodeEntries);
 
-            var newNode = new Node<T>(getNextNodeId(), n.level, maxNodeEntries);
+            var newNode = new Node<T>(GetNextNodeId(), n.level, maxNodeEntries);
             nodeMap.Add(newNode.nodeId, newNode);
 
-            pickSeeds(n, newRect, newId, newNode); // this also sets the entryCount to 1
+            PickSeeds(n, newRect, newId, newNode); // this also sets the entryCount to 1
 
             // [Check if done] If all entries have been assigned, stop. If one
             // group has so few entries that all the rest must be assigned to it in
@@ -1029,7 +967,7 @@ namespace AcadLib.RTree.SpatialIndex
                         if (entryStatus[i] == ENTRY_STATUS_UNASSIGNED)
                         {
                             entryStatus[i] = ENTRY_STATUS_ASSIGNED;
-                            n.mbr.add(n.entries[i]);
+                            n.mbr.Add(n.entries[i]);
                             n.entryCount++;
                         }
                     }
@@ -1049,48 +987,15 @@ namespace AcadLib.RTree.SpatialIndex
                     }
                     break;
                 }
-
                 // [Select entry to assign] Invoke algorithm pickNext to choose the
                 // next entry to assign. Add it to the group whose covering rectangle
                 // will have to be enlarged least to accommodate it. Resolve ties
                 // by adding the entry to the group with smaller area, then to the
                 // the one with fewer entries, then to either. Repeat from S2
-                pickNext(n, newNode);
+                PickNext(n, newNode);
             }
-
             n.reorganize(this);
-
-            // debug code
-            //if (log.IsDebugEnabled)
-            //{
-            //    float newArea = n.mbr.area() + newNode.mbr.area();
-            //    float percentageIncrease = (100 * (newArea - initialArea)) / initialArea;
-            //    log.Debug("Node " + n.nodeId + " split. New area increased by " + percentageIncrease + "%");
-            //}
-
             return newNode;
         }
-
-        /**
-         * Used by delete(). Ensures that all nodes from the passed node
-         * up to the root have the minimum number of entries.
-         *
-         * Note that the parent and parentEntry stacks are expected to
-         * contain the nodeIds of all parents up to the root.
-         */
-        /**
-         *  Used by add(). Chooses a leaf to add the rectangle to.
-         */
-        /**
-         * Ascend from a leaf Node&lt;T&gt; L to the root, adjusting covering rectangles and
-         * propagating Node&lt;T&gt; splits as necessary.
-         */
-        /**
-         * Check the consistency of the tree.
-         */
-        /**
-         * Given a Node<T> object, calculate the Node<T> MBR from it's entries.
-         * Used in consistency checking
-         */
     }
 }

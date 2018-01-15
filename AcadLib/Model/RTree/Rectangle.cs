@@ -25,54 +25,21 @@ using System.Text;
 // ReSharper disable once CheckNamespace
 namespace RTreeLib
 {
-    /**
-     * Currently hardcoded to 2 dimensions, but could be extended.
-     *
-     * @author  aled@sourceforge.net
-     * @version 1.0b2p1
-     */
-
     [PublicAPI]
+#pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public class Rectangle
+#pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
-        /**
-         * Number of dimensions in a rectangle. In theory this
-         * could be exended to three or more dimensions.
-         */
         internal const int DIMENSIONS = 3;
-
-        /**
-         * array containing the minimum value for each dimension; ie { min(x), min(y) }
-         */
         internal double[] _max;
-
-        /**
-         * array containing the maximum value for each dimension; ie { max(x), max(y) }
-         */
         internal double[] _min;
-
-        /**
-         * Constructor.
-         *
-         * @param x1 coordinate of any corner of the rectangle
-         * @param y1 (see x1)
-         * @param x2 coordinate of the opposite corner
-         * @param y2 (see x2)
-         */
 
         public Rectangle(double x1, double y1, double x2, double y2, double z1, double z2)
         {
             _min = new double[DIMENSIONS];
             _max = new double[DIMENSIONS];
-            set(x1, y1, x2, y2, z1, z2);
+            Set(x1, y1, x2, y2, z1, z2);
         }
-
-        /**
-         * Constructor.
-         *
-         * @param min array containing the minimum value for each dimension; ie { min(x), min(y) }
-         * @param max array containing the maximum value for each dimension; ie { max(x), max(y) }
-         */
 
         public Rectangle([NotNull] double[] min, [NotNull] double[] max)
         {
@@ -85,19 +52,10 @@ namespace RTreeLib
             _min = new double[DIMENSIONS];
             _max = new double[DIMENSIONS];
 
-            set(min, max);
+            Set(min, max);
         }
 
-        /**
-          * Sets the size of the rectangle.
-          *
-          * @param x1 coordinate of any corner of the rectangle
-          * @param y1 (see x1)
-          * @param x2 coordinate of the opposite corner
-          * @param y2 (see x2)
-          */
-
-        internal void set(double x1, double y1, double x2, double y2, double z1, double z2)
+        internal void Set(double x1, double y1, double x2, double y2, double z1, double z2)
         {
             _min[0] = Math.Min(x1, x2);
             _min[1] = Math.Min(y1, y2);
@@ -107,37 +65,19 @@ namespace RTreeLib
             _max[2] = Math.Max(z1, z2);
         }
 
-        /**
-         * Sets the size of the rectangle.
-         *
-         * @param min array containing the minimum value for each dimension; ie { min(x), min(y) }
-         * @param max array containing the maximum value for each dimension; ie { max(x), max(y) }
-         */
-
-        internal void set([NotNull] double[] min, [NotNull] double[] max)
+        internal void Set([NotNull] double[] min, [NotNull] double[] max)
         {
             Array.Copy(min, 0, _min, 0, DIMENSIONS);
             Array.Copy(max, 0, _max, 0, DIMENSIONS);
         }
 
-        /**
-         * Make a copy of this rectangle
-         *
-         * @return copy of this rectangle
-         */
-
         [NotNull]
-        internal Rectangle copy()
+        internal Rectangle Copy()
         {
             return new Rectangle(_min, _max);
         }
 
-        /**
-         * Determine whether an edge of this rectangle overlies the equivalent
-         * edge of the passed rectangle
-         */
-
-        internal bool edgeOverlaps(Rectangle r)
+        internal bool EdgeOverlaps(Rectangle r)
         {
             for (var i = 0; i < DIMENSIONS; i++)
             {
@@ -149,15 +89,7 @@ namespace RTreeLib
             return false;
         }
 
-        /**
-         * Determine whether this rectangle intersects the passed rectangle
-         *
-         * @param r The rectangle that might intersect this rectangle
-         *
-         * @return true if the rectangles intersect, false if they do not intersect
-         */
-
-        internal bool intersects(Rectangle r)
+        internal bool Intersects(Rectangle r)
         {
             // Every dimension must intersect. If any dimension
             // does not intersect, return false immediately.
@@ -171,16 +103,7 @@ namespace RTreeLib
             return true;
         }
 
-        /**
-         * Determine whether this rectangle contains the passed rectangle
-         *
-         * @param r The rectangle that might be contained by this rectangle
-         *
-         * @return true if this rectangle contains the passed rectangle, false if
-         *         it does not
-         */
-
-        internal bool contains(Rectangle r)
+        internal bool Contains(Rectangle r)
         {
             for (var i = 0; i < DIMENSIONS; i++)
             {
@@ -192,16 +115,7 @@ namespace RTreeLib
             return true;
         }
 
-        /**
-         * Determine whether this rectangle is contained by the passed rectangle
-         *
-         * @param r The rectangle that might contain this rectangle
-         *
-         * @return true if the passed rectangle contains this rectangle, false if
-         *         it does not
-         */
-
-        internal bool containedBy(Rectangle r)
+        internal bool ContainedBy(Rectangle r)
         {
             for (var i = 0; i < DIMENSIONS; i++)
             {
@@ -213,16 +127,7 @@ namespace RTreeLib
             return true;
         }
 
-        /**
-         * Return the distance between this rectangle and the passed point.
-         * If the rectangle contains the point, the distance is zero.
-         *
-         * @param p Point to find the distance to
-         *
-         * @return distance beween this rectangle and the passed point.
-         */
-
-        internal double distance(Point p)
+        internal double Distance(Point p)
         {
             double distanceSquared = 0;
             for (var i = 0; i < DIMENSIONS; i++)
@@ -237,16 +142,7 @@ namespace RTreeLib
             return Math.Sqrt(distanceSquared);
         }
 
-        /**
-         * Return the distance between this rectangle and the passed rectangle.
-         * If the rectangles overlap, the distance is zero.
-         *
-         * @param r Rectangle to find the distance to
-         *
-         * @return distance between this rectangle and the passed rectangle
-         */
-
-        internal double distance(Rectangle r)
+        internal double Distance(Rectangle r)
         {
             double distanceSquared = 0;
             for (var i = 0; i < DIMENSIONS; i++)
@@ -261,11 +157,7 @@ namespace RTreeLib
             return Math.Sqrt(distanceSquared);
         }
 
-        /**
-         * Return the squared distance from this rectangle to the passed point
-         */
-
-        internal double distanceSquared(int dimension, double point)
+        internal double DistanceSquared(int dimension, double point)
         {
             double distanceSquared = 0;
             var tempDistance = point - _max[dimension];
@@ -281,16 +173,7 @@ namespace RTreeLib
             return distanceSquared;
         }
 
-        /**
-         * Return the furthst possible distance between this rectangle and
-         * the passed rectangle.
-         *
-         * Find the distance between this rectangle and each corner of the
-         * passed rectangle, and use the maximum.
-         *
-         */
-
-        internal double furthestDistance(Rectangle r)
+        internal double FurthestDistance(Rectangle r)
         {
             double distanceSquared = 0;
 
@@ -303,42 +186,20 @@ namespace RTreeLib
             return Math.Sqrt(distanceSquared);
         }
 
-        /**
-         * Calculate the area by which this rectangle would be enlarged if
-         * added to the passed rectangle. Neither rectangle is altered.
-         *
-         * @param r Rectangle to union with this rectangle, in order to
-         *          compute the difference in area of the union and the
-         *          original rectangle
-         */
-
-        internal double enlargement([NotNull] Rectangle r)
+        internal double Enlargement([NotNull] Rectangle r)
         {
             var enlargedArea = (Math.Max(_max[0], r._max[0]) - Math.Min(_min[0], r._min[0])) *
                                     (Math.Max(_max[1], r._max[1]) - Math.Min(_min[1], r._min[1]));
 
-            return enlargedArea - area();
+            return enlargedArea - Area();
         }
 
-        /**
-         * Compute the area of this rectangle.
-         *
-         * @return The area of this rectangle
-         */
-
-        internal double area()
+        internal double Area()
         {
             return (_max[0] - _min[0]) * (_max[1] - _min[1]);
         }
 
-        /**
-         * Computes the union of this rectangle and the passed rectangle, storing
-         * the result in this rectangle.
-         *
-         * @param r Rectangle to add to this rectangle
-         */
-
-        internal void add(Rectangle r)
+        internal void Add(Rectangle r)
         {
             for (var i = 0; i < DIMENSIONS; i++)
             {
@@ -353,18 +214,11 @@ namespace RTreeLib
             }
         }
 
-        /**
-         * Find the the union of this rectangle and the passed rectangle.
-         * Neither rectangle is altered
-         *
-         * @param r The rectangle to union with this rectangle
-         */
-
         [NotNull]
-        internal Rectangle union(Rectangle r)
+        internal Rectangle Union(Rectangle r)
         {
-            var union = copy();
-            union.add(r);
+            var union = Copy();
+            union.Add(r);
             return union;
         }
 
@@ -381,12 +235,6 @@ namespace RTreeLib
             return true;
         }
 
-        /**
-         * Determine whether this rectangle is equal to a given object.
-         * Equality is determined by the bounds of the rectangle.
-         *
-         * @param o The object to compare with this rectangle
-         */
 #pragma warning disable 659
 
         public override bool Equals(object obj)
@@ -404,27 +252,11 @@ namespace RTreeLib
             return equals;
         }
 
-        /**
-         * Determine whether this rectangle is the same as another object
-         *
-         * Note that two rectangles can be equal but not the same object,
-         * if they both have the same bounds.
-         *
-         * @param o The object to compare with this rectangle.
-         */
-
         internal bool SameObject(object o)
         {
             // ReSharper disable once BaseObjectEqualsIsObjectEquals
             return base.Equals(o);
         }
-
-        /**
-         * Return a string representation of this rectangle, in the form:
-         * (1.2, 3.4), (5.6, 7.8)
-         *
-         * @return String String representation of this rectangle.
-         */
 
         public override string ToString()
         {

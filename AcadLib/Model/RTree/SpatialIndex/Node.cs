@@ -85,15 +85,15 @@ namespace AcadLib.RTree.SpatialIndex
         internal void addEntry([NotNull] Rectangle r, int id)
         {
             ids[entryCount] = id;
-            entries[entryCount] = r.copy();
+            entries[entryCount] = r.Copy();
             entryCount++;
             if (mbr == null)
             {
-                mbr = r.copy();
+                mbr = r.Copy();
             }
             else
             {
-                mbr.add(r);
+                mbr.Add(r);
             }
         }
 
@@ -104,11 +104,11 @@ namespace AcadLib.RTree.SpatialIndex
             entryCount++;
             if (mbr == null)
             {
-                mbr = r.copy();
+                mbr = r.Copy();
             }
             else
             {
-                mbr.add(r);
+                mbr.Add(r);
             }
         }
 
@@ -157,13 +157,13 @@ namespace AcadLib.RTree.SpatialIndex
         // Thus, the MBR is only recalculated if the OldRectangle influenced the old MBR
         internal void recalculateMBR(Rectangle deletedRectangle)
         {
-            if (mbr.edgeOverlaps(deletedRectangle))
+            if (mbr.EdgeOverlaps(deletedRectangle))
             {
-                mbr.set(entries[0]._min, entries[0]._max);
+                mbr.Set(entries[0]._min, entries[0]._max);
 
                 for (var i = 1; i < entryCount; i++)
                 {
-                    mbr.add(entries[i]);
+                    mbr.Add(entries[i]);
                 }
             }
         }
