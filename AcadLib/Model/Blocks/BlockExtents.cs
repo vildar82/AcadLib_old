@@ -1,7 +1,7 @@
-﻿using AcadLib;
-using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
-using System;
+using NetLib;
+using General = AcadLib.General;
 
 // ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
@@ -18,7 +18,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <param name="blRef"></param>
         public static void FlattenZ(this BlockReference blRef)
         {
-            if (Math.Abs(blRef.Position.Z) > 0.000001)
+            if (blRef.Position.Z.IsEqual6(0))
             {
                 if (!blRef.IsWriteEnabled) blRef = (BlockReference)blRef.Id.GetObject(OpenMode.ForWrite);
                 blRef.Position = new Point3d(blRef.Position.X, blRef.Position.Y, 0);
