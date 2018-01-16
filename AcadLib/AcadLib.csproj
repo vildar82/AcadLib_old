@@ -214,6 +214,7 @@
     <Compile Include="Model\Errors\UI\ErrorModelOne.cs" />
     <Compile Include="Model\Errors\UI\ErrorAddButton.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelList.cs" />
+    <Compile Include="Model\Files\FileDataExt.cs" />
     <Compile Include="Model\Geometry\CurveExt.cs" />
     <Compile Include="Model\Geometry\Polylines\Join\JoinPolyline.cs" />
     <Compile Include="Model\Geometry\Polylines\Join\JoinPolylines.cs" />

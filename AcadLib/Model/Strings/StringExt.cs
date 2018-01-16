@@ -13,8 +13,9 @@ namespace System
         /// Удаление разделителей строк и др. \r\n?|\n
         /// </summary>
         /// <param name="input"></param>
+        [NotNull]
         [Obsolete("Используй NetLib")]
-        public static string ClearString(this string input)
+        public static string ClearString([NotNull] this string input)
         {
             //return Regex.Replace(input, @"\r\n?|\n", "");
             return NetLib.StringExt.ClearString(input);
@@ -36,7 +37,9 @@ namespace System
         /// <returns></returns>
         [Obsolete]
         [NotNull]
+#pragma warning disable IDE1006 // Naming Styles
         public static string f([NotNull] this string format, [NotNull] params object[] args)
+#pragma warning restore IDE1006 // Naming Styles
         {
             return string.Format(format, args);
         }

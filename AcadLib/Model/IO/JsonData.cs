@@ -10,6 +10,7 @@ namespace AcadLib.IO
     /// Данные хранимые в файле json на сервере, с локальным кэшем
     /// </summary>
     [PublicAPI]
+    [Obsolete]
     public class JsonData<T>
     {
         // ReSharper disable once MemberCanBePrivate.Global

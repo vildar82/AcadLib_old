@@ -1,6 +1,7 @@
 ﻿using AcadLib;
 using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
+using System;
 
 // ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
@@ -10,6 +11,19 @@ namespace Autodesk.AutoCAD.DatabaseServices
     {
         private static readonly Scale3d scale1 = new Scale3d(1);
         private static readonly Tolerance tolerance = new Tolerance(0.001, 0.001);
+
+        /// <summary>
+        /// Обнудение координаты Z вставки блоки
+        /// </summary>
+        /// <param name="blRef"></param>
+        public static void FlattenZ(this BlockReference blRef)
+        {
+            if (Math.Abs(blRef.Position.Z) > 0.000001)
+            {
+                if (!blRef.IsWriteEnabled) blRef = (BlockReference)blRef.Id.GetObject(OpenMode.ForWrite);
+                blRef.Position = new Point3d(blRef.Position.X, blRef.Position.Y, 0);
+            }
+        }
 
         public static bool IsScaleEquals1([NotNull] this BlockReference blref)
         {

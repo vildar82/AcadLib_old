@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using NetLib;
+using System;
 using System.IO;
 
 namespace AcadLib.IO
@@ -8,6 +9,7 @@ namespace AcadLib.IO
     /// Данные хранимые в файле json на сервере, с локальным кэшем
     /// </summary>
     [PublicAPI]
+    [Obsolete]
     public class JsonLocalData<T>
     {
         public readonly string LocalFile;

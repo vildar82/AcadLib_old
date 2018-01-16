@@ -1,4 +1,4 @@
-﻿using AcadLib.IO;
+﻿using AcadLib.Files;
 using AcadLib.PaletteCommands;
 using AcadLib.UI.Ribbon.Elements;
 using AcadLib.UI.Ribbon.Options;
@@ -24,16 +24,16 @@ namespace AcadLib.UI.Ribbon
     /// </summary>
     public static class RibbonBuilder
     {
-        private static readonly RibbonOptions ribbonOptions;
-        private static readonly JsonLocalData<RibbonOptions> ribbonOptionsData;
+        private static readonly LocalFileData<RibbonOptions> ribbonOptions;
         private static bool isInitialized;
         private static RibbonControl ribbon;
 
         static RibbonBuilder()
         {
             // Загрузка настроек ленты
-            ribbonOptionsData = new JsonLocalData<RibbonOptions>("Ribbon", "RibbonOptions");
-            ribbonOptions = ribbonOptionsData.TryLoad() ?? new RibbonOptions();
+            ribbonOptions = FileDataExt.GetLocalFileData<RibbonOptions>("Ribbon", "RibbonOptions", false);
+            ribbonOptions.TryLoad();
+            if (ribbonOptions.Data == null) ribbonOptions.Data = new RibbonOptions();
         }
 
         public static void InitRibbon()
@@ -117,7 +117,7 @@ namespace AcadLib.UI.Ribbon
         }
 
         [NotNull]
-        private static ItemOptions CreatePanel(string panelName, IEnumerable<IRibbonElement> elements,
+        private static ItemOptions CreatePanel(string panelName, [NotNull] IEnumerable<IRibbonElement> elements,
             [NotNull] ItemOptions tabOptions)
         {
             var name = panelName.IsNullOrEmpty() ? "Главная" : panelName;
@@ -179,7 +179,7 @@ namespace AcadLib.UI.Ribbon
                 Id = tabName,
                 UID = tabName
             };
-            var tabOptions = GetItemOptions(tab, ribbonOptions.Tabs);
+            var tabOptions = GetItemOptions(tab, ribbonOptions.Data.Tabs);
             tab.IsVisible = tabOptions.IsVisible;
             tabOptions.Items = elements.GroupBy(g => g.Panel).Select(p => CreatePanel(p.Key, p.ToList(), tabOptions))
                 .OrderBy(o => o.Index).ToList();
@@ -231,7 +231,7 @@ namespace AcadLib.UI.Ribbon
                 var panel = (RibbonPanel)sender;
                 var tab = panel.Tab;
                 if (tab == null) return;
-                var tabOpt = ribbonOptions.Tabs.FirstOrDefault(t => t.UID == tab.UID);
+                var tabOpt = ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == tab.UID);
                 if (tabOpt == null) return;
                 panel.IsVisible = panel.IsVisible;
                 SaveOptions();
@@ -245,7 +245,7 @@ namespace AcadLib.UI.Ribbon
                 var ribbonPanelCol = sender as RibbonPanelCollection;
                 var tab = ribbonPanelCol?.FirstOrDefault()?.Tab;
                 if (tab == null) return;
-                var tabOptions = ribbonOptions.Tabs.FirstOrDefault(t => t.UID == tab.UID);
+                var tabOptions = ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == tab.UID);
                 if (tabOptions == null) return;
                 for (var index = 0; index < ribbonPanelCol.Count; index++)
                 {
@@ -269,7 +269,7 @@ namespace AcadLib.UI.Ribbon
 
         private static void SaveOptions()
         {
-            foreach (var tabOpt in ribbonOptions.Tabs)
+            foreach (var tabOpt in ribbonOptions.Data.Tabs)
             {
                 var tab = (RibbonTab)tabOpt.Item;
                 tabOpt.IsVisible = tab.IsVisible;
@@ -280,7 +280,7 @@ namespace AcadLib.UI.Ribbon
                 }
             }
             Debug.WriteLine("RibbonBuilder SaveOptions");
-            ribbonOptionsData.TrySave(ribbonOptions);
+            ribbonOptions.TrySave();
         }
 
         private static void Tab_PropertyChanged(object sender, [NotNull] System.ComponentModel.PropertyChangedEventArgs e)
@@ -288,7 +288,7 @@ namespace AcadLib.UI.Ribbon
             if (e.PropertyName == "IsVisible")
             {
                 var tab = (RibbonTab)sender;
-                var tabOpt = ribbonOptions.Tabs.FirstOrDefault(t => t.UID == tab.UID);
+                var tabOpt = ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == tab.UID);
                 if (tabOpt == null) return;
                 tabOpt.IsVisible = tab.IsVisible;
                 SaveOptions();
@@ -299,7 +299,7 @@ namespace AcadLib.UI.Ribbon
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach (var tab in ribbonOptions.Tabs)
+                foreach (var tab in ribbonOptions.Data.Tabs)
                 {
                     var index = ribbon.Tabs.IndexOf((RibbonTab)tab.Item);
                     if (index == -1)
