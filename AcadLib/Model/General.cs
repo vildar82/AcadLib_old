@@ -16,6 +16,7 @@ namespace AcadLib
         /// Отменено пользователем.
         /// Сообщение для исключения при отмене команды пользователем.
         /// </summary>
+        [Obsolete]
         public const string CanceledByUser = "Отменено пользователем";
 
         public const string Company = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
