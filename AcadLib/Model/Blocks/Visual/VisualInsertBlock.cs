@@ -8,6 +8,7 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks.Visual
 {
+    [PublicAPI]
     public static class VisualInsertBlock
     {
         private static readonly Dictionary<Predicate<string>, List<IVisualBlock>> dictFiles =

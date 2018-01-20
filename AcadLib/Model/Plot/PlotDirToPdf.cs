@@ -345,9 +345,7 @@ namespace AcadLib.Plot
 
                 foreach (var fileDwg in filesDwg)
                 {
-                    if (HostApplicationServices.Current.UserBreak())
-                        throw new Exception(General.CanceledByUser);
-
+                    if (HostApplicationServices.Current.UserBreak()) throw new OperationCanceledException();
                     indexfile++;
                     using (var dbTemp = new Database(false, true))
                     {

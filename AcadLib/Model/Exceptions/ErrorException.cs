@@ -5,6 +5,10 @@ using System.Drawing;
 
 namespace AcadLib.Exceptions
 {
+    /// <summary>
+    /// Ошибка с Error (можно показать объект на чертеже)
+    /// </summary>
+    [PublicAPI]
     public class ErrorException : Exception
     {
         public Errors.Error Error { get; private set; }

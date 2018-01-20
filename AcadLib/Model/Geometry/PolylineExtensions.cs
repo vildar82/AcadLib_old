@@ -7,6 +7,7 @@ using NetLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AcadLib.Exceptions;
 
 namespace AcadLib.Geometry
 {
@@ -488,7 +489,7 @@ namespace AcadLib.Geometry
                             countWhile++;
                             if (countWhile > 3)
                             {
-                                throw new Exceptions.ErrorException(new Errors.Error(
+                                throw new ErrorException(new Errors.Error(
                                     "Не определено попадает ли точка внутрь полилинии.",
                                     pt.GetRectangleFromCenter(3), Matrix3d.Identity,
                                     System.Drawing.SystemIcons.Error));

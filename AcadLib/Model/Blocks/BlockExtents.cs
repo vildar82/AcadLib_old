@@ -20,7 +20,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             if (blRef.Position.Z.IsEqual6(0))
             {
-                if (!blRef.IsWriteEnabled) blRef = (BlockReference)blRef.Id.GetObject(OpenMode.ForWrite);
+                if (!blRef.IsWriteEnabled) blRef = (BlockReference)blRef.Id.GetObject(OpenMode.ForWrite, false, true);
                 blRef.Position = new Point3d(blRef.Position.X, blRef.Position.Y, 0);
             }
         }

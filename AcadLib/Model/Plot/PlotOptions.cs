@@ -7,42 +7,69 @@ using System.Globalization;
 
 namespace AcadLib.Plot
 {
+    public class OnePdfOrEachConverter : BooleanConverter
+    {
+        public override object ConvertFrom(ITypeDescriptorContext context,
+          CultureInfo culture,
+          object value)
+        {
+            return (string)value == "Общий";
+        }
+
+        [NotNull]
+        public override object ConvertTo(ITypeDescriptorContext context,
+                CultureInfo culture,
+          [NotNull] object value,
+          Type destType)
+        {
+            return (bool)value ? "Общий" : "Для каждого dwg";
+        }
+    }
+
+    [PublicAPI]
     [Serializable]
     public class PlotOptions
     {
-        private static string REGKEY = "PlotOptions";
-        private static string KeySortTabOrName = "SortTabOrName";
-        private static string KeyOnePdfOrEachDwg = "OnePdfOrEachDwg";
-        private static string KeyFilterByNumbers = "FilterByNumbers";
-        private static string KeyFilterByNames = "FilterByNames";
-        private static string KeyFilterState = "FilterState";
-        private static string KeyDefaultPlotSource = "DefaultPlotSource";
-        private static string KeyIncludeSubdirs = "IncludeSubdirs";
+        private const string KeyDefaultPlotSource = "DefaultPlotSource";
+        private const string KeyFilterByNames = "FilterByNames";
+        private const string KeyFilterByNumbers = "FilterByNumbers";
+        private const string KeyFilterState = "FilterState";
+        private const string KeyIncludeSubdirs = "IncludeSubdirs";
+        private const string KeyOnePdfOrEachDwg = "OnePdfOrEachDwg";
+        private const string KeySortTabOrName = "SortTabOrName";
+        private const string REGKEY = "PlotOptions";
+        [Category("Печать")]
+        [DisplayName("Поумолчанию печать из:")]
+        [Description("При вызове команды установить опцию поумолчанию печати из текущего чертежа или выбор папки.")]
+        [DefaultValue("Текущего")]
+        [TypeConverter(typeof(PlotSourceConverter))]
+        public string DefaultPlotSource { get; set; }
 
-        //private static PlotOptions _instance;
-        //public static PlotOptions Instance
-        //{
-        //    get
-        //    {
-        //        if (_instance == null)
-        //        {
-        //            _instance = new PlotOptions();                    
-        //        }
-        //        return _instance;
-        //    }
-        //}
+        [Category("Фильтр")]
+        [DisplayName("Фильтр по названию вкладок:")]
+        [Description("Печатать только вкладки соответствующим заданной строке поиска. Через | можно складывать условия ИЛИ.")]
+        [DefaultValue("")]
+        public string FilterByNames { get; set; }
 
-        public PlotOptions()
-        {
-            Load();
-        }
+        [Category("Фильтр")]
+        [DisplayName("Фильтр по номерам вкладок:")]
+        [Description("Печатать только указанные номера вкладок. Номера через запятую и/или тире. Отрицательные числа считаются с конца вкладок.\n\r Например: 16--4 печать с 16 листа до 4 с конца; -1--3 печать трех последних листов.")]
+        [DefaultValue("")]
+        public string FilterByNumbers { get; set; }
+
+        [Category("Фильтр")]
+        [DisplayName("Использовать фильтр?")]
+        [Description("Включение и отключение фильтров.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool FilterState { get; set; }
 
         [Category("Печать")]
-        [DisplayName("Сортировка по")]
-        [Description("Сортировка листов - по порядку вкладок в чертеже или по алфавиту.")]
-        [DefaultValue(true)]
-        [TypeConverter(typeof(SortLayoutConverter))]
-        public bool SortTabOrName { get; set; }
+        [DisplayName("Включая подпапки")]
+        [Description("Если выбрана печать всей папки, то включать все файлы в подпапках удовлетворяющие фильтру.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool IncludeSubdirs { get; set; }
 
         [Category("Печать")]
         [DisplayName("Файл PDF")]
@@ -52,37 +79,16 @@ namespace AcadLib.Plot
         public bool OnePdfOrEachDwg { get; set; }
 
         [Category("Печать")]
-        [DisplayName("Поумолчанию печать из:")]
-        [Description("При вызове команды установить опцию поумолчанию печати из текущего чертежа или выбор папки.")]
-        [DefaultValue("Текущего")]
-        [TypeConverter(typeof(PlotSourceConverter))]
-        public string DefaultPlotSource { get; set; }
+        [DisplayName("Сортировка по")]
+        [Description("Сортировка листов - по порядку вкладок в чертеже или по алфавиту.")]
+        [DefaultValue(true)]
+        [TypeConverter(typeof(SortLayoutConverter))]
+        public bool SortTabOrName { get; set; }
 
-        [Category("Печать")]
-        [DisplayName("Включая подпапки")]
-        [Description("Если выбрана печать всей папки, то включать все файлы в подпапках удовлетворяющие фильтру.")]
-        [DefaultValue(false)]
-        [TypeConverter(typeof(YesNoConverter))]
-        public bool IncludeSubdirs { get; set; }
-
-        [Category("Фильтр")]
-        [DisplayName("Фильтр по номерам вкладок:")]
-        [Description("Печатать только указанные номера вкладок. Номера через запятую и/или тире. Отрицательные числа считаются с конца вкладок.\n\r Например: 16--4 печать с 16 листа до 4 с конца; -1--3 печать трех последних листов.")]
-        [DefaultValue("")]
-        public string FilterByNumbers { get; set; }
-
-        [Category("Фильтр")]
-        [DisplayName("Фильтр по названию вкладок:")]
-        [Description("Печатать только вкладки соответствующим заданной строке поиска. Через | можно складывать условия ИЛИ.")]
-        [DefaultValue("")]
-        public string FilterByNames { get; set; }
-
-        [Category("Фильтр")]
-        [DisplayName("Использовать фильтр?")]
-        [Description("Включение и отключение фильтров.")]
-        [DefaultValue(false)]
-        [TypeConverter(typeof(YesNoConverter))]
-        public bool FilterState { get; set; }
+        public PlotOptions()
+        {
+            Load();
+        }
 
         public void Load()
         {
@@ -133,18 +139,37 @@ namespace AcadLib.Plot
                 IncludeSubdirs = copyOptions.IncludeSubdirs;
                 Save();
             }
-            //formOpt.propertyGrid1.SelectedObject = copyOptions;
-            //if (Application.ShowModalDialog(formOpt) == System.Windows.Forms.DialogResult.OK)
-            //{
-            //    SortTabOrName = copyOptions.SortTabOrName;
-            //    OnePdfOrEachDwg = copyOptions.OnePdfOrEachDwg;
-            //    FilterState = copyOptions.FilterState;
-            //    FilterByNames = copyOptions.FilterByNames;
-            //    FilterByNumbers = copyOptions.FilterByNumbers;
-            //    DefaultPlotSource = copyOptions.DefaultPlotSource;
-            //    IncludeSubdirs = copyOptions.IncludeSubdirs;
-            //    Save();
-            //}            
+        }
+    }
+
+    public class PlotSourceConverter : TypeConverter
+    {
+        private readonly List<string> values = new List<string> { "Текущего", "Папки" };
+
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return true;
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        {
+            return value;
+        }
+
+        [NotNull]
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+        {
+            return new StandardValuesCollection(values);
+        }
+
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+        {
+            return true;
+        }
+
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+        {
+            return true;
         }
     }
 
@@ -181,48 +206,6 @@ namespace AcadLib.Plot
           Type destType)
         {
             return (bool)value ? "Да" : "Нет";
-        }
-    }
-
-    public class OnePdfOrEachConverter : BooleanConverter
-    {
-        public override object ConvertFrom(ITypeDescriptorContext context,
-          CultureInfo culture,
-          object value)
-        {
-            return (string)value == "Общий";
-        }
-
-        [NotNull]
-        public override object ConvertTo(ITypeDescriptorContext context,
-                CultureInfo culture,
-          [NotNull] object value,
-          Type destType)
-        {
-            return (bool)value ? "Общий" : "Для каждого dwg";
-        }
-    }
-
-    public class PlotSourceConverter : TypeConverter
-    {
-        private List<string> values = new List<string>() { "Текущего", "Папки" };
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) { return true; }
-
-        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) { return true; }
-
-        [NotNull]
-        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-        {
-            return new StandardValuesCollection(values);
-        }
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-        {
-            return true;
-        }
-
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-        {
-            return value;
         }
     }
 }

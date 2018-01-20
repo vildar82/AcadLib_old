@@ -12,6 +12,7 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
 {
+    [PublicAPI]
     public class CommandStart
     {
         public static string CurrentCommand { get; set; }
@@ -124,7 +125,9 @@ namespace AcadLib
             }
             catch (System.Exception ex)
             {
+#pragma warning disable 612
                 if (!ex.Message.Contains(General.CanceledByUser))
+#pragma warning restore 612
                 {
                     Logger.Log.Error(ex, CurrentCommand);
                     Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);

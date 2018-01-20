@@ -10,6 +10,7 @@ namespace AcadLib.Jigs
     /// Запрос точки вставки с висящим на курсоре прямоугольником.
     /// Точка вставки - нижний левый угол
     /// </summary>
+    [PublicAPI]
     public class RectangleJig : EntityJig
     {
         public Point3d Position { get; set; }
@@ -28,15 +29,13 @@ namespace AcadLib.Jigs
         protected override SamplerStatus Sampler([NotNull] JigPrompts prompts)
         {
             var res = prompts.AcquirePoint("\nТочка вставки:");
-            if (res.Status != PromptStatus.OK)
-                throw new Exception(General.CanceledByUser);
-
+            if (res.Status != PromptStatus.OK) throw new OperationCanceledException();
             var status = SamplerStatus.NoChange;
             if (!Position.IsEqualTo(res.Value, Tolerance.Global))
             {
                 status = SamplerStatus.OK;
             }
-            Position = res.Value; //TransformBy(ed.CurrentUserCoordinateSystem);            
+            Position = res.Value; //TransformBy(ed.CurrentUserCoordinateSystem);
             return status;
         }
 

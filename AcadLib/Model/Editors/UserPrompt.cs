@@ -1,5 +1,4 @@
-﻿using AcadLib;
-using AcadLib.Jigs;
+﻿using AcadLib.Jigs;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
@@ -61,8 +60,7 @@ namespace Autodesk.AutoCAD.EditorInput
         {
             var jigRect = new RectangleJig(len, height);
             var res = ed.Drag(jigRect);
-            if (res.Status != PromptStatus.OK)
-                throw new Exception(General.CanceledByUser);
+            if (res.Status != PromptStatus.OK) throw new OperationCanceledException();
             return jigRect.Position;
         }
 

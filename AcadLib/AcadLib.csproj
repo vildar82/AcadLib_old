@@ -89,7 +89,7 @@
       <HintPath>..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="Equals, Version=1.7.1.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Equals.Fody.1.7.1\Lib\dotnet\Equals.dll</HintPath>
+      <HintPath>..\packages\Equals.Fody.1.7.1\lib\dotnet\Equals.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
@@ -157,7 +157,6 @@
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
@@ -263,9 +262,6 @@
     <Compile Include="Model\Hatches\HatchExt.cs" />
     <Compile Include="Model\IO\Path.cs" />
     <Compile Include="Model\Jigs\DragSel.cs" />
-    <Compile Include="Model\Jokes\IJoke.cs" />
-    <Compile Include="Model\Jokes\Joke.cs" />
-    <Compile Include="Model\Jokes\JokeHelper.cs" />
     <Compile Include="Model\Layers\LayerVisibleState.cs" />
     <Compile Include="Model\Layouts\LayoutsExt.cs" />
     <Compile Include="Model\Log\Logger.cs" />
@@ -288,7 +284,6 @@
     <Compile Include="Model\Blocks\Visual\IVisualBlock.cs" />
     <Compile Include="Model\Blocks\Visual\VisualBlock.cs" />
     <Compile Include="Model\Blocks\Visual\VisualInsertBlock.cs" />
-    <Compile Include="Model\Blocks\Visual\VisualModel.cs" />
     <Compile Include="Model\Blocks\Visual\UI\WindowVisualBlocks.xaml.cs">
       <DependentUpon>WindowVisualBlocks.xaml</DependentUpon>
     </Compile>
@@ -592,16 +587,14 @@
     </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Fody.2.2.1.0\build\netstandard1.2\Fody.targets" Condition="Exists('..\packages\Fody.2.2.1.0\build\netstandard1.2\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.1\build\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.1\build\NETStandard.Library.targets'))" />
-    <Error Condition="!Exists('..\packages\Fody.2.2.1.0\build\net452\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.2.1.0\build\net452\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.2.2.1.0\build\netstandard1.2\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.2.1.0\build\netstandard1.2\Fody.targets'))" />
     <Error Condition="!Exists('..\packages\Equals.Fody.1.7.1\build\dotnet\Equals.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Equals.Fody.1.7.1\build\dotnet\Equals.Fody.targets'))" />
   </Target>
-  <Import Project="..\packages\NETStandard.Library.2.0.1\build\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.1\build\NETStandard.Library.targets')" />
-  <Import Project="..\packages\Fody.2.2.1.0\build\net452\Fody.targets" Condition="Exists('..\packages\Fody.2.2.1.0\build\net452\Fody.targets')" />
   <Import Project="..\packages\Equals.Fody.1.7.1\build\dotnet\Equals.Fody.targets" Condition="Exists('..\packages\Equals.Fody.1.7.1\build\dotnet\Equals.Fody.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
