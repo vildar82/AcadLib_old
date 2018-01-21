@@ -4,7 +4,6 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks
 {
@@ -84,8 +83,7 @@ namespace AcadLib.Blocks
         /// </summary>
         public static bool HasBlockThisDrawing(string name)
         {
-            var doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) throw new Exception("Нет активного документа!");
+            var doc = AcadHelper.Doc;
 #pragma warning disable 618
             using (var bt = (BlockTable)doc.Database.BlockTableId.Open(OpenMode.ForRead))
 #pragma warning restore 618

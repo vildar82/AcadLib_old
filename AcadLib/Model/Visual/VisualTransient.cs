@@ -64,12 +64,13 @@ namespace AcadLib.Visual
                     tm?.EraseTransient(item, vps);
                     item.Dispose();
                 }
+                draws = null;
             }
-            draws = null;
         }
 
         private void DisposeDraws()
         {
+            draws = null;
             if (draws?.Any() != true) return;
             foreach (var draw in draws)
             {

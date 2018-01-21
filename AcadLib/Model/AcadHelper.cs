@@ -2,6 +2,8 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 using System;
+using System.IO;
+using System.Linq;
 using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
@@ -18,6 +20,13 @@ namespace AcadLib
         [NotNull]
         public static Document Doc => DocumentManager.MdiActiveDocument ?? throw new InvalidOperationException();
         public static int VersionMajor => Application.Version.Major;
+
+        [CanBeNull]
+        public static Document GetOpenedDocument(string file)
+        {
+            return DocumentManager.Cast<Document>().FirstOrDefault(d =>
+                Path.GetFullPath(d.Name).Equals(Path.GetFullPath(file), StringComparison.OrdinalIgnoreCase));
+        }
 
         /// <summary>
         /// Если пользователь нажал Esc для прерывания процесса
