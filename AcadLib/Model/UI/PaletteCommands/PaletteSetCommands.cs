@@ -7,6 +7,8 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
+using AcadLib.Properties;
+using AcadLib.UI.PaletteCommands.UI;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Brush = System.Windows.Media.Brush;
 
@@ -34,15 +36,24 @@ namespace AcadLib.PaletteCommands
         {
             this.versionPalette = versionPalette;
             CommandsAddin = commandsAddin;
-            Icon = Properties.Resources.pik;
+            Icon = Resources.pik;
             LoadPalettes();
-            //// Установка фона контрола на палитре - в зависимости от цветовой темы автокада.
-            //CheckTheme();
-            //Autodesk.AutoCAD.ApplicationServices.Core.Application.SystemVariableChanged += (s, e) =>
-            //{
-            //    if (e.Name == "COLORTHEME" && e.Changed)
-            //        CheckTheme();
-            //};
+            PaletteAddContextMenu += PaletteSetCommands_PaletteAddContextMenu;
+        }
+
+        public static double GetButtonWidth()
+        {
+            if (Settings.Default.PaletteStyle == 1)
+            {
+                var wb = MathExt.Interpolate(8, 55, 25, 180, Settings.Default.PaletteFontSize);
+                return wb < Settings.Default.PaletteImageSize ? Settings.Default.PaletteImageSize : wb;
+            }
+            return Settings.Default.PaletteImageSize * 1.08;
+        }
+
+        public static double GetFontSize()
+        {
+            return Settings.Default.PaletteFontSize * 2.5;
         }
 
         /// <summary>
@@ -121,7 +132,7 @@ namespace AcadLib.PaletteCommands
                 var p = new Pane
                 {
                     ToolTipText = $"Палитра {paletteName}, вер. {ver.Revision}",
-                    Icon = Icon.FromHandle(Properties.Resources.logo.GetHicon())
+                    Icon = Icon.FromHandle(Resources.logo.GetHicon())
                 };
                 p.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);
                 p.Visible = false;
@@ -164,13 +175,6 @@ namespace AcadLib.PaletteCommands
                         var commControl = new UI.CommandsControl { DataContext = model };
                         var name = group.Key;
                         if (string.IsNullOrEmpty(name)) name = "Главная";
-                        //var host = new ElementHost
-                        //{
-                        //    AutoSize = true,
-                        //    Dock = DockStyle.Fill,
-                        //    Child = commControl
-                        //};
-                        //Add(name, host);
                         AddVisual(name, commControl);
                         Models.Add(model);
                     }
@@ -182,6 +186,39 @@ namespace AcadLib.PaletteCommands
             var controlCommon = new UI.CommandsControl { DataContext = modelCommon };
             AddVisual(groupCommon, controlCommon);
             Models.Add(modelCommon);
+            Settings.Default.PropertyChanged += (o, e) =>
+            {
+                double bw;
+                switch (e.PropertyName)
+                {
+                    case "PaletteImageSize":
+                    case "PaletteStyle":
+                        bw = GetButtonWidth();
+                        Models.ForEach(m => m.ButtonWidth = bw);
+                        break;
+
+                    case "PaletteFontSize":
+                        var fontMaxH = GetFontSize();
+                        bw = GetButtonWidth();
+                        Models.ForEach(m =>
+                        {
+                            m.FontMaxHeight = fontMaxH;
+                            m.ButtonWidth = bw;
+                        });
+                        break;
+                }
+            };
+        }
+
+        private void PaletteSetCommands_PaletteAddContextMenu(object sender, [NotNull] PaletteAddContextMenuEventArgs e)
+        {
+            var mi = new MenuItem("Параметры отображения");
+            mi.Click += (co, ce) =>
+            {
+                var paletteoptView = new PaletteOptionsView(new PaletteOptionsViewModel());
+                paletteoptView.ShowDialog();
+            };
+            e.MenuItems.Add(mi);
         }
     }
 

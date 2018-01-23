@@ -95,6 +95,12 @@ namespace AcadLib
                 Logger.Log.Info("start Initialize AcadLib");
                 "MODEMACRO".SetSystemVariableTry(PikSettings.UserGroup);
                 PluginStatisticsHelper.StartAutoCAD();
+                if (Settings.Default.UpgradeRequired)
+                {
+                    Settings.Default.Upgrade();
+                    Settings.Default.UpgradeRequired = false;
+                    Settings.Default.Save();
+                }
                 AllCommandsCommon();
                 // Копирование вспомогательных сборок локально из шаровой папки packages
                 var task = Task.Run(() =>

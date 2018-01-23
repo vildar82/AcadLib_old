@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Input;
 using System.Windows.Media;
 using JetBrains.Annotations;
 
@@ -9,6 +10,7 @@ namespace AcadLib.PaletteCommands
     public interface IPaletteCommand
     {
         List<string> Access { get; }
+        ICommand Command { get; set; }
         List<MenuItemCommand> ContexMenuItems { get; set; }
         string Description { get; }
         string Group { get; }

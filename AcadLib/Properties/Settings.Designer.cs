@@ -44,5 +44,53 @@ namespace AcadLib.Properties {
                 return ((string)(this["SR_IRA_AR_DECORConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UpgradeRequired {
+            get {
+                return ((bool)(this["UpgradeRequired"]));
+            }
+            set {
+                this["UpgradeRequired"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int PaletteStyle {
+            get {
+                return ((int)(this["PaletteStyle"]));
+            }
+            set {
+                this["PaletteStyle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public double PaletteImageSize {
+            get {
+                return ((double)(this["PaletteImageSize"]));
+            }
+            set {
+                this["PaletteImageSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("11")]
+        public double PaletteFontSize {
+            get {
+                return ((double)(this["PaletteFontSize"]));
+            }
+            set {
+                this["PaletteFontSize"] = value;
+            }
+        }
     }
 }

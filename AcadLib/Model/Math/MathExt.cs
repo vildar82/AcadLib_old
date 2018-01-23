@@ -49,6 +49,20 @@ namespace AcadLib
         }
 
         /// <summary>
+        /// Линейная интерполяция
+        /// </summary>
+        /// <param name="x0">Начальное X</param>
+        /// <param name="y0">Начальное Y</param>
+        /// <param name="x1">Конечное X</param>
+        /// <param name="y1">Конечное Y</param>
+        /// <param name="x">Промежуточное X для котрого нужно интерполировать Y</param>
+        /// <returns></returns>
+        public static double Interpolate(double x0, double y0, double x1, double y1, double x)
+        {
+            return y0 * (x - x1) / (x0 - x1) + y1 * (x - x0) / (x1 - x0);
+        }
+
+        /// <summary>
         /// Список чисел в строку, с групперовкой последовательных номеров
         /// ints = 1, 2, 3, 4, 5, 7, 8, 10, 15, 16, 100, 101, 102, 103, 105, 106, 107, 109
         /// res = "1-8, 10, 15, 16, 100-107, 109"

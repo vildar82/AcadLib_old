@@ -2,6 +2,7 @@
 using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using AcadLib.Properties;
 using ReactiveUI;
 
 // ReSharper disable once CheckNamespace
@@ -14,6 +15,10 @@ namespace AcadLib.PaletteCommands
         /// </summary>
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         [Reactive] public System.Windows.Media.Brush Background { get; set; }
+
+        [Reactive] public double ButtonWidth { get; set; } = PaletteSetCommands.GetButtonWidth();
+
+        [Reactive] public double FontMaxHeight { get; set; } = PaletteSetCommands.GetFontSize();
 
         /// <summary>
         /// Команды на палитре

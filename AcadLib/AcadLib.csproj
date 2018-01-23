@@ -334,6 +334,10 @@
     <Compile Include="Model\UI\PaletteCommands\PaletteModel.cs" />
     <Compile Include="Model\UI\PaletteCommands\PaletteSetCommands.cs" />
     <Compile Include="Model\UI\PaletteCommands\UI\DesignTimePalette.cs" />
+    <Compile Include="Model\UI\PaletteCommands\UI\PaletteOptionsView.xaml.cs">
+      <DependentUpon>PaletteOptionsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UI\PaletteCommands\UI\PaletteOptionsViewModel.cs" />
     <Compile Include="Model\UI\Properties\DictionaryEditor\AttributeProvider.cs" />
     <Compile Include="Model\UI\Properties\DictionaryEditor\DefaultProvider.cs" />
     <Compile Include="Model\UI\Properties\DictionaryEditor\EditableKeyValuePair.cs" />
@@ -564,6 +568,10 @@
     <Page Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Model\UI\PaletteCommands\UI\PaletteOptionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\UI\Properties\PropertiesView.xaml">
       <SubType>Designer</SubType>
