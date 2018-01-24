@@ -33,10 +33,15 @@ namespace AcadLib.UI.PaletteCommands.UI
                 .Where(w => w).Subscribe(s => SetListStyle(2));
         }
 
+        public override void OnClosing()
+        {
+            Settings.Default.Save();
+            base.OnClosing();
+        }
+
         private static void SetListStyle(int listStyle)
         {
             Settings.Default.PaletteStyle = listStyle;
-            Settings.Default.Save();
         }
 
         private void SwitchRadioContent()
