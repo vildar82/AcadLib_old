@@ -9,12 +9,13 @@
 		Background="{Binding CurrentTheme.TabBackgroundBrush, Source={x:Static acwt:ThemeManager.PaletteSettings}}"
 		Name="userControl" mc:Ignorable="d">
 	<Grid>
-		<!--<Grid.Resources>
-			<Style x:Key="btnImage" TargetType="{x:Type Image}" BasedOn="{StaticResource {x:Type Image}}">
-				<Setter Property="Height" Value="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}" />
-				<Setter Property="Width" Value="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}" />
-			</Style>
-		</Grid.Resources>-->
+		<Grid.Resources>
+			<ResourceDictionary>
+				<ResourceDictionary.MergedDictionaries>
+					<ResourceDictionary Source="../../../../Model/WPF/ScrollBarIOS.xaml" />
+				</ResourceDictionary.MergedDictionaries>
+			</ResourceDictionary>
+		</Grid.Resources>
 		<Grid.RowDefinitions>
 			<RowDefinition />
 			<RowDefinition Height="Auto" />
@@ -122,10 +123,11 @@
 							<Setter Property="Content">
 								<Setter.Value>
 									<ListBox ItemsSource="{Binding PaletteCommands}" Background="Transparent" BorderThickness="0"
-											ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+											ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
 										<ListBox.ItemTemplate>
 											<DataTemplate>
-												<Button Command="{Binding Command}" BorderThickness="0" Margin="1"
+												<Button Command="{Binding Command}" Margin="1" HorizontalAlignment="Stretch"
+														HorizontalContentAlignment="Left"
 														Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
 													<Grid>
 														<Grid.ColumnDefinitions>
@@ -136,7 +138,7 @@
 																Width="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}"
 																Height="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}" />
 														<TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"
-																TextWrapping="Wrap" MaxHeight="60" Margin="5,1,1,1"
+																TextWrapping="Wrap" MaxHeight="30" Margin="5,1,1,1"
 																FontSize="{Binding PaletteFontSize, Source={x:Static properties:Settings.Default}}" />
 													</Grid>
 													<ToolTipService.ToolTip>
