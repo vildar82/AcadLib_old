@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using AcadLib.CommandLock;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib
@@ -100,6 +101,11 @@ namespace AcadLib
                 Logger.Log.StartCommand(commandStart);
                 Logger.Log.Info($"Document={doc.Name}");
                 PluginStatisticsHelper.PluginStart(commandStart);
+                // Проверка блокировки команды
+                if (!CommandLockService.CanStartCommand(commandStart.CommandName))
+                {
+                    return;
+                }
             }
             catch (System.Exception ex)
             {

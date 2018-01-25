@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reactive.Linq;
 using AcadLib.Properties;
 using NetLib.WPF;
