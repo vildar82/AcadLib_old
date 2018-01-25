@@ -66,6 +66,14 @@ namespace AcadLib.Visual
                 }
                 draws = null;
             }
+            else
+            {
+                foreach (var item in draws)
+                {
+                    item.Dispose();
+                }
+                draws = null;
+            }
         }
 
         private void DisposeDraws()
