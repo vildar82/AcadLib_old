@@ -104,6 +104,7 @@ namespace AcadLib
                 // Проверка блокировки команды
                 if (!CommandLockService.CanStartCommand(commandStart.CommandName))
                 {
+                    Logger.Log.Info($"Команда заблокирована - {commandStart.CommandName}");
                     return;
                 }
             }
