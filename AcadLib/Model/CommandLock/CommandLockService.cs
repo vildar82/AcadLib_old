@@ -1,4 +1,5 @@
 ﻿using AcadLib.CommandLock.Data;
+using AcadLib.CommandLock.UI;
 using AutoCAD_PIK_Manager.Settings;
 using JetBrains.Annotations;
 using NetLib;
@@ -6,7 +7,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 
 namespace AcadLib.CommandLock
 {
@@ -20,14 +20,8 @@ namespace AcadLib.CommandLock
             if (!isInit && !Init()) return true;
             if (data.Data.Locks.TryGetValue(commandName, out var lc) && lc.IsActive)
             {
-                if (lc.CanContinue)
-                {
-                    return MessageBox.Show($"Предупреждение:\n\n{lc.Message}\n\nПродолжить выполнение?",
-                        "Блокировка", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes;
-                }
-                MessageBox.Show($"Команда заблокирована:\n\n{lc.Message}\n\nВыход", "Блокировка",
-                    MessageBoxButton.OK, MessageBoxImage.Hand);
-                return lc.CanContinue;
+                var lockView = new LockView(new LockViewModel(lc));
+                return lockView.ShowDialog() == true;
             }
             return true;
         }
