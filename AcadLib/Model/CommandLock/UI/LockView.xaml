@@ -26,7 +26,8 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate DataType="local:Button">
 					<Button Content="{Binding Name}" Command="{Binding Command}" ToolTip="{Binding ToolTip}"
-							VerticalAlignment="Center" Padding="10,5,10,5" Margin="5" />
+							VerticalAlignment="Center" Padding="10,5,10,5" Margin="5" IsDefault="{Binding IsDefault}"
+							IsCancel="{Binding IsCancel}" />
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>

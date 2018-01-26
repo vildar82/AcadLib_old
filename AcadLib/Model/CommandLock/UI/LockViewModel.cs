@@ -23,14 +23,24 @@ namespace AcadLib.CommandLock.UI
             {
                 ImageKey = "../../../Resources/notify.png";
                 Title = "Предупреждение";
-                Buttons.Add(new Button { Name = "Продолжить", Command = CreateCommand(() => DialogResult = true) });
+                Buttons.Add(new Button
+                {
+                    Name = "Продолжить",
+                    Command = CreateCommand(() => DialogResult = true),
+                    IsDefault = true
+                });
             }
             else
             {
                 ImageKey = "../../../Resources/stop.png";
                 Title = "Команда заблокирована";
             }
-            Buttons.Add(new Button { Name = "Выход", Command = CreateCommand(() => DialogResult = false) });
+            Buttons.Add(new Button
+            {
+                Name = "Выход",
+                Command = CreateCommand(() => DialogResult = false),
+                IsCancel = true
+            });
         }
     }
 }
