@@ -3,7 +3,8 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:AcadLib.CommandLock.UI"
 		xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
 		d:DataContext="{d:DesignInstance local:LockViewModel, IsDesignTimeCreatable=True}" mc:Ignorable="d"
-		Title="{Binding Title}" SizeToContent="WidthAndHeight" ResizeMode="CanResize" WindowStartupLocation="CenterScreen">
+		Title="{Binding Title}" SizeToContent="WidthAndHeight" ResizeMode="CanResize" WindowStartupLocation="CenterScreen"
+		SaveWindowPosition="False">
 	<Grid Margin="10">
 		<Grid.RowDefinitions>
 			<RowDefinition />

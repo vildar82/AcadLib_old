@@ -159,16 +159,16 @@ namespace AcadLib.PaletteCommands
         {
             Models = new List<PaletteModel>();
             // Группировка команд
-            const string groupCommon = Commands.GroupCommon;
-            var commonCommands = Commands.CommandsPalette;
+            //const string groupCommon = Commands.GroupCommon;
+            //var commonCommands = Commands.CommandsPalette;
             var groupCommands = CommandsAddin.GroupBy(c => c.Group).OrderBy(g => g.Key);
             foreach (var group in groupCommands)
             {
-                if (group.Key.Equals(groupCommon, StringComparison.OrdinalIgnoreCase))
-                {
-                    commonCommands.AddRange(group);
-                }
-                else
+                //if (group.Key.Equals(groupCommon, StringComparison.OrdinalIgnoreCase))
+                //{
+                //    commonCommands.AddRange(group);
+                //}
+                //else
                 {
                     var model = new PaletteModel(group.GroupBy(g => g.Name).Select(s => s.First()), versionPalette);
                     if (model.PaletteCommands.Any())
@@ -181,12 +181,12 @@ namespace AcadLib.PaletteCommands
                     }
                 }
             }
-            // Общие команды для всех отделов определенные в этой сборке
-            var modelCommon = new PaletteModel(commonCommands.GroupBy(g => g.Name).Select(s => s.First()).ToList(),
-                versionPalette);
-            var controlCommon = new UI.CommandsControl { DataContext = modelCommon };
-            AddVisual(groupCommon, controlCommon);
-            Models.Add(modelCommon);
+            //// Общие команды для всех отделов определенные в этой сборке
+            //var modelCommon = new PaletteModel(commonCommands.GroupBy(g => g.Name).Select(s => s.First()).ToList(),
+            //    versionPalette);
+            //var controlCommon = new UI.CommandsControl { DataContext = modelCommon };
+            //AddVisual(groupCommon, controlCommon);
+            //Models.Add(modelCommon);
             Settings.Default.PropertyChanged += (o, e) =>
             {
                 double bw;
