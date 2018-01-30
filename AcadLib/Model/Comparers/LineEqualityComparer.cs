@@ -35,7 +35,7 @@ namespace AcadLib.Comparers
             var dir2 = l2.EndPoint - l2.StartPoint;
             var res = dir1.IsParallelTo(dir2, tolerance);
             if (!res) return false;
-            if (WidthBetweenLines(l1, l2, dir1.GetPerpendicularVector()) > maxWidth) return false;
+            if (WidthBetweenLines(l1, l2, dir1) > maxWidth) return false;
             return MaxLens(l1, l2) - (l1.Length + l2.Length) <= maxInterval;
         }
 

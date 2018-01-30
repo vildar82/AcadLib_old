@@ -425,5 +425,29 @@ namespace AcadLib
                 ed.Regen();
             });
         }
+
+        [CommandMethod(Group, nameof(PIK_BlocksUnitsless), CommandFlags.Modal)]
+        public void PIK_BlocksUnitsless()
+        {
+            CommandStart.Start(doc =>
+            {
+                var db = doc.Database;
+                using (var t = db.TransactionManager.StartTransaction())
+                {
+                    var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
+                    foreach (var id in bt)
+                    {
+                        var btr = (BlockTableRecord)id.GetObject(OpenMode.ForRead);
+                        if (btr.IsLayout || btr.IsAnonymous || btr.IsDependent) continue;
+                        if (btr.Units != UnitsValue.Undefined)
+                        {
+                            btr = (BlockTableRecord)id.GetObject(OpenMode.ForWrite);
+                            btr.Units = UnitsValue.Undefined;
+                        }
+                    }
+                    t.Commit();
+                }
+            });
+        }
     }
 }

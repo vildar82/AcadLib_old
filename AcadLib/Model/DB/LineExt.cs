@@ -26,8 +26,13 @@ namespace AcadLib
                 unionLine = prew;
                 prew = line;
             }
-            unionLine?.Dispose();
-            return prew ?? (Line)lines[0].Clone();
+            if (prew == null) return null;
+            if (unionLine == null)
+            {
+                return (Line)prew.Clone();
+            }
+            unionLine.Dispose();
+            return prew;
         }
 
         /// <summary>
