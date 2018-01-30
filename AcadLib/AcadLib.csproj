@@ -319,6 +319,7 @@
     <Compile Include="Model\Plot\PlotOptions.cs" />
     <Compile Include="Model\Regexes\RegexExt.cs" />
     <Compile Include="Model\Registry\RegExt.cs" />
+    <Compile Include="Model\RTree\SpatialIndex\RectangleExt.cs" />
     <Compile Include="Model\Scale\ScaleHelper.cs" />
     <Compile Include="Model\Statistic\DataSetStatistic.Designer.cs">
       <AutoGen>True</AutoGen>

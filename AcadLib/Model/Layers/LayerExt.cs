@@ -63,6 +63,7 @@ namespace AcadLib.Layers
                     {
                         layId = CreateLayer(layer, lt);
                     }
+                    layer.LayerId = layId;
                     resVal.Add(layName, layId);
                 }
             }

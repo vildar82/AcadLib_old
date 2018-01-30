@@ -49,11 +49,21 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return (ext.MaxPoint.X - ext.MinPoint.X) * (ext.MaxPoint.Y - ext.MinPoint.Y);
         }
 
+        /// <summary>
+        /// Расстояние по Y
+        /// </summary>
+        /// <param name="ext"></param>
+        /// <returns></returns>
         public static double GetHeight(this Extents3d ext)
         {
             return ext.MaxPoint.Y - ext.MinPoint.Y;
         }
 
+        /// <summary>
+        /// Расстояние по X
+        /// </summary>
+        /// <param name="ext"></param>
+        /// <returns></returns>
         public static double GetLength(this Extents3d ext)
         {
             return ext.MaxPoint.X - ext.MinPoint.X;
