@@ -93,7 +93,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentValidation.7.3.4\lib\net45\FluentValidation.dll</HintPath>
+      <HintPath>..\packages\FluentValidation.7.4.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Annotations, Version=11.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>..\packages\JetBrains.Annotations.11.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
@@ -171,8 +171,8 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UIAutomationClient" />
-    <Reference Include="UnitsNet, Version=3.87.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnitsNet.3.87.0\lib\net40\UnitsNet.dll</HintPath>
+    <Reference Include="UnitsNet, Version=3.88.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnitsNet.3.88.0\lib\net40\UnitsNet.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
@@ -214,8 +214,10 @@
     <Compile Include="Model\CommandLock\UI\LockView.xaml.cs">
       <DependentUpon>LockView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\Comparers\LineEqualityComparer.cs" />
     <Compile Include="Model\DB\DataExtensions.cs" />
     <Compile Include="Model\DB\GenericExtensions.cs" />
+    <Compile Include="Model\DB\LineExt.cs" />
     <Compile Include="Model\DB\SystemVariableExt.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
@@ -515,6 +517,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\purge.png" />
     <Resource Include="Resources\stop.png" />
     <Resource Include="Resources\notify.png" />
     <None Include="DbYouTube.xsc">

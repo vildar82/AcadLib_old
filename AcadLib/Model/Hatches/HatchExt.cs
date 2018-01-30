@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using NetLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AcadLib.Hatches
@@ -205,8 +206,9 @@ namespace AcadLib.Hatches
             for (var i = 0; i < nloops; i++)
             {
                 var loop = ht.GetLoopAt(i);
-                if (loopType.HasAny(loop.LoopType))
+                if (loopType.HasFlag(loop.LoopType))
                 {
+                    Debug.WriteLine($"GetPolylines2 HasFlag {loop.LoopType}!");
                     var poly = new Polyline();
                     var vertex = 0;
                     if (loop.IsPolyline)

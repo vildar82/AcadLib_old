@@ -68,6 +68,7 @@ namespace AcadLib.PaletteCommands
                 var palette = _paletteSets.FirstOrDefault(p => p.Guid.Equals(paletteGuid));
                 if (palette == null)
                 {
+                    commands.AddRange(Commands.CommandsPalette);
                     var ver = Assembly.GetCallingAssembly().GetName().Version;
                     _paletteSets.Add(new UserGroupPalette
                     {
@@ -158,7 +159,7 @@ namespace AcadLib.PaletteCommands
         {
             Models = new List<PaletteModel>();
             // Группировка команд
-            const string groupCommon = "Общие";
+            const string groupCommon = Commands.GroupCommon;
             var commonCommands = Commands.CommandsPalette;
             var groupCommands = CommandsAddin.GroupBy(c => c.Group).OrderBy(g => g.Key);
             foreach (var group in groupCommands)

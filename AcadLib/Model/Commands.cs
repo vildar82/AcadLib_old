@@ -44,6 +44,7 @@ namespace AcadLib
         //public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";
         public const string CommandXDataView = "PIK_XDataView";
 
+        public const string GroupCommon = "Общие";
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
         /// <summary>
         /// Общие команды для всех отделов определенные в этой сборке
@@ -62,8 +63,9 @@ namespace AcadLib
             {
                 CommandsPalette = new List<IPaletteCommand>
                 {
-                    new PaletteInsertBlock("PIK_Project-Logo", fileCommonBlocks, "Блок логотипа", Resources.logo, "Вставка блока логотипа ПИК."),
-                    new PaletteCommand("Просмотр расширенных данных примитива", Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива.")
+                    new PaletteInsertBlock("PIK_Project-Logo", fileCommonBlocks, "Блок логотипа", Resources.logo, "Вставка блока логотипа ПИК.", GroupCommon),
+                    new PaletteCommand("Просмотр расширенных данных примитива", Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива.", GroupCommon),
+                    new PaletteCommand("Проверка и очистка", Resources.purge, nameof(PIK_PurgeAuditRegen),"Очистка (_purge), проверка (_audit) и регенерация чертежа.", GroupCommon)
                 };
             }
             catch (Exception ex)
@@ -409,6 +411,18 @@ namespace AcadLib
                     }
                     t.Commit();
                 }
+            });
+        }
+
+        [CommandMethod(Group, nameof(PIK_PurgeAuditRegen), CommandFlags.Modal)]
+        public void PIK_PurgeAuditRegen()
+        {
+            CommandStart.Start(doc =>
+            {
+                var ed = doc.Editor;
+                ed.Command("_-purge", "_All", "*", "_No");
+                ed.Command("_audit", "_Yes");
+                ed.Regen();
             });
         }
     }
