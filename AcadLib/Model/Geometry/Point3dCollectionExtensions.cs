@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AcadLib.Comparers;
 
 namespace AcadLib.Geometry
 {
@@ -41,10 +42,16 @@ namespace AcadLib.Geometry
             return false;
         }
 
+        public static List<Point3d> RemoveDuplicate([NotNull] this List<Point3d> pts, Tolerance tol)
+        {
+            return pts.Distinct(new Point3dEqualityComparer(tol.EqualPoint)).ToList();
+        }
+
         /// <summary>
         /// Removes duplicated points in the collection.
         /// </summary>
         /// <param name="pts">The instance to which the method applies.</param>
+        [Obsolete("Use RemoveDuplicate List<Point3d>")]
         public static void RemoveDuplicate([NotNull] this Point3dCollection pts)
         {
             pts.RemoveDuplicate(Tolerance.Global);
@@ -55,28 +62,14 @@ namespace AcadLib.Geometry
         /// </summary>
         /// <param name="pts">The instance to which the method applies.</param>
         /// <param name="tol">The tolerance to use in comparisons.</param>
+        [Obsolete("Use RemoveDuplicate List<Point3d>")]
         public static void RemoveDuplicate([NotNull] this Point3dCollection pts, Tolerance tol)
         {
-            var ptlst = new List<Point3d>();
-            for (var i = 0; i < pts.Count; i++)
+            var ptsClean = RemoveDuplicate(pts.Cast<Point3d>().ToList(), tol);
+            pts.Clear();
+            foreach (var pt in ptsClean)
             {
-                ptlst.Add(pts[i]);
-            }
-            ptlst.Sort((p1, p2) => p1.X.CompareTo(p2.X));
-            for (var i = 0; i < ptlst.Count - 1; i++)
-            {
-                for (var j = i + 1; j < ptlst.Count;)
-                {
-                    if (ptlst[j].X - ptlst[i].X > tol.EqualPoint)
-                        break;
-                    if (ptlst[i].IsEqualTo(ptlst[j], tol))
-                    {
-                        pts.Remove(ptlst[j]);
-                        ptlst.RemoveAt(j);
-                    }
-                    else
-                        j++;
-                }
+                pts.Add(pt);
             }
         }
 
