@@ -65,7 +65,7 @@ namespace AcadLib
                 {
                     new PaletteInsertBlock("PIK_Project-Logo", fileCommonBlocks, "Блок логотипа", Resources.logo, "Вставка блока логотипа ПИК.", GroupCommon),
                     new PaletteCommand("Просмотр расширенных данных примитива", Resources.PIK_XDataView, CommandXDataView,"Просмотр расширенных данных (XData) примитива.", GroupCommon),
-                    new PaletteCommand("Проверка и очистка", Resources.purge, nameof(PIK_PurgeAuditRegen),"Очистка (_purge), проверка (_audit) и регенерация чертежа.", GroupCommon)
+                    new PaletteCommand("Проверка и очистка", Resources.purge, nameof(PIK_PurgeAuditRegen),"Очистка (_purge), проверка (_audit), сброс списка масштабов аннотации (_scalelistedit) и регенерация чертежа.", GroupCommon)
                 };
             }
             catch (Exception ex)
@@ -422,6 +422,7 @@ namespace AcadLib
                 var ed = doc.Editor;
                 ed.Command("_-purge", "_All", "*", "_No");
                 ed.Command("_audit", "_Yes");
+                ed.Command("_-scalelistedit", "_R", "_Y", "_E");
                 ed.Regen();
             });
         }
