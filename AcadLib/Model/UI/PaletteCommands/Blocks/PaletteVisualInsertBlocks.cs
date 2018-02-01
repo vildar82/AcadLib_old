@@ -12,14 +12,16 @@ namespace AcadLib.PaletteCommands
     [PublicAPI]
     public class PaletteVisualInsertBlocks : PaletteCommand
     {
+        private readonly bool explode;
         private readonly string file;
         private readonly Predicate<string> filter;
 
         public PaletteVisualInsertBlocks(Predicate<string> filter, string file, string name, Bitmap image,
-            string description, string group = "", bool isTest = false)
+            string description, string group = "", bool isTest = false, bool explode = false)
             : base(name, image, "", description, group, isTest)
         {
             this.file = file;
+            this.explode = explode;
             this.filter = filter;
         }
 
@@ -29,7 +31,7 @@ namespace AcadLib.PaletteCommands
             if (doc == null) return;
             using (doc.LockDocument())
             {
-                Blocks.Visual.VisualInsertBlock.InsertBlock(file, filter);
+                Blocks.Visual.VisualInsertBlock.InsertBlock(file, filter, explode: explode);
             }
         }
     }

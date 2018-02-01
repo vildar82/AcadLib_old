@@ -9,9 +9,18 @@ namespace AcadLib.Blocks.Visual.UI
 {
     public class VisualBlocksViewModel : BaseViewModel
     {
+        public bool Explode { get; set; }
+
+        public List<VisualGroup> Groups { get; set; }
+
+        public ReactiveCommand Insert { get; set; }
+
+        public bool IsHideWindow { get; set; } = true;
+
+        public Visibility VisibleSeparator { get; set; }
+
         public VisualBlocksViewModel()
         {
-
         }
 
         public VisualBlocksViewModel([NotNull] List<IVisualBlock> visuals)
@@ -21,11 +30,6 @@ namespace AcadLib.Blocks.Visual.UI
             VisibleSeparator = Groups.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public List<VisualGroup> Groups { get; set; }
-        public ReactiveCommand Insert { get; set; }
-        public Visibility VisibleSeparator { get; set; }
-        public bool IsHideWindow { get; set; } = true;
-
         private void OnInsertExecute(IVisualBlock block)
         {
             var doc = AcadHelper.Doc;
@@ -34,13 +38,13 @@ namespace AcadLib.Blocks.Visual.UI
                 if (IsHideWindow)
                 {
                     HideMe();
-                    VisualInsertBlock.Insert(block);
+                    VisualInsertBlock.Insert(block, Explode);
                 }
                 else
                 {
                     using (HideWindow())
                     {
-                        VisualInsertBlock.Insert(block);
+                        VisualInsertBlock.Insert(block, Explode);
                     }
                 }
             }

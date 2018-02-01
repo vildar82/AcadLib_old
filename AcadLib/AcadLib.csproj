@@ -233,6 +233,7 @@
     <Compile Include="Model\Images\ImageExt.cs" />
     <Compile Include="Model\IO\JsonLocalData.cs" />
     <Compile Include="Model\IO\JsonData.cs" />
+    <Compile Include="Model\Jigs\DragEntitiesJig.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayer.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayerVport.cs" />
     <Compile Include="Model\Layers\AutoLayers\AutoLayerDim.cs" />

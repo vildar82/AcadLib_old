@@ -44,7 +44,7 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Вставка блока в чертеж - интерактивная (BlockInsertJig)
         /// </summary>
-        public static ObjectId Insert(string blName, LayerInfo layer, List<Property> props)
+        public static ObjectId Insert(string blName, LayerInfo layer, List<Property> props, bool explode = false)
         {
             ObjectId idBlRefInsert;
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -94,7 +94,6 @@ namespace AcadLib.Blocks
                         }
                     }
                 }
-
                 // jig
                 var entJig = new Jigs.BlockInsertJig(br);
                 var pr = ed.Drag(entJig);
@@ -103,6 +102,10 @@ namespace AcadLib.Blocks
                     var btrBl = (BlockTableRecord)t.GetObject(idBlBtr, OpenMode.ForRead);
                     if (btrBl.HasAttributeDefinitions)
                         AddAttributes(br, btrBl, t);
+                    if (explode)
+                    {
+                        br.ExplodeToOwnerSpace();
+                    }
                 }
                 else
                 {
@@ -114,9 +117,9 @@ namespace AcadLib.Blocks
             return idBlRefInsert;
         }
 
-        public static ObjectId Insert(string blName, LayerInfo layer)
+        public static ObjectId Insert(string blName, LayerInfo layer, bool explode = false)
         {
-            return Insert(blName, layer, null);
+            return Insert(blName, layer, null, explode);
         }
 
         public static ObjectId Insert(string blName, string layer)

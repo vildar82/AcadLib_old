@@ -31,7 +31,8 @@ namespace AcadLib.Blocks.Visual
             ShowVisuals(visuals);
         }
 
-        public static void InsertBlock(string fileBlocks, [NotNull] Predicate<string> filter, [CanBeNull] LayerInfo layer = null)
+        public static void InsertBlock(string fileBlocks, [NotNull] Predicate<string> filter,
+            [CanBeNull] LayerInfo layer = null, bool explode = false)
         {
             _layer = layer;
             if (!dictFiles.TryGetValue(filter, out var visuals))
@@ -39,12 +40,13 @@ namespace AcadLib.Blocks.Visual
                 visuals = LoadVisuals(fileBlocks, n => filter(n) ? "" : null);
                 dictFiles.Add(filter, visuals);
             }
-            ShowVisuals(visuals);
+            ShowVisuals(visuals, explode);
         }
 
-        private static void ShowVisuals([NotNull] List<IVisualBlock> blocks)
+        private static void ShowVisuals([NotNull] List<IVisualBlock> blocks, bool explode = false)
         {
             var vm = new VisualBlocksViewModel(blocks);
+            vm.Explode = explode;
             if (winVisual == null)
             {
                 winVisual = new WindowVisualBlocks(vm);
@@ -99,13 +101,13 @@ namespace AcadLib.Blocks.Visual
             }
         }
 
-        public static void Insert([CanBeNull] IVisualBlock block)
+        public static void Insert([CanBeNull] IVisualBlock block, bool explode = false)
         {
             if (block == null) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
             GetInsertBtr(block.Name, block.File, db);
-            BlockInsert.Insert(block.Name, _layer);
+            BlockInsert.Insert(block.Name, _layer, explode);
         }
 
         private static void GetInsertBtr(string name, string fileBlocks, [NotNull] Database dbdest)

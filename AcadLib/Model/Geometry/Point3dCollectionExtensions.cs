@@ -42,6 +42,7 @@ namespace AcadLib.Geometry
             return false;
         }
 
+        [NotNull]
         public static List<Point3d> RemoveDuplicate([NotNull] this List<Point3d> pts, Tolerance tol)
         {
             return pts.Distinct(new Point3dEqualityComparer(tol.EqualPoint)).ToList();

@@ -5,7 +5,6 @@ using MicroMvvm;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
-using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 // ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
