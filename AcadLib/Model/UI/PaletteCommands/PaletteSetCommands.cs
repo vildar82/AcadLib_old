@@ -84,7 +84,6 @@ namespace AcadLib.PaletteCommands
                 {
                     palette.Commands.AddRange(commands);
                 }
-                RibbonBuilder.InitRibbon();
             }
             catch (Exception ex)
             {

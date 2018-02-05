@@ -11,6 +11,7 @@ namespace AcadLib.Blocks
     [PublicAPI]
     public class Property : IEquatable<Property>, ICloneable
     {
+        public short DynPropTypeCode { get; set; }
         /// <summary>
         /// Только, если тип параматера - атрибут!
         /// </summary>
@@ -86,7 +87,7 @@ namespace AcadLib.Blocks
                     if (dyn.VisibleInCurrentVisibilityState)
                     {
                         if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase)) continue;
-                        var prop = new Property(dyn);
+                        var prop = new Property(dyn) { DynPropTypeCode = dyn.PropertyTypeCode };
                         props.Add(prop);
                     }
                 }

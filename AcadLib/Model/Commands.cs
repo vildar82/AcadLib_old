@@ -126,6 +126,10 @@ namespace AcadLib
                     var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
                     LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
                 }
+                if (PaletteSetCommands._paletteSets.Any())
+                {
+                    RibbonBuilder.InitRibbon();
+                }
                 Logger.Log.Info("end Initialize AcadLib");
                 var procsR = Process.GetProcessesByName("Acad");
                 if (procsR.Length == 1)
