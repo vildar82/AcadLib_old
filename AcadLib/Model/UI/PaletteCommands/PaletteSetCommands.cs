@@ -1,5 +1,4 @@
-﻿using AcadLib.UI.Ribbon;
-using Autodesk.AutoCAD.Windows;
+﻿using Autodesk.AutoCAD.Windows;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;

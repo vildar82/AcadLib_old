@@ -110,6 +110,19 @@ namespace Autodesk.AutoCAD.EditorInput
             throw new OperationCanceledException();
         }
 
+        [NotNull]
+        public static List<ObjectId> Select([NotNull] this Editor ed, string msg, string start)
+        {
+            var selOpt = new PromptSelectionOptions { MessageForAdding = msg };
+            var filter = new SelectionFilter(new[] { new TypedValue((int)DxfCode.Start, start) });
+            var selRes = ed.GetSelection(selOpt, filter);
+            if (selRes.Status == PromptStatus.OK)
+            {
+                return selRes.Value.GetObjectIds().ToList();
+            }
+            throw new OperationCanceledException();
+        }
+
         /// <summary>
         /// Pапрос выбора блоков
         /// </summary>
