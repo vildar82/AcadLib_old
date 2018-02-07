@@ -104,12 +104,12 @@ namespace AcadLib
                     Settings.Default.Save();
                 }
                 AllCommandsCommon();
-                // Копирование вспомогательных сборок локально из шаровой папки packages
-                var task = Task.Run(() =>
-                {
-                    LoadService.CopyPackagesLocal();
-                });
-                task.Wait(15000);
+                //// Копирование вспомогательных сборок локально из шаровой папки packages
+                //var task = Task.Run(() =>
+                //{
+                //    LoadService.CopyPackagesLocal();
+                //});
+                //task.Wait(15000);
                 // Автослоиtest
                 AutoLayersService.Init();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -124,7 +124,7 @@ namespace AcadLib
                 foreach (var userGroup in PikSettings.UserGroupsCombined)
                 {
                     var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
-                    LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
+                    LoadService.LoadFromFolder(dirGroup, SearchOption.AllDirectories);
                 }
                 if (PaletteSetCommands._paletteSets.Any())
                 {
@@ -193,7 +193,9 @@ namespace AcadLib
                     Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
                     SearchOption.AllDirectories));
                 // Все сборки из локальной папки packages
-                dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
+                //dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
+                // Оставить только сборки под текущую версию автокада
+                dllsResolve = FilterDllResolveVersions(dllsResolve);
             }
             var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
             if (dllResolver == null) return null;
@@ -208,6 +210,13 @@ namespace AcadLib
                 Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
             }
             return null;
+        }
+
+        [NotNull]
+        private List<DllResolve> FilterDllResolveVersions(List<DllResolve> dllResolves)
+        {
+            return LoadService.GetDllsForCurVerAcad(dllsResolve.Select(s => s.DllFile).ToList())
+                .Select(s => new DllResolve(s.Dll) { DllName = s.FileWoVer }).ToList();
         }
 
         public void Terminate()
