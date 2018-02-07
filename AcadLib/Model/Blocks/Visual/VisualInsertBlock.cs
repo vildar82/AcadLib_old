@@ -45,8 +45,7 @@ namespace AcadLib.Blocks.Visual
 
         private static void ShowVisuals([NotNull] List<IVisualBlock> blocks, bool explode = false)
         {
-            var vm = new VisualBlocksViewModel(blocks);
-            vm.Explode = explode;
+            var vm = new VisualBlocksViewModel(blocks) { Explode = explode };
             if (winVisual == null)
             {
                 winVisual = new WindowVisualBlocks(vm);

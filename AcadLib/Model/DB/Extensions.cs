@@ -21,8 +21,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         [CanBeNull]
         public static T GetObject<T>(this ObjectId id, OpenMode mode) where T : DBObject
         {
-            if (!id.IsValidEx())
-                return null;
+            if (!id.IsValidEx()) return null;
             return id.GetObject(mode, false, true) as T;
         }
 
