@@ -124,7 +124,7 @@ namespace AcadLib
                 foreach (var userGroup in PikSettings.UserGroupsCombined)
                 {
                     var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
-                    LoadService.LoadFromFolder(dirGroup, SearchOption.AllDirectories);
+                    LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
                 }
                 if (PaletteSetCommands._paletteSets.Any())
                 {

@@ -222,6 +222,7 @@
     <Compile Include="Model\Dll\DllVer.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
+    <Compile Include="Model\Editors\EditorExtension.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelOne.cs" />
     <Compile Include="Model\Errors\UI\ErrorAddButton.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelList.cs" />
@@ -460,7 +461,7 @@
     </Compile>
     <Compile Include="Model\DB\WorkingDatabaseSwitcher.cs" />
     <Compile Include="Model\Editors\UserPrompt.cs" />
-    <Compile Include="Model\Editors\Zoom.cs" />
+    <Compile Include="Model\Editors\ViewTableRecordExtension.cs" />
     <Compile Include="Model\Errors\Error.cs" />
     <Compile Include="Model\Geometry\CircularArc2dExtensions.cs" />
     <Compile Include="Model\Geometry\CircularArc3dExtensions.cs" />

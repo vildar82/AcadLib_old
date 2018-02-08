@@ -17,12 +17,25 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return id.GetObject<T>(OpenMode.ForRead);
         }
 
+        [NotNull]
+        public static T GetObjectT<T>(this ObjectId id) where T : DBObject
+        {
+            return id.GetObjectT<T>(OpenMode.ForRead);
+        }
+
         // Opens a DBObject in the given mode (kaefer @ TheSwamp)
         [CanBeNull]
         public static T GetObject<T>(this ObjectId id, OpenMode mode) where T : DBObject
         {
             if (!id.IsValidEx()) return null;
             return id.GetObject(mode, false, true) as T;
+        }
+
+        [NotNull]
+        public static T GetObjectT<T>(this ObjectId id, OpenMode mode) where T : DBObject
+        {
+            if (!id.IsValidEx()) throw new InvalidOperationException();
+            return (T)id.GetObject(mode, false, true);
         }
 
         // Opens a collection of DBObject in ForRead mode (kaefer @ TheSwamp)

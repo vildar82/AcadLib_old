@@ -54,6 +54,37 @@ namespace AcadLib
             }
         }
 
+        public static void FlickObjectHighlight([CanBeNull] this List<ObjectId> ids,
+            int num = 2, int delay1 = 50, int delay2 = 50)
+        {
+            if (ids?.Any() != true) return;
+            var doc = Application.DocumentManager.MdiActiveDocument;
+#pragma warning disable 618
+            using (var ents = new DisposableSet<Entity>(ids.Select(s => (Entity)s.Open(OpenMode.ForRead))))
+#pragma warning restore 618
+            {
+                for (var i = 0; i < num; i++)
+                {
+                    // Highlight entity
+                    foreach (var entity in ents)
+                    {
+                        entity.Highlight();
+                    }
+                    doc.Editor.UpdateScreen();
+                    // Wait for delay1 msecs
+                    Thread.Sleep(delay1);
+                    // Unhighlight entity
+                    foreach (var entity in ents)
+                    {
+                        entity.Unhighlight();
+                    }
+                    doc.Editor.UpdateScreen();
+                    // Wait for delay2 msecs
+                    Thread.Sleep(delay2);
+                }
+            }
+        }
+
         /// <summary>
         /// Функция производит "мигание" объектом при помощи Highlight/Unhighlight
         /// </summary>
