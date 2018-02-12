@@ -5,6 +5,7 @@ using MicroMvvm;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
+using AcadLib.Layers;
 
 // ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
@@ -18,6 +19,7 @@ namespace AcadLib.PaletteCommands
         private readonly bool explode;
         private readonly string file;
         private readonly List<Property> props;
+        public LayerInfo Layer { get; set; }
 
         public PaletteInsertBlock(string blName, string file, string name, Bitmap image,
             string description, string group = "", [CanBeNull] List<Property> props = null, bool isTest = false,
@@ -34,7 +36,7 @@ namespace AcadLib.PaletteCommands
         public override void Execute()
         {
             CopyBlock(explode ? DuplicateRecordCloning.Replace : DuplicateRecordCloning.Ignore);
-            var blRefId = BlockInsert.Insert(blName, null, props);
+            var blRefId = BlockInsert.Insert(blName, Layer, props);
             if (explode)
             {
                 using (AcadHelper.Doc.LockDocument())

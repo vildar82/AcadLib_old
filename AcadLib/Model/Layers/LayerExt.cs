@@ -18,6 +18,41 @@ namespace AcadLib.Layers
         public static string GroupLayerPrefix => groupLayerPrefix ?? (groupLayerPrefix = GetGroupLayerPrefix());
 
         /// <summary>
+        /// Все слои чертежа
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        [NotNull]
+        public static List<LayerInfo> Layers([NotNull] this Database db)
+        {
+            List<LayerInfo> layers;
+            using (var t = db.TransactionManager.StartTransaction())
+            {
+                var lt = db.LayerTableId.GetObjectT<LayerTable>();
+                layers = lt.Cast<ObjectId>().LayersFromLTR();
+                t.Commit();
+            }
+            return layers;
+        }
+        
+        [NotNull]
+        private static List<LayerInfo> LayersFromLTR([NotNull] this IEnumerable<ObjectId> ltrIds)
+        {
+            return ltrIds.Select(s => new LayerInfo(s)).ToList();
+        }
+
+        /// <summary>
+        /// Список слоев из объектов чертежа
+        /// </summary>
+        /// <param name="entIds"></param>
+        /// <returns></returns>
+        [NotNull]
+        public static List<LayerInfo> Layers([NotNull] this IEnumerable<ObjectId> entIds)
+        {
+            return entIds.GetObjects<Entity>().GroupBy(g => g.LayerId).Select(s => new LayerInfo(s.Key)).ToList();
+        }
+
+        /// <summary>
         /// Проверка блокировки слоя IsOff IsLocked IsFrozen.
         /// Если заблокировано - то разблокируется.
         /// Если слоя нет - то он создается.

@@ -59,11 +59,11 @@ namespace AcadLib.Blocks
                 {
                     throw new Exception("Блок не определен в чертеже " + blName);
                 }
-
                 var idBlBtr = bt[blName];
                 var pt = Point3d.Origin;
                 var br = new BlockReference(pt, idBlBtr);
                 br.SetDatabaseDefaults();
+
                 if (layer != null)
                 {
                     layer.CheckLayerState();

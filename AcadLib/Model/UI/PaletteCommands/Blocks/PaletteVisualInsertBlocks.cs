@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using AcadLib.Layers;
 using JetBrains.Annotations;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
@@ -15,6 +16,7 @@ namespace AcadLib.PaletteCommands
         private readonly bool explode;
         private readonly string file;
         private readonly Predicate<string> filter;
+        public LayerInfo Layer { get; set; }
 
         public PaletteVisualInsertBlocks(Predicate<string> filter, string file, string name, Bitmap image,
             string description, string group = "", bool isTest = false, bool explode = false)
@@ -31,7 +33,7 @@ namespace AcadLib.PaletteCommands
             if (doc == null) return;
             using (doc.LockDocument())
             {
-                Blocks.Visual.VisualInsertBlock.InsertBlock(file, filter, explode: explode);
+                Blocks.Visual.VisualInsertBlock.InsertBlock(file, filter, Layer, explode);
             }
         }
     }

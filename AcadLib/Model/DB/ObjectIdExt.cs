@@ -14,6 +14,16 @@ namespace AcadLib
     [PublicAPI]
     public static class ObjectIdExt
     {
+        public static void HighlightEntity(this ObjectId entId)
+        {
+#pragma warning disable 618
+            using (var ent = (Entity)entId.Open(OpenMode.ForRead, false, true))
+#pragma warning restore 618
+            {
+                ent.Highlight();
+            }
+        }
+
         /// <summary>
         /// Копирование объекта в одной базе
         /// </summary>
