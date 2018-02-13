@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using NetLib;
 using System;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace AcadLib.Layers
 {
@@ -18,8 +19,8 @@ namespace AcadLib.Layers
         private LineWeight? lineWeight;
 
         [XmlIgnore]
+        [JsonIgnore]
         [IgnoreDuringEquals]
-        [PublicAPI]
         public Color Color
         {
             get => color;
@@ -40,29 +41,35 @@ namespace AcadLib.Layers
                 color = colorStr.AcadColorFromString2();
             }
         }
-        [PublicAPI]
+        
         public bool IsFrozen { get; set; }
-        [PublicAPI]
+        
         public bool IsLocked { get; set; }
-        [PublicAPI]
+        
         public bool IsOff { get; set; }
-        [PublicAPI]
+        
         public bool IsPlotable { get; set; } = true;
-        [PublicAPI]
-        public ObjectId LayerId { get; set; }
-        [PublicAPI]
-        public string LineType { get; set; }
+
         [XmlIgnore]
-        [PublicAPI]
+        [JsonIgnore]
+        [IgnoreDuringEquals]
+        public ObjectId LayerId { get; set; }
+        
+        public string LineType { get; set; }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        [IgnoreDuringEquals]
         public ObjectId LinetypeObjectId { get; set; }
-        [PublicAPI]
+        
         public LineWeight LineWeight
         {
             get => lineWeight ?? LineWeight.ByLayer;
             set => lineWeight = value;
         }
-        [PublicAPI]
+        
         public string Name { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         public LayerInfo()
         {
@@ -91,6 +98,7 @@ namespace AcadLib.Layers
                 }
                 LineWeight = layer.LineWeight;
                 IsPlotable = layer.IsPlottable;
+                Description = layer.Description;
             }
         }
 
@@ -107,6 +115,7 @@ namespace AcadLib.Layers
             lay.IsLocked = IsLocked;
             lay.IsOff = IsOff;
             lay.IsPlottable = IsPlotable;
+            lay.Description = Description;
             if (lineWeight.HasValue) lay.LineWeight = LineWeight;
             if (!LinetypeObjectId.IsNull) lay.LinetypeObjectId = LinetypeObjectId;
             else if (!string.IsNullOrEmpty(LineType)) lay.LinetypeObjectId = db.GetLineTypeIdByName(LineType);

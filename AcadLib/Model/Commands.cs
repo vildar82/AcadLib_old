@@ -23,6 +23,7 @@ using AcadLib.PaletteCommands;
 using AcadLib.Plot;
 using AcadLib.Properties;
 using AcadLib.Statistic;
+using AcadLib.Template;
 using AcadLib.UI.Ribbon;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -469,10 +470,9 @@ namespace AcadLib
             CommandStart.Start(doc =>
             {
                 if (!doc.IsNamedDrawing) throw new Exception("Чертеж не сохранен на диске");
-                var tm = new Template.TemplateManager();
-                tm.LoadFromDb(doc.Database);
+                var tData=TemplateManager.LoadFromDb(doc.Database);
                 var file = Path.ChangeExtension(doc.Name, "json");
-                tm.ExportToJson(file ?? throw new InvalidOperationException());
+                tData.ExportToJson(file ?? throw new InvalidOperationException());
                 Process.Start(file);
             });
         }

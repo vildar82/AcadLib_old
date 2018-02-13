@@ -1,6 +1,10 @@
-﻿using System;
+﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
+// 2016 05 12 8:56
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoCAD_PIK_Manager;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Runtime;
@@ -13,13 +17,12 @@ namespace AcadLib
     public static class General
     {
         /// <summary>
-        /// Отменено пользователем.
-        /// Сообщение для исключения при отмене команды пользователем.
+        ///     Отменено пользователем.
+        ///     Сообщение для исключения при отмене команды пользователем.
         /// </summary>
-        [Obsolete]
-        public const string CanceledByUser = "Отменено пользователем";
+        [Obsolete] public const string CanceledByUser = "Отменено пользователем";
 
-        public const string Company = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
+        public const string Company = CompanyInfo.NameEngShort;
         public const string UserGroupAR = "АР";
         public const string UserGroupEO = "ЭО";
         public const string UserGroupGBKTO = "ЖБК-ТО";
@@ -43,13 +46,18 @@ namespace AcadLib
         public static readonly RXClass ClassRecord = RXObject.GetClass(typeof(Xrecord));
         public static readonly RXClass ClassRegion = RXObject.GetClass(typeof(Region));
         public static readonly RXClass ClassVport = RXObject.GetClass(typeof(Viewport));
+
         private static readonly List<string> bimUsers = new List<string>
         {
-            "PrudnikovVS", "vrublevskiyba", "khisyametdinovvt", "arslanovti", "karadzhayanra"
+            "PrudnikovVS",
+            "vrublevskiyba",
+            "khisyametdinovvt",
+            "arslanovti",
+            "karadzhayanra"
         };
 
         /// <summary>
-        /// BIM-manager - отдел поддержки пользователей
+        ///     BIM-manager - отдел поддержки пользователей
         /// </summary>
         public static bool IsBimUser { get; }
 
@@ -59,7 +67,7 @@ namespace AcadLib
         }
 
         /// <summary>
-        /// Файл из папки пользовательских данных (AppData\PIK\Autocad\...)
+        ///     Файл из папки пользовательских данных (AppData\PIK\Autocad\...)
         /// </summary>
         /// <param name="pluginName">Имя программы(плагина)</param>
         /// <param name="fileName">Имя файла</param>
@@ -72,32 +80,33 @@ namespace AcadLib
 
         public static bool IsCadManager()
         {
-            return Environment.UserName.Equals(PikSettings.PikFileSettings.LoginCADManager, StringComparison.OrdinalIgnoreCase);
+            return Environment.UserName.Equals(PikSettings.PikFileSettings.LoginCADManager,
+                StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
-        /// Символы строковые
+        ///     Символы строковые
         /// </summary>
         [PublicAPI]
         public static class Symbols
         {
             /// <summary>
-            /// Кубическая степень- ³
+            ///     Кубическая степень- ³
             /// </summary>
             public const string Cubic = "³";
 
             /// <summary>
-            /// Градус - °
+            ///     Градус - °
             /// </summary>
             public const string Degree = "°";
 
             /// <summary>
-            /// Диаметр ⌀
+            ///     Диаметр ⌀
             /// </summary>
             public const string Diam = "⌀";
 
             /// <summary>
-            /// Квадратная степень- ²
+            ///     Квадратная степень- ²
             /// </summary>
             public const string Square = "²";
         }

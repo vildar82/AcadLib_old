@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
+// 2018 02 12 14:42
+
+using System.Collections.Generic;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using JetBrains.Annotations;
@@ -21,9 +24,7 @@ namespace AcadLib.Layers.LayersSelected
             var ed = doc.Editor;
             var sel = ed.SelectImplied();
             if (sel.Status != PromptStatus.OK)
-            {
                 return new List<LayerInfo>();
-            }
             List<LayerInfo> layers;
             using (var t = doc.TransactionManager.StartTransaction())
             {

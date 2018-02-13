@@ -38,7 +38,7 @@ namespace AcadLib.Layers
         [NotNull]
         private static List<LayerInfo> LayersFromLTR([NotNull] this IEnumerable<ObjectId> ltrIds)
         {
-            return ltrIds.Select(s => new LayerInfo(s)).ToList();
+            return ltrIds.Select(s => new LayerInfo(s)).OrderBy(o=>o.Name).ToList();
         }
 
         /// <summary>
