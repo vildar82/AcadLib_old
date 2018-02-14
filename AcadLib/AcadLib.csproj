@@ -277,11 +277,13 @@
     <Compile Include="Model\Hatches\HatchExt.cs" />
     <Compile Include="Model\IO\Path.cs" />
     <Compile Include="Model\Jigs\DragSel.cs" />
+    <Compile Include="Model\Layers\Filter\ImportLayerFilter.cs" />
     <Compile Include="Model\Layers\LayersSelected\LayersSelectedService.cs" />
     <Compile Include="Model\Layers\LayersSelected\LayersSelectedView.xaml.cs">
       <DependentUpon>LayersSelectedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Layers\LayersSelected\LayersSelectedVM.cs" />
+    <Compile Include="Model\Layers\LayerState\ImportLayerState.cs" />
     <Compile Include="Model\Template\TemplateManager.cs" />
     <Compile Include="Model\Layers\LayerVisibleState.cs" />
     <Compile Include="Model\Layouts\LayoutsExt.cs" />

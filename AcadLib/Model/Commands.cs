@@ -18,7 +18,9 @@ using AcadLib.DbYouTubeTableAdapters;
 using AcadLib.Field;
 using AcadLib.Layers;
 using AcadLib.Layers.AutoLayers;
+using AcadLib.Layers.Filter;
 using AcadLib.Layers.LayersSelected;
+using AcadLib.Layers.LayerState;
 using AcadLib.PaletteCommands;
 using AcadLib.Plot;
 using AcadLib.Properties;
@@ -184,6 +186,7 @@ namespace AcadLib
                         var root = AutomationElement.FromHandle(proc.MainWindowHandle);
                         var activeTabName = root.Current.Name;
                         if (activeTabName.ToLower().Contains("youtube"))
+                        {
                             try
                             {
                                 player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
@@ -193,6 +196,7 @@ namespace AcadLib
                             {
                                 Logger.Log.Error(ex, "Video Statistic");
                             }
+                        }
                     }
                 }
             });
@@ -299,10 +303,12 @@ namespace AcadLib
                     var allTypes = new Dictionary<string, int>();
                     var ms = (BlockTableRecord) SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
                     foreach (var id in ms)
+                    {
                         if (allTypes.ContainsKey(id.ObjectClass.Name))
                             allTypes[id.ObjectClass.Name]++;
                         else
                             allTypes.Add(id.ObjectClass.Name, 1);
+                    }
                     var sortedByCount = allTypes.OrderBy(i => i.Value);
                     foreach (var item in sortedByCount)
                         ed.WriteMessage($"\n{item.Key} - {item.Value}");
@@ -364,9 +370,7 @@ namespace AcadLib
             CommandStart.Start(doc =>
             {
                 using (doc.LockDocument())
-                {
                     PlotDirToPdf.PromptAndPlot(doc);
-                }
             });
         }
 
@@ -470,7 +474,7 @@ namespace AcadLib
             CommandStart.Start(doc =>
             {
                 if (!doc.IsNamedDrawing) throw new Exception("Чертеж не сохранен на диске");
-                var tData=TemplateManager.LoadFromDb(doc.Database);
+                var tData = TemplateManager.LoadFromDb(doc.Database);
                 var file = Path.ChangeExtension(doc.Name, "json");
                 tData.ExportToJson(file ?? throw new InvalidOperationException());
                 Process.Start(file);
@@ -481,6 +485,17 @@ namespace AcadLib
         public void PIK_LayersSelectedObjects()
         {
             CommandStart.Start(LayersSelectedService.Show);
+        }
+
+        [CommandMethod(Group, nameof(PIK_Test), CommandFlags.Modal)]
+        public void PIK_Test()
+        {
+            CommandStart.Start(doc =>
+            {
+                //var templateFile = TemplateManager.GetTemplateFile("PIK_Masterplan_24.08.17_на согласование.dwt");
+                //doc.Database.ImportLayerFilterTree(templateFile);
+                //doc.Database.ImportLayerStates(templateFile);
+            });
         }
     }
 }

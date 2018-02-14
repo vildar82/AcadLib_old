@@ -1,14 +1,14 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2018 02 12 14:01
+// 2018 02 13 15:03
 
 using System;
 using System.IO;
+using System.Linq;
 using AcadLib.Layers;
+using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 using NetLib;
-using System.Linq;
-using AutoCAD_PIK_Manager.Settings;
 
 namespace AcadLib.Template
 {
@@ -26,7 +26,7 @@ namespace AcadLib.Template
         [NotNull]
         public static TemplateData LoadFromDb([NotNull] Database db)
         {
-            return new TemplateData { Layers = db.Layers().ToDictionary(k => k.Name) };
+            return new TemplateData {Layers = db.Layers().ToDictionary(k => k.Name)};
         }
 
         public static TemplateData LoadFromJson(string file)
@@ -42,13 +42,18 @@ namespace AcadLib.Template
             }
             catch (Exception ex)
             {
-                Logger.Log.Warn(ex,$"Ошибка загрузки файла шаблона json '{file}'");
+                Logger.Log.Warn(ex, $"Ошибка загрузки файла шаблона json '{file}'");
                 return new TemplateData();
             }
         }
 
+        /// <summary>
+        ///     Полный путь к шаблону (из папки Template настроек)
+        /// </summary>
+        /// <param name="templateFileName">Имя файла шаблона с расширением</param>
+        /// <returns></returns>
         [NotNull]
-        public static string GetTemplateFolder(string templateFileName)
+        public static string GetTemplateFile(string templateFileName)
         {
             return Path.Combine(PikSettings.LocalSettingsFolder, $@"Template\{PikSettings.UserGroup}\{templateFileName}");
         }
