@@ -12,27 +12,30 @@ namespace AcadLib
         [CanBeNull]
         public static Line GetUnionLine([NotNull] this List<Line> lines)
         {
-            Line prew = null;
-            Line unionLine = null;
-            foreach (var l in lines)
+            using (var wasteLines = new DisposableSet<Line>())
             {
-                if (prew == null)
+                Line prew = null;
+                Line unionLine = null;
+                foreach (var l in lines)
                 {
-                    prew = l;
-                    continue;
+                    if (prew == null)
+                    {
+                        prew = l;
+                        continue;
+                    }
+                    var line = prew.GetUnionLine(l);
+                    wasteLines.Add(line);
+                    unionLine = prew;
+                    prew = line;
                 }
-                var line = prew.GetUnionLine(l);
-                unionLine?.Dispose();
-                unionLine = prew;
-                prew = line;
+                if (prew == null) return null;
+                if (unionLine == null)
+                {
+                    return (Line) prew.Clone();
+                }
+                wasteLines.Remove(prew);
+                return prew;
             }
-            if (prew == null) return null;
-            if (unionLine == null)
-            {
-                return (Line)prew.Clone();
-            }
-            unionLine.Dispose();
-            return prew;
         }
 
         /// <summary>

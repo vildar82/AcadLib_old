@@ -72,8 +72,8 @@ namespace AcadLib.Plot
         public bool IncludeSubdirs { get; set; }
 
         [Category("Печать")]
-        [DisplayName("Файл PDF")]
-        [Description("Создавать pdf для каждого чертежа dwg или один для всех.")]
+        [DisplayName("Единый файл PDF")]
+        [Description("Создавать один общий файл pdf или для каждого чертежа dwg отдельно.")]
         [DefaultValue(true)]
         [TypeConverter(typeof(OnePdfOrEachConverter))]
         public bool OnePdfOrEachDwg { get; set; }
