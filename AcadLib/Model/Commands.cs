@@ -18,9 +18,7 @@ using AcadLib.DbYouTubeTableAdapters;
 using AcadLib.Field;
 using AcadLib.Layers;
 using AcadLib.Layers.AutoLayers;
-using AcadLib.Layers.Filter;
 using AcadLib.Layers.LayersSelected;
-using AcadLib.Layers.LayerState;
 using AcadLib.PaletteCommands;
 using AcadLib.Plot;
 using AcadLib.Properties;
@@ -72,8 +70,7 @@ namespace AcadLib
 
         public void Initialize()
         {
-#if DEBUG
-            // Отключение отладочных сообщений биндинга (тормозит сильно)
+#if DEBUG // Отключение отладочных сообщений биндинга (тормозит сильно)
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Off;
 #endif
             try
@@ -134,6 +131,17 @@ namespace AcadLib
             Logger.Log.Info("Terminate AcadLib");
         }
 
+        [CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]
+        public void About()
+        {
+            CommandStart.Start(doc =>
+            {
+                var ed = doc.Editor;
+                var acadLibVer = Assembly.GetExecutingAssembly().GetName().Version;
+                ed.WriteMessage($"\nБиблиотека AcadLib версии {acadLibVer}");
+            });
+        }
+
         /// <summary>
         ///     Список общих команд
         /// </summary>
@@ -159,47 +167,27 @@ namespace AcadLib
             }
         }
 
-        [CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]
-        public void About()
+        [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
+        public void BlockListCommand()
+        {
+            CommandStart.Start(doc => doc.Database.List());
+        }
+
+        [CommandMethod(Group, CommandCleanZombieBlocks, CommandFlags.Modal)]
+        public void CleanZombieBlocks()
         {
             CommandStart.Start(doc =>
             {
-                var ed = doc.Editor;
-                var acadLibVer = Assembly.GetExecutingAssembly().GetName().Version;
-                ed.WriteMessage($"\nБиблиотека AcadLib версии {acadLibVer}");
+                var db = doc.Database;
+                var countZombie = db.CleanZombieBlock();
+                doc.Editor.WriteMessage($"\nУдалено {countZombie} зомби!☻");
             });
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+        [CommandMethod(Group, CommandColorBookNCS, CommandFlags.Modal | CommandFlags.Session)]
+        public void ColorBookNCS()
         {
-            Task.Run(() =>
-            {
-                var procsChrome = Process.GetProcessesByName("chrome");
-                if (procsChrome.Length <= 0)
-                {
-                }
-                else
-                {
-                    foreach (var proc in procsChrome)
-                    {
-                        if (proc.MainWindowHandle == IntPtr.Zero) continue;
-                        var root = AutomationElement.FromHandle(proc.MainWindowHandle);
-                        var activeTabName = root.Current.Name;
-                        if (activeTabName.ToLower().Contains("youtube"))
-                        {
-                            try
-                            {
-                                player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Log.Error(ex, "Video Statistic");
-                            }
-                        }
-                    }
-                }
-            });
+            CommandStart.Start(doc => ColorBookHelper.GenerateNCS());
         }
 
         [CanBeNull]
@@ -240,33 +228,60 @@ namespace AcadLib
                 .Select(s => new DllResolve(s.Dll) {DllName = s.FileWoVer}).ToList();
         }
 
-        [CommandMethod(Group, nameof(PIK_Ribbon), CommandFlags.Modal)]
-        public void PIK_Ribbon()
+        [CommandMethod(Group, nameof(PIK_AutoLayersAll), CommandFlags.Modal)]
+        public void PIK_AutoLayersAll()
         {
-            CommandStart.Start(d => RibbonBuilder.CreateRibbon());
+            CommandStart.Start(doc => AutoLayersService.AutoLayersAll());
         }
 
-        [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
-        public void BlockListCommand()
+        [CommandMethod(Group, nameof(PIK_AutoLayersStart), CommandFlags.Modal)]
+        public void PIK_AutoLayersStart()
         {
-            CommandStart.Start(doc => doc.Database.List());
+            CommandStart.Start(doc =>
+            {
+                AutoLayersService.Start();
+                doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}");
+            });
         }
 
-        [CommandMethod(Group, CommandCleanZombieBlocks, CommandFlags.Modal)]
-        public void CleanZombieBlocks()
+        [CommandMethod(Group, nameof(PIK_AutoLayersStatus), CommandFlags.Modal)]
+        public void PIK_AutoLayersStatus()
+        {
+            CommandStart.Start(doc => doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}"));
+        }
+
+        [CommandMethod(Group, nameof(PIK_AutoLayersStop), CommandFlags.Modal)]
+        public void PIK_AutoLayersStop()
+        {
+            CommandStart.Start(doc =>
+            {
+                AutoLayersService.Stop();
+                doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}");
+            });
+        }
+
+        [CommandMethod(Group, nameof(PIK_BlocksUnitsless), CommandFlags.Modal)]
+        public void PIK_BlocksUnitsless()
         {
             CommandStart.Start(doc =>
             {
                 var db = doc.Database;
-                var countZombie = db.CleanZombieBlock();
-                doc.Editor.WriteMessage($"\nУдалено {countZombie} зомби!☻");
+                using (var t = db.TransactionManager.StartTransaction())
+                {
+                    var bt = (BlockTable) db.BlockTableId.GetObject(OpenMode.ForRead);
+                    foreach (var id in bt)
+                    {
+                        var btr = (BlockTableRecord) id.GetObject(OpenMode.ForRead);
+                        if (btr.IsLayout || btr.IsAnonymous || btr.IsDependent) continue;
+                        if (btr.Units != UnitsValue.Undefined)
+                        {
+                            btr = (BlockTableRecord) id.GetObject(OpenMode.ForWrite);
+                            btr.Units = UnitsValue.Undefined;
+                        }
+                    }
+                    t.Commit();
+                }
             });
-        }
-
-        [CommandMethod(Group, CommandColorBookNCS, CommandFlags.Modal | CommandFlags.Session)]
-        public void ColorBookNCS()
-        {
-            CommandStart.Start(doc => ColorBookHelper.GenerateNCS());
         }
 
         [CommandMethod(Group, nameof(PIK_DbObjectsCountInfo), CommandFlags.Modal)]
@@ -291,38 +306,23 @@ namespace AcadLib
             });
         }
 
-        [CommandMethod(Group, nameof(PIK_ModelObjectsCountInfo), CommandFlags.Modal)]
-        public void PIK_ModelObjectsCountInfo()
+        [CommandMethod(Group, nameof(PIK_ExportTemplateToJson), CommandFlags.Modal)]
+        public void PIK_ExportTemplateToJson()
         {
             CommandStart.Start(doc =>
             {
-                var db = doc.Database;
-                var ed = doc.Editor;
-                using (var t = db.TransactionManager.StartTransaction())
-                {
-                    var allTypes = new Dictionary<string, int>();
-                    var ms = (BlockTableRecord) SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
-                    foreach (var id in ms)
-                    {
-                        if (allTypes.ContainsKey(id.ObjectClass.Name))
-                            allTypes[id.ObjectClass.Name]++;
-                        else
-                            allTypes.Add(id.ObjectClass.Name, 1);
-                    }
-                    var sortedByCount = allTypes.OrderBy(i => i.Value);
-                    foreach (var item in sortedByCount)
-                        ed.WriteMessage($"\n{item.Key} - {item.Value}");
-                    t.Commit();
-                }
+                if (!doc.IsNamedDrawing) throw new Exception("Чертеж не сохранен на диске");
+                var tData = TemplateManager.LoadFromDb(doc.Database);
+                var file = Path.ChangeExtension(doc.Name, "json");
+                tData.ExportToJson(file ?? throw new InvalidOperationException());
+                Process.Start(file);
             });
         }
 
-        [LispFunction(nameof(PIK_LispLog))]
-        public void PIK_LispLog([NotNull] ResultBuffer rb)
+        [CommandMethod(Group, nameof(PIK_LayersSelectedObjects), CommandFlags.UsePickSet)]
+        public void PIK_LayersSelectedObjects()
         {
-            var tvs = rb.AsArray();
-            if (tvs.Any())
-                Logger.Log.InfoLisp(tvs[0].Value.ToString());
+            CommandStart.Start(LayersSelectedService.Show);
         }
 
         /// <summary>
@@ -352,16 +352,38 @@ namespace AcadLib
             }
         }
 
-        [CommandMethod(Group, CommandXDataView, CommandFlags.Modal)]
-        public void XDataView()
+        [LispFunction(nameof(PIK_LispLog))]
+        public void PIK_LispLog([NotNull] ResultBuffer rb)
         {
-            CommandStart.Start(doc => XData.Viewer.XDataView.View());
+            var tvs = rb.AsArray();
+            if (tvs.Any())
+                Logger.Log.InfoLisp(tvs[0].Value.ToString());
         }
 
-        [CommandMethod(Group, nameof(PIK_UpdateFieldsInObjects), CommandFlags.Modal)]
-        public void PIK_UpdateFieldsInObjects()
+        [CommandMethod(Group, nameof(PIK_ModelObjectsCountInfo), CommandFlags.Modal)]
+        public void PIK_ModelObjectsCountInfo()
         {
-            CommandStart.Start(doc => UpdateField.UpdateInSelected());
+            CommandStart.Start(doc =>
+            {
+                var db = doc.Database;
+                var ed = doc.Editor;
+                using (var t = db.TransactionManager.StartTransaction())
+                {
+                    var allTypes = new Dictionary<string, int>();
+                    var ms = (BlockTableRecord) SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
+                    foreach (var id in ms)
+                    {
+                        if (allTypes.ContainsKey(id.ObjectClass.Name))
+                            allTypes[id.ObjectClass.Name]++;
+                        else
+                            allTypes.Add(id.ObjectClass.Name, 1);
+                    }
+                    var sortedByCount = allTypes.OrderBy(i => i.Value);
+                    foreach (var item in sortedByCount)
+                        ed.WriteMessage($"\n{item.Key} - {item.Value}");
+                    t.Commit();
+                }
+            });
         }
 
         [CommandMethod(Group, nameof(PIK_PlotToPdf), CommandFlags.Session)]
@@ -374,36 +396,23 @@ namespace AcadLib
             });
         }
 
-        [CommandMethod(Group, nameof(PIK_AutoLayersStart), CommandFlags.Modal)]
-        public void PIK_AutoLayersStart()
+        [CommandMethod(Group, nameof(PIK_PurgeAuditRegen), CommandFlags.Modal)]
+        public void PIK_PurgeAuditRegen()
         {
             CommandStart.Start(doc =>
             {
-                AutoLayersService.Start();
-                doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}");
+                var ed = doc.Editor;
+                ed.Command("_-purge", "_All", "*", "_No");
+                ed.Command("_audit", "_Yes");
+                ed.Command("_-scalelistedit", "_R", "_Y", "_E");
+                ed.Regen();
             });
         }
 
-        [CommandMethod(Group, nameof(PIK_AutoLayersStop), CommandFlags.Modal)]
-        public void PIK_AutoLayersStop()
+        [CommandMethod(Group, nameof(PIK_Ribbon), CommandFlags.Modal)]
+        public void PIK_Ribbon()
         {
-            CommandStart.Start(doc =>
-            {
-                AutoLayersService.Stop();
-                doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}");
-            });
-        }
-
-        [CommandMethod(Group, nameof(PIK_AutoLayersStatus), CommandFlags.Modal)]
-        public void PIK_AutoLayersStatus()
-        {
-            CommandStart.Start(doc => doc.Editor.WriteMessage($"\n{AutoLayersService.GetInfo()}"));
-        }
-
-        [CommandMethod(Group, nameof(PIK_AutoLayersAll), CommandFlags.Modal)]
-        public void PIK_AutoLayersAll()
-        {
-            CommandStart.Start(doc => AutoLayersService.AutoLayersAll());
+            CommandStart.Start(d => RibbonBuilder.CreateRibbon());
         }
 
         [CommandMethod(Group, nameof(PIK_SearchById), CommandFlags.Modal)]
@@ -431,62 +440,6 @@ namespace AcadLib
             });
         }
 
-        [CommandMethod(Group, nameof(PIK_PurgeAuditRegen), CommandFlags.Modal)]
-        public void PIK_PurgeAuditRegen()
-        {
-            CommandStart.Start(doc =>
-            {
-                var ed = doc.Editor;
-                ed.Command("_-purge", "_All", "*", "_No");
-                ed.Command("_audit", "_Yes");
-                ed.Command("_-scalelistedit", "_R", "_Y", "_E");
-                ed.Regen();
-            });
-        }
-
-        [CommandMethod(Group, nameof(PIK_BlocksUnitsless), CommandFlags.Modal)]
-        public void PIK_BlocksUnitsless()
-        {
-            CommandStart.Start(doc =>
-            {
-                var db = doc.Database;
-                using (var t = db.TransactionManager.StartTransaction())
-                {
-                    var bt = (BlockTable) db.BlockTableId.GetObject(OpenMode.ForRead);
-                    foreach (var id in bt)
-                    {
-                        var btr = (BlockTableRecord) id.GetObject(OpenMode.ForRead);
-                        if (btr.IsLayout || btr.IsAnonymous || btr.IsDependent) continue;
-                        if (btr.Units != UnitsValue.Undefined)
-                        {
-                            btr = (BlockTableRecord) id.GetObject(OpenMode.ForWrite);
-                            btr.Units = UnitsValue.Undefined;
-                        }
-                    }
-                    t.Commit();
-                }
-            });
-        }
-
-        [CommandMethod(Group, nameof(PIK_ExportTemplateToJson), CommandFlags.Modal)]
-        public void PIK_ExportTemplateToJson()
-        {
-            CommandStart.Start(doc =>
-            {
-                if (!doc.IsNamedDrawing) throw new Exception("Чертеж не сохранен на диске");
-                var tData = TemplateManager.LoadFromDb(doc.Database);
-                var file = Path.ChangeExtension(doc.Name, "json");
-                tData.ExportToJson(file ?? throw new InvalidOperationException());
-                Process.Start(file);
-            });
-        }
-
-        [CommandMethod(Group, nameof(PIK_LayersSelectedObjects), CommandFlags.UsePickSet)]
-        public void PIK_LayersSelectedObjects()
-        {
-            CommandStart.Start(LayersSelectedService.Show);
-        }
-
         [CommandMethod(Group, nameof(PIK_Test), CommandFlags.Modal)]
         public void PIK_Test()
         {
@@ -496,6 +449,50 @@ namespace AcadLib
                 //doc.Database.ImportLayerFilterTree(templateFile);
                 //doc.Database.ImportLayerStates(templateFile);
             });
+        }
+
+        [CommandMethod(Group, nameof(PIK_UpdateFieldsInObjects), CommandFlags.Modal)]
+        public void PIK_UpdateFieldsInObjects()
+        {
+            CommandStart.Start(doc => UpdateField.UpdateInSelected());
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            Task.Run(() =>
+            {
+                var procsChrome = Process.GetProcessesByName("chrome");
+                if (procsChrome.Length <= 0)
+                {
+                }
+                else
+                {
+                    foreach (var proc in procsChrome)
+                    {
+                        if (proc.MainWindowHandle == IntPtr.Zero) continue;
+                        var root = AutomationElement.FromHandle(proc.MainWindowHandle);
+                        var activeTabName = root.Current.Name;
+                        if (activeTabName.ToLower().Contains("youtube"))
+                        {
+                            try
+                            {
+                                player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Log.Error(ex, "Video Statistic");
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        [CommandMethod(Group, CommandXDataView, CommandFlags.Modal)]
+        public void XDataView()
+        {
+            CommandStart.Start(doc => XData.Viewer.XDataView.View());
         }
     }
 }
