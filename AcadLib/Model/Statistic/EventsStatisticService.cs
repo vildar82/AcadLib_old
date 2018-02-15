@@ -17,14 +17,6 @@ namespace AcadLib.Statistic
 
         public static void Start()
         {
-            try
-            {
-                sn = Application.GetSystemVariable("_pkser") as string;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "EventsStatisticService - GetSystemVariable(\"_pkser\")");
-            }
             eventer = new Eventer("AutoCAD", HostApplicationServices.Current.releaseMarketVersion);
             Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
             try
@@ -49,6 +41,18 @@ namespace AcadLib.Statistic
             {
                 db.SaveComplete -= Db_SaveComplete;
                 db.BeginSave -= Db_BeginSave;
+            }
+            if (sn == null)
+            {
+                try
+                {
+                    sn = Application.GetSystemVariable("_pkser") as string;
+                    Logger.Log.Info($"EventsStatisticService SerialNumber = {sn}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Error(ex, "EventsStatisticService - GetSystemVariable(\"_pkser\")");
+                }
             }
             db = doc.Database;
             db.SaveComplete += Db_SaveComplete;
