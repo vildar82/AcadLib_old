@@ -32,8 +32,9 @@ namespace AcadLib.Statistic
             SubscribeDoc(e.Document);
         }
 
-        private static void SubscribeDoc([NotNull] Document doc)
+        private static void SubscribeDoc([CanBeNull] Document doc)
         {
+            if (doc == null) return;
             if (db != null)
             {
                 db.SaveComplete -= Db_SaveComplete;
