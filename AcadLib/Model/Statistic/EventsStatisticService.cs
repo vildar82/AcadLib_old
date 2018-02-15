@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using EventStatistic;
@@ -45,10 +46,11 @@ namespace AcadLib.Statistic
             db.BeginSave += Db_BeginSave;
         }
 
-        private static void Db_BeginSave(object sender, DatabaseIOEventArgs e)
+        private static void Db_BeginSave(object sender, [NotNull] DatabaseIOEventArgs e)
         {
             try
             {
+                if (!IsDwg(e.FileName)) return;
                 eventer.Start();
             }
             catch (Exception ex)
@@ -57,10 +59,16 @@ namespace AcadLib.Statistic
             }
         }
 
+        private static bool IsDwg(string fileName)
+        {
+            return Path.GetExtension(fileName).EqualsIgnoreCase(".dwg");
+        }
+
         private static void Db_SaveComplete(object sender, [NotNull] DatabaseIOEventArgs e)
         {
             try
             {
+                if (!IsDwg(e.FileName)) return;
                 var res = eventer.Finish("Сохранить", e.FileName);
                 if (!res.IsNullOrEmpty())
                 {
