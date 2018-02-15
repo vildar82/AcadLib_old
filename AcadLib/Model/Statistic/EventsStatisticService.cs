@@ -13,9 +13,18 @@ namespace AcadLib.Statistic
     {
         private static Eventer eventer;
         private static Database db;
+        private static string sn;
 
         public static void Start()
         {
+            try
+            {
+                sn = Application.GetSystemVariable("_pkser") as string;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "EventsStatisticService - GetSystemVariable(\"_pkser\")");
+            }
             eventer = new Eventer("AutoCAD", HostApplicationServices.Current.releaseMarketVersion);
             Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
             try
@@ -69,7 +78,7 @@ namespace AcadLib.Statistic
             try
             {
                 if (!IsDwg(e.FileName)) return;
-                var res = eventer.Finish("Сохранить", e.FileName);
+                var res = eventer.Finish("Сохранить", e.FileName, sn);
                 if (!res.IsNullOrEmpty())
                 {
                     Logger.Log.Error($"Ошибка EventsStatistic Finish Result '{e.FileName}' - {res}");
