@@ -92,6 +92,9 @@
       <HintPath>..\packages\Equals.Fody.1.7.1\Lib\dotnet\Equals.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="EventStatistic">
+      <HintPath>\\dsk2.picompany.ru\project\CAD_Settings\Revit_server\10. Dll's\Dll\PIK\Revit_Rooms\EventStatistic.dll</HintPath>
+    </Reference>
     <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.7.4.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
@@ -227,6 +230,7 @@
     <Compile Include="Model\Errors\UI\ErrorModelOne.cs" />
     <Compile Include="Model\Errors\UI\ErrorAddButton.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelList.cs" />
+    <Compile Include="Model\Statistic\EventsStatisticService.cs" />
     <Compile Include="Model\Files\FileDataExt.cs" />
     <Compile Include="Model\Geometry\CurveExt.cs" />
     <Compile Include="Model\Geometry\Polylines\Join\JoinPolyline.cs" />

@@ -119,6 +119,7 @@ namespace AcadLib
                     timer.Tick += Timer_Tick;
                     timer.Start();
                 }
+                EventsStatisticService.Start();
             }
             catch (Exception ex)
             {
