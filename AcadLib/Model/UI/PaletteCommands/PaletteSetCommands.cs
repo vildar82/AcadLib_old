@@ -214,7 +214,7 @@ namespace AcadLib.PaletteCommands
             var mi = new MenuItem("Параметры отображения");
             mi.Click += (co, ce) =>
             {
-                var paletteoptView = new PaletteOptionsView(new PaletteOptionsViewModel());
+                var paletteoptView = new PaletteOptionsView(new PaletteOptionsViewModel(Models));
                 paletteoptView.ShowDialog();
             };
             e.MenuItems.Add(mi);

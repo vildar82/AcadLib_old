@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Input;
 using System.Windows.Media;
 using JetBrains.Annotations;
@@ -7,7 +8,7 @@ using JetBrains.Annotations;
 namespace AcadLib.PaletteCommands
 {
     [PublicAPI]
-    public interface IPaletteCommand
+    public interface IPaletteCommand : INotifyPropertyChanged
     {
         List<string> Access { get; }
         ICommand Command { get; set; }

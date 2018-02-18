@@ -42,7 +42,7 @@ namespace AcadLib.Statistic
                 db.SaveComplete -= Db_SaveComplete;
                 db.BeginSave -= Db_BeginSave;
             }
-            if (sn == null)
+            if (sn == null || sn.StartsWith("000"))
             {
                 try
                 {

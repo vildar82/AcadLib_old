@@ -23,7 +23,6 @@ namespace AcadLib.PaletteCommands.UI
             {
                 throw e.Exception;
             }
-
             if (e.Exception.HResult != -2146233079)
             {
                 Logger.Log.Error("CommandsControl.Dispatcher_UnhandledException: " + e.Exception);

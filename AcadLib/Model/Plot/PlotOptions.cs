@@ -39,7 +39,7 @@ namespace AcadLib.Plot
         private const string KeySortTabOrName = "SortTabOrName";
         private const string REGKEY = "PlotOptions";
         [Category("Печать")]
-        [DisplayName("Поумолчанию печать из:")]
+        [DisplayName("По умолчанию печать из:")]
         [Description("При вызове команды установить опцию поумолчанию печати из текущего чертежа или выбор папки.")]
         [DefaultValue("Текущего")]
         [TypeConverter(typeof(PlotSourceConverter))]

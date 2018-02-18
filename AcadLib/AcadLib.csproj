@@ -85,6 +85,9 @@
     <Reference Include="AutoCAD_PIK_Manager">
       <Private>False</Private>
     </Reference>
+    <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
+    </Reference>
     <Reference Include="EPPlus, Version=4.1.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
@@ -101,8 +104,8 @@
     <Reference Include="JetBrains.Annotations, Version=11.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>..\packages\JetBrains.Annotations.11.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
     </Reference>
-    <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
+    <Reference Include="MahApps.Metro, Version=1.6.0.362, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.6.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro.IconPacks, Version=2.0.0.31, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.2.0.0\lib\net45\MahApps.Metro.IconPacks.dll</HintPath>
@@ -117,8 +120,8 @@
     <Reference Include="NetLib">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
@@ -164,7 +167,7 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -174,9 +177,8 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UIAutomationClient" />
-    <Reference Include="UnitsNet">
-      <HintPath>..\packages\UnitsNet.3.88.0\lib\net40\UnitsNet.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="UnitsNet, Version=3.89.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnitsNet.3.89.0\lib\net40\UnitsNet.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
@@ -353,6 +355,7 @@
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteInsertBlock.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteVisualInsertBlocks.cs" />
     <Compile Include="Model\UI\PaletteCommands\CommandInfo.cs" />
+    <Compile Include="Model\UI\PaletteCommands\SplitCommand.cs" />
     <Compile Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml.cs">
       <DependentUpon>CommandsControl.xaml</DependentUpon>
     </Compile>
@@ -362,7 +365,15 @@
     <Compile Include="Model\UI\PaletteCommands\PaletteCommand.cs" />
     <Compile Include="Model\UI\PaletteCommands\PaletteModel.cs" />
     <Compile Include="Model\UI\PaletteCommands\PaletteSetCommands.cs" />
-    <Compile Include="Model\UI\PaletteCommands\UI\DesignTimePalette.cs" />
+    <Compile Include="Model\UI\PaletteCommands\UI\ImagesAndText.xaml.cs">
+      <DependentUpon>ImagesAndText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UI\PaletteCommands\UI\ListCommands.xaml.cs">
+      <DependentUpon>ListCommands.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UI\PaletteCommands\UI\OnlyImages.xaml.cs">
+      <DependentUpon>OnlyImages.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\UI\PaletteCommands\UI\PaletteOptionsView.xaml.cs">
       <DependentUpon>PaletteOptionsView.xaml</DependentUpon>
     </Compile>
@@ -382,6 +393,7 @@
     <Compile Include="Model\UI\Ribbon\Attribute\RibbonCommandAttribute.cs" />
     <Compile Include="Model\UI\Ribbon\Elements\IRibbonElement.cs" />
     <Compile Include="Model\UI\Ribbon\Elements\RibbonElement.cs" />
+    <Compile Include="Model\UI\Ribbon\Elements\SplitElement.cs" />
     <Compile Include="Model\UI\Ribbon\Options\ItemOptions.cs" />
     <Compile Include="Model\UI\Ribbon\RibbonBuilder.cs" />
     <Compile Include="Model\UI\Ribbon\Options\RibbonOptions.cs" />
@@ -608,6 +620,18 @@
     <Page Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Model\UI\PaletteCommands\UI\ImagesAndText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model\UI\PaletteCommands\UI\ListCommands.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model\UI\PaletteCommands\UI\OnlyImages.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\UI\PaletteCommands\UI\PaletteOptionsView.xaml">
       <SubType>Designer</SubType>

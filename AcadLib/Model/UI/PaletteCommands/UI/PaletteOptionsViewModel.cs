@@ -1,22 +1,27 @@
-﻿using System;
-using System.Reactive.Linq;
+﻿using AcadLib.PaletteCommands;
 using AcadLib.Properties;
 using NetLib.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Reactive.Linq;
+using System.Windows.Threading;
 
 namespace AcadLib.UI.PaletteCommands.UI
 {
     public class PaletteOptionsViewModel : BaseViewModel
     {
+        private readonly List<PaletteModel> models;
         [Reactive] public double FontSize { get; set; }
         [Reactive] public double ImageSize { get; set; }
         [Reactive] public bool IsImageAndText { get; set; }
         [Reactive] public bool IsList { get; set; }
         [Reactive] public bool IsOnlyImage { get; set; }
 
-        public PaletteOptionsViewModel()
+        public PaletteOptionsViewModel(List<PaletteModel> models)
         {
+            this.models = models;
             ImageSize = Settings.Default.PaletteImageSize;
             this.WhenAnyValue(v => v.ImageSize).Skip(1).Throttle(TimeSpan.FromMilliseconds(100))
                 .Subscribe(s => Settings.Default.PaletteImageSize = s);
@@ -25,11 +30,11 @@ namespace AcadLib.UI.PaletteCommands.UI
                 .Subscribe(s => Settings.Default.PaletteFontSize = s);
             SwitchRadioContent();
             this.WhenAnyValue(v => v.IsOnlyImage).Skip(1).Throttle(TimeSpan.FromMilliseconds(500))
-                .Where(w => w).Subscribe(s => SetListStyle(0));
+                .Where(w => w).ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(s => SetListStyle(0));
             this.WhenAnyValue(v => v.IsImageAndText).Skip(1).Throttle(TimeSpan.FromMilliseconds(500))
-                .Where(w => w).Subscribe(s => SetListStyle(1));
+                .Where(w => w).ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(s => SetListStyle(1));
             this.WhenAnyValue(v => v.IsList).Skip(1).Throttle(TimeSpan.FromMilliseconds(500))
-                .Where(w => w).Subscribe(s => SetListStyle(2));
+                .Where(w => w).ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(s => SetListStyle(2));
         }
 
         public override void OnClosing()
@@ -38,9 +43,13 @@ namespace AcadLib.UI.PaletteCommands.UI
             base.OnClosing();
         }
 
-        private static void SetListStyle(int listStyle)
+        private void SetListStyle(int listStyle)
         {
             Settings.Default.PaletteStyle = listStyle;
+            foreach (var model in models)
+            {
+                model.ChangeContent(listStyle);
+            }
         }
 
         private void SwitchRadioContent()

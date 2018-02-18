@@ -50,22 +50,43 @@ namespace AcadLib.UI.Ribbon
                 foreach (var palette in PaletteSetCommands._paletteSets)
                 {
                     CreateRibbon(palette.Commands.Where(w => PaletteSetCommands.IsAccess(w.Access))
-                        .Select(c => new RibbonElement
-                        {
-                            Command = new RelayCommand(c.Execute),
-                            Image = c.Image,
-                            LargeImage = c.Image,
-                            Name = c.Name,
-                            Tab = palette.Name,
-                            Panel = c.Group,
-                            Description = c.Description,
-                        }).ToList<IRibbonElement>());
+                        .Select(c => ConvertToRibbonElement(c, palette.Name)));
                 }
             }
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, "CreateRibbon");
             }
+        }
+
+        [NotNull]
+        private static IRibbonElement ConvertToRibbonElement([NotNull] IPaletteCommand c, string paletteName)
+        {
+            if (c is SplitCommand splitCommand)
+            {
+                return new SplitElement
+                {
+                    Items = splitCommand.Commands.Select(s => ConvertPaletteCommand(s, paletteName)).ToList(),
+                    Tab = paletteName,
+                    Panel = c.Group
+                };
+            }
+            return ConvertPaletteCommand(c, paletteName);
+        }
+
+        [NotNull]
+        private static RibbonElement ConvertPaletteCommand([NotNull] IPaletteCommand c, string paletteName)
+        {
+            return new RibbonElement
+            {
+                Command = new RelayCommand(c.Execute),
+                Image = c.Image,
+                LargeImage = c.Image,
+                Name = c.Name,
+                Tab = paletteName,
+                Panel = c.Group,
+                Description = c.Description
+            };
         }
 
         private static void AddItem<T>(int index, [NotNull] T item, [NotNull] IList<T> items) where T : IRibbonContentUid
@@ -94,6 +115,18 @@ namespace AcadLib.UI.Ribbon
             ComponentManager.ItemInitialized -= ComponentManager_ItemInitialized;
             CreateRibbon();
             Application.SystemVariableChanged += Application_SystemVariableChanged;
+        }
+
+        [NotNull]
+        private static RibbonSplitButton CreateSplitButton([NotNull] SplitElement splitElem)
+        {
+            var splitB = new RibbonSplitButton();
+            foreach (var elem in splitElem.Items)
+            {
+                var button = CreateButton(elem);
+                splitB.Items.Add(button);
+            }
+            return splitB;
         }
 
         [NotNull]
@@ -133,8 +166,16 @@ namespace AcadLib.UI.Ribbon
                 var row = new RibbonRowPanel();
                 foreach (var element in part)
                 {
-                    var button = CreateButton(element);
-                    row.Items.Add(button);
+                    RibbonItem item;
+                    if (element is SplitElement splitElem)
+                    {
+                        item = CreateSplitButton(splitElem);
+                    }
+                    else
+                    {
+                        item = CreateButton(element);
+                    }
+                    row.Items.Add(item);
                 }
                 panelSource.Items.Add(row);
                 panelSource.Items.Add(new RibbonRowBreak());
@@ -153,7 +194,7 @@ namespace AcadLib.UI.Ribbon
                 if (ribbon == null) ribbon = ComponentManager.Ribbon;
                 ribbon.Tabs.CollectionChanged -= Tabs_CollectionChanged;
                 // группировка элементов по вкладкам
-                var tabsOpt = elements.GroupBy(g => g.Tab).Select(t => CreateTab(t.Key, t.ToList()));
+                var tabsOpt = elements.GroupBy(g => g.Tab).Select(t => CreateTab(t.Key, t.ToList())).ToList();
                 foreach (var tabOpt in tabsOpt)
                 {
                     var tab = (RibbonTab)tabOpt.Item;

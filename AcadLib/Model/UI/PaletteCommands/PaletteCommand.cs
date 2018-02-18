@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using MicroMvvm;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,13 +7,13 @@ using System.IO;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using MicroMvvm;
+using ReactiveUI;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 // ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
-    public class PaletteCommand : IPaletteCommand
+    public class PaletteCommand : ReactiveObject, IPaletteCommand
     {
         /// <summary>
         /// Ограниечение доступа по логину
@@ -41,6 +42,11 @@ namespace AcadLib.PaletteCommands
         /// </summary>
         public string Name { get; set; }
         //public PaletteCommand() { }
+
+        public PaletteCommand()
+        {
+
+        }
 
         public PaletteCommand(string name, Bitmap image, string command, string description, string group = "",
             bool isTest = false)
