@@ -15,9 +15,10 @@
                     Background="{Binding CurrentTheme.TabBackgroundBrush, Source={x:Static acwt:ThemeManager.PaletteSettings}}">
                 <controls:SplitButton.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding Image}" VerticalAlignment="Top" HorizontalAlignment="Center"
+                        <Image Source="{Binding Image}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="1"
                                Width="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}"
-                               Height="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}" />
+                               Height="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}" 
+                               ToolTip="{Binding Name}"/>
                     </DataTemplate>
                 </controls:SplitButton.ItemTemplate>
                 <ToolTipService.ToolTip>

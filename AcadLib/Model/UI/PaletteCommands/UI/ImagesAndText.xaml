@@ -19,7 +19,7 @@
                             <Image  Source="{Binding Image}" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="1"
                                    Width="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}"
                                    Height="{Binding PaletteImageSize, Source={x:Static properties:Settings.Default}}" />
-                            <TextBlock  Text="{Binding Name}" VerticalAlignment="Top" TextWrapping="Wrap" HorizontalAlignment="Center"
+                            <TextBlock  Text="{Binding Name}" VerticalAlignment="Top" TextWrapping="Wrap" HorizontalAlignment="Left"
                                     FontSize="{Binding PaletteFontSize, Source={x:Static properties:Settings.Default}}" Margin="1"/>
                         </StackPanel>
                     </DataTemplate>
