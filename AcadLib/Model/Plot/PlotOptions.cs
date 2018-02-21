@@ -65,7 +65,7 @@ namespace AcadLib.Plot
         public bool FilterState { get; set; }
 
         [Category("Печать")]
-        [DisplayName("Включая подпапки")]
+        [DisplayName("C подпапками")]
         [Description("Если выбрана печать всей папки, то включать все файлы в подпапках удовлетворяющие фильтру.")]
         [DefaultValue(false)]
         [TypeConverter(typeof(YesNoConverter))]

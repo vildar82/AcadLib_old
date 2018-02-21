@@ -77,7 +77,14 @@ namespace AcadLib
             {
                 Logger.Log.Info("start Initialize AcadLib");
                 "MODEMACRO".SetSystemVariableTry(PikSettings.UserGroup);
-                PluginStatisticsHelper.StartAutoCAD();
+                try
+                {
+                    PluginStatisticsHelper.StartAutoCAD();
+                }
+                catch
+                {
+                    //
+                }
                 if (Settings.Default.UpgradeRequired)
                 {
                     Settings.Default.Upgrade();
