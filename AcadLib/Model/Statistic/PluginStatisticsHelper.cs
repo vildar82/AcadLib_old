@@ -15,9 +15,10 @@ namespace AcadLib.Statistic
         private static string _app;
         private static string _acadLibVer;
         private static string _acadYear;
+        private static bool? _isCivil;
 
         [NotNull]
-        private static string App => _app ?? (_app = IsCivil() ? "Civil" : "AutoCAD");
+        private static string App => _app ?? (_app = IsCivil ? "Civil" : "AutoCAD");
 
         [NotNull]
         private static string AcadLibVer =>
@@ -25,6 +26,8 @@ namespace AcadLib.Statistic
 
         [NotNull]
         public static string AcadYear => _acadYear ?? (_acadYear = HostApplicationServices.Current.releaseMarketVersion);
+
+        public static bool IsCivil => (bool) (_isCivil ?? (_isCivil = GetIsCivil()));
 
         /// <summary>
         /// Запись статистики обновления настроек
@@ -110,7 +113,7 @@ namespace AcadLib.Statistic
             });
         }
 
-        private static bool IsCivil()
+        private static bool GetIsCivil()
         {
             try { return CivilTest.IsCivil(); } catch { return false;}
         }
