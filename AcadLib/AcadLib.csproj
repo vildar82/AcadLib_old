@@ -82,8 +82,13 @@
     <Reference Include="AdWindows">
       <Private>False</Private>
     </Reference>
-    <Reference Include="AutoCAD_PIK_Manager">
+    <Reference Include="AeccDbMgd">
+      <HintPath>..\..\..\Program Files\Autodesk\AutoCAD 2016\C3D\AeccDbMgd.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="AutoCAD_PIK_Manager, Version=1.0.53.206, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Manager.dll</HintPath>
     </Reference>
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
@@ -232,6 +237,7 @@
     <Compile Include="Model\Errors\UI\ErrorModelOne.cs" />
     <Compile Include="Model\Errors\UI\ErrorAddButton.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelList.cs" />
+    <Compile Include="Model\Statistic\CivilTest.cs" />
     <Compile Include="Model\Statistic\EventsStatisticService.cs" />
     <Compile Include="Model\Files\FileDataExt.cs" />
     <Compile Include="Model\Geometry\CurveExt.cs" />

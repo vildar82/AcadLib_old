@@ -4,12 +4,44 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
+using AutoCAD_PIK_Manager.Settings;
+using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AcadLib.Statistic
 {
     [PublicAPI]
     public static class PluginStatisticsHelper
     {
+        private static string _app;
+        private static string _acadLibVer;
+        private static string _acadYear;
+
+        [NotNull]
+        private static string App => _app ?? (_app = IsCivil() ? "Civil" : "AutoCAD");
+
+        [NotNull]
+        private static string AcadLibVer =>
+            _acadLibVer ?? (_acadLibVer = Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+        [NotNull]
+        public static string AcadYear => _acadYear ?? (_acadYear = HostApplicationServices.Current.releaseMarketVersion);
+
+        /// <summary>
+        /// Запись статистики обновления настроек
+        /// </summary>
+        private static void UpdateSettings()
+        {
+            try
+            {
+                if (PikSettings.IsUpdatedSettings)
+                    InsertStatistic($"{App} Update", "AcadLib", "Настройки последние", AcadLibVer, "");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "PluginStatisticsHelper.UpdateSettings");
+            }
+        }
+
         public static void AddStatistic()
         {
             try
@@ -25,63 +57,63 @@ namespace AcadLib.Statistic
 
         public static void PluginStart(CommandStart command)
         {
-            Task.Run(() =>
+            if (!IsUserCanAddStatistic()) return;
+            try
             {
-                try
-                {
-                    if (!General.IsCadManager() && !General.IsBimUser)
-                    {
-                        var version = command.Assembly != null
-                            ? FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion
-                            : string.Empty;
-                        using (var pg = new C_PluginStatisticTableAdapter())
-                        {
-                            var app = IsCivilAssembly(command.Assembly) ? "Civil" : "AutoCAD";
-                            pg.Insert(app, command.Plugin, command.CommandName, version,
-                                command.Doc, Environment.UserName, DateTime.Now, null);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log.Error(ex, "PluginStatisticsHelper.PluginStart");
-                }
-            });
+                var version = command.Assembly != null
+                    ? FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion
+                    : string.Empty;
+                InsertStatistic(App, command.Plugin, command.CommandName, version, command.Doc);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "PluginStart.");
+            }
         }
 
         public static void StartAutoCAD()
         {
+            if (!IsUserCanAddStatistic()) return;
+            try
+            {
+                InsertStatistic($"{App} {AcadYear} Run", "AcadLib", $"{App} Run", AcadLibVer, "");
+                // Статистика обновления настроек
+                UpdateSettings();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "StartAutoCAD.");
+            }
+        }
+
+        private static bool IsUserCanAddStatistic()
+        {
+            return true;
+            return !General.IsCadManager() && !General.IsBimUser;
+        }
+
+        private static void InsertStatistic(string appName, string plugin, string command, string version, string doc)
+        {
             Task.Run(() =>
             {
                 try
                 {
-                    if (!General.IsCadManager() && !General.IsBimUser)
+                    using (var pg = new C_PluginStatisticTableAdapter())
                     {
-                        var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                        using (var pg = new C_PluginStatisticTableAdapter())
-                        {
-                            var appRun = IsCivilGroup() ? "Civil Run" : "AutoCAD Run";
-                            pg.Insert(appRun, "AcadLib", appRun, version,
-                                "", Environment.UserName, DateTime.Now, null);
-                        }
+                        pg.Insert(appName, plugin, command, version,
+                            doc, Environment.UserName, DateTime.Now, null);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log.Error(ex, "PluginStatisticsHelper.StartAutoCAD");
+                    Logger.Log.Error(ex, "PluginStatisticsHelper Insert.");
                 }
             });
         }
 
-        private static bool IsCivilAssembly([CanBeNull] Assembly assm)
+        private static bool IsCivil()
         {
-            return assm?.GetName().Name?.Contains("Civil") == true;
-        }
-
-        private static bool IsCivilGroup()
-        {
-            return AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup.StartsWith("ГП") ||
-                   AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup == "НС";
+            try { return CivilTest.IsCivil(); } catch { return false;}
         }
     }
 }

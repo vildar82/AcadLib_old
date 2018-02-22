@@ -11,13 +11,23 @@ namespace AcadLib.Statistic
 {
     public static class EventsStatisticService
     {
-        private static Eventer eventer;
+        [NotNull]
+        private static Eventer Eventer =>
+            eventer ?? (eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion));
+
+        [NotNull]
+        private static string GetApp()
+        {
+            try {if (CivilTest.IsCivil()) return "Civil"; } catch {  }
+            return "AutoCAD";
+        }
+
         private static Database db;
         private static string sn;
+        private static Eventer eventer;
 
         public static void Start()
         {
-            eventer = new Eventer("AutoCAD", HostApplicationServices.Current.releaseMarketVersion);
             Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
             try
             {
@@ -64,7 +74,7 @@ namespace AcadLib.Statistic
             try
             {
                 if (!IsDwg(e.FileName)) return;
-                eventer.Start();
+                Eventer.Start();
             }
             catch (Exception ex)
             {
@@ -82,7 +92,7 @@ namespace AcadLib.Statistic
             try
             {
                 if (!IsDwg(e.FileName)) return;
-                var res = eventer.Finish("Сохранить", e.FileName, sn);
+                var res = Eventer.Finish("Сохранить", e.FileName, sn);
                 if (!res.IsNullOrEmpty())
                 {
                     Logger.Log.Error($"Ошибка EventsStatistic Finish Result '{e.FileName}' - {res}");
