@@ -5,6 +5,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using EventStatistic;
 using JetBrains.Annotations;
 using NetLib;
+using NLog.Fluent;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Statistic
@@ -28,6 +29,8 @@ namespace AcadLib.Statistic
 
         public static void Start()
         {
+            Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
+            Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
             Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
             try
             {
@@ -36,6 +39,27 @@ namespace AcadLib.Statistic
             catch
             {
                 //
+            }
+        }
+
+        private static void DocumentManager_DocumentCreateStarted(object sender, DocumentCollectionEventArgs e)
+        {
+            Eventer.Start();
+        }
+
+        private static void DocumentManager_DocumentCreated(object sender, [NotNull] DocumentCollectionEventArgs e)
+        {
+            try
+            {
+                var res = Eventer.Finish("Открытие", e.Document.Name, sn);
+                if (!string.IsNullOrEmpty(res))
+                {
+                    Logger.Log.Error($"Ошибка EventsStatistic Открытие Finish Result - {res}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "EventsStatisticService - DocumentManager_DocumentCreated");
             }
         }
 
@@ -95,7 +119,7 @@ namespace AcadLib.Statistic
                 var res = Eventer.Finish("Сохранить", e.FileName, sn);
                 if (!res.IsNullOrEmpty())
                 {
-                    Logger.Log.Error($"Ошибка EventsStatistic Finish Result '{e.FileName}' - {res}");
+                    Logger.Log.Error($"Ошибка EventsStatistic Сохранить Finish Result - {res}");
                 }
             }
             catch (Exception ex)
