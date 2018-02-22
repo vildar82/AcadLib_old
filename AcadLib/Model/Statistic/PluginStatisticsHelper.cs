@@ -88,7 +88,6 @@ namespace AcadLib.Statistic
 
         private static bool IsUserCanAddStatistic()
         {
-            return true;
             return !General.IsCadManager() && !General.IsBimUser;
         }
 
