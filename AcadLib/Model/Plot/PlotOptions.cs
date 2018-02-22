@@ -39,7 +39,7 @@ namespace AcadLib.Plot
         private const string KeySortTabOrName = "SortTabOrName";
         private const string REGKEY = "PlotOptions";
         [Category("Печать")]
-        [DisplayName("По умолчанию печать из:")]
+        [DisplayName("Печать по умолчанию:")]
         [Description("При вызове команды установить опцию поумолчанию печати из текущего чертежа или выбор папки.")]
         [DefaultValue("Текущего")]
         [TypeConverter(typeof(PlotSourceConverter))]
@@ -50,6 +50,7 @@ namespace AcadLib.Plot
         [Description("Печатать только вкладки соответствующим заданной строке поиска. Через | можно складывать условия ИЛИ.")]
         [DefaultValue("")]
         public string FilterByNames { get; set; }
+
 
         [Category("Фильтр")]
         [DisplayName("Фильтр по номерам вкладок:")]
@@ -65,18 +66,18 @@ namespace AcadLib.Plot
         public bool FilterState { get; set; }
 
         [Category("Печать")]
-        [DisplayName("C подпапками")]
-        [Description("Если выбрана печать всей папки, то включать все файлы в подпапках удовлетворяющие фильтру.")]
-        [DefaultValue(false)]
-        [TypeConverter(typeof(YesNoConverter))]
-        public bool IncludeSubdirs { get; set; }
-
-        [Category("Печать")]
         [DisplayName("Единый файл PDF")]
         [Description("Создавать один общий файл pdf или для каждого чертежа dwg отдельно.")]
         [DefaultValue(true)]
         [TypeConverter(typeof(OnePdfOrEachConverter))]
         public bool OnePdfOrEachDwg { get; set; }
+
+        [Category("Печать")]
+        [DisplayName("С подпапками")]
+        [Description("Если выбрана печать всей папки, то включать все файлы в подпапках удовлетворяющие фильтру.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool IncludeSubdirs { get; set; }
 
         [Category("Печать")]
         [DisplayName("Сортировка по")]
