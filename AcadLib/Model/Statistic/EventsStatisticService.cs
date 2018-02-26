@@ -49,9 +49,14 @@ namespace AcadLib.Statistic
 
         private static void DocumentManager_DocumentCreated(object sender, [NotNull] DocumentCollectionEventArgs e)
         {
+            DocumentCreated(e.Document);
+        }
+
+        private static void DocumentCreated(Document doc)
+        {
             try
             {
-                var res = Eventer.Finish("Открытие", e.Document.Name, sn);
+                var res = Eventer.Finish("Открытие", doc.Name, sn);
                 if (!string.IsNullOrEmpty(res))
                 {
                     Logger.Log.Error($"Ошибка EventsStatistic Открытие Finish Result - {res}");
@@ -91,6 +96,10 @@ namespace AcadLib.Statistic
             db = doc.Database;
             db.SaveComplete += Db_SaveComplete;
             db.BeginSave += Db_BeginSave;
+
+            // Если запустили автокад открытием файла dwg из проводника.
+            Eventer.Start();
+            DocumentCreated(doc);
         }
 
         private static void Db_BeginSave(object sender, [NotNull] DatabaseIOEventArgs e)
