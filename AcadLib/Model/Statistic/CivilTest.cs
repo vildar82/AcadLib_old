@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.Civil.ApplicationServices;
+﻿using Autodesk.Civil.ApplicationServices;
 
 namespace AcadLib.Statistic
 {

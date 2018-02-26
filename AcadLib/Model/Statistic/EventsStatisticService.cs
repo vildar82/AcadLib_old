@@ -5,7 +5,6 @@ using Autodesk.AutoCAD.DatabaseServices;
 using EventStatistic;
 using JetBrains.Annotations;
 using NetLib;
-using NLog.Fluent;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Statistic
@@ -19,6 +18,7 @@ namespace AcadLib.Statistic
         [NotNull]
         private static string GetApp()
         {
+            // ReSharper disable once EmptyGeneralCatchClause
             try {if (CivilTest.IsCivil()) return "Civil"; } catch {  }
             return "AutoCAD";
         }
