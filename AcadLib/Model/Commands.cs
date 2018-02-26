@@ -25,6 +25,7 @@ using AcadLib.Properties;
 using AcadLib.Statistic;
 using AcadLib.Template;
 using AcadLib.UI.Ribbon;
+using AcadLib.Utils;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
@@ -501,6 +502,12 @@ namespace AcadLib
         public void XDataView()
         {
             CommandStart.Start(doc => XData.Viewer.XDataView.View());
+        }
+
+        [CommandMethod(Group, nameof(PIK_ListModules), CommandFlags.Modal)]
+        public void PIK_ListModules()
+        {
+            CommandStart.Start(doc => ListModules.List());
         }
     }
 }

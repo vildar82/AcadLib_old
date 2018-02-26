@@ -410,6 +410,7 @@
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\Units\UnitsNetExt.cs" />
     <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Model\Utils\ListModules.cs" />
     <Compile Include="Model\VisualStyle\VisualStyleUsing.cs" />
     <Compile Include="Model\Visual\IVisualElement.cs" />
     <Compile Include="Model\Visual\IVisualService.cs" />
