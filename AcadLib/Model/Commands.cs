@@ -137,7 +137,7 @@ namespace AcadLib
 
         public void Terminate()
         {
-            Logger.Log.Info("Terminate AcadLib");
+            Logger.Log.Info("Terminatenh AcadLib");
         }
 
         [CommandMethod(Group, "PIK_Acadlib_About", CommandFlags.Modal)]

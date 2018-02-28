@@ -7,6 +7,7 @@ using System.Collections.Generic;
 // ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    [PublicAPI]
     public static class TypedValueExt
     {
         public static T GetValue<T>([CanBeNull] this Dictionary<string, object> dictValues, string name, T defaultValue)
@@ -20,7 +21,7 @@ namespace AcadLib
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log.Error(ex, $"TypedValueExt, GetValue из словаря значений - по имени параметра '{name}'. object = {value.ToString()} тип {value.GetType()}");
+                    Logger.Log.Error(ex, $"TypedValueExt, GetValue из словаря значений - по имени параметра '{name}'. object = {value} тип {value.GetType()}");
                     return defaultValue;
                 }
             }
