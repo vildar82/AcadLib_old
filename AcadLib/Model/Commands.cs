@@ -109,9 +109,13 @@ namespace AcadLib
                 Logger.Log.Info("end Initialize AcadLib");
                 YoutubeStatisticInit();
                 EventsStatisticService.Start();
+                var asm = Assembly.GetExecutingAssembly().GetName();
+                $"PIK. {asm.Name} загружен, версия {asm.Version}".WriteToCommandLine();
             }
             catch (Exception ex)
             {
+                var asm = Assembly.GetExecutingAssembly().GetName();
+                $"PIK. Ошибка загрузки {asm.Name}, версия:{asm.Version} - {ex.Message}.".WriteToCommandLine();
                 Logger.Log.Error(ex, "AcadLib Initialize.");
             }
         }
