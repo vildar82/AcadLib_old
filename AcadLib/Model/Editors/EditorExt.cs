@@ -4,12 +4,40 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Autodesk.AutoCAD.Geometry;
 
 namespace AcadLib.Editors
 {
     public static class EditorExt
     {
+        public static void AcadLoadInfo([NotNull] this Assembly assm)
+        {
+            try
+            {
+                var asmName = assm.GetName();
+                $"PIK. {asmName.Name} загружен, версия {asmName.Version}".WriteToCommandLine();
+            }
+            catch
+            {
+                //
+            }
+        }
+
+        public static void AcadLoadError([NotNull] this Assembly assm, 
+            [CanBeNull] Exception ex = null, [CanBeNull] string err = null)
+        {
+            try
+            {
+                var asmName = assm.GetName();
+                $"PIK. Ошибка загрузки {asmName.Name}, версия:{asmName.Version} - {err} {ex?.Message}.".WriteToCommandLine();
+            }
+            catch
+            {
+                //
+            }
+        }
+
         /// <summary>
         /// Выделение объектов и зумирование по границе
         /// </summary>

@@ -15,6 +15,7 @@ using AcadLib;
 using AcadLib.Blocks.Visual;
 using AcadLib.Colors;
 using AcadLib.DbYouTubeTableAdapters;
+using AcadLib.Editors;
 using AcadLib.Field;
 using AcadLib.Layers;
 using AcadLib.Layers.AutoLayers;
@@ -109,8 +110,7 @@ namespace AcadLib
                 Logger.Log.Info("end Initialize AcadLib");
                 YoutubeStatisticInit();
                 EventsStatisticService.Start();
-                var asm = Assembly.GetExecutingAssembly().GetName();
-                $"PIK. {asm.Name} загружен, версия {asm.Version}".WriteToCommandLine();
+                Assembly.GetExecutingAssembly().AcadLoadInfo();
             }
             catch (Exception ex)
             {
