@@ -93,20 +93,9 @@ namespace AcadLib
                     Settings.Default.Save();
                 }
                 AllCommandsCommon();
-                //// Копирование вспомогательных сборок локально из шаровой папки packages
-                //var task = Task.Run(() =>
-                //{
-                //    LoadService.CopyPackagesLocal();
-                //});
-                //task.Wait(15000);
                 // Автослоиtest
                 AutoLayersService.Init();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-                // Загрузка сборок из текущей папки
-                //foreach (var item in Directory.EnumerateFiles(CurDllDir, "*.dll"))
-                //{
-                //    LoadService.LoadFromTry(item);
-                //}
                 // Загрузка сборок из папки ../Script/Net - без вложенных папок
                 LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
                     SearchOption.TopDirectoryOnly);
@@ -116,9 +105,21 @@ namespace AcadLib
                     var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
                     LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
                 }
-                if (PaletteSetCommands._paletteSets.Any())
-                    RibbonBuilder.InitRibbon();
+                if (PaletteSetCommands._paletteSets.Any()) RibbonBuilder.InitRibbon();
                 Logger.Log.Info("end Initialize AcadLib");
+                YoutubeStatisticInit();
+                EventsStatisticService.Start();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "AcadLib Initialize.");
+            }
+        }
+
+        private void YoutubeStatisticInit()
+        {
+            try
+            {
                 var procsR = Process.GetProcessesByName("Acad");
                 if (procsR.Length == 1)
                 {
@@ -127,11 +128,10 @@ namespace AcadLib
                     timer.Tick += Timer_Tick;
                     timer.Start();
                 }
-                EventsStatisticService.Start();
             }
             catch (Exception ex)
             {
-                Logger.Log.Error(ex, "AcadLib Initialize.");
+                Logger.Log.Error(ex, "YoutubeStatisticInit");
             }
         }
 

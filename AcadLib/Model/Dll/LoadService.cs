@@ -95,11 +95,18 @@ namespace AcadLib
         /// </summary>
         public static void LoadFromFolder(string dir, SearchOption mode)
         {
-            if (!Directory.Exists(dir)) return;
-            var dlls = GetDllsForCurVerAcad(Directory.GetFiles(dir, "*.dll", mode).ToList());
-            foreach (var dll in dlls)
+            try
             {
-                LoadFromTry(dll.Dll);
+                if (!Directory.Exists(dir)) return;
+                var dlls = GetDllsForCurVerAcad(Directory.GetFiles(dir, "*.dll", mode).ToList());
+                foreach (var dll in dlls)
+                {
+                    LoadFromTry(dll.Dll);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"LoadFromFolder {dir}");
             }
         }
 
