@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Windows.Forms;
 
 namespace AcadLib.Plot
 {
@@ -51,7 +52,6 @@ namespace AcadLib.Plot
         [DefaultValue("")]
         public string FilterByNames { get; set; }
 
-
         [Category("Фильтр")]
         [DisplayName("Фильтр по номерам вкладок:")]
         [Description("Печатать только указанные номера вкладок. Номера через запятую и/или тире. Отрицательные числа считаются с конца вкладок.\n\r Например: 16--4 печать с 16 листа до 4 с конца; -1--3 печать трех последних листов.")]
@@ -66,7 +66,7 @@ namespace AcadLib.Plot
         public bool FilterState { get; set; }
 
         [Category("Печать")]
-        [DisplayName("Единый файл PDF")]
+        [DisplayName("PDF файл")]
         [Description("Создавать один общий файл pdf или для каждого чертежа dwg отдельно.")]
         [DefaultValue(true)]
         [TypeConverter(typeof(OnePdfOrEachConverter))]
@@ -125,11 +125,7 @@ namespace AcadLib.Plot
         {
             //var formOpt = new UI.FormProperties();
             var copyOptions = (PlotOptions)MemberwiseClone();
-            if (PropertiesService.Show(copyOptions, v =>
-            {
-                copyOptions = (PlotOptions)MemberwiseClone();
-                return copyOptions;
-            }) == true)
+            if (PropertiesService.ShowForm(copyOptions) == DialogResult.OK)
             {
                 SortTabOrName = copyOptions.SortTabOrName;
                 OnePdfOrEachDwg = copyOptions.OnePdfOrEachDwg;

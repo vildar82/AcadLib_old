@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using NetLib;
 using ReactiveUI;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
@@ -48,7 +49,7 @@ namespace AcadLib.PaletteCommands
 
         }
 
-        public PaletteCommand(string name, Bitmap image, string command, string description, string group = "",
+        public PaletteCommand(string name, Bitmap image, [NotNull] string command, string description, string group = "",
             bool isTest = false)
         {
             IsTest = isTest;
@@ -62,9 +63,15 @@ namespace AcadLib.PaletteCommands
             {
                 Name += " (Тест)";
             }
-            // HelpMedia
+            // Add Help
+            AddHelp(command.IsNullOrEmpty() ? name : command);
+            
+        }
+
+        private void AddHelp([NotNull] string name)
+        {
             HelpMedia = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
-                AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, "Help", command, command + ".mp4");
+                "Help", name, name + ".mp4");
             if (!File.Exists(HelpMedia))
             {
                 HelpMedia = null;
@@ -72,7 +79,7 @@ namespace AcadLib.PaletteCommands
         }
 
         public PaletteCommand(List<string> access, string name, Bitmap image,
-            string command, string description, string group = "", bool isTest = false)
+            [NotNull] string command, string description, string group = "", bool isTest = false)
             : this(name, image, command, description, group, isTest)
         {
             Access = access;
