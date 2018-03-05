@@ -72,6 +72,20 @@ namespace AcadLib
             StartCommand(action, caller, null);
         }
 
+        public static void StartWoStat(Action<Document> action)
+        {
+            MethodBase caller = null;
+            try
+            {
+                caller = new StackTrace().GetFrame(1).GetMethod();
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Log.Error(ex, "CommandStart - StackTrace");
+            }
+            StartCommand(action, caller, null, true);
+        }
+
         public static void Start(Action<Document> action, Version minAcadVersion)
         {
             if (Application.Version < minAcadVersion)
@@ -91,26 +105,29 @@ namespace AcadLib
             StartCommand(action, caller, null);
         }
 
-        private static void StartCommand(Action<Document> action, MethodBase caller, string commandName)
+        private static void StartCommand(Action<Document> action, MethodBase caller, string commandName, bool woStatistic = false)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
-            try
+            if (!woStatistic)
             {
-                var commandStart = GetCallerCommand(caller, commandName);
-                Logger.Log.StartCommand(commandStart);
-                Logger.Log.Info($"Document={doc.Name}");
-                PluginStatisticsHelper.PluginStart(commandStart);
-                // Проверка блокировки команды
-                if (!CommandLockService.CanStartCommand(commandStart.CommandName))
+                try
                 {
-                    Logger.Log.Info($"Команда заблокирована - {commandStart.CommandName}");
-                    return;
+                    var commandStart = GetCallerCommand(caller, commandName);
+                    Logger.Log.StartCommand(commandStart);
+                    Logger.Log.Info($"Document={doc.Name}");
+                    PluginStatisticsHelper.PluginStart(commandStart);
+                    // Проверка блокировки команды
+                    if (!CommandLockService.CanStartCommand(commandStart.CommandName))
+                    {
+                        Logger.Log.Info($"Команда заблокирована - {commandStart.CommandName}");
+                        return;
+                    }
                 }
-            }
-            catch (System.Exception ex)
-            {
-                Logger.Log.Error(ex, "CommandStart");
+                catch (System.Exception ex)
+                {
+                    Logger.Log.Error(ex, "CommandStart");
+                }
             }
             try
             {
