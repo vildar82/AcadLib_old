@@ -234,6 +234,8 @@
     <Compile Include="Model\DB\GenericExtensions.cs" />
     <Compile Include="Model\DB\LineExt.cs" />
     <Compile Include="Model\DB\SystemVariableExt.cs" />
+    <Compile Include="Model\Dim\DimBlkEnum.cs" />
+    <Compile Include="Model\Dim\DimensionExt.cs" />
     <Compile Include="Model\Dll\DllVer.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />

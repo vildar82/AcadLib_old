@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System;
 using System.IO;
+using AutoCAD_PIK_Manager.Settings;
 
 namespace AcadLib.IO
 {
@@ -44,6 +45,17 @@ namespace AcadLib.IO
         public static string GetSharedFile([NotNull] string pluginName, [NotNull] string fileName)
         {
             return System.IO.Path.Combine(GetSharedPluginFolder(pluginName), fileName);
+        }
+
+        /// <summary>
+        /// Получение файла в локальных настройках
+        /// </summary>
+        /// <param name="relativeFromSettings">Путь от папки Settings</param>
+        /// <returns>Полный путь</returns>
+        [NotNull]
+        public static string GetLocalSettingsFile([NotNull] string relativeFromSettings)
+        {
+            return System.IO.Path.Combine(PikSettings.LocalSettingsFolder, relativeFromSettings);
         }
 
         [NotNull]
