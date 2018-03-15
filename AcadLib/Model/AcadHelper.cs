@@ -2,7 +2,6 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using Autodesk.AutoCAD.Runtime;
@@ -21,7 +20,7 @@ namespace AcadLib
         /// <returns></returns>
         public static bool IsRussianAcad()
         {
-            return SystemObjects.DynamicLinker.ProductLcid == 419;
+            return SystemObjects.DynamicLinker.ProductLcid == 1049;
         }
 
         /// <summary>
