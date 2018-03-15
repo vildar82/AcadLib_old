@@ -2,8 +2,10 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using Autodesk.AutoCAD.Runtime;
 using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
@@ -13,6 +15,15 @@ namespace AcadLib
     [PublicAPI]
     public static class AcadHelper
     {
+        /// <summary>
+        /// Это русская версия AutoCAD ru-RU
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsRussianAcad()
+        {
+            return SystemObjects.DynamicLinker.ProductLcid == 419;
+        }
+
         /// <summary>
         /// Текущий документ.
         /// </summary>
