@@ -13,19 +13,29 @@ namespace AcadLib
     {
         public static LineWeight LwDataRow = LineWeight.LineWeight018;
 
+        public static Cell MoveDown([NotNull] this Cell cell)
+        {
+            return cell.ParentTable.Cells[cell.Row + 1, cell.Column];
+        }
+
+        public static Cell MoveRight([NotNull] this Cell cell)
+        {
+            return cell.ParentTable.Cells[cell.Row, cell.Column+1];
+        }
+
         public static void SetBorders([NotNull] this Table table, LineWeight lw)
         {
             if (table.Rows.Count < 2) return;
 
             var rowTitle = table.Rows[0];
-            setRowTitle(rowTitle);
+            SetRowTitle(rowTitle);
 
             var rowHead = table.Rows[1];
-            setRowHeader(rowHead, lw);
+            SetRowHeader(rowHead, lw);
 
             foreach (var row in table.Rows.Skip(2))
             {
-                setRowData(row, lw);
+                SetRowData(row, lw);
             }
         }
 
@@ -67,41 +77,41 @@ namespace AcadLib
                 new Point3d(ext.MaxPoint.X + cell.Borders.Horizontal.Margin ?? 0, ext.MaxPoint.Y + cell.Borders.Top.Margin ?? 0, 0));
         }
 
-        private static void setCell([NotNull] CellBorder cell, LineWeight lw, bool visible)
+        private static void SetCell([NotNull] CellBorder cell, LineWeight lw, bool visible)
         {
             //cell.Overrides = GridProperties.Visibility | GridProperties.LineWeight;
             cell.LineWeight = lw;
             cell.IsVisible = visible;
         }
 
-        private static void setRowData([NotNull] Row row, LineWeight lw)
+        private static void SetRowData([NotNull] Row row, LineWeight lw)
         {
-            setCell(row.Borders.Bottom, LwDataRow, true);
-            setCell(row.Borders.Horizontal, LwDataRow, true);
-            setCell(row.Borders.Left, lw, true);
-            setCell(row.Borders.Right, lw, true);
-            setCell(row.Borders.Top, LwDataRow, true);
-            setCell(row.Borders.Vertical, lw, true);
+            SetCell(row.Borders.Bottom, LwDataRow, true);
+            SetCell(row.Borders.Horizontal, LwDataRow, true);
+            SetCell(row.Borders.Left, lw, true);
+            SetCell(row.Borders.Right, lw, true);
+            SetCell(row.Borders.Top, LwDataRow, true);
+            SetCell(row.Borders.Vertical, lw, true);
         }
 
-        private static void setRowHeader([NotNull] Row row, LineWeight lw)
+        private static void SetRowHeader([NotNull] Row row, LineWeight lw)
         {
-            setCell(row.Borders.Bottom, lw, true);
-            setCell(row.Borders.Horizontal, lw, true);
-            setCell(row.Borders.Left, lw, true);
-            setCell(row.Borders.Right, lw, true);
-            setCell(row.Borders.Top, lw, true);
-            setCell(row.Borders.Vertical, lw, true);
+            SetCell(row.Borders.Bottom, lw, true);
+            SetCell(row.Borders.Horizontal, lw, true);
+            SetCell(row.Borders.Left, lw, true);
+            SetCell(row.Borders.Right, lw, true);
+            SetCell(row.Borders.Top, lw, true);
+            SetCell(row.Borders.Vertical, lw, true);
         }
 
-        private static void setRowTitle([NotNull] Row row)
+        private static void SetRowTitle([NotNull] Row row)
         {
-            setCell(row.Borders.Bottom, LineWeight.LineWeight000, false);
-            setCell(row.Borders.Horizontal, LineWeight.LineWeight000, false);
-            setCell(row.Borders.Left, LineWeight.LineWeight000, false);
-            setCell(row.Borders.Right, LineWeight.LineWeight000, false);
-            setCell(row.Borders.Top, LineWeight.LineWeight000, false);
-            setCell(row.Borders.Vertical, LineWeight.LineWeight000, false);
+            SetCell(row.Borders.Bottom, LineWeight.LineWeight000, false);
+            SetCell(row.Borders.Horizontal, LineWeight.LineWeight000, false);
+            SetCell(row.Borders.Left, LineWeight.LineWeight000, false);
+            SetCell(row.Borders.Right, LineWeight.LineWeight000, false);
+            SetCell(row.Borders.Top, LineWeight.LineWeight000, false);
+            SetCell(row.Borders.Vertical, LineWeight.LineWeight000, false);
         }
     }
 }
