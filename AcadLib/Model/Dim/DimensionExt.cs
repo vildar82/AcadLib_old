@@ -8,19 +8,20 @@ namespace AcadLib.Dim
     [PublicAPI]
     public static class DimensionExt
     {
+        public static void SetDimBlk(string dimSysVar, DimBlkEnum type)
+        {
+            Application.SetSystemVariable(dimSysVar, GetDimBlkName(type));
+        }
+
         public static ObjectId GetDimBlkObjectId([NotNull] this Database db, DimBlkEnum dimBlk)
         {
             var blkName = GetDimBlkName(dimBlk);
-            // Get the current value of DIMBLK
-            var oldArrName = Application.GetSystemVariable("DIMBLK") as string;
-            // Set DIMBLK to the new style (this action may create a new block) 
-            Application.SetSystemVariable("DIMBLK", blkName);
-            // Reset the previous value of DIMBLK
-            if (oldArrName?.Length != 0) Application.SetSystemVariable("DIMBLK", oldArrName);
-#pragma warning disable 618
-            using (var bt = (BlockTable)db.BlockTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
+            using (var bt = db.BlockTableId.GetObjectT<BlockTable>())
             {
+                if (!bt.Has(blkName))
+                {
+                    Application.SetSystemVariable("DIMBLK", blkName);
+                }
                 return bt[blkName];
             }
         }

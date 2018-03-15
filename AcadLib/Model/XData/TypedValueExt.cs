@@ -65,6 +65,7 @@ namespace AcadLib
         /// <param name="tv"></param>
         /// <returns></returns>
         // ReSharper disable once MemberCanBePrivate.Global
+        [CanBeNull]
         public static T GetTvValue<T>(this TypedValue tv)
         {
             try

@@ -97,8 +97,15 @@ namespace AcadLib.Visual
             if (opt.LineWeight.HasValue) ent.LineWeight = opt.LineWeight.Value;
             if (opt.TextHeight.HasValue)
             {
-                if (ent is DBText t) t.Height = opt.TextHeight.Value;
-                if (ent is MText mt) mt.TextHeight = opt.TextHeight.Value;
+                switch (ent)
+                {
+                    case DBText t:
+                        t.Height = opt.TextHeight.Value;
+                        break;
+                    case MText mt:
+                        mt.TextHeight = opt.TextHeight.Value;
+                        break;
+                }
             }
         }
 

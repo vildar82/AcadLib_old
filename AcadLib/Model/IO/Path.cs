@@ -61,8 +61,8 @@ namespace AcadLib.IO
         [NotNull]
         public static string GetSharedPluginFolder([NotNull] string pluginName)
         {
-            var pluginFolder = System.IO.Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
-                AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup, pluginName);
+            var pluginFolder = System.IO.Path.Combine(PikSettings.ServerShareSettingsFolder,
+                PikSettings.UserGroup, pluginName);
             if (!Directory.Exists(pluginFolder))
             {
                 try
