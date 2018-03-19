@@ -68,7 +68,7 @@ namespace AcadLib.Tables
 
             if (!string.IsNullOrEmpty(Layer))
             {
-                var layerId = Layers.LayerExt.GetLayerOrCreateNew(new Layers.LayerInfo(Layer));
+                var layerId = Layers.LayerExt.CheckLayerState(Layer);
                 table.LayerId = layerId;
             }
 

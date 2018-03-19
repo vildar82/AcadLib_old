@@ -45,7 +45,7 @@ namespace AcadLib.Extensions
         [NotNull]
         public static Dictionary<string, DBText> GetAttributeDictionary([NotNull] this BlockReference blockref)
         {
-            return blockref.GetAttributes().Where(a => a.Visible).ToDictionary(a => GetTag(a), StringComparer.OrdinalIgnoreCase);
+            return blockref.GetAttributes().Where(a => a.Visible).ToDictionary(GetTag, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -112,10 +112,11 @@ namespace AcadLib.Extensions
 
         private static string GetTag([NotNull] DBText dbtext)
         {
-            if (dbtext is AttributeDefinition attdef)
-                return attdef.Tag;
-            if (dbtext is AttributeReference attref)
-                return attref.Tag;
+            switch (dbtext)
+            {
+                case AttributeDefinition attdef: return attdef.Tag;
+                case AttributeReference attref: return attref.Tag;
+            }
             throw new ArgumentException("requires an AttributeDefintion or AttributeReference");
         }
     }

@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using System;
+using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 using NetLib;
 using System.Collections.Generic;
@@ -96,7 +97,9 @@ namespace AcadLib.Layers
                     }
                     else
                     {
+#pragma warning disable 618
                         layId = CreateLayer(layer, lt);
+#pragma warning restore 618
                     }
                     layer.LayerId = layId;
                     resVal.Add(layName, layId);
@@ -156,6 +159,7 @@ namespace AcadLib.Layers
         /// </summary>
         /// <param name="layerInfo">параметры слоя</param>
         /// <param name="lt">таблица слоев открытая для чтения. Выполняется UpgradeOpen и DowngradeOpen</param>
+        [Obsolete("Use CheckLayerState")]
         public static ObjectId CreateLayer([NotNull] this LayerInfo layerInfo, [NotNull] LayerTable lt)
         {
             if (layerInfo.Name.IsNullOrEmpty()) return lt.Database.Clayer;
@@ -178,6 +182,7 @@ namespace AcadLib.Layers
         /// </summary>
         /// <param name="layerInfo">параметры слоя</param>
         /// <returns></returns>
+        [Obsolete("Use ChackLayerState")]
         public static ObjectId GetLayerOrCreateNew([NotNull] this LayerInfo layerInfo)
         {
             ObjectId idLayer;

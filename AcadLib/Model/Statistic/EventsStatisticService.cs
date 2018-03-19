@@ -32,6 +32,7 @@ namespace AcadLib.Statistic
             Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
             Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
             Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
+            Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
             try
             {
                 SubscribeDoc(AcadHelper.Doc);
@@ -40,6 +41,12 @@ namespace AcadLib.Statistic
             {
                 //
             }
+        }
+
+        private static void DocumentManager_DocumentDestroyed(object sender, [NotNull] DocumentDestroyedEventArgs e)
+        {
+            Eventer.Start();
+            Eventer.Finish("Закрытие", e.FileName, sn);
         }
 
         private static void DocumentManager_DocumentCreateStarted(object sender, DocumentCollectionEventArgs e)

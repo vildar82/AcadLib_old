@@ -29,6 +29,7 @@ namespace AcadLib.Template
             return new TemplateData {Layers = db.Layers().ToDictionary(k => k.Name)};
         }
 
+        [NotNull]
         public static TemplateData LoadFromJson(string file)
         {
             if (!File.Exists(file))
@@ -38,7 +39,9 @@ namespace AcadLib.Template
             }
             try
             {
-                return file.Deserialize<TemplateData>();
+                var templData = file.Deserialize<TemplateData>();
+                templData.Name = Path.GetFileName(file);
+                return templData;
             }
             catch (Exception ex)
             {
