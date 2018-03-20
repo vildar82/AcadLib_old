@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NetLib.Comparers;
 
-// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
     [PublicAPI]

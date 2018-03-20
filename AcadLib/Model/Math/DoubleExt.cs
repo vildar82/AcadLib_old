@@ -1,7 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
     [PublicAPI]
