@@ -10,7 +10,7 @@ namespace AcadLib.Template
     [PublicAPI]
     public class TemplateData
     {
-        public Dictionary<string, LayerInfo> Layers { get; set; }
+        public Dictionary<string, LayerInfo> Layers { get; set; } = new Dictionary<string, LayerInfo>();
         public string Name { get; set; }
         private LayerInfo zero = new LayerInfo("0");
 
