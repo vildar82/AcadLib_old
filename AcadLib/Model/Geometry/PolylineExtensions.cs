@@ -66,7 +66,7 @@ namespace AcadLib.Geometry
             var pl2 = (Polyline)pl1.Clone();
 
             // le point spécifié est sur un sommet de la polyligne
-            if (Math.Abs(Math.Round(param, 6) - index) < 0.0001)
+            if (Math.Abs(NetLib.DoubleExt.Round(param, 6) - index) < 0.0001)
             {
                 for (var i = pl1.NumberOfVertices - 1; i > index; i--)
                 {

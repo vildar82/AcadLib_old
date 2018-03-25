@@ -402,7 +402,7 @@ namespace AcadLib.Blocks
             return
                 blk1.OwnerId == blk2.OwnerId &&
                 blk1.Name == blk2.Name &&
-                Math.Abs(Math.Round(blk1.Rotation, 1) - Math.Round(blk2.Rotation, 1)) < 0.001 &&
+                Math.Abs(NetLib.DoubleExt.Round(blk1.Rotation,1) - NetLib.DoubleExt.Round(blk2.Rotation, 1)) < 0.001 &&
                 blk1.Position.IsEqualTo(blk2.Position, tol) &&
                 blk1.ScaleFactors.IsEqualTo(blk2.ScaleFactors, tol);
         }

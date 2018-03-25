@@ -9,7 +9,7 @@ namespace AcadLib
         [Obsolete("Используй NetLib", true)]
         public static double Round(this double value, int digits = 4)
         {
-            return Math.Round(value, digits);
+            return NetLib.DoubleExt.Round(value, digits);
         }
     }
 }
