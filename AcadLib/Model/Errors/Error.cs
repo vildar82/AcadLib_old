@@ -104,7 +104,8 @@ namespace AcadLib.Errors
                     {
                         IdEnt.FlickObjectHighlight(2, 60, 60);
                         Visuals.FlickObjectHighlight();
-                        ed.AddEntToImpliedSelection(IdEnt);
+                        ed.SetImpliedSelection(new []{IdEnt});
+                        //ed.AddEntToImpliedSelection(IdEnt);
                     }
                     else MessageBox.Show($"Должен быть активен чертеж {IdEnt.Database.Filename}");
                 }

@@ -199,7 +199,8 @@ namespace AcadLib
                     {
                         doc.Editor.Zoom(ent.GeometricExtents.Offset());
                         id.FlickObjectHighlight(num, delay1, delay2);
-                        doc.Editor.AddEntToImpliedSelection(id);
+                        doc.Editor.SetImpliedSelection(new [] { id });
+                        //doc.Editor.AddEntToImpliedSelection(id);
                     }
                     catch
                     {
@@ -228,7 +229,8 @@ namespace AcadLib
                 {
                     docOrig.Editor.Zoom(ext);
                     id.FlickObjectHighlight(2, 100, 100);
-                    docOrig.Editor.AddEntToImpliedSelection(id);
+                    docOrig.Editor.SetImpliedSelection(new [] { id });
+                    //docOrig.Editor.AddEntToImpliedSelection(id);
                 }
                 else
                 {

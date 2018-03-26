@@ -52,13 +52,13 @@ namespace AcadLib.Editors
                     "Нет объектов для выделения.".WriteToCommandLine();
                     return;
                 }
-                ed.SetImpliedSelection(ids.ToArray());
                 var ext = new Extents3d();
                 ids.Select(s => s.GetObject(OpenMode.ForRead)).Iterate(o =>
                 {
                     if (o.Bounds.HasValue) ext.AddExtents(o.Bounds.Value);
                 });
                 ed.Zoom(ext);
+                ed.SetImpliedSelection(ids.ToArray());
             }
             catch (Exception ex)
             {
