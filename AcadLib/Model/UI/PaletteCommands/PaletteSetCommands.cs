@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Windows.Media;
 using AcadLib.Properties;
 using AcadLib.UI.PaletteCommands.UI;
+using AcadLib.UI.Ribbon;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Brush = System.Windows.Media.Brush;
 
@@ -115,6 +116,15 @@ namespace AcadLib.PaletteCommands
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, "PaletteSetCommands.Start().");
+            }
+            try
+            {
+                // Построение ленты (бывает автоматом не создается при старте)
+                RibbonBuilder.CreateRibbon();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "Start CreateRibbon.");
             }
         }
 

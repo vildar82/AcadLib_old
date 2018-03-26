@@ -1,4 +1,15 @@
-﻿using AcadLib.Files;
+﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
+// 2017 08 15 21:34
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using AcadLib.Files;
 using AcadLib.PaletteCommands;
 using AcadLib.UI.Ribbon.Elements;
 using AcadLib.UI.Ribbon.Options;
@@ -8,19 +19,12 @@ using Autodesk.Windows;
 using JetBrains.Annotations;
 using MicroMvvm;
 using NetLib;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Linq;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.UI.Ribbon
 {
     /// <summary>
-    /// Создает ленту
+    ///     Создает ленту
     /// </summary>
     public static class RibbonBuilder
     {
@@ -49,8 +53,9 @@ namespace AcadLib.UI.Ribbon
             {
                 foreach (var palette in PaletteSetCommands._paletteSets)
                 {
-                    CreateRibbon(palette.Commands.Where(w => PaletteSetCommands.IsAccess(w.Access))
-                        .Select(c => ConvertToRibbonElement(c, palette.Name)));
+                    var elems = palette.Commands.Where(w => PaletteSetCommands.IsAccess(w.Access))
+                        .Select(c => ConvertToRibbonElement(c, palette.Name));
+                    CreateRibbon(elems, palette.Name);
                 }
             }
             catch (Exception ex)
@@ -59,19 +64,29 @@ namespace AcadLib.UI.Ribbon
             }
         }
 
-        [NotNull]
-        private static IRibbonElement ConvertToRibbonElement([NotNull] IPaletteCommand c, string paletteName)
+        private static void AddItem<T>(int index, [NotNull] T item, [NotNull] IList<T> items) where T : IRibbonContentUid
         {
-            if (c is SplitCommand splitCommand)
+            if (index > items.Count) index = ribbon.Tabs.Count;
+            else if (index < 0)
             {
-                return new SplitElement
-                {
-                    Items = splitCommand.Commands.Select(s => ConvertPaletteCommand(s, paletteName)).ToList(),
-                    Tab = paletteName,
-                    Panel = c.Group
-                };
+                items.Add(item);
+                return;
             }
-            return ConvertPaletteCommand(c, paletteName);
+            items.Insert(index, item);
+        }
+
+        private static void Application_SystemVariableChanged(object sender, [NotNull] SystemVariableChangedEventArgs e)
+        {
+            if (e.Name.Equals("WSCURRENT")) CreateRibbon();
+        }
+
+        private static void ComponentManager_ItemInitialized(object sender, RibbonItemEventArgs e)
+        {
+            ribbon = ComponentManager.Ribbon;
+            if (ribbon == null) return;
+            ComponentManager.ItemInitialized -= ComponentManager_ItemInitialized;
+            CreateRibbon();
+            Application.SystemVariableChanged += Application_SystemVariableChanged;
         }
 
         [NotNull]
@@ -89,44 +104,19 @@ namespace AcadLib.UI.Ribbon
             };
         }
 
-        private static void AddItem<T>(int index, [NotNull] T item, [NotNull] IList<T> items) where T : IRibbonContentUid
-        {
-            if (index > items.Count) index = ribbon.Tabs.Count;
-            else if (index < 0)
-            {
-                items.Add(item);
-                return;
-            }
-            items.Insert(index, item);
-        }
-
-        private static void Application_SystemVariableChanged(object sender, [NotNull] SystemVariableChangedEventArgs e)
-        {
-            if (e.Name.Equals("WSCURRENT"))
-            {
-                CreateRibbon();
-            }
-        }
-
-        private static void ComponentManager_ItemInitialized(object sender, RibbonItemEventArgs e)
-        {
-            ribbon = ComponentManager.Ribbon;
-            if (ribbon == null) return;
-            ComponentManager.ItemInitialized -= ComponentManager_ItemInitialized;
-            CreateRibbon();
-            Application.SystemVariableChanged += Application_SystemVariableChanged;
-        }
-
         [NotNull]
-        private static RibbonSplitButton CreateSplitButton([NotNull] SplitElement splitElem)
+        private static IRibbonElement ConvertToRibbonElement([NotNull] IPaletteCommand c, string paletteName)
         {
-            var splitB = new RibbonSplitButton();
-            foreach (var elem in splitElem.Items)
+            if (c is SplitCommand splitCommand)
             {
-                var button = CreateButton(elem);
-                splitB.Items.Add(button);
+                return new SplitElement
+                {
+                    Items = splitCommand.Commands.Select(s => ConvertPaletteCommand(s, paletteName)).ToList(),
+                    Tab = paletteName,
+                    Panel = c.Group
+                };
             }
-            return splitB;
+            return ConvertPaletteCommand(c, paletteName);
         }
 
         [NotNull]
@@ -168,36 +158,33 @@ namespace AcadLib.UI.Ribbon
                 {
                     RibbonItem item;
                     if (element is SplitElement splitElem)
-                    {
                         item = CreateSplitButton(splitElem);
-                    }
                     else
-                    {
                         item = CreateButton(element);
-                    }
                     row.Items.Add(item);
                 }
                 panelSource.Items.Add(row);
                 panelSource.Items.Add(new RibbonRowBreak());
             }
-            var panel = new RibbonPanel { Source = panelSource, UID = panelSource.UID };
+            var panel = new RibbonPanel {Source = panelSource, UID = panelSource.UID};
             var panelOpt = GetItemOptions(panel, tabOptions.Items);
             panel.IsVisible = panelOpt.IsVisible;
             panel.PropertyChanged += Panel_PropertyChanged;
             return panelOpt;
         }
 
-        private static void CreateRibbon(IEnumerable<IRibbonElement> elements)
+        private static void CreateRibbon(IEnumerable<IRibbonElement> elements, string tabName)
         {
             try
             {
                 if (ribbon == null) ribbon = ComponentManager.Ribbon;
                 ribbon.Tabs.CollectionChanged -= Tabs_CollectionChanged;
+                if (ribbon.FindTab(tabName)!= null) return;
                 // группировка элементов по вкладкам
                 var tabsOpt = elements.GroupBy(g => g.Tab).Select(t => CreateTab(t.Key, t.ToList())).ToList();
                 foreach (var tabOpt in tabsOpt)
                 {
-                    var tab = (RibbonTab)tabOpt.Item;
+                    var tab = (RibbonTab) tabOpt.Item;
                     AddItem(tabOpt.Index, tab, ribbon.Tabs);
                     tab.Panels.CollectionChanged += Panels_CollectionChanged;
                     tab.PropertyChanged += Tab_PropertyChanged;
@@ -208,6 +195,18 @@ namespace AcadLib.UI.Ribbon
             {
                 Logger.Log.Error(ex, "CreateRibbon");
             }
+        }
+
+        [NotNull]
+        private static RibbonSplitButton CreateSplitButton([NotNull] SplitElement splitElem)
+        {
+            var splitB = new RibbonSplitButton();
+            foreach (var elem in splitElem.Items)
+            {
+                var button = CreateButton(elem);
+                splitB.Items.Add(button);
+            }
+            return splitB;
         }
 
         [NotNull]
@@ -224,10 +223,7 @@ namespace AcadLib.UI.Ribbon
             tab.IsVisible = tabOptions.IsVisible;
             tabOptions.Items = elements.GroupBy(g => g.Panel).Select(p => CreatePanel(p.Key, p.ToList(), tabOptions))
                 .OrderBy(o => o.Index).ToList();
-            foreach (var panelOpt in tabOptions.Items)
-            {
-                tab.Panels.Add((RibbonPanel)panelOpt.Item);
-            }
+            foreach (var panelOpt in tabOptions.Items) tab.Panels.Add((RibbonPanel) panelOpt.Item);
             return tabOptions;
         }
 
@@ -247,9 +243,7 @@ namespace AcadLib.UI.Ribbon
                 itemOptions.Add(tabOption);
             }
             else
-            {
                 tabOption.Item = item;
-            }
             return tabOption;
         }
 
@@ -261,15 +255,15 @@ namespace AcadLib.UI.Ribbon
                 Title = element.Name,
                 Content = element.Description,
                 IsHelpEnabled = false,
-                Image = element.LargeImage,
+                Image = element.LargeImage
             };
         }
 
-        private static void Panel_PropertyChanged(object sender, [NotNull] System.ComponentModel.PropertyChangedEventArgs e)
+        private static void Panel_PropertyChanged(object sender, [NotNull] PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsVisible")
             {
-                var panel = (RibbonPanel)sender;
+                var panel = (RibbonPanel) sender;
                 var tab = panel.Tab;
                 if (tab == null) return;
                 var tabOpt = ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == tab.UID);
@@ -292,10 +286,7 @@ namespace AcadLib.UI.Ribbon
                 {
                     var panel = ribbonPanelCol[index];
                     var panelOpt = tabOptions.Items.FirstOrDefault(p => p.UID == panel.UID);
-                    if (panelOpt != null)
-                    {
-                        panelOpt.Index = index;
-                    }
+                    if (panelOpt != null) panelOpt.Index = index;
                 }
                 SaveOptions();
             }
@@ -304,7 +295,8 @@ namespace AcadLib.UI.Ribbon
         [CanBeNull]
         private static BitmapSource ResizeImage([CanBeNull] BitmapSource image, int size)
         {
-            return image == null ? null
+            return image == null
+                ? null
                 : new TransformedBitmap(image, new ScaleTransform(size / image.Width, size / image.Height));
         }
 
@@ -312,11 +304,11 @@ namespace AcadLib.UI.Ribbon
         {
             foreach (var tabOpt in ribbonOptions.Data.Tabs)
             {
-                var tab = (RibbonTab)tabOpt.Item;
+                var tab = (RibbonTab) tabOpt.Item;
                 tabOpt.IsVisible = tab.IsVisible;
                 foreach (var panelOpt in tabOpt.Items)
                 {
-                    var panel = (RibbonPanel)panelOpt.Item;
+                    var panel = (RibbonPanel) panelOpt.Item;
                     panelOpt.IsVisible = panel.IsVisible;
                 }
             }
@@ -324,11 +316,11 @@ namespace AcadLib.UI.Ribbon
             ribbonOptions.TrySave();
         }
 
-        private static void Tab_PropertyChanged(object sender, [NotNull] System.ComponentModel.PropertyChangedEventArgs e)
+        private static void Tab_PropertyChanged(object sender, [NotNull] PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsVisible")
             {
-                var tab = (RibbonTab)sender;
+                var tab = (RibbonTab) sender;
                 var tabOpt = ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == tab.UID);
                 if (tabOpt == null) return;
                 tabOpt.IsVisible = tab.IsVisible;
@@ -342,11 +334,8 @@ namespace AcadLib.UI.Ribbon
             {
                 foreach (var tab in ribbonOptions.Data.Tabs)
                 {
-                    var index = ribbon.Tabs.IndexOf((RibbonTab)tab.Item);
-                    if (index == -1)
-                    {
-                        return;
-                    }
+                    var index = ribbon.Tabs.IndexOf((RibbonTab) tab.Item);
+                    if (index == -1) return;
                     tab.Index = index;
                 }
                 SaveOptions();
