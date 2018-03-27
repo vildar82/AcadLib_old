@@ -1,5 +1,4 @@
-﻿using AcadLib.Editors;
-using AcadLib.Errors.UI;
+﻿using AcadLib.Errors.UI;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;

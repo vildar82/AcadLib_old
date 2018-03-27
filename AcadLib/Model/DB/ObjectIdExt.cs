@@ -1,5 +1,4 @@
-﻿using AcadLib.Editors;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using JetBrains.Annotations;
@@ -38,10 +37,15 @@ namespace AcadLib
             return map[idEnt].Value;
         }
 
-        public static void FlickObjectHighlight([CanBeNull] this IEnumerable<Entity> ents, int num = 2, int delay1 = 50, int delay2 = 50)
+        public static void FlickObjectHighlight([NotNull] this Entity ent, int num = 2, int delay1 = 50, int delay2 = 50)
         {
-            var list = ents?.ToList();
-            if (list?.Any() != true) return;
+            FlickObjectHighlight(new []{ ent }, num, delay1, delay2);
+        }
+
+        public static void FlickObjectHighlight([NotNull] this IEnumerable<Entity> ents, int num = 2, int delay1 = 50, int delay2 = 50)
+        {
+            var list = ents.ToList();
+            if (list.Any() != true) return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             for (var i = 0; i < num; i++)
             {
