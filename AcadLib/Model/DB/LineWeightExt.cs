@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
@@ -23,7 +24,7 @@ namespace AcadLib
             var mm100 = mm * 100;
             var lwsLast = lws100.Last();
             if (mm100 > lwsLast) return (LineWeight)lwsLast;
-            return (LineWeight)lws100.OrderBy(o => o - mm100).First();
+            return (LineWeight)lws100.OrderBy(o => Math.Abs(o - mm100)).First();
         }
     }
 }
