@@ -29,7 +29,14 @@ namespace AcadLib.Visual
 
         public virtual void Dispose()
         {
-            EraseDraws();
+            try
+            {
+                EraseDraws();
+            }
+            catch
+            {
+                //
+            }
         }
 
         public virtual void VisualsDelete()

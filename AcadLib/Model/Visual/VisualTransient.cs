@@ -3,13 +3,13 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.GraphicsInterface;
 using JetBrains.Annotations;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace AcadLib.Visual
 {
     /// <summary>
     /// Визуализация графики - через TransientManager
     /// </summary>
+    [PublicAPI]
     public abstract class VisualTransient : VisualBase
     {
         public static readonly Autodesk.AutoCAD.Geometry.IntegerCollection vps = new Autodesk.AutoCAD.Geometry.IntegerCollection();
@@ -78,11 +78,14 @@ namespace AcadLib.Visual
 
         private void DisposeDraws()
         {
-            draws = null;
-            if (draws?.Any() != true) return;
-            foreach (var draw in draws)
+            if (draws == null) return;
+            try
             {
-                draw?.Dispose();
+                EraseDraws();
+            }
+            catch
+            {
+                //
             }
         }
     }

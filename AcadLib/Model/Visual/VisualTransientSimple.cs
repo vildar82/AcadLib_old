@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
+using JetBrains.Annotations;
 
 namespace AcadLib.Visual
 {
@@ -7,14 +9,21 @@ namespace AcadLib.Visual
     {
         private readonly List<Entity> ents;
 
-        public VisualTransientSimple(List<Entity> ents)
+        public VisualTransientSimple([NotNull] List<Entity> ents)
         {
             this.ents = ents;
         }
 
+        [NotNull]
         public override List<Entity> CreateVisual()
         {
-            return ents;
+            return ents.Select(s=>(Entity)s.Clone()).ToList();
+        }
+
+        public override void Dispose()
+        {
+            ents.ForEach(e=>e.Dispose());
+            base.Dispose();
         }
     }
 }
