@@ -102,8 +102,8 @@ namespace AcadLib.Statistic
                 {
                     using (var pg = new C_PluginStatisticTableAdapter())
                     {
-                        pg.Insert(appName, plugin, command, version,
-                            doc, Environment.UserName, DateTime.Now, null);
+                        pg.Insert(appName, plugin ?? "", command ?? "", version ?? "",
+                            doc ?? "", Environment.UserName, DateTime.Now, null);
                     }
                 }
                 catch (Exception ex)
