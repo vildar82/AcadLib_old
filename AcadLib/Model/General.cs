@@ -53,7 +53,7 @@ namespace AcadLib
             "vrublevskiyba",
             "khisyametdinovvt",
             "arslanovti",
-            //"karadzhayanra"
+            "karadzhayanra"
         };
 
         /// <summary>
