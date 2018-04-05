@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
@@ -69,7 +70,9 @@ namespace AcadLib.PaletteCommands
                 if (palette == null)
                 {
                     commands.AddRange(Commands.CommandsPalette);
-                    var ver = Assembly.GetCallingAssembly().GetName().Version;
+                    var asm = Assembly.GetCallingAssembly();
+                    var ver = asm.GetName().Version;
+                    var date = File.GetLastWriteTime(asm.Location);
                     _paletteSets.Add(new UserGroupPalette
                     {
                         Guid = paletteGuid,
@@ -78,7 +81,7 @@ namespace AcadLib.PaletteCommands
                         Commands = commands,
                         VersionPalette = ver.ToString()
                     });
-                    SetTrayIcon(paletteName, paletteGuid, ver);
+                    SetTrayIcon(paletteName, paletteGuid, ver, date.ToString());
                 }
                 else
                 {
@@ -133,14 +136,14 @@ namespace AcadLib.PaletteCommands
             Start(paletteGuid);
         }
 
-        private static void SetTrayIcon(string paletteName, Guid paletteGuid, Version ver)
+        private static void SetTrayIcon(string paletteName, Guid paletteGuid, Version ver, string date)
         {
             // Добавление иконки в трей
             try
             {
                 var p = new Pane
                 {
-                    ToolTipText = $"Палитра {paletteName}, вер. {ver.Revision}",
+                    ToolTipText = $"Палитра {paletteName}, вер. {ver.Revision} \n{date}",
                     Icon = Icon.FromHandle(Resources.logo.GetHicon())
                 };
                 p.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);

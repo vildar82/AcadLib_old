@@ -31,6 +31,6 @@ using System.Runtime.InteropServices;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.95.779")]
-[assembly: AssemblyFileVersion("1.0.95.779")]
-[assembly: AssemblyInformationalVersion("1.0.6")]
+[assembly: AssemblyVersion("1.0.95.785")]
+[assembly: AssemblyFileVersion("1.0.95.785")]
+[assembly: AssemblyInformationalVersion("1.0.12")]
