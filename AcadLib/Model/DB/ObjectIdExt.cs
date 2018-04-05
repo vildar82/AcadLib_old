@@ -13,6 +13,16 @@ namespace AcadLib
     [PublicAPI]
     public static class ObjectIdExt
     {
+        /// <summary>
+        /// Выделение объекта на чертеже
+        /// </summary>
+        /// <param name="entId"></param>
+        /// <param name="ed"></param>
+        public static void Select(this ObjectId entId, [NotNull] Editor ed)
+        {
+            ed.SetImpliedSelection(new []{ entId });
+        }
+
         public static void HighlightEntity(this ObjectId entId)
         {
 #pragma warning disable 618

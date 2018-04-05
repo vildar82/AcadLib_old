@@ -14,6 +14,7 @@ namespace AcadLib
         private readonly Database db;
 
         public List<ObjectId> Added { get;  } = new List<ObjectId>();
+        public event ObjectEventHandler ObjectAppended;
 
         public AddedObjects([NotNull] Database db)
         {
@@ -24,6 +25,7 @@ namespace AcadLib
         private void Db_ObjectAppended(object sender, [NotNull] ObjectEventArgs e)
         {
             Added.Add(e.DBObject.Id);
+            ObjectAppended?.Invoke(sender, e);
         }
 
         public void Dispose()
