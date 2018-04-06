@@ -5,6 +5,17 @@
 		xmlns:view="clr-namespace:AcadLib.UI.StatusBar.View" mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance view:StatusBarMenu}" SizeToContent="WidthAndHeight" WindowStyle="None"
 		ResizeMode="NoResize" WindowStartupLocation="Manual" >
+	<Window.Resources>
+		<Style TargetType="MenuItem">
+			<Setter Property="HeaderTemplate">
+				<Setter.Value>
+					<DataTemplate>
+						<TextBlock Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+					</DataTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
 	<Border BorderBrush="{Binding CurrentTheme.ControlBorderBrush, Source={x:Static theme:ThemeManager.PaletteSettings}}"
 			BorderThickness="2">
 		<Grid>

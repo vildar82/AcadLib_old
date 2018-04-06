@@ -10,6 +10,7 @@ namespace AcadLib.UI.StatusBar
     /// <summary>
     /// Статусная строка
     /// </summary>
+    [PublicAPI]
     public static class StatusBarEx
     {
         /// <summary>

@@ -48,12 +48,15 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Id определения блока - BklockTableRecord (для анонимных - DynamicBlockTableRecord).
         /// </summary>
+        [Obsolete("Для дин. блоков это определение анонимного блока!")]
         public ObjectId IdBtr { get; set; }
         /// <inheritdoc />
         /// <summary>
         /// Для динамических блоков - анонимное определение блока
         /// </summary>
+        [Obsolete("Для дин. блоков определение оригинального дин блока см в IdBtrDyn")]
         public ObjectId IdBtrAnonym { get; set; }
+        public ObjectId IdBtrDyn { get; set; }
         /// <inheritdoc />
         /// <summary>
         /// Пространство в который вставлен этот блок (определение блока)
@@ -347,14 +350,11 @@ namespace AcadLib.Blocks
             Db = blRef.Database;
             IdBtrOwner = blRef.OwnerId;
             IdBlRef = blRef.Id;
+            IdBtr = blRef.BlockTableRecord;
             if (blRef.IsDynamicBlock)
             {
-                IdBtr = blRef.DynamicBlockTableRecord;
+                IdBtrDyn = blRef.DynamicBlockTableRecord;
                 IdBtrAnonym = blRef.AnonymousBlockTableRecord;
-            }
-            else
-            {
-                IdBtr = blRef.BlockTableRecord;
             }
             BlLayer = blRef.Layer;
             LayerId = blRef.LayerId;
