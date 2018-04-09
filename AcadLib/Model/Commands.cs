@@ -171,7 +171,8 @@ namespace AcadLib
                         "Просмотр расширенных данных (XData) примитива.", GroupCommon),
                     new PaletteCommand("Проверка и очистка", Resources.purge, nameof(PIK_PurgeAuditRegen),
                         "Очистка (_purge), проверка (_audit), сброс списка масштабов аннотации (_scalelistedit) и регенерация чертежа.",
-                        GroupCommon)
+                        GroupCommon),
+                    new PaletteCommand("Последние ошибки", Resources.error, nameof(PIK_Errors), "Показать окно последних ошибок", GroupCommon)
                 };
             }
             catch (Exception ex)

@@ -584,6 +584,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\error.png" />
     <Resource Include="Resources\purge.png" />
     <Resource Include="Resources\stop.png" />
     <Resource Include="Resources\notify.png" />
