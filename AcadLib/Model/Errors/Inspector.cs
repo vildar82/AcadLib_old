@@ -17,6 +17,7 @@ namespace AcadLib.Errors
         private static Database _db;
         private static Document _doc;
         private static Editor _ed;
+        private static bool needClear;
         public static List<IError> Errors { get; private set; }
 
         public static bool HasErrors => Errors.Count > 0;
@@ -40,187 +41,199 @@ namespace AcadLib.Errors
             }
         }
 
+        private static void AddErrorInternal(IError err)
+        {
+            if (needClear)
+            {
+#pragma warning disable 618
+                Clear();
+#pragma warning restore 618
+                needClear = false;
+            }
+            Errors.Add(err);
+        }
+
         public static void AddError(IError err)
         {
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(Error err)
         {
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, icon);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, icon) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string msg)
         {
             var err = new Error(msg, SystemIcons.Error);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string group, string msg)
         {
             var err = new Error(msg, SystemIcons.Error);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         [Obsolete("Используй интерполяцию строк $\"\"")]
         public static void AddError([NotNull] string msg, [NotNull] params object[] args)
         {
             var err = new Error(string.Format(msg, args));
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, icon);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, icon) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string msg, [NotNull] Entity ent)
         {
             var err = new Error(msg, ent);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string group, string msg, [NotNull] Entity ent)
         {
             var err = new Error(msg, ent) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string msg, [NotNull] Entity ent, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, trans, icon);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string group, string msg, [NotNull] Entity ent, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, trans, icon) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, [NotNull] Entity ent, Extents3d ext, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, ent, icon);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, [NotNull] Entity ent, Extents3d ext, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, ent, icon) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string msg, [NotNull] Entity ent, Extents3d ext)
         {
             var err = new Error(msg, ext, ent);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string group, string msg, [NotNull] Entity ent, Extents3d ext)
         {
             var err = new Error(msg, ext, ent) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, Extents3d ext, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, idEnt, icon);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, Extents3d ext, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, idEnt, icon) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string msg, Extents3d ext, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, trans, icon);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string group, string msg, Extents3d ext, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, trans, icon) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string msg, Extents3d ext, ObjectId idEnt)
         {
             var err = new Error(msg, ext, idEnt);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string group, string msg, Extents3d ext, ObjectId idEnt)
         {
             var err = new Error(msg, ext, idEnt) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, icon);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, icon) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string msg, ObjectId idEnt)
         {
             var err = new Error(msg, idEnt);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string group, string msg, ObjectId idEnt)
         {
             var err = new Error(msg, idEnt) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string msg, ObjectId idEnt, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, trans, icon);
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void AddError(string group, string msg, ObjectId idEnt, Matrix3d trans, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, trans, icon) { Group = group };
-            Errors.Add(err);
+            AddErrorInternal(err);
         }
 
         public static void Show()
@@ -239,9 +252,7 @@ namespace AcadLib.Errors
             var errVM = new ErrorsViewModel(errors) { IsDialog = false };
             var errView = new ErrorsView(errVM);
             errView.Show();
-#pragma warning disable 618
-            Clear();
-#pragma warning restore 618
+            needClear = true;
         }
 
         [NotNull]
@@ -259,6 +270,7 @@ namespace AcadLib.Errors
         {
             if (HasErrors)
             {
+                needClear = true;
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors = SortErrors(Errors);
                 // WPF
@@ -276,9 +288,7 @@ namespace AcadLib.Errors
             var errVM = new ErrorsViewModel(errors) { IsDialog = true };
             var errView = new ErrorsView(errVM);
             var res = errView.ShowDialog();
-#pragma warning disable 618
-            Clear();
-#pragma warning restore 618
+            needClear = true;
             return res;
         }
     }

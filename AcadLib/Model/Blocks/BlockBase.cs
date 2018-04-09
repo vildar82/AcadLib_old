@@ -48,7 +48,6 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Id определения блока - BklockTableRecord (для анонимных - DynamicBlockTableRecord).
         /// </summary>
-        [Obsolete("Для дин. блоков это определение анонимного блока!")]
         public ObjectId IdBtr { get; set; }
         /// <inheritdoc />
         /// <summary>
