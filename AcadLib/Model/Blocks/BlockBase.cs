@@ -53,7 +53,7 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Для динамических блоков - анонимное определение блока
         /// </summary>
-        [Obsolete("Для дин. блоков определение оригинального дин блока см в IdBtrDyn")]
+        [Obsolete("Для дин. блоков определение оригинального дин блока см в IdBtrDyn. Скоро будет удалено.")]
         public ObjectId IdBtrAnonym { get; set; }
         public ObjectId IdBtrDyn { get; set; }
         /// <inheritdoc />
@@ -301,8 +301,7 @@ namespace AcadLib.Blocks
         [NotNull]
         public List<Polyline> FindPolylineInLayer(string layer)
         {
-            var idBtr = IdBtrAnonym.IsNull ? IdBtr : IdBtrAnonym;
-            var btr = (BlockTableRecord)idBtr.GetObject(OpenMode.ForRead);
+            var btr = (BlockTableRecord)IdBtr.GetObject(OpenMode.ForRead);
             var allPls = btr.GetObjects<Polyline>(OpenMode.ForRead);
             var pls = allPls.Where(p => p.Visible && p.Layer.Equals(layer, StringComparison.OrdinalIgnoreCase)).ToList();
             return pls;
@@ -353,7 +352,9 @@ namespace AcadLib.Blocks
             if (blRef.IsDynamicBlock)
             {
                 IdBtrDyn = blRef.DynamicBlockTableRecord;
+#pragma warning disable 618
                 IdBtrAnonym = blRef.AnonymousBlockTableRecord;
+#pragma warning restore 618
             }
             BlLayer = blRef.Layer;
             LayerId = blRef.LayerId;
