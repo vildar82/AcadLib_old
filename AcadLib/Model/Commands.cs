@@ -520,5 +520,11 @@ namespace AcadLib
         {
             CommandStart.Start(d => { });
         }
+
+        [CommandMethod(Group, nameof(PIK_StyleManager), CommandFlags.Modal)]
+        public void PIK_StyleManager()
+        {
+            CommandStart.Start(d => Styles.StyleManager.StyleManagerService.ManageStyles());
+        }
     }
 }

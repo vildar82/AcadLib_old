@@ -146,7 +146,7 @@
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.5.1\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.5.2\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -329,6 +329,13 @@
     </Compile>
     <Compile Include="Model\Layers\LayersSelected\LayersSelectedVM.cs" />
     <Compile Include="Model\Layers\LayerState\ImportLayerState.cs" />
+    <Compile Include="Model\Styles\StyleManager\UI\Style.cs" />
+    <Compile Include="Model\Styles\StyleManager\StyleManagerService.cs" />
+    <Compile Include="Model\Styles\StyleManager\UI\StyleManagerView.xaml.cs">
+      <DependentUpon>StyleManagerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Styles\StyleManager\UI\StyleManager.vm.cs" />
+    <Compile Include="Model\Styles\StyleManager\UI\StyleTable.cs" />
     <Compile Include="Model\Template\TemplateManager.cs" />
     <Compile Include="Model\Layers\LayerVisibleState.cs" />
     <Compile Include="Model\Layouts\LayoutsExt.cs" />
@@ -656,6 +663,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\Layers\LayersSelected\LayersSelectedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model\Styles\StyleManager\UI\StyleManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
