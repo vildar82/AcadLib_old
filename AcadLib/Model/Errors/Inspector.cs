@@ -28,8 +28,7 @@ namespace AcadLib.Errors
             Clear();
 #pragma warning restore 618
         }
-
-        [Obsolete("После Show очищаются ошибки.")]
+        
         public static void Clear()
         {
             Errors = new List<IError>();

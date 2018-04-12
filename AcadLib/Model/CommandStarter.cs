@@ -131,6 +131,9 @@ namespace AcadLib
             }
             try
             {
+#pragma warning disable 618
+                Inspector.Clear();
+#pragma warning restore 618
                 action(doc);
             }
             catch (OperationCanceledException ex)
