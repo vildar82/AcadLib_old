@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AcadLib;
 
 // ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.EditorInput
@@ -98,9 +99,25 @@ namespace Autodesk.AutoCAD.EditorInput
         [NotNull]
         public static List<ObjectId> Select([NotNull] this Editor ed, string msg)
         {
-            var selOpt = new PromptSelectionOptions
+            var selOpt = new PromptSelectionOptions();
+            selOpt.Keywords.Add(AcadHelper.IsRussianAcad() ? "Все" : "ALL" );
+            selOpt.MessageForAdding = msg + selOpt.Keywords.GetDisplayString(true);
+            var selRes = ed.GetSelection(selOpt);
+            if (selRes.Status == PromptStatus.OK)
             {
-                MessageForAdding = msg
+                return selRes.Value.GetObjectIds().ToList();
+            }
+            throw new OperationCanceledException();
+        }
+
+        public static List<ObjectId> Select([NotNull] this Editor ed, string msg, Func<List<ObjectId>> selectAll)
+        {
+            var selOpt = new PromptSelectionOptions();
+            selOpt.Keywords.Add(AcadHelper.IsRussianAcad() ? "Все" : "ALL");
+            selOpt.MessageForAdding = msg + selOpt.Keywords.GetDisplayString(true);
+            selOpt.KeywordInput += (s, e) =>
+            {
+                selectAll();
             };
             var selRes = ed.GetSelection(selOpt);
             if (selRes.Status == PromptStatus.OK)

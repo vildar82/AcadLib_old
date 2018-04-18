@@ -76,9 +76,9 @@ namespace AcadLib.Statistic
 
         public static void StartAutoCAD()
         {
-            if (!IsUserCanAddStatistic()) return;
             try
             {
+                if (!IsUserCanAddStatistic()) return;
                 InsertStatistic($"{App} {AcadYear} Run", "AcadLib", $"{App} Run", AcadLibVer, "");
                 // Статистика обновления настроек
                 UpdateSettings();

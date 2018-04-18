@@ -79,14 +79,7 @@ namespace AcadLib
             {
                 Logger.Log.Info("start Initialize AcadLib");
                 "MODEMACRO".SetSystemVariableTry(PikSettings.UserGroup);
-                try
-                {
-                    PluginStatisticsHelper.StartAutoCAD();
-                }
-                catch
-                {
-                    //
-                }
+                PluginStatisticsHelper.StartAutoCAD();
                 if (Settings.Default.UpgradeRequired)
                 {
                     Settings.Default.Upgrade();
@@ -518,7 +511,7 @@ namespace AcadLib
         [CommandMethod(Group, nameof(PIK_Errors), CommandFlags.Modal)]
         public void PIK_Errors()
         {
-            CommandStart.Start(d => { });
+            CommandStart.StartWoStat(d => { });
         }
 
         [CommandMethod(Group, nameof(PIK_StyleManager), CommandFlags.Modal)]

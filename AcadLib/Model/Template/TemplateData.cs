@@ -17,14 +17,14 @@ namespace AcadLib.Template
         [CanBeNull]
         public LayerInfo GetLayer([NotNull] string layer)
         {
-            if (Layers.TryGetValue(layer, out var li))
+            if (!Layers.TryGetValue(layer, out var li))
             {
-                return li;
+                // Нет слоя в шалоне - лог и создать слой
+                Logger.Log.Error($"Нет слоя '{layer}' в шаблоне '{Name}'");
+                li = new LayerInfo(layer);
+                Layers.Add(layer,li);
             }
-            // Нет слоя в шалоне - лог и вернуть текущий слой
-            Logger.Log.Error($"Нет слоя '{layer}' в шаблоне '{Name}'");
-            Layers.Add(layer, zero);
-            return zero;
+            return li;
         }
     }
 }
