@@ -4,6 +4,8 @@ using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using AcadLib.Statistic;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Blocks.Visual
@@ -107,6 +109,7 @@ namespace AcadLib.Blocks.Visual
             var db = doc.Database;
             GetInsertBtr(block.Name, block.File, db);
             BlockInsert.Insert(block.Name, _layer, explode);
+            PluginStatisticsHelper.PluginStart(new CommandStart($"Вставка блока {block.Name}", Assembly.GetCallingAssembly()));
         }
 
         private static void GetInsertBtr(string name, string fileBlocks, [NotNull] Database dbdest)

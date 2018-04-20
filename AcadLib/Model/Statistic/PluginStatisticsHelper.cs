@@ -5,7 +5,10 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using NetLib;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Statistic
 {
@@ -66,6 +69,8 @@ namespace AcadLib.Statistic
                 var version = command.Assembly != null
                     ? FileVersionInfo.GetVersionInfo(command.Assembly.Location).ProductVersion
                     : string.Empty;
+                if (command.Plugin.IsNullOrEmpty()) command.Plugin = command.Assembly?.GetName().Name;
+                if (command.Doc.IsNullOrEmpty()) command.Doc = Application.DocumentManager.MdiActiveDocument?.Name;
                 InsertStatistic(App, command.Plugin, command.CommandName, version, command.Doc);
             }
             catch (Exception ex)

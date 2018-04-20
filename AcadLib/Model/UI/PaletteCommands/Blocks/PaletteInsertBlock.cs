@@ -31,6 +31,7 @@ namespace AcadLib.PaletteCommands
             this.props = props;
             this.explode = explode;
             CreateContexMenu();
+            commandStart.CommandName = $"Вставка блока {blName}";
         }
 
         public override void Execute()
@@ -49,6 +50,7 @@ namespace AcadLib.PaletteCommands
                     }
                 }
             }
+            Statistic.PluginStatisticsHelper.PluginStart(commandStart);
         }
 
         private bool CanRedefine()

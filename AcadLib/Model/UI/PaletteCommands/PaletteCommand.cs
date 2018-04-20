@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -16,6 +17,7 @@ namespace AcadLib.PaletteCommands
 {
     public class PaletteCommand : ReactiveObject, IPaletteCommand
     {
+        protected CommandStart commandStart;
         /// <summary>
         /// Ограниечение доступа по логину
         /// </summary>
@@ -46,7 +48,7 @@ namespace AcadLib.PaletteCommands
 
         public PaletteCommand()
         {
-
+            
         }
 
         public PaletteCommand(string name, Bitmap image, [NotNull] string command, string description, string group = "",
@@ -65,7 +67,7 @@ namespace AcadLib.PaletteCommands
             }
             // Add Help
             AddHelp(command.IsNullOrEmpty() ? name : command);
-            
+            commandStart = new CommandStart(command, Assembly.GetCallingAssembly());
         }
 
         private void AddHelp([NotNull] string name)

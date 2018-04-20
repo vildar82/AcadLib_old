@@ -17,10 +17,10 @@ namespace AcadLib
     public class CommandStart
     {
         public static string CurrentCommand { get; set; }
-        public string CommandName { get; private set; }
+        public string CommandName { get; set; }
         public string Plugin { get; set; }
         public string Doc { get; set; }
-        public Assembly Assembly { get; private set; }
+        public Assembly Assembly { get; set; }
 
         public CommandStart()
         {
