@@ -12,9 +12,9 @@ namespace AcadLib
         private readonly Database oldDb;
 
         /// <summary>
-        /// Constructor.
+        /// Переключение рабочей базы
         /// </summary>
-        /// <param name="db">Target database.</param>
+        /// <param name="db">База временно устанавливаемя как рабочая WorkingDatabase</param>
         public WorkingDatabaseSwitcher(Database db)
         {
             oldDb = HostApplicationServices.WorkingDatabase;
