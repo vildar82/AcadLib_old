@@ -259,6 +259,7 @@ namespace AcadLib.Blocks
                 {
                     atr.TextString = text;
                 }
+                atr.AdjustAlignment(Db);
             }
             else if (prop.Type == PropertyType.Dynamic)
             {
