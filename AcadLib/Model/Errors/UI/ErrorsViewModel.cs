@@ -4,7 +4,6 @@ using JetBrains.Annotations;
 using NetLib.WPF;
 using OfficeOpenXml;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +12,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
+using NetLib;
 
 // ReSharper disable once CheckNamespace
 namespace AcadLib.Errors

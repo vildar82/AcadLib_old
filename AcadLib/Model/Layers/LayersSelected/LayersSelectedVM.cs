@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
 using JetBrains.Annotations;
+using NetLib;
 using NetLib.WPF;
-using ReactiveUI.Fody.Helpers;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Layers.LayersSelected

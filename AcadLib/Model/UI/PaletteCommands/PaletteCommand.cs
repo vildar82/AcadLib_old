@@ -9,13 +9,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using NetLib;
+using NetLib.WPF;
 using ReactiveUI;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 // ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
-    public class PaletteCommand : ReactiveObject, IPaletteCommand
+    public class PaletteCommand : BaseModel, IPaletteCommand
     {
         protected CommandStart commandStart;
         /// <summary>

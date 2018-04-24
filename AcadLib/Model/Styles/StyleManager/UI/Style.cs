@@ -1,7 +1,5 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using NetLib.WPF;
-using ReactiveUI;
 
 namespace AcadLib.Styles.StyleManager.UI
 {

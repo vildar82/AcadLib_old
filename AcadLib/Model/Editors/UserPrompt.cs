@@ -110,6 +110,7 @@ namespace Autodesk.AutoCAD.EditorInput
             throw new OperationCanceledException();
         }
 
+        [NotNull]
         public static List<ObjectId> Select([NotNull] this Editor ed, string msg, Func<List<ObjectId>> selectAll)
         {
             var selOpt = new PromptSelectionOptions();

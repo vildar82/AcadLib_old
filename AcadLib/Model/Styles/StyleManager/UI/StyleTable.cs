@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Linq;
 using AcadLib.Errors;
 using AcadLib.Filer;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
 using NetLib.WPF;
 using NLog;
 using ReactiveUI;
-using ReactiveUI.Legacy;
 using ReactiveCommand = ReactiveUI.ReactiveCommand;
 
 namespace AcadLib.Styles.StyleManager.UI

@@ -8,13 +8,14 @@ using System.Windows.Media;
 using AcadLib.Properties;
 using AcadLib.UI.PaletteCommands.UI;
 using JetBrains.Annotations;
+using NetLib;
+using NetLib.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 // ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
-    public class PaletteModel : ReactiveObject
+    public class PaletteModel : BaseModel
     {
         public PaletteModel([NotNull] IEnumerable<IPaletteCommand> commands, string version)
         {

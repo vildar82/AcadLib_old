@@ -43,22 +43,29 @@ namespace AcadLib.Editors
         /// </summary>
         /// <param name="ids">Элементв</param>
         /// <param name="ed">Редактор</param>
-        public static void SetSelectionAndZoom([NotNull] this List<ObjectId> ids, Editor ed)
+        public static void SetSelectionAndZoom([NotNull] this List<ObjectId> ids, Editor ed = null)
         {
             try
             {
-                if (!ids.Any())
+                var doc = AcadHelper.Doc;
+                ed = doc.Editor;
+                using (doc.LockDocument())
+                using (var t = doc.TransactionManager.StartTransaction())
                 {
-                    "Нет объектов для выделения.".WriteToCommandLine();
-                    return;
+                    if (!ids.Any())
+                    {
+                        "Нет объектов для выделения.".WriteToCommandLine();
+                        return;
+                    }
+                    var ext = new Extents3d();
+                    ids.Select(s => s.GetObject(OpenMode.ForRead)).Iterate(o =>
+                    {
+                        if (o.Bounds.HasValue) ext.AddExtents(o.Bounds.Value);
+                    });
+                    ed.Zoom(ext);
+                    ed.SetImpliedSelection(ids.ToArray());
+                    t.Commit();
                 }
-                var ext = new Extents3d();
-                ids.Select(s => s.GetObject(OpenMode.ForRead)).Iterate(o =>
-                {
-                    if (o.Bounds.HasValue) ext.AddExtents(o.Bounds.Value);
-                });
-                ed.Zoom(ext);
-                ed.SetImpliedSelection(ids.ToArray());
             }
             catch (Exception ex)
             {

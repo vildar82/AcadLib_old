@@ -46,7 +46,7 @@ namespace AcadLib.PaletteCommands
         {
             if (Settings.Default.PaletteStyle == 1)
             {
-                var wb = MathExt.Interpolate(8, 55, 25, 180, Settings.Default.PaletteFontSize);
+                var wb = NetLib.MathExt.Interpolate(8, 55, 25, 180, Settings.Default.PaletteFontSize);
                 return wb < Settings.Default.PaletteImageSize ? Settings.Default.PaletteImageSize : wb;
             }
             return Settings.Default.PaletteImageSize * 1.08;

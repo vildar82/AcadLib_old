@@ -2,11 +2,11 @@
 using AcadLib.Properties;
 using NetLib.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Windows.Threading;
+using System.Threading;
+using NetLib;
 
 namespace AcadLib.UI.PaletteCommands.UI
 {
@@ -30,11 +30,11 @@ namespace AcadLib.UI.PaletteCommands.UI
                 .Subscribe(s => Settings.Default.PaletteFontSize = s);
             SwitchRadioContent();
             this.WhenAnyValue(v => v.IsOnlyImage).Skip(1).Throttle(TimeSpan.FromMilliseconds(500))
-                .Where(w => w).ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(s => SetListStyle(0));
+                .Where(w => w).ObserveOn(SynchronizationContext.Current).Subscribe(s => SetListStyle(0));
             this.WhenAnyValue(v => v.IsImageAndText).Skip(1).Throttle(TimeSpan.FromMilliseconds(500))
-                .Where(w => w).ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(s => SetListStyle(1));
+                .Where(w => w).ObserveOn(SynchronizationContext.Current).Subscribe(s => SetListStyle(1));
             this.WhenAnyValue(v => v.IsList).Skip(1).Throttle(TimeSpan.FromMilliseconds(500))
-                .Where(w => w).ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(s => SetListStyle(2));
+                .Where(w => w).ObserveOn(SynchronizationContext.Current).Subscribe(s => SetListStyle(2));
         }
 
         public override void OnClosing()

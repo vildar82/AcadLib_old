@@ -1,9 +1,9 @@
 ﻿using JetBrains.Annotations;
-using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using NetLib;
 
 namespace AcadLib.Errors.UI
 {

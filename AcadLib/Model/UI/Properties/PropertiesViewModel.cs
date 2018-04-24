@@ -1,8 +1,8 @@
 ﻿using JetBrains.Annotations;
 using NetLib.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
+using NetLib;
 
 namespace AcadLib.UI.Properties
 {

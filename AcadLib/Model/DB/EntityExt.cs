@@ -1,5 +1,4 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace

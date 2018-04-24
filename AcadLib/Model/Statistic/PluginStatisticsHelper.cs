@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
-using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using NetLib;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;

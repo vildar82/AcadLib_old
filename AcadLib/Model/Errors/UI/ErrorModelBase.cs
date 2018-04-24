@@ -7,13 +7,14 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using JetBrains.Annotations;
+using NetLib.WPF;
 using Visibility = System.Windows.Visibility;
 
 // ReSharper disable once CheckNamespace
 namespace AcadLib.Errors
 {
     [PublicAPI]
-    public abstract class ErrorModelBase : ReactiveObject
+    public abstract class ErrorModelBase : BaseModel
     {
         protected IError firstErr;
         private bool isSelected;
