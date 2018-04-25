@@ -207,7 +207,34 @@ namespace AcadLib.Blocks
             Database destDb, DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
             var resVal = new Dictionary<string, ObjectId>();
-            var uniqBlNames = blNames.Distinct(StringComparer.OrdinalIgnoreCase);
+            var uniqBlNames = blNames.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+            if (mode == DuplicateRecordCloning.Ignore)
+            {
+                // Если уже есть эти блоки
+#pragma warning disable 618
+                using (var btDest =(BlockTable) destDb.BlockTableId.Open(OpenMode.ForRead))
+#pragma warning restore 618
+                {
+                    var existBls = new List<string>();
+                    foreach (var uniqBlName in uniqBlNames)
+                    {
+                        if (btDest.Has(uniqBlName))
+                        {
+                            existBls.Add(uniqBlName);
+                            resVal.Add(uniqBlName, btDest[uniqBlName]);
+                        }
+                    }
+                    if (existBls.Any())
+                    {
+                        uniqBlNames = uniqBlNames.Except(existBls).ToList();
+                    }
+                }
+            }
+            if (!uniqBlNames.Any())
+            {
+                return resVal;
+            }
 
             using (var extDb = new Database(false, true))
             {
