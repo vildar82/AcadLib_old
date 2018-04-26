@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
 using AcadLib.Layers;
 using JetBrains.Annotations;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
@@ -29,11 +30,18 @@ namespace AcadLib.PaletteCommands
 
         public override void Execute()
         {
-            var doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
-            using (doc.LockDocument())
+            try
             {
-                Blocks.Visual.VisualInsertBlock.InsertBlock(file, filter, Layer, explode);
+                var doc = Application.DocumentManager.MdiActiveDocument;
+                if (doc == null) return;
+                using (doc.LockDocument())
+                {
+                    Blocks.Visual.VisualInsertBlock.InsertBlock(file, filter, Layer, explode);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($@"Ошибка при вставке блока - {ex.Message}");
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using AcadLib.Blocks;
+﻿using System;
+using AcadLib.Blocks;
 using Autodesk.AutoCAD.DatabaseServices;
 using JetBrains.Annotations;
 using MicroMvvm;
@@ -36,21 +37,28 @@ namespace AcadLib.PaletteCommands
 
         public override void Execute()
         {
-            CopyBlock(explode ? DuplicateRecordCloning.Replace : DuplicateRecordCloning.Ignore);
-            var blRefId = BlockInsert.Insert(blName, Layer, props);
-            if (explode)
+            try
             {
-                using (AcadHelper.Doc.LockDocument())
+                CopyBlock(explode ? DuplicateRecordCloning.Replace : DuplicateRecordCloning.Ignore);
+                var blRefId = BlockInsert.Insert(blName, Layer, props);
+                if (explode)
                 {
-#pragma warning disable 618
-                    using (var blRef = (BlockReference)blRefId.Open(OpenMode.ForWrite, false, true))
-#pragma warning restore 618
+                    using (AcadHelper.Doc.LockDocument())
                     {
-                        if (blRef != null) blRef.ExplodeToOwnerSpace();
+#pragma warning disable 618
+                        using (var blRef = (BlockReference) blRefId.Open(OpenMode.ForWrite, false, true))
+#pragma warning restore 618
+                        {
+                            if (blRef != null) blRef.ExplodeToOwnerSpace();
+                        }
                     }
                 }
+                Statistic.PluginStatisticsHelper.PluginStart(commandStart);
             }
-            Statistic.PluginStatisticsHelper.PluginStart(commandStart);
+            catch (Exception e)
+            {
+                MessageBox.Show($"Ошибка при вставке блока - {e.Message}");
+            }
         }
 
         private bool CanRedefine()
