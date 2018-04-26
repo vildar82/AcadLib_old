@@ -63,7 +63,21 @@ namespace AcadLib
 
         static General()
         {
-            IsBimUser = bimUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
+            IsBimUser = bimUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName)) || IsBimUserByUserData();
+        }
+
+        private static bool IsBimUserByUserData()
+        {
+            try
+            {
+                var isDeveloper = UserInfo.UserData.SubDivision?.EqualsIgnoreCase("ИРА") == true;
+                var isBIM = UserInfo.UserData.SubDivision?.EqualsIgnoreCase("BIM") == true;
+                return isBIM || isDeveloper;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
