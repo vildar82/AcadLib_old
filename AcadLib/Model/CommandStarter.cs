@@ -138,13 +138,13 @@ namespace AcadLib
             }
             catch (OperationCanceledException ex)
             {
-                doc.Editor.WriteMessage(ex.Message);
+                if (!doc.IsDisposed) doc.Editor.WriteMessage(ex.Message);
             }
 #pragma warning disable 618
             catch (CancelByUserException cancelByUser)
 #pragma warning restore 618
             {
-                doc.Editor.WriteMessage(cancelByUser.Message);
+                if (!doc.IsDisposed) doc.Editor.WriteMessage(cancelByUser.Message);
             }
             catch (Exceptions.ErrorException error)
             {
@@ -159,7 +159,7 @@ namespace AcadLib
                     Logger.Log.Error(ex, CurrentCommand);
                     Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
                 }
-                doc.Editor.WriteMessage(ex.Message);
+                if (!doc.IsDisposed) doc.Editor.WriteMessage(ex.Message);
             }
             Inspector.Show();
         }

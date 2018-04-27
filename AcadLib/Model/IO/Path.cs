@@ -47,6 +47,11 @@ namespace AcadLib.IO
             return System.IO.Path.Combine(GetSharedPluginFolder(pluginName), fileName);
         }
 
+        public static string GetSharedCommonFile([NotNull] string pluginName, [NotNull] string fileName)
+        {
+            return System.IO.Path.Combine(GetSharedCommonFolder(pluginName), fileName);
+        }
+
         /// <summary>
         /// Получение файла в локальных настройках
         /// </summary>
@@ -72,6 +77,23 @@ namespace AcadLib.IO
                 catch (Exception ex)
                 {
                     Logger.Log.Error(ex, $"GetSharedpluginFolder - pluginName={pluginName}");
+                }
+            }
+            return pluginFolder;
+        }
+
+        public static string GetSharedCommonFolder([NotNull] string pluginName)
+        {
+            var pluginFolder = System.IO.Path.Combine(PikSettings.ServerShareSettingsFolder, pluginName);
+            if (!Directory.Exists(pluginFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(pluginFolder);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Error(ex, $"GetSharedCommonFolder - pluginName={pluginName}");
                 }
             }
             return pluginFolder;

@@ -14,10 +14,10 @@ namespace AcadLib.Errors
     [PublicAPI]
     public static class Inspector
     {
+        public static List<IError> LastErrors { get; private set; }
         private static Database _db;
         private static Document _doc;
         private static Editor _ed;
-        private static bool needClear;
         public static List<IError> Errors { get; private set; }
 
         public static bool HasErrors => Errors.Count > 0;
@@ -31,6 +31,10 @@ namespace AcadLib.Errors
         
         public static void Clear()
         {
+            if (Errors?.Any() == true)
+            {
+                LastErrors = Errors.ToList();
+            }
             Errors = new List<IError>();
             _doc = Application.DocumentManager.MdiActiveDocument;
             if (_doc != null)
@@ -42,13 +46,6 @@ namespace AcadLib.Errors
 
         private static void AddErrorInternal(IError err)
         {
-            if (needClear)
-            {
-#pragma warning disable 618
-                Clear();
-#pragma warning restore 618
-                needClear = false;
-            }
             Errors.Add(err);
         }
 
@@ -251,7 +248,9 @@ namespace AcadLib.Errors
             var errVM = new ErrorsViewModel(errors) { IsDialog = false };
             var errView = new ErrorsView(errVM);
             errView.Show();
-            needClear = true;
+#pragma warning disable 618
+            Clear();
+#pragma warning restore 618
         }
 
         [NotNull]
@@ -269,7 +268,6 @@ namespace AcadLib.Errors
         {
             if (HasErrors)
             {
-                needClear = true;
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors = SortErrors(Errors);
                 // WPF
@@ -287,8 +285,21 @@ namespace AcadLib.Errors
             var errVM = new ErrorsViewModel(errors) { IsDialog = true };
             var errView = new ErrorsView(errVM);
             var res = errView.ShowDialog();
-            needClear = true;
+            if (res == true)
+            {
+#pragma warning disable 618
+                Clear();
+#pragma warning restore 618
+            }
             return res;
+        }
+
+        public static void ShowLast()
+        {
+            if (LastErrors?.Any() != true) return;
+            var errVM = new ErrorsViewModel(LastErrors) { IsDialog = false };
+            var errView = new ErrorsView(errVM);
+            errView.Show();
         }
     }
 }

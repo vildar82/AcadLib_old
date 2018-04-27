@@ -16,6 +16,7 @@ using AcadLib.Blocks.Visual;
 using AcadLib.Colors;
 using AcadLib.DbYouTubeTableAdapters;
 using AcadLib.Editors;
+using AcadLib.Errors;
 using AcadLib.Field;
 using AcadLib.Layers;
 using AcadLib.Layers.AutoLayers;
@@ -511,7 +512,7 @@ namespace AcadLib
         [CommandMethod(Group, nameof(PIK_Errors), CommandFlags.Modal)]
         public void PIK_Errors()
         {
-            CommandStart.StartWoStat(d => { });
+            CommandStart.StartWoStat(d => Inspector.ShowLast());
         }
 
         [CommandMethod(Group, nameof(PIK_StyleManager), CommandFlags.Modal)]
