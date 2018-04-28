@@ -47,6 +47,7 @@ namespace AcadLib.IO
             return System.IO.Path.Combine(GetSharedPluginFolder(pluginName), fileName);
         }
 
+        [NotNull]
         public static string GetSharedCommonFile([NotNull] string pluginName, [NotNull] string fileName)
         {
             return System.IO.Path.Combine(GetSharedCommonFolder(pluginName), fileName);
@@ -82,6 +83,7 @@ namespace AcadLib.IO
             return pluginFolder;
         }
 
+        [NotNull]
         public static string GetSharedCommonFolder([NotNull] string pluginName)
         {
             var pluginFolder = System.IO.Path.Combine(PikSettings.ServerShareSettingsFolder, pluginName);

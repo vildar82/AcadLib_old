@@ -10,7 +10,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using NetLib;
 using NetLib.WPF;
-using ReactiveUI;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 // ReSharper disable once CheckNamespace

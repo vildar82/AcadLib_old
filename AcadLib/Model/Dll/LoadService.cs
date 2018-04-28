@@ -58,7 +58,8 @@ namespace AcadLib
                     if (groupDllVer.Skip(1).Any())
                     {
                         var dllWin = groupDllVer.FirstOrDefault(f => f.Ver == ver) ??
-                                     groupDllVer.OrderByDescending(o => o.Ver).First(d => d.Ver <= ver);
+                                     groupDllVer.OrderByDescending(o => o.Ver).FirstOrDefault(d => d.Ver <= ver);
+                        if (dllWin == null) continue; // Могут быть только специфичные версии, не для текущей - типа Acad_SheetSet_v2018 (нет для 2015)
                         dllsToLoad.Add(dllWin);
                     }
                     else
