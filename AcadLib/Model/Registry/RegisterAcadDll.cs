@@ -11,6 +11,7 @@ namespace AcadLib
     [PublicAPI]
     public static class RegisterAcadDll
     {
+        private const string sAppName = "AcadLib";
         /// <summary>
         /// Controls how and when the .NET assembly is loaded.
         /// </summary>
@@ -37,8 +38,7 @@ namespace AcadLib
             {
                 var sProdKey = UserOrMachine ? HostApplicationServices.Current.UserRegistryProductRootKey :
                                                     HostApplicationServices.Current.MachineRegistryProductRootKey;
-                var curAssembly = Assembly.GetExecutingAssembly();
-                var sAppName = curAssembly.GetName().Name;
+                var curAssembly = Commands.AcadLibAssembly;
 
                 using (var regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
                                                              Microsoft.Win32.Registry.LocalMachine.OpenSubKey(sProdKey))
@@ -89,9 +89,6 @@ namespace AcadLib
         {
             // Get the AutoCAD Applications key
             var sProdKey = HostApplicationServices.Current.UserRegistryProductRootKey;
-            var curAssembly = Assembly.GetExecutingAssembly();
-            var sAppName = curAssembly.GetName().Name;
-
             // HKCU
             DeleteApp(sProdKey, sAppName, true);
             // HKLM

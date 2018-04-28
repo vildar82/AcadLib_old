@@ -48,7 +48,7 @@ namespace AcadLib
         [NotNull]
         public static List<DllVer> GetDllsForCurVerAcad([NotNull] List<string> dlls)
         {
-            Logger.Log.Info($"GetDllsForCurVerAcad dlls={dlls.JoinToString()}");
+            Logger.Log.Info($"GetDllsForCurVerAcad dlls={dlls.JoinToString(Path.GetFileNameWithoutExtension)}");
             var dllsToLoad = new List<DllVer>();
             if (int.TryParse(HostApplicationServices.Current.releaseMarketVersion, out var ver))
             {
@@ -68,6 +68,7 @@ namespace AcadLib
                     }
                 }
             }
+            Logger.Log.Info($"GetDllsForCurVerAcad dllsToLoad={dllsToLoad.JoinToString(s=> Path.GetFileNameWithoutExtension(s.Dll))}");
             return dllsToLoad;
         }
 

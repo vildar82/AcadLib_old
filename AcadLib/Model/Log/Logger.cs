@@ -138,7 +138,8 @@ namespace AcadLib
         private static string GetMessage(string msg)
         {
             return $"Команда: {CommandStart.CurrentCommand}; Сообщение: {msg}; " +
-                   $"Doc={Application.DocumentManager.MdiActiveDocument?.Name}";
+                   $"Doc={Application.DocumentManager.MdiActiveDocument?.Name}" +
+                   $"AcadLib ver={Commands.AcadLibVersion}";
         }
     }
 }

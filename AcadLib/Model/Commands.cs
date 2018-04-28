@@ -58,8 +58,10 @@ namespace AcadLib
 
         internal static readonly string fileCommonBlocks =
             Path.Combine(PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
-
-        public static readonly string CurDllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        
+        public static readonly Assembly AcadLibAssembly = Assembly.GetExecutingAssembly();
+        public static readonly Version AcadLibVersion = AcadLibAssembly.GetName().Version;
+        public static readonly string CurDllDir = Path.GetDirectoryName(AcadLibAssembly.Location);
 
         private readonly Timer timer = new Timer();
 
@@ -104,12 +106,11 @@ namespace AcadLib
                 Logger.Log.Info("end Initialize AcadLib");
                 YoutubeStatisticInit();
                 EventsStatisticService.Start();
-                Assembly.GetExecutingAssembly().AcadLoadInfo();
+                AcadLibAssembly.AcadLoadInfo();
             }
             catch (Exception ex)
             {
-                var asm = Assembly.GetExecutingAssembly().GetName();
-                $"PIK. Ошибка загрузки {asm.Name}, версия:{asm.Version} - {ex.Message}.".WriteToCommandLine();
+                $"PIK. Ошибка загрузки AcadLib, версия:{AcadLibVersion} - {ex.Message}.".WriteToCommandLine();
                 Logger.Log.Error(ex, "AcadLib Initialize.");
             }
         }
@@ -144,8 +145,7 @@ namespace AcadLib
             CommandStart.Start(doc =>
             {
                 var ed = doc.Editor;
-                var acadLibVer = Assembly.GetExecutingAssembly().GetName().Version;
-                ed.WriteMessage($"\nБиблиотека AcadLib версии {acadLibVer}");
+                ed.WriteMessage($"\nБиблиотека AcadLib версии {AcadLibVersion}");
             });
         }
 

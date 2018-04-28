@@ -23,10 +23,6 @@ namespace AcadLib.Statistic
         private static string App => _app ?? (_app = IsCivil ? "Civil" : "AutoCAD");
 
         [NotNull]
-        private static string AcadLibVer =>
-            _acadLibVer ?? (_acadLibVer = Assembly.GetExecutingAssembly().GetName().Version.ToString());
-
-        [NotNull]
         public static string AcadYear => _acadYear ?? (_acadYear = HostApplicationServices.Current.releaseMarketVersion);
 
         public static bool IsCivil => (bool) (_isCivil ?? (_isCivil = GetIsCivil()));
@@ -39,7 +35,7 @@ namespace AcadLib.Statistic
             try
             {
                 if (PikSettings.IsUpdatedSettings)
-                    InsertStatistic($"{App} Update", "AcadLib", "Настройки последние", AcadLibVer, "");
+                    InsertStatistic($"{App} Update", "AcadLib", "Настройки последние", Commands.AcadLibVersion.ToString(), "");
             }
             catch (Exception ex)
             {
@@ -83,7 +79,7 @@ namespace AcadLib.Statistic
             try
             {
                 if (!IsUserCanAddStatistic()) return;
-                InsertStatistic($"{App} {AcadYear} Run", "AcadLib", $"{App} Run", AcadLibVer, "");
+                InsertStatistic($"{App} {AcadYear} Run", "AcadLib", $"{App} Run", Commands.AcadLibVersion.ToString(), "");
                 // Статистика обновления настроек
                 UpdateSettings();
             }
