@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using NetLib;
 
 namespace AcadLib
 {
@@ -47,6 +48,7 @@ namespace AcadLib
         [NotNull]
         public static List<DllVer> GetDllsForCurVerAcad([NotNull] List<string> dlls)
         {
+            Logger.Log.Info($"GetDllsForCurVerAcad dlls={dlls.JoinToString()}");
             var dllsToLoad = new List<DllVer>();
             if (int.TryParse(HostApplicationServices.Current.releaseMarketVersion, out var ver))
             {

@@ -30,7 +30,14 @@ namespace AcadLib
             }
             catch (Exception ex)
             {
-                LoadBackup();
+                try
+                {
+                    LoadBackup();
+                }
+                catch
+                {
+                    //
+                }
                 Logger.Log.Error(ex, "adUtils");
             }
         }
