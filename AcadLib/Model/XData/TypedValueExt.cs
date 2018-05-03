@@ -28,6 +28,23 @@ namespace AcadLib
             return defaultValue;
         }
 
+        public static IEnumerable<KeyValuePair<string, object>> ToListPairs([CanBeNull] this IEnumerable<TypedValue> values)
+        {
+            if (values != null)
+            {
+                string key = null;
+                foreach (var value in values)
+                {
+                    if (key == null) key = value.Value.ToString();
+                    else
+                    {
+                        yield return new KeyValuePair<string, object>(key, value.Value);
+                        key = null;
+                    }
+                }
+            }
+        }
+
         [NotNull]
         public static Dictionary<string, object> ToDictionary([CanBeNull] this IEnumerable<TypedValue> values)
         {
