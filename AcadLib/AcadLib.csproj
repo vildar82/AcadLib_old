@@ -271,6 +271,7 @@
     <Compile Include="Model\Filer\ReferenceFiler.cs" />
     <Compile Include="Model\Filer\ReferenceFilerExt.cs" />
     <Compile Include="Model\Filer\ReferenceFilerResult.cs" />
+    <Compile Include="Model\Geometry\Polylines\MergePolylineEx.cs" />
     <Compile Include="Model\Statistic\CivilTest.cs" />
     <Compile Include="Model\Statistic\EventsStatisticService.cs" />
     <Compile Include="Model\Files\FileDataExt.cs" />
