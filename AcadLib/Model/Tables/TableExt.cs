@@ -13,6 +13,14 @@ namespace AcadLib
     {
         public static LineWeight LwDataRow = LineWeight.LineWeight018;
 
+        [NotNull]
+        public static Cell SetValue([NotNull] this Cell cell, [CanBeNull] object value)
+        {
+            if (value == null) return cell;
+            cell.SetValue(value, ParseOption.ParseOptionNone);
+            return cell;
+        }
+
         public static Cell MoveDown([NotNull] this Cell cell)
         {
             return cell.ParentTable.Cells[cell.Row + 1, cell.Column];

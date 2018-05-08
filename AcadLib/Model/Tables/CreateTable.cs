@@ -80,7 +80,7 @@ namespace AcadLib.Tables
             var rowTitle = table.Cells[0, 0];
             rowTitle.Alignment = CellAlignment.MiddleCenter;
             rowTitle.TextHeight = 5;
-            rowTitle.TextString = Title;
+            if (Title != null) rowTitle.TextString = Title;
 
             // Строка заголовков столбцов
             var rowHeaders = table.Rows[1];
