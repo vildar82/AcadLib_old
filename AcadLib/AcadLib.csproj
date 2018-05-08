@@ -185,6 +185,15 @@
     <Compile Include="Model\Filer\ReferenceFilerExt.cs" />
     <Compile Include="Model\Filer\ReferenceFilerResult.cs" />
     <Compile Include="Model\Geometry\Polylines\MergePolylineEx.cs" />
+    <Compile Include="Model\PaletteProps\Data\IPalettePropVM.cs" />
+    <Compile Include="Model\PaletteProps\Data\PalettePropsType.cs" />
+    <Compile Include="Model\PaletteProps\Data\PalettePropsProvider.cs" />
+    <Compile Include="Model\PaletteProps\PalletePropsService.cs" />
+    <Compile Include="Model\PaletteProps\Data\PalettePropsGroup.cs" />
+    <Compile Include="Model\PaletteProps\UI\PalettePropsView.xaml.cs">
+      <DependentUpon>PalettePropsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PaletteProps\UI\PalettePropsVM.cs" />
     <Compile Include="Model\Statistic\CivilTest.cs" />
     <Compile Include="Model\Statistic\EventsStatisticService.cs" />
     <Compile Include="Model\Files\FileDataExt.cs" />
@@ -580,6 +589,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Model\PaletteProps\UI\PalettePropsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Model\Styles\StyleManager\UI\StyleManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -687,6 +700,9 @@
     <PackageReference Include="UnitsNet">
       <Version>3.97.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\PaletteProps\Data\Values\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

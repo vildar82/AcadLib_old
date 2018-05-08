@@ -14,4 +14,8 @@
     <StartProgram>C:\Program Files\Autodesk\AutoCAD 2017\acad.exe</StartProgram>
     <StartAction>Program</StartAction>
   </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>C:\Autodesk\AutoCAD\Pik\Settings\Dll\;C:\dev\ObjectARX\ObjectARX2016\</ReferencePath>
+    <ProjectView>ShowAllFiles</ProjectView>
+  </PropertyGroup>
 </Project>
