@@ -8,7 +8,6 @@
     xmlns:local="clr-namespace:TestAcadlib.WPF"
     xmlns:controls="clr-namespace:AcadLib.WPF.Controls;assembly=AcadLib"
     xmlns:ctrl="clr-namespace:UserControlExample"
-    xmlns:controls1="clr-namespace:mpESKD.Base.Properties.Controls"
     xmlns:wpf="clr-namespace:AcadLib.WPF;assembly=AcadLib"
     xmlns:controls2="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:wpf1="clr-namespace:NetLib.WPF;assembly=NetLib"

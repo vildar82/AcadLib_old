@@ -18,13 +18,14 @@ namespace AcadLib.Lisp
             }
         }
 
-        private static void DocumentManager_DocumentActivated(object sender, [NotNull] DocumentCollectionEventArgs e)
+        private static void DocumentManager_DocumentActivated(object sender, [CanBeNull] DocumentCollectionEventArgs e)
         {
-            LoadLisp(e.Document);
+            LoadLisp(e?.Document);
         }
 
-        private static void LoadLisp(Document doc)
+        private static void LoadLisp([CanBeNull] Document doc)
         {
+            if (doc == null) return;
             foreach (var refLisp in PikSettings.PikFileSettings.AutoLoadLispPathBySettings)
             {
                 var startupLispFile = Path.GetLocalSettingsFile(refLisp);
