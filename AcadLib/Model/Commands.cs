@@ -23,6 +23,7 @@ using AcadLib.Layers.AutoLayers;
 using AcadLib.Layers.LayersSelected;
 using AcadLib.Lisp;
 using AcadLib.PaletteCommands;
+using AcadLib.PaletteProps;
 using AcadLib.Plot;
 using AcadLib.Properties;
 using AcadLib.Statistic;
@@ -522,6 +523,12 @@ namespace AcadLib
         public void PIK_StyleManager()
         {
             CommandStart.Start(d => Styles.StyleManager.StyleManagerService.ManageStyles());
+        }
+        
+        [CommandMethod(Group, nameof(PIK_PaletteProperties), CommandFlags.Modal)]
+        public void PIK_PaletteProperties()
+        {
+            CommandStart.Start(d => PalletePropsService.Start());
         }
     }
 }

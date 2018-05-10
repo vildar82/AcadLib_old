@@ -1,10 +1,7 @@
 ﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.Runtime;
-using MicroMvvm;
 using System.ComponentModel;
-using AcadLib.WPF;
 using NetLib.WPF;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace TestAcadlib.WPF
 {

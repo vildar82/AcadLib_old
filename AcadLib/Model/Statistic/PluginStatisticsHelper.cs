@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -16,16 +15,15 @@ namespace AcadLib.Statistic
     {
         private static string _app;
         private static string _acadLibVer;
-        private static string _acadYear;
-        private static bool? _isCivil;
+        private static bool? _isCivil = GetIsCivil();
 
         [NotNull]
         private static string App => _app ?? (_app = IsCivil ? "Civil" : "AutoCAD");
 
         [NotNull]
-        public static string AcadYear => _acadYear ?? (_acadYear = HostApplicationServices.Current.releaseMarketVersion);
+        public static string AcadYear => HostApplicationServices.Current.releaseMarketVersion;
 
-        public static bool IsCivil => (bool) (_isCivil ?? (_isCivil = GetIsCivil()));
+        public static bool IsCivil => _isCivil ?? false;
 
         /// <summary>
         /// Запись статистики обновления настроек

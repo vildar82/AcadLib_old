@@ -1,18 +1,27 @@
-﻿<UserControl x:Class="AcadLib.PaletteProps.UI.PalettePropsView"
+﻿<wpf:BaseUserControl x:Class="AcadLib.PaletteProps.UI.PalettePropsView"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:local="clr-namespace:AcadLib.PaletteProps.UI"
+        xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
         d:DataContext="{d:DesignInstance local:PalettePropsVM}"
 		mc:Ignorable="d">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="PalettePropsStyle.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition/>
 		</Grid.RowDefinitions>
 		<StackPanel Grid.Row="0">
-			<ComboBox ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType}">
+			<ComboBox ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType}" HorizontalAlignment="Left"
+			          Margin="1" MinWidth="100">
 				<ComboBox.ItemTemplate>
 					<DataTemplate>
 						<StackPanel Orientation="Horizontal">
@@ -23,42 +32,46 @@
 				</ComboBox.ItemTemplate>
 			</ComboBox>
 		</StackPanel>
-		<ItemsControl Grid.Row="1" ItemsSource="{Binding SelectedType.Groups}">
-			<ItemsControl.ItemTemplate>
-				<DataTemplate>
-					<Grid>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition/>
-						</Grid.RowDefinitions>
-						<Grid Grid.Row="0">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition Width="Auto"/>
-							</Grid.ColumnDefinitions>
-							<TextBlock Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Left"/>
-							<Button Grid.Column="1" Content="{Binding ButtonExpandContent}" 
-							        Command="{Binding ButtonExpandCommand}" HorizontalAlignment="Right"/>
+		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+			<ItemsControl  ItemsSource="{Binding SelectedType.Groups}" Margin="1">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition />
+							</Grid.RowDefinitions>
+							<Grid Grid.Row="0" HorizontalAlignment="Stretch"
+									Background="{DynamicResource AccentColorBrush4}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
+								<TextBlock Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Left" />
+								<Button Grid.Column="1" Content="{Binding ButtonExpandContent}"
+										Command="{Binding ButtonExpandCommand}" HorizontalAlignment="Right" />
+							</Grid>
+							<ItemsControl Grid.Row="1" ItemsSource="{Binding Properties}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition />
+												<ColumnDefinition Width="1" />
+												<ColumnDefinition />
+											</Grid.ColumnDefinitions>
+											<TextBlock Grid.Column="0" Text="{Binding Name}" />
+											<GridSplitter Grid.Column="1" />
+											<!--<ContentControl Grid.Column="2" Content="{Binding }" />-->
+										</Grid>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
 						</Grid>
-						<ItemsControl Grid.Row="1" ItemsSource="{Binding Properties}">
-							<ItemsControl.ItemTemplate>
-								<DataTemplate>
-									<Grid>
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition/>
-											<ColumnDefinition Width="1"/>
-											<ColumnDefinition/>
-										</Grid.ColumnDefinitions>
-										<TextBlock Grid.Column="0" Text="{Binding Name}"/>
-										<GridSplitter Grid.Column="1"/>
-										<ContentControl Grid.Column="2" Content="{Binding }"/>
-									</Grid>
-								</DataTemplate>
-							</ItemsControl.ItemTemplate>
-						</ItemsControl>
-					</Grid>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-		</ItemsControl>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
 	</Grid>
-</UserControl>
+</wpf:BaseUserControl>
+

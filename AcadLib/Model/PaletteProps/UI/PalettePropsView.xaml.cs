@@ -5,10 +5,9 @@
     /// </summary>
     public partial class PalettePropsView
     {
-        public PalettePropsView(PalettePropsVM propsVm)
+        public PalettePropsView(PalettePropsVM propsVm) : base(propsVm)
         {
             InitializeComponent();
-            DataContext = propsVm;
         }
     }
 }

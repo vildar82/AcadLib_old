@@ -5,11 +5,6 @@ namespace AcadLib.PaletteProps.UI
 {
     public class PalettePropsVM : BaseModel
     {
-        public PalettePropsVM()
-        {
-            
-        }
-
         public List<PalettePropsType> Types { get; set; }
 
         public PalettePropsType SelectedType { get; set; }

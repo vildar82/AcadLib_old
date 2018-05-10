@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Windows.Forms.Integration;
 using AcadLib.Errors;
 using AcadLib.PaletteProps.UI;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.Windows;
 using JetBrains.Annotations;
+using ReactiveUI;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 using Exception = System.Exception;
 
@@ -32,12 +32,11 @@ namespace AcadLib.PaletteProps
         /// <param name="getTypes">Для выделенных объектов вернуть группы типов свойств</param>
         public static void Registry(string name, Func<ObjectId[], Document, List<PalettePropsType>> getTypes)
         {
-            if (providers.Any(p => p.Name == name))
+            if (providers.Any(p => p.Name == name)) 
                 throw new Exception($"Такой провайдер свойств палитры уже есть - '{name}'");
             providers.Add(new PalettePropsProvider(name, getTypes));
         }
 
-        [CommandMethod("PIK_PaletteProperties")]
         public static void Start()
         {
             Application.DocumentManager.DocumentCreated +=
@@ -50,10 +49,13 @@ namespace AcadLib.PaletteProps
             stop = false;
             if (palette == null)
             {
-                palette = new PaletteSet("ПИК Свойства", "PIK_PaletteProperties", new Guid("F1FFECA8-A9AE-47D6-8682-752D6AF1A15B"));
+                palette = new PaletteSet("ПИК Свойства", nameof(Commands.PIK_PaletteProperties), 
+                    new Guid("F1FFECA8-A9AE-47D6-8682-752D6AF1A15B"));
                 palette.StateChanged += Palette_StateChanged;
                 var propsView = new PalettePropsView(propsVM);
-                palette.AddVisual("Свойства", propsView);
+                var host = new ElementHost {Child = propsView};
+                palette.Add("Свойства", host);
+                //palette.AddVisual("Свойства", propsView);
             }
             palette.Visible = true;
         }
@@ -80,7 +82,6 @@ namespace AcadLib.PaletteProps
         private static void Document_ImpliedSelectionChanged(object sender, EventArgs e)
         {
             if (stop || !providers.Any()) return;
-            Debug.WriteLine("Document_ImpliedSelectionChanged");
             ShowSelection();
         }
 
@@ -88,7 +89,7 @@ namespace AcadLib.PaletteProps
         {
             var doc = AcadHelper.Doc;
             var sel = doc.Editor.SelectImplied();
-            if (sel.Status != PromptStatus.OK || sel.Value.Count == 0)
+            if (providers.Any() && sel.Status != PromptStatus.OK || sel.Value.Count == 0)
             {
                 // Очистить палитру свойств
                 propsVM.Clear();
@@ -97,18 +98,43 @@ namespace AcadLib.PaletteProps
             var ids = sel.Value.GetObjectIds();
             // группы по типу объектов
             var groups = new List<PalettePropsType>();
-            foreach (var provider in providers)
+            using (doc.LockDocument())
+            using (var t = doc.TransactionManager.StartTransaction())
             {
-                try
+                foreach (var provider in providers)
                 {
-                    groups.AddRange(provider.GetTypes(ids, doc));
+                    try
+                    {
+                        var types = provider.GetTypes(ids, doc).Where(w=>w?.Groups?.Any(g=>g?.Properties?.Any() == true) == true);
+                        groups.AddRange(types);
+                    }
+                    catch (Exception ex)
+                    {
+                        Inspector.AddError($"Ошибка обработки группы свойств '{provider.Name}' - {ex}");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Inspector.AddError($"Ошибка обработки группы свойств '{provider.Name}' - {ex}");
-                }
+                t.Commit();
             }
-            propsVM.Types = groups;
+            if (groups.Count == 0)
+            {
+                propsVM.Clear();
+            }
+            else
+            {
+                if (groups.Count > 1)
+                {
+                    // Добавить тип "Все"
+                    var allType = new PalettePropsType
+                    {
+                        Name = "Все",
+                        Groups = groups.Where(w=>w.Groups?.Any() == true).SelectMany(s=>s.Groups).ToList()
+                    };
+                    groups.Insert(0, allType);
+                }
+                propsVM.Types = groups;
+                propsVM.SelectedType = groups[0];
+            }
+            Inspector.Show();
         }
     }
 }

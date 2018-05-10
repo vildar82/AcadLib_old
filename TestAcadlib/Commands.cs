@@ -1,12 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using AcAp = Autodesk.AutoCAD.ApplicationServices.Application;
+﻿using System.Diagnostics;
 using Autodesk.AutoCAD.Runtime;
-using Autodesk.AutoCAD.DatabaseServices;
-using AcadLib.Jigs;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
-[assembly:ExtensionApplication(typeof(TestAcadlib.Commands))]
+[assembly: ExtensionApplication(typeof(TestAcadlib.Commands))]
 
 namespace TestAcadlib
 {

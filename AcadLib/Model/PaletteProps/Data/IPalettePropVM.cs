@@ -2,6 +2,6 @@
 {
     public class PalettePropVM
     {
-        public string Name { get; }
+        public string Name { get; set; }
     }
 }

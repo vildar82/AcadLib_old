@@ -9,8 +9,7 @@ namespace AcadLib.PaletteProps
         /// Название типа объектов
         /// </summary>
         public string Name { get; set; }
-
-        public int Count { get; set; }
+        public int Count => Groups?.Sum(s => s.Ids?.Count) ?? 0;
         public List<PalettePropsGroup> Groups { get; set; }
     }
 }

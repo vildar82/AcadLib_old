@@ -95,7 +95,7 @@ namespace AcadLib
             DeleteApp(sProdKey, sAppName, false);
         }
 
-        private static void DeleteApp([NotNull] string sProdKey, string sAppName, bool UserOrMachine)
+        private static void DeleteApp([NotNull] string sProdKey, string appName, bool UserOrMachine)
         {
             using (var regAcadProdKey = UserOrMachine ? Microsoft.Win32.Registry.CurrentUser.OpenSubKey(sProdKey) :
                                                       Microsoft.Win32.Registry.LocalMachine.OpenSubKey(sProdKey))
@@ -107,7 +107,7 @@ namespace AcadLib
                     // Delete the key for the application
                     try
                     {
-                        regAcadAppKey.DeleteSubKeyTree(sAppName);
+                        regAcadAppKey.DeleteSubKeyTree(appName);
                     }
                     catch
                     {

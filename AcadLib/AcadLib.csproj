@@ -590,6 +590,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Model\PaletteProps\UI\PalettePropsStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Model\PaletteProps\UI\PalettePropsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

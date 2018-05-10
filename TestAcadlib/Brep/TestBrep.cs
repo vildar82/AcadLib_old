@@ -18,7 +18,7 @@ namespace TestAcadlib.Brep
                 using (var t = doc.TransactionManager.StartTransaction())
                 {
                     var h = ed.SelectEntity<Hatch>("Выбери штриховку для построения региона", "Штриховку")
-                        .GetObject<Hatch>();
+                        .GetObjectT<Hatch>();
                     var region = h.CreateRegion();
                     if (region == null) throw new System.Exception($"Пустой регион = null.");
                     region.AddEntityToCurrentSpace();
@@ -34,7 +34,7 @@ namespace TestAcadlib.Brep
             var db = doc.Database;
             var ed = doc.Editor;
 
-            var tvs = new TypedValue[] { new TypedValue((int)DxfCode.Start, "LWPOLYLINE") };
+            var tvs = new[] { new TypedValue((int)DxfCode.Start, "LWPOLYLINE") };
             var selFilter = new SelectionFilter(tvs);                                        
             var sel = ed.GetSelection(selFilter);
             if (sel.Status != PromptStatus.OK) return;
@@ -49,7 +49,7 @@ namespace TestAcadlib.Brep
                     pls.Add(pl);
                 }
 
-                var union = BrepExtensions.Union(pls, null);               
+                var union = pls.Union(null);               
 
                 //var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;                
                 //if (union != null)

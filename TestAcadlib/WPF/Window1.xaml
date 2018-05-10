@@ -14,11 +14,9 @@
     mc:Ignorable="d"
     Title="Window1" Height="300" Width="300">
     <Window.Resources>
-        <ResourceDictionary>
-            <DataTemplate x:Key="test">
-                <TextBlock Text="Test"/>
-            </DataTemplate>
-        </ResourceDictionary>
+        <Style x:Key="test" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="Background" Value="ForestGreen" />
+        </Style>
     </Window.Resources>
     <wpf1:BaseWindow.RightWindowCommands>
         <controls2:WindowCommands>
@@ -30,7 +28,8 @@
         <!--<controls1:IntTextBox Value="{Binding IntTextBox}"/>-->
         <ctrl:FieldUserControl Value="{Binding Color}"/>
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Цвет: " Margin="2" VerticalAlignment="Center"/>
+            <TextBlock Text="Test: " Margin="2" VerticalAlignment="Center" Style="{StaticResource test}"/>
+            <TextBlock Text="Цвет: " Margin="2" VerticalAlignment="Center" Style="{StaticResource test}"/>
             <controls:AcadColorPick Color="{Binding Color}"/>
         </StackPanel>
         <ComboBox
