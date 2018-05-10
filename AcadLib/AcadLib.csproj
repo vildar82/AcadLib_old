@@ -194,6 +194,7 @@
       <DependentUpon>PalettePropsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\PaletteProps\UI\PalettePropsVM.cs" />
+    <Compile Include="Model\Lisp\LispAutoloader.cs" />
     <Compile Include="Model\Statistic\CivilTest.cs" />
     <Compile Include="Model\Statistic\EventsStatisticService.cs" />
     <Compile Include="Model\Files\FileDataExt.cs" />

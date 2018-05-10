@@ -21,6 +21,7 @@ using AcadLib.Field;
 using AcadLib.Layers;
 using AcadLib.Layers.AutoLayers;
 using AcadLib.Layers.LayersSelected;
+using AcadLib.Lisp;
 using AcadLib.PaletteCommands;
 using AcadLib.Plot;
 using AcadLib.Properties;
@@ -102,6 +103,8 @@ namespace AcadLib
                     var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
                     LoadService.LoadFromFolder(dirGroup, SearchOption.TopDirectoryOnly);
                 }
+                // автозагрузка стартового общего лиспа
+                LispAutoloader.Start();
                 if (PaletteSetCommands._paletteSets.Any()) RibbonBuilder.InitRibbon();
                 Logger.Log.Info("end Initialize AcadLib");
                 YoutubeStatisticInit();
