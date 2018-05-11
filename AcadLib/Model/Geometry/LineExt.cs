@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 
 namespace AcadLib.Geometry
 {
+    [PublicAPI]
     public static class LineExt
     {
         public static Point3d Center([NotNull] this Line line)
