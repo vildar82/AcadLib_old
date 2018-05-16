@@ -1,2 +1,2 @@
-netload "c:\dev\AcadLib\TestAcadlib\bin\Debug\TestAcadlib.dll"
+;netload "c:\dev\AcadLib\TestAcadlib\bin\Debug\TestAcadlib.dll"
 TestPalettePropsCom

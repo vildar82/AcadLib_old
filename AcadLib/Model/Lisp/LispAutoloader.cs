@@ -11,14 +11,14 @@ namespace AcadLib.Lisp
     {
         public static void Start()
         {
-            Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
+            Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
             foreach (Document doc in Application.DocumentManager)
             {
                 LoadLisp(doc);
             }
         }
 
-        private static void DocumentManager_DocumentActivated(object sender, [CanBeNull] DocumentCollectionEventArgs e)
+        private static void DocumentManager_DocumentCreated(object sender, [CanBeNull] DocumentCollectionEventArgs e)
         {
             LoadLisp(e?.Document);
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.Windows.Themes;
 using NetLib.WPF;
 using ReactiveUI;
 
@@ -10,8 +12,9 @@ namespace AcadLib.PaletteProps
     {
         public PalettePropsGroup()
         {
-            this.WhenAnyValue(v => v.IsExpanded).Subscribe(s=> ButtonExpandContent = s ? "+" : "-");
-            ButtonExpandCommand = CreateCommand(() => IsExpanded = !IsExpanded);
+            this.WhenAnyValue(v => v.IsExpanded).Subscribe(s=> { ButtonExpandContent = s ? "+" : "-"; });
+            ButtonExpandCommand = CreateCommand(() => 
+                IsExpanded = !IsExpanded);
         }
 
         /// <summary>
@@ -26,5 +29,7 @@ namespace AcadLib.PaletteProps
         public ReactiveCommand ButtonExpandCommand { get; set; }
 
         public List<PalettePropVM> Properties { get; set; }
+
+        public Brush Background { get; set; }
     }
 }

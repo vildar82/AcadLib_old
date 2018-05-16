@@ -16,6 +16,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ReferencePath>C:\Autodesk\AutoCAD\Pik\Settings\Dll\;C:\dev\ObjectARX\ObjectARX2016\</ReferencePath>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
 </Project>

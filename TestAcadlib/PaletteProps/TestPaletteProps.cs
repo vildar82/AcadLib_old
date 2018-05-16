@@ -18,7 +18,7 @@ namespace TestAcadlib.PaletteProps
         }
 
         [NotNull]
-        private List<PalettePropsType> GetTypes([NotNull] ObjectId[] ids, Document doc)
+        public static List<PalettePropsType> GetTypes([NotNull] ObjectId[] ids, Document doc)
         {
             var types = new List<PalettePropsType>();
             foreach (var typeEnts in ids.GetObjects<Entity>().GroupBy(g=>g.GetType()))
@@ -39,20 +39,25 @@ namespace TestAcadlib.PaletteProps
                 };
                 types.Add(typeProps);
             }
-            types.AddRange(Enumerable.Range(0,7).Select(s=> new PalettePropsType
+            types.AddRange(Enumerable.Range(0,4).Select(s=> new PalettePropsType
             {
                 Name = $"Type{s}",
                 Groups = Enumerable.Range(0,3).Select(g=>new PalettePropsGroup
                 {
                     Name = $"Group{g}",
-                    Properties = Enumerable.Range(0,10).Select(p=> new PalettePropVM{ Name = $"Prop{p}"}).ToList()
+                    Properties = Enumerable.Range(0,5).Select(p=> new PalettePropVM
+                    {
+                        Name = $"Prop{p}",
+                        ValueControl = new IntValueView(new IntValueVM{ Value = p, Min = 1, Max = 10}),
+                        Tooltip = $"Hello {s} {g} {p}"
+                    }).ToList()
                 }).ToList()
             }));
             return types;
         }
 
         [NotNull]
-        private List<PalettePropVM> GetProperties(List<Entity> ents)
+        private static List<PalettePropVM> GetProperties(List<Entity> ents)
         {
             return new List<PalettePropVM>
             {
@@ -61,11 +66,12 @@ namespace TestAcadlib.PaletteProps
         }
 
         [NotNull]
-        private PalettePropVM GetProp(List<Entity> ents, string propName)
+        private static PalettePropVM GetProp(List<Entity> ents, string propName)
         {
             return new PalettePropVM
             {
-                Name = "Цвет"
+                Name = propName,
+                ValueControl = new IntValueView(new IntValueVM{ Value = 5, Min = 1, Max = 10}),
             };
         }
     }
