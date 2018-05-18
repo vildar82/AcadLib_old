@@ -8,6 +8,16 @@ namespace Autodesk.AutoCAD.DatabaseServices
     [PublicAPI]
     public static class ExtentsExtension
     {
+        public static Extents3d Union([NotNull] this IEnumerable<Extents3d> exts)
+        {
+            var ext = new Extents3d();
+            foreach (var extents3D in exts)
+            {
+                ext.AddExtents(extents3D);
+            }
+            return ext;
+        }
+
         /// <summary>
         /// Определение точки центра границы Extents3d
         /// </summary>
