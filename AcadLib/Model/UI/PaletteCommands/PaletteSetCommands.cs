@@ -10,6 +10,8 @@ using System.Windows.Media;
 using AcadLib.Properties;
 using AcadLib.UI.PaletteCommands.UI;
 using AcadLib.UI.Ribbon;
+using AutoCAD_PIK_Manager.Settings;
+using NetLib;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Brush = System.Windows.Media.Brush;
 
@@ -81,7 +83,7 @@ namespace AcadLib.PaletteCommands
                         Commands = commands,
                         VersionPalette = ver.ToString()
                     });
-                    SetTrayIcon(paletteName, paletteGuid, ver, date.ToString());
+                    SetTrayPalette(paletteName, paletteGuid, ver, date.ToString());
                 }
                 else
                 {
@@ -136,14 +138,14 @@ namespace AcadLib.PaletteCommands
             Start(paletteGuid);
         }
 
-        private static void SetTrayIcon(string paletteName, Guid paletteGuid, Version ver, string date)
+        private static void SetTrayPalette(string paletteName, Guid paletteGuid, Version ver, string date)
         {
             // Добавление иконки в трей
             try
             {
                 var p = new Pane
                 {
-                    ToolTipText = $"Палитра {paletteName}, вер. {ver.Revision} \n{date}",
+                    ToolTipText = "Палитра инструментов ПИК",
                     Icon = Icon.FromHandle(Resources.logo.GetHicon())
                 };
                 p.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);
@@ -154,7 +156,7 @@ namespace AcadLib.PaletteCommands
             }
             catch (Exception ex)
             {
-                Logger.Log.Error(ex, "PaletteSetCommands.SetTrayIcon().");
+                Logger.Log.Error(ex, "PaletteSetCommands.SetTrayPalette().");
             }
         }
 

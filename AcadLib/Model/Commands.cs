@@ -28,12 +28,14 @@ using AcadLib.Properties;
 using AcadLib.Statistic;
 using AcadLib.Template;
 using AcadLib.UI.Ribbon;
+using AcadLib.UI.StatusBar;
 using AcadLib.Utils;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using JetBrains.Annotations;
+using NetLib;
 using NetLib.IO;
 using Exception = System.Exception;
 using Path = System.IO.Path;
@@ -82,7 +84,14 @@ namespace AcadLib
             try
             {
                 Logger.Log.Info("start Initialize AcadLib");
-                "MODEMACRO".SetSystemVariableTry(PikSettings.UserGroup);
+                try
+                {
+                    StatusBarEx.AddPaneUserGroup();
+                }
+                catch
+                {
+                    //
+                }
                 PluginStatisticsHelper.StartAutoCAD();
                 if (Settings.Default.UpgradeRequired)
                 {

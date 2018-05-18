@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.Windows;
 using JetBrains.Annotations;
+using NetLib;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using StatusBarMenu = AcadLib.UI.StatusBar.View.StatusBarMenu;
 
@@ -40,6 +42,35 @@ namespace AcadLib.UI.StatusBar
             Application.StatusBar.Update();
             return pane;
         }
-        
+
+        public static void AddPane(string name, string toolTip)
+        {
+            var pane = new Pane
+            {
+                Text = name,
+                ToolTipText = toolTip,
+                Visible = false
+            };
+            Application.StatusBar.Panes.Insert(0, pane);
+            pane.Visible = true;
+            Application.StatusBar.Update();
+        }
+
+        public static void AddPaneUserGroup()
+        {
+            AddPane(PikSettings.UserGroup,
+                $"{PikSettings.Versions.JoinToString(GetGroupVersionInfo, "\n")}");
+        }
+
+        [NotNull]
+        private static string GetGroupVersionInfo([NotNull] GroupInfo groupInfo)
+        {
+            var info = $"{groupInfo.GroupName}, вер: {groupInfo.VersionLocal}";
+            if (groupInfo.UpdateRequired)
+            {
+                info +=$", на сервере: {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
+            }
+            return info;
+        }
     }
 }

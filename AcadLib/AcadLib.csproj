@@ -187,6 +187,7 @@
     <Compile Include="Model\Geometry\LineExt.cs" />
     <Compile Include="Model\Geometry\Polylines\MergePolylineEx.cs" />
     <Compile Include="Model\Lisp\LispAutoloader.cs" />
+    <Compile Include="Model\SettingsGroupInfo.cs" />
     <Compile Include="Model\Statistic\CivilTest.cs" />
     <Compile Include="Model\Statistic\EventsStatisticService.cs" />
     <Compile Include="Model\Files\FileDataExt.cs" />
