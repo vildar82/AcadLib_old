@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.Windows;
 using JetBrains.Annotations;
@@ -43,14 +44,21 @@ namespace AcadLib.UI.StatusBar
             return pane;
         }
 
-        public static void AddPane(string name, string toolTip)
+        public static void AddPane(string name, string toolTip,
+            [CanBeNull] Action<StatusBarMouseDownEventArgs> onClick = null,
+            int minWith = 20, int maxWith = 200, [CanBeNull] Icon icon = null, PaneStyles style = PaneStyles.Normal)
         {
             var pane = new Pane
             {
                 Text = name,
                 ToolTipText = toolTip,
-                Visible = false
+                Visible = false,
+                MinimumWidth = minWith,
+                MaximumWidth = maxWith,
+                Style = style
             };
+            if (icon != null) pane.Icon = icon;
+            pane.MouseDown += (s, e) => onClick?.Invoke(e);
             Application.StatusBar.Panes.Insert(0, pane);
             pane.Visible = true;
             Application.StatusBar.Update();
@@ -59,7 +67,8 @@ namespace AcadLib.UI.StatusBar
         public static void AddPaneUserGroup()
         {
             AddPane(PikSettings.UserGroup,
-                $"{PikSettings.Versions.JoinToString(GetGroupVersionInfo, "\n")}");
+                $"{PikSettings.Versions.JoinToString(GetGroupVersionInfo, "\n")}",
+                onClick: e=> AcadHelper.Doc.SendStringToExecute("_ToolPalettes ", true, false, true));
         }
 
         [NotNull]
