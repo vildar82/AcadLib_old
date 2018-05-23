@@ -2,11 +2,13 @@
 using JetBrains.Annotations;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
 using NetLib;
+using NetLib.Notification;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Statistic
@@ -78,7 +80,6 @@ namespace AcadLib.Statistic
         {
             try
             {
-                if (!IsUserCanAddStatistic()) return;
                 InsertStatistic($"{App} {AcadYear} Run", "AcadLib", $"{App} Run", Commands.AcadLibVersion.ToString(), "");
                 // Статистика обновления настроек
                 UpdateSettings();
@@ -116,6 +117,33 @@ namespace AcadLib.Statistic
         private static bool GetIsCivil()
         {
             try { return CivilTest.IsCivil(); } catch { return false;}
+        }
+
+        private static void CheckCommandUpdate([NotNull] CommandInfo command)
+        {
+            var task = Task.Run(() =>
+            {
+                var localAsmFile = "";
+                var serverAsmFile = "";
+                if (!NetLib.IO.Path.IsEqualsDataDir(localAsmFile, serverAsmFile))
+                {
+                    return $"Доступна новая версия плагина '' от " +
+                           $"{File.GetLastWriteTime(serverAsmFile):dd.MM.yy HH:mm}." +
+                           "\nРекомендуется обновиться.";
+                }
+                return null;
+            });
+            if (task.Wait(300) && task.Result != null)
+            {
+                try
+                {
+                    Notify.ShowScreenNotify(task.Result, NotifyType.Warning, new NotifyMessageOptions{ FontSize = 14});
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                }
+            }
         }
     }
 }

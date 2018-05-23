@@ -93,6 +93,7 @@ namespace AcadLib
                     //
                 }
                 PluginStatisticsHelper.StartAutoCAD();
+                CheckUpdates.Start();
                 if (Settings.Default.UpgradeRequired)
                 {
                     Settings.Default.Upgrade();
