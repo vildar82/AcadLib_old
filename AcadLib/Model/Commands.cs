@@ -37,6 +37,7 @@ using Autodesk.AutoCAD.Runtime;
 using JetBrains.Annotations;
 using NetLib;
 using NetLib.IO;
+using NetLib.Notification;
 using Exception = System.Exception;
 using Path = System.IO.Path;
 
@@ -93,7 +94,15 @@ namespace AcadLib
                     //
                 }
                 PluginStatisticsHelper.StartAutoCAD();
-                CheckUpdates.Start();
+                try
+                {
+                    Notify.SetScreenSettings(new NotifyOptions(with: 400));
+                    CheckUpdates.Start();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Error(ex,"Notify и CheckUpdates");
+                }
                 if (Settings.Default.UpgradeRequired)
                 {
                     Settings.Default.Upgrade();

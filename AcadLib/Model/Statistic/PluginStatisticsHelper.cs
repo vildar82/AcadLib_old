@@ -118,32 +118,5 @@ namespace AcadLib.Statistic
         {
             try { return CivilTest.IsCivil(); } catch { return false;}
         }
-
-        private static void CheckCommandUpdate([NotNull] CommandInfo command)
-        {
-            var task = Task.Run(() =>
-            {
-                var localAsmFile = "";
-                var serverAsmFile = "";
-                if (!NetLib.IO.Path.IsEqualsDataDir(localAsmFile, serverAsmFile))
-                {
-                    return $"Доступна новая версия плагина '' от " +
-                           $"{File.GetLastWriteTime(serverAsmFile):dd.MM.yy HH:mm}." +
-                           "\nРекомендуется обновиться.";
-                }
-                return null;
-            });
-            if (task.Wait(300) && task.Result != null)
-            {
-                try
-                {
-                    Notify.ShowScreenNotify(task.Result, NotifyType.Warning, new NotifyMessageOptions{ FontSize = 14});
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                }
-            }
-        }
     }
 }

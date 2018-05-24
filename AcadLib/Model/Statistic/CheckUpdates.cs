@@ -19,7 +19,7 @@ namespace AcadLib.Statistic
 
         internal static void Start()
         {
-            timer = new Timer(o => CheckUpdatesNotify(), null, TimeSpan.FromSeconds(30), TimeSpan.FromHours(3));
+            timer = new Timer(o => CheckUpdatesNotify(), null, TimeSpan.FromSeconds(30), TimeSpan.FromHours(2));
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace AcadLib.Statistic
                 {
                     try
                     {
-                        Notify.ShowScreenNotify(msg, NotifyType.Warning, new NotifyMessageOptions {FontSize = 16});
+                        Notify.ShowOnScreen(msg, NotifyType.Warning, new NotifyMessageOptions{ FontSize = 16});
                     }
                     catch (Exception ex)
                     {
