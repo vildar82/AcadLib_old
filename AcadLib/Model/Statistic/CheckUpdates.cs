@@ -19,7 +19,7 @@ namespace AcadLib.Statistic
 
         internal static void Start()
         {
-            timer = new Timer(o => CheckUpdatesNotify(), null, TimeSpan.FromSeconds(30), TimeSpan.FromHours(2));
+            timer = new Timer(o => CheckUpdatesNotify(), null, TimeSpan.FromSeconds(5), TimeSpan.FromHours(2));
         }
 
         /// <summary>
