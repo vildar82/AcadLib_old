@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using AcadLib.CommandLock;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+using Exception = System.Exception;
 
 namespace AcadLib
 {
@@ -109,25 +110,33 @@ namespace AcadLib
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
-            if (!woStatistic)
+            CommandStart commandStart = null;
+            try
             {
-                try
+                commandStart = GetCallerCommand(caller, commandName);
+                if (!woStatistic)
                 {
-                    var commandStart = GetCallerCommand(caller, commandName);
                     Logger.Log.StartCommand(commandStart);
                     Logger.Log.Info($"Document={doc.Name}");
                     PluginStatisticsHelper.PluginStart(commandStart);
-                    // Проверка блокировки команды
-                    if (!CommandLockService.CanStartCommand(commandStart.CommandName))
-                    {
-                        Logger.Log.Info($"Команда заблокирована - {commandStart.CommandName}");
-                        return;
-                    }
                 }
-                catch (System.Exception ex)
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "CommandStart");
+            }
+            try
+            {
+                // Проверка блокировки команды
+                if (commandStart != null && !CommandLockService.CanStartCommand(commandStart.CommandName))
                 {
-                    Logger.Log.Error(ex, "CommandStart");
+                    Logger.Log.Info($"Команда заблокирована - {commandStart.CommandName}");
+                    return;
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "Проверка блокировки команды");
             }
             try
             {
