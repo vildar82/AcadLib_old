@@ -43,7 +43,7 @@ namespace AcadLib.Statistic
         /// <param name="msg"></param>
         /// <param name="updateVersions">Обновленные группы настроек</param>
         /// <returns>True - есть новая версия</returns>
-        public static bool Check(bool includeUserNotNotify, [CanBeNull] out string msg, out List<GroupInfo> updateVersions)
+        public static bool Check(bool includeUserNotNotify, [CanBeNull] out string msg, [CanBeNull] out List<GroupInfo> updateVersions)
         {
             try
             {
