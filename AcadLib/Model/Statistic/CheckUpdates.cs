@@ -8,7 +8,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Threading;
 using AutoCAD_PIK_Manager;
 using AutoCAD_PIK_Manager.Settings;
