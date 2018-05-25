@@ -46,7 +46,7 @@ namespace AcadLib
             {
                 caller = new StackTrace().GetFrame(1).GetMethod();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "CommandStart - StackTrace");
             }
@@ -66,7 +66,7 @@ namespace AcadLib
             {
                 caller = new StackTrace().GetFrame(1).GetMethod();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "CommandStart - StackTrace");
             }
@@ -80,7 +80,7 @@ namespace AcadLib
             {
                 caller = new StackTrace().GetFrame(1).GetMethod();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "CommandStart - StackTrace");
             }
@@ -99,7 +99,7 @@ namespace AcadLib
             {
                 caller = new StackTrace().GetFrame(1).GetMethod();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "CommandStart - StackTrace");
             }
@@ -159,7 +159,7 @@ namespace AcadLib
             {
                 Inspector.AddError(error.Error);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
 #pragma warning disable 612
                 if (!ex.Message.Contains(General.CanceledByUser))

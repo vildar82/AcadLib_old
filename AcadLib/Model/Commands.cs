@@ -35,7 +35,6 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using JetBrains.Annotations;
-using NetLib;
 using NetLib.IO;
 using NetLib.Notification;
 using Exception = System.Exception;
@@ -541,6 +540,12 @@ namespace AcadLib
         public void PIK_StyleManager()
         {
             CommandStart.Start(d => Styles.StyleManager.StyleManagerService.ManageStyles());
+        }
+
+        [CommandMethod(Group, nameof(PIK_CheckUpdates), CommandFlags.Transparent)]
+        public void PIK_CheckUpdates()
+        {
+            CommandStart.Start(d => CheckUpdates.CheckUpdatesNotify(false));
         }
     }
 }

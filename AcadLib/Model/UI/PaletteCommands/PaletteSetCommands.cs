@@ -10,8 +10,6 @@ using System.Windows.Media;
 using AcadLib.Properties;
 using AcadLib.UI.PaletteCommands.UI;
 using AcadLib.UI.Ribbon;
-using AutoCAD_PIK_Manager.Settings;
-using NetLib;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Brush = System.Windows.Media.Brush;
 
