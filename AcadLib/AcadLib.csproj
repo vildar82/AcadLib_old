@@ -87,18 +87,18 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMPolygonMGD">
-      <HintPath>..\..\Package\AutoCAD\2015\AcMPolygonMGD.dll</HintPath>
+      <HintPath>..\..\Package\AutoCAD\2017\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AdUiPalettes">
-      <HintPath>..\..\..\Program Files\Autodesk\AutoCAD 2016\AdUiPalettes.dll</HintPath>
+      <HintPath>..\..\..\Program Files\Autodesk\AutoCAD 2017\AdUiPalettes.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AdWindows">
       <Private>False</Private>
     </Reference>
     <Reference Include="AeccDbMgd">
-      <HintPath>..\..\..\Program Files\Autodesk\AutoCAD 2016\C3D\AeccDbMgd.dll</HintPath>
+      <HintPath>..\..\..\Program Files\Autodesk\AutoCAD 2017\C3D\AeccDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AutoCAD_PIK_Settings, Version=1.0.145.233, Culture=neutral, processorArchitecture=MSIL">
@@ -116,7 +116,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NetLib">
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -668,7 +668,7 @@
       <Version>11.0.2</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>4.5.4</Version>
+      <Version>4.5.5</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
       <Version>2.5.6</Version>

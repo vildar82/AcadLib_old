@@ -80,13 +80,17 @@ namespace AcadLib.UI.StatusBar
         [NotNull]
         private static string GetGroupVersionInfo([NotNull] List<GroupInfo> groupInfos)
         {
-            return $"{groupInfos.JoinToString(getGroupInfo, "\n")}";
-            string getGroupInfo (GroupInfo groupInfo)
+            return $"{groupInfos.JoinToString(GetGroupInfo, "\n")}";
+            string GetGroupInfo (GroupInfo groupInfo)
             {
                 var info = $"{groupInfo.GroupName}, вер: {groupInfo.VersionLocal}";
                 if (groupInfo.UpdateRequired)
                 {
                     info += $", на сервере: {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
+                }
+                if (!groupInfo.UpdateDescription.IsNullOrEmpty())
+                {
+                    info += $"\n'{groupInfo.UpdateDescription}'\n";
                 }
                 return info;
             }
