@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -101,7 +102,7 @@ namespace AcadLib.Statistic
                     using (var pg = new C_PluginStatisticTableAdapter())
                     {
                         pg.Insert(appName, plugin ?? "", command ?? "", version ?? "",
-                            doc ?? "", Environment.UserName, DateTime.Now, null);
+                            doc ?? "", Environment.UserName, DateTime.Now, null, Path.GetFileName(doc));
                     }
                 }
                 catch (Exception ex)
