@@ -31,7 +31,7 @@ namespace AcadLib.Statistic
 
         internal static void Start()
         {
-            timer = new Timer(o => CheckUpdatesNotify(true), null, TimeSpan.FromSeconds(10), TimeSpan.FromHours(2));
+            timer = new Timer(o => CheckUpdatesNotify(true), null, TimeSpan.FromSeconds(15), TimeSpan.FromHours(2));
             changes.Throttle(TimeSpan.FromMilliseconds(1000)).Subscribe(s => CheckUpdatesNotify(true));
         }
 
