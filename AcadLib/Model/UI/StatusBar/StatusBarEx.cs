@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using AcadLib.Statistic;
 using AutoCAD_PIK_Manager;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.Windows;
@@ -73,7 +74,7 @@ namespace AcadLib.UI.StatusBar
                 {
                     p.ToolTipText = GetGroupVersionInfo(Update.GetVersions());
                     AcadHelper.Doc.SendStringToExecute($"{nameof(Commands.PIK_CheckUpdates)} ", true, false, true);
-                    AcadHelper.Doc.SendStringToExecute("_ToolPalettes ", true, false, true);
+                    AcadHelper.Doc.SendStringToExecute($"{nameof(Commands.PIK_UserSettings)} ", true, false, true);
                 });
         }
 
@@ -88,7 +89,7 @@ namespace AcadLib.UI.StatusBar
                 {
                     info += $", на сервере: {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
                 }
-                if (!groupInfo.UpdateDescription.IsNullOrEmpty())
+                if (CheckUpdates.NeedNotify(groupInfo.UpdateDescription))
                 {
                     info += $"\n'{groupInfo.UpdateDescription}'\n";
                 }

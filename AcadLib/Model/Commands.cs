@@ -29,8 +29,10 @@ using AcadLib.Statistic;
 using AcadLib.Template;
 using AcadLib.UI.Ribbon;
 using AcadLib.UI.StatusBar;
+using AcadLib.User;
 using AcadLib.Utils;
 using AutoCAD_PIK_Manager.Settings;
+using AutoCAD_PIK_Manager.User;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
@@ -93,6 +95,13 @@ namespace AcadLib
                     //
                 }
                 PluginStatisticsHelper.StartAutoCAD();
+                if (PikSettings.IsDisabledSettings)
+                {
+                    Logger.Log.Info("Настройки отключены (PikSettings.IsDisabledSettings) - загрузка прервана.");
+                    AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                    EventsStatisticService.Start();
+                    return;
+                }
                 try
                 {
                     Notify.SetScreenSettings(new NotifyOptions(with: 400));
@@ -128,6 +137,10 @@ namespace AcadLib
                 YoutubeStatisticInit();
                 EventsStatisticService.Start();
                 AcadLibAssembly.AcadLoadInfo();
+                if (AutocadUserService.User == null)
+                {
+                    UserSettingsService.Show();
+                }
             }
             catch (Exception ex)
             {
@@ -170,6 +183,12 @@ namespace AcadLib
             });
         }
 
+        [CommandMethod(Group, "PIK_UserSettings", CommandFlags.Modal)]
+        public void PIK_UserSettings()
+        {
+            CommandStart.Start(doc => { UserSettingsService.Show(); });
+        }
+
         /// <summary>
         ///     Список общих команд
         /// </summary>
@@ -186,7 +205,8 @@ namespace AcadLib
                     new PaletteCommand("Проверка и очистка", Resources.purge, nameof(PIK_PurgeAuditRegen),
                         "Очистка (_purge), проверка (_audit), сброс списка масштабов аннотации (_scalelistedit) и регенерация чертежа.",
                         GroupCommon),
-                    new PaletteCommand("Последние ошибки", Resources.error, nameof(PIK_Errors), "Показать окно последних ошибок", GroupCommon)
+                    new PaletteCommand("Последние ошибки", Resources.error, nameof(PIK_Errors), "Показать окно последних ошибок", GroupCommon),
+                    new PaletteCommand("Настройки", Resources.userSettings, nameof(PIK_UserSettings), "Настройки пользователя", GroupCommon)
                 };
             }
             catch (Exception ex)

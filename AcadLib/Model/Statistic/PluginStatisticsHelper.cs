@@ -35,7 +35,11 @@ namespace AcadLib.Statistic
             try
             {
                 if (PikSettings.IsUpdatedSettings)
-                    InsertStatistic($"{App} Update", "AcadLib", "Настройки последние", Commands.AcadLibVersion.ToString(), "");
+                {
+                    InsertStatistic($"{App} Update", "AcadLib",
+                        PikSettings.IsDisabledSettings ? "Настройки отключены" : "Настройки последние",
+                        Commands.AcadLibVersion.ToString(), "");
+                }
             }
             catch (Exception ex)
             {

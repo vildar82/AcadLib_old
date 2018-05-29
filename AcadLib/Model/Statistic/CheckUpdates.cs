@@ -92,9 +92,9 @@ namespace AcadLib.Statistic
             }
         }
 
-        private static bool NeedNotify([CanBeNull] string updateDesc)
+        public static bool NeedNotify([CanBeNull] string updateDesc)
         {
-            return updateDesc == null || !(updateDesc.StartsWith("no", StringComparison.OrdinalIgnoreCase) ||
+            return updateDesc.IsNullOrEmpty() || !(updateDesc.StartsWith("no", StringComparison.OrdinalIgnoreCase) ||
                      updateDesc.StartsWith("нет", StringComparison.OrdinalIgnoreCase));
         }
 
@@ -134,6 +134,7 @@ namespace AcadLib.Statistic
                                 }
                             }
                         });
+                        Logger.Log.Info($"CheckUpdatesNotify '{msg}'");
                     }
                     catch (Exception ex)
                     {

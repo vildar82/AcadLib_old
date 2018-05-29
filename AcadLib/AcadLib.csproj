@@ -369,6 +369,12 @@
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\Units\UnitsNetExt.cs" />
     <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Model\User\UI\UserSettingsView.xaml.cs">
+      <DependentUpon>UserSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\User\UI\UserSettingsVM.cs" />
+    <Compile Include="Model\User\UserSettings.cs" />
+    <Compile Include="Model\User\UserSettingsService.cs" />
     <Compile Include="Model\Utils\ListModules.cs" />
     <Compile Include="Model\VisualStyle\VisualStyleUsing.cs" />
     <Compile Include="Model\Visual\IVisualElement.cs" />
@@ -513,6 +519,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\userSettings.png" />
     <Resource Include="Resources\error.png" />
     <Resource Include="Resources\purge.png" />
     <Resource Include="Resources\stop.png" />
@@ -615,6 +622,10 @@
     <Page Include="Model\UI\StatusBar\View\StatusBarMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Model\User\UI\UserSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\WPF\Controls\AcadColorPick.xaml">
       <SubType>Designer</SubType>
