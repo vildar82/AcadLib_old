@@ -54,7 +54,7 @@ namespace AcadLib.Statistic
                 {
                     var updates = updateVersions.JoinToString(v => 
                             $"{v.GroupName} от {v.VersionServerDate:dd.MM.yy HH:mm}" +
-                            $"{(v.UpdateDescription.IsNullOrEmpty() ? "" : $" - '{v.UpdateDescription}'")}","\n");
+                            $"{(v.UpdateDescription.IsNullOrEmpty() ? "" : $"\n'{v.UpdateDescription}'")}","\n");
                     msg = $"Доступны обновления настроек:\n{updates}\nРекомендуется обновиться (перезапустить автокад).";
                     return true;
                 }
@@ -86,7 +86,7 @@ namespace AcadLib.Statistic
                 foreach (var file in serverFilesVer)
                 {
                     var watcher = new FileWatcherRx(Path.GetDirectoryName(file), Path.GetFileName(file));
-                    watcher.Changed.Throttle(TimeSpan.FromMilliseconds(200))
+                    watcher.Changed.Delay(TimeSpan.FromMilliseconds(300)).Throttle(TimeSpan.FromMilliseconds(500))
                         .Subscribe(OnFileVersionChanged);
                 }
             }
