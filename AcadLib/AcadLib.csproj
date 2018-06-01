@@ -369,10 +369,33 @@
     <Compile Include="Model\Units\UnitsConvertHelper.cs" />
     <Compile Include="Model\Units\UnitsNetExt.cs" />
     <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Model\User\DB\AutocadUsers.cs">
+      <DependentUpon>Users.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\User\DB\DbUsers.cs" />
+    <Compile Include="Model\User\DB\Users.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Users.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\User\DB\Users.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Users.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\User\DB\Users.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Users.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Model\User\UI\UserSettingsView.xaml.cs">
       <DependentUpon>UserSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\User\UI\UserSettingsVM.cs" />
+    <Compile Include="Model\User\UsersEditor\UsersEditorView.xaml.cs">
+      <DependentUpon>UsersEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\User\UsersEditor\UsersEditorVM.cs" />
     <Compile Include="Model\User\UserSettings.cs" />
     <Compile Include="Model\User\UserSettingsService.cs" />
     <Compile Include="Model\Utils\ListModules.cs" />
@@ -519,6 +542,24 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Model\User\DB\Users.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Users.edmx</DependentUpon>
+      <LastGenOutput>Users.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Model\User\DB\Users.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Users.edmx</DependentUpon>
+      <LastGenOutput>Users.cs</LastGenOutput>
+    </Content>
+    <EntityDeploy Include="Model\User\DB\Users.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Users.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="App.Config" />
+    <None Include="Model\User\DB\Users.edmx.diagram">
+      <DependentUpon>Users.edmx</DependentUpon>
+    </None>
     <None Include="Resources\userSettings.png" />
     <Resource Include="Resources\error.png" />
     <Resource Include="Resources\purge.png" />
@@ -540,7 +581,6 @@
     <Resource Include="Resources\send2.png" />
     <Resource Include="Resources\txt.png" />
     <Resource Include="Resources\update.png" />
-    <None Include="app.config" />
     <None Include="Model\Statistic\DataSetStatistic.xsc">
       <DependentUpon>DataSetStatistic.xsd</DependentUpon>
     </None>
@@ -627,6 +667,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Model\User\UsersEditor\UsersEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Model\WPF\Controls\AcadColorPick.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -650,6 +694,9 @@
     </PackageReference>
     <PackageReference Include="CsvHelper">
       <Version>7.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="EntityFramework">
+      <Version>6.2.0</Version>
     </PackageReference>
     <PackageReference Include="EPPlus">
       <Version>4.5.2</Version>
@@ -679,7 +726,7 @@
       <Version>11.0.2</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>4.5.5</Version>
+      <Version>4.5.6</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
       <Version>2.5.6</Version>
@@ -696,6 +743,9 @@
     <PackageReference Include="UnitsNet">
       <Version>3.99.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

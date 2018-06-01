@@ -19,7 +19,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <param name="blRef"></param>
         public static void FlattenZ(this BlockReference blRef)
         {
-            if (blRef.Position.Z.IsEqual6(0))
+            if (!blRef.Position.Z.IsEqual6(0))
             {
                 if (!blRef.IsWriteEnabled) blRef = (BlockReference)blRef.Id.GetObject(OpenMode.ForWrite, false, true);
                 blRef.Position = new Point3d(blRef.Position.X, blRef.Position.Y, 0);

@@ -1,0 +1,29 @@
+﻿<wpf:BaseWindow x:Class="AcadLib.User.UsersEditor.UsersEditorView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AcadLib.User.UsersEditor"
+        xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
+        d:DataContext="{d:DesignInstance local:UsersEditorVM}"
+        mc:Ignorable="d"
+        Title="Пользователи">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DataGrid Grid.Row="0" ItemsSource="{Binding Users}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}"/>
+                <DataGridTextColumn Header="Логин" Binding="{Binding Login}"/>
+                <DataGridTextColumn Header="Группа" Binding="{Binding Group}"/>
+                <DataGridTextColumn Header="Примечание" Binding="{Binding Description}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
+            <Button Content="Сохранить" Command="{Binding Save}" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</wpf:BaseWindow>
+
