@@ -105,8 +105,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Settings.dll</HintPath>
     </Reference>
-    <Reference Include="EventStatistic">
-      <HintPath>\\dsk2.picompany.ru\project\CAD_Settings\Revit_server\10. Dll's\Dll\PIK\Revit_Rooms\EventStatistic.dll</HintPath>
+    <Reference Include="EventStatistic, Version=1.0.155.40, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\Адаптация\Общие\Dll\EventStatistic.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MicroMvvm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
