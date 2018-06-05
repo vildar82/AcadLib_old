@@ -1,4 +1,5 @@
-﻿using AcadLib.User.UI;
+﻿using System;
+using AcadLib.User.UI;
 using AcadLib.User.UsersEditor;
 using AutoCAD_PIK_Manager.User;
 
@@ -10,7 +11,17 @@ namespace AcadLib.User
 
         public static void Show()
         {
-            var userSettingsVm = new UserSettingsVM(AutocadUserService.User);
+            var user = AutocadUserService.LoadUser();
+            if (user == null)
+            {
+                "Ошибка загрузки пользователя из базы. Загрузка из локального кеша.".WriteToCommandLine();
+                user = AutocadUserService.LoadBackup();
+                if (user == null)
+                {
+                    "Ошибка загрузки пользователя из локального кеша.".WriteToCommandLine();
+                }
+            }
+            var userSettingsVm = new UserSettingsVM(user);
             var userSettingsView = new UserSettingsView(userSettingsVm);
             if (userSettingsView.ShowDialog() != true) return;
             AutocadUserService.User = userSettingsVm.User;

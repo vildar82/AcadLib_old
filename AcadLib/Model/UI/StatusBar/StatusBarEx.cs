@@ -84,14 +84,14 @@ namespace AcadLib.UI.StatusBar
             return $"{groupInfos.JoinToString(GetGroupInfo, "\n")}";
             string GetGroupInfo (GroupInfo groupInfo)
             {
-                var info = $"{groupInfo.GroupName}, вер: {groupInfo.VersionLocal}";
+                var info = $"{groupInfo.GroupName}: вер. {groupInfo.VersionLocal}";
                 if (groupInfo.UpdateRequired)
                 {
-                    info += $", на сервере: {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
+                    info += $", на сервере {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
                 }
                 if (CheckUpdates.NeedNotify(groupInfo.UpdateDescription))
                 {
-                    info += $"\n'{groupInfo.UpdateDescription}'\n";
+                    info += $"\n'{groupInfo.UpdateDescription}'";
                 }
                 return info;
             }

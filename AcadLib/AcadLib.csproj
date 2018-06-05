@@ -394,6 +394,7 @@
       <DependentUpon>UserSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\User\UI\UserSettingsVM.cs" />
+    <Compile Include="Model\User\UsersEditor\EditAutocadUsers.cs" />
     <Compile Include="Model\User\UsersEditor\UsersEditorView.xaml.cs">
       <DependentUpon>UsersEditorView.xaml</DependentUpon>
     </Compile>

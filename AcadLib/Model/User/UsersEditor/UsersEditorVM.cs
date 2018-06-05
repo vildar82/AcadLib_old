@@ -2,28 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using AcadLib.Model.User.DB;
+using System.Text.RegularExpressions;
+using System.Windows.Data;
+using AcadLib.IO;
 using AcadLib.User.DB;
 using AutoCAD_PIK_Manager.Settings;
+using NetLib;
+using NetLib.Locks;
 using NetLib.WPF;
+using NetLib.WPF.Data;
 using ReactiveUI;
 
 namespace AcadLib.User.UsersEditor
 {
     public class UsersEditorVM : BaseViewModel
     {
+        private List<EditAutocadUsers> users;
         private DbUsers dbUsers;
+        private FileLock fileLock;
 
         public UsersEditorVM()
         {
             dbUsers = new DbUsers();
-            Users = dbUsers.GetUsers().Select(s=> new EditAutocadUsers(s)).ToList();
+            users = dbUsers.GetUsers().Select(s => new EditAutocadUsers(s)).ToList();
+            Users = new CollectionView<EditAutocadUsers>(users) { Filter  = OnFilter};
             Groups = PikSettings.UserGroups;
-            //Save = CreateCommand(dbUsers.Save);
+            this.WhenAnyValue(v => v.EditMode).Subscribe(ChangeMode);
+            Save = CreateCommand(dbUsers.Save, this.WhenAnyValue(v=>v.EditMode));
             this.WhenAnyValue(v => v.SelectedUsers).Subscribe(s => OnSelected());
+            this.WhenAnyValue(v => v.Filter).Subscribe(s => Users.Refresh());
         }
 
-        public List<EditAutocadUsers> Users { get; set; }
+        public CollectionView<EditAutocadUsers> Users { get; set; }
         public ReactiveCommand Save { get; set; }
         public EditAutocadUsers SelectedUser { get; set; }
         public List<EditAutocadUsers> SelectedUsers { get; set; }
@@ -31,6 +41,35 @@ namespace AcadLib.User.UsersEditor
         public bool IsOneUserSelected { get; set; }
         public bool EditUserEnable { get; set; }
         public ReactiveCommand Apply { get; set; }
+        public bool EditMode { get; set; }
+        public string Filter { get; set; }
+
+        private bool OnFilter(object obj)
+        {
+            if (!Filter.IsNullOrEmpty() && obj is EditAutocadUsers user)
+            {
+                return Regex.IsMatch(user.ToString(), Filter, RegexOptions.IgnoreCase);
+            }
+            return true;
+        }
+
+        private void ChangeMode(bool editMode)
+        {
+            if (editMode)
+            {
+                // Создать файл блокировки
+                fileLock = new FileLock(Path.GetSharedCommonFile("UsersEditor", "UsersEditor.lock"));
+                if (!fileLock.IsLockSuccess)
+                {
+                    ShowMessage(fileLock.GetMessage(), "Доступ заблокирован");
+                    EditMode = false;
+                }
+            }
+            else
+            {
+                fileLock?.Dispose();
+            }
+        }
 
         private void OnSelected()
         {
@@ -44,13 +83,14 @@ namespace AcadLib.User.UsersEditor
             IsOneUserSelected = SelectedUsers.Count == 1;
             SelectedUser = new EditAutocadUsers
             {
-                FIO = GetValue(u=>u.FIO),
-                Login = GetValue(u=>u.Login),
-                Group = GetValue(u=>u.Group),
-                Disabled = GetValue(u=>u.Disabled),
-                Description = GetValue(u=>u.Description),
+                FIO = GetValue(u => u.FIO),
+                Login = GetValue(u => u.Login),
+                Group = GetValue(u => u.Group),
+                Disabled = GetValue(u => u.Disabled),
+                Description = GetValue(u => u.Description),
             };
-            Apply = CreateCommand(()=>ApplyExecute(SelectedUser, SelectedUsers), SelectedUser.Changed.Skip(1).Select(s => true));
+            Apply = CreateCommand(() => ApplyExecute(SelectedUser, SelectedUsers),
+                SelectedUser.Changed.Skip(1).Select(s => true));
         }
 
         private void ApplyExecute(EditAutocadUsers selectedUser, List<EditAutocadUsers> selectedUsers)
@@ -60,6 +100,7 @@ namespace AcadLib.User.UsersEditor
                 autocadUserse.Group = selectedUser.Group;
                 autocadUserse.Description = selectedUser.Description;
                 autocadUserse.Disabled = selectedUser.Disabled;
+                autocadUserse.SaveToDbUser();
             }
             if (selectedUsers.Count == 1)
             {
@@ -75,31 +116,6 @@ namespace AcadLib.User.UsersEditor
             var moreOne = res.Skip(1).Any();
             var value = res.First();
             return moreOne ? default : value;
-        }
-    }
-
-    public class EditAutocadUsers : BaseModel
-    {
-        public AutocadUsers DbUser { get; set; }
-        public string Login { get; set; }
-        public string FIO { get; set; }
-        public string Group { get; set; }
-        public bool? Disabled { get; set; }
-        public string Description { get; set; }
-
-        public EditAutocadUsers()
-        {
-            
-        }
-
-        public EditAutocadUsers(AutocadUsers dbUser)
-        {
-            DbUser = dbUser;
-            Login = dbUser.Login;
-            FIO = dbUser.FIO;
-            Disabled = dbUser.Disabled;
-            Description = dbUser.Description;
-            Group = dbUser.Group;
         }
     }
 }
