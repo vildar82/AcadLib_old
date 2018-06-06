@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Threading;
 using AutoCAD_PIK_Manager;
@@ -48,8 +49,15 @@ namespace AcadLib.Statistic
             {
                 var versions = Update.GetVersions();
                 SubscribeChanges(versions);
-                updateVersions = Update.GetVersions().Where(w => w.UpdateRequired && NeedNotify(w.UpdateDescription) &&
-                                                                 (!includeUserNotNotify || !IsNotNotify(w))).ToList();
+                updateVersions = versions.Where(w =>
+                {
+                    string updateDescription = null;
+                    var res = w.UpdateRequired &&
+                           NeedNotify(w.UpdateDescription, out updateDescription) &&
+                           (!includeUserNotNotify || !IsNotNotify(w));
+                    w.UpdateDescription = updateDescription;
+                    return res;
+                }).ToList();
                 if (updateVersions.Any())
                 {
                     var updates = updateVersions.JoinToString(v => 
@@ -92,10 +100,36 @@ namespace AcadLib.Statistic
             }
         }
 
-        public static bool NeedNotify([CanBeNull] string updateDesc)
+        public static bool NeedNotify([CanBeNull] string updateDesc, out string descResult)
         {
-            return updateDesc.IsNullOrEmpty() || !(updateDesc.StartsWith("no", StringComparison.OrdinalIgnoreCase) ||
-                     updateDesc.StartsWith("нет", StringComparison.OrdinalIgnoreCase));
+            descResult = updateDesc;
+            if (updateDesc.IsNullOrEmpty()) return true;
+            if (updateDesc.StartsWith("no", StringComparison.OrdinalIgnoreCase) ||
+                updateDesc.StartsWith("нет", StringComparison.OrdinalIgnoreCase)) return false;
+            return IsPersonalNotify(updateDesc, out descResult);
+        }
+
+        private static bool IsPersonalNotify(string updateDesc, out string descResult)
+        {
+            if (updateDesc.StartsWith("@"))
+            {
+                var match = Regex.Match(updateDesc, @"([\w-_]+)");
+                if (match.Success)
+                {
+                    var groups = match.Groups.Cast<Group>().Skip(1).ToList();
+                    if (groups.Any(g => g.Value.EqualsIgnoreCase(Environment.UserName)))
+                    {
+                        // Персональное сообщение
+                        var lastGroup = groups.Last();
+                        descResult = updateDesc.Substring(lastGroup.Index + lastGroup.Length).Trim();
+                        return true;
+                    }
+                }
+                descResult = updateDesc;
+                return false;
+            }
+            descResult = updateDesc;
+            return true;
         }
 
         private static void OnFileVersionChanged([NotNull] EventPattern<FileSystemEventArgs> e)
@@ -104,7 +138,7 @@ namespace AcadLib.Statistic
             {
                 Debug.WriteLine($"{e.EventArgs.FullPath}|{e.EventArgs.ChangeType}, {e.Sender}");
                 var desc = File.ReadLines(e.EventArgs.FullPath, Encoding.Default).Skip(1).FirstOrDefault();
-                if (NeedNotify(desc)) changes.OnNext(true);
+                if (NeedNotify(desc, out desc)) changes.OnNext(true);
             }
             catch (Exception ex)
             {

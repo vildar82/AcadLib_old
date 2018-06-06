@@ -20,6 +20,7 @@ namespace AcadLib.User.UsersEditor
         private List<EditAutocadUsers> users;
         private DbUsers dbUsers;
         private FileLock fileLock;
+        private string filter;
 
         public UsersEditorVM()
         {

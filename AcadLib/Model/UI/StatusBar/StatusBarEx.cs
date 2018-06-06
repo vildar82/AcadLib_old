@@ -89,9 +89,9 @@ namespace AcadLib.UI.StatusBar
                 {
                     info += $", на сервере {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
                 }
-                if (CheckUpdates.NeedNotify(groupInfo.UpdateDescription))
+                if (CheckUpdates.NeedNotify(groupInfo.UpdateDescription, out var descResult))
                 {
-                    info += $"\n'{groupInfo.UpdateDescription}'";
+                    info += $" '{descResult}'";
                 }
                 return info;
             }
