@@ -17,8 +17,11 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBox Grid.Row="0" Text="{Binding Filter, Delay=400, UpdateSourceTrigger=PropertyChanged}" 
+        <StackPanel Grid.Row="0"  Orientation="Horizontal">
+            <TextBox Text="{Binding Filter, Delay=400, UpdateSourceTrigger=PropertyChanged}" 
                  mah:TextBoxHelper.Watermark="Фильтр" MinWidth="80" Margin="20,10,2,2" HorizontalAlignment="Left"/>
+            <Button Content="Я" Command="{Binding FindMe}" Margin="10,10,2,2" VerticalAlignment="Center" MinWidth="50"/>
+        </StackPanel>
         <DataGrid Name="dgUsers" Grid.Row="1" ItemsSource="{Binding Users}" AutoGenerateColumns="False"
                   SelectionMode="Extended" SelectionChanged="Selector_OnSelectionChanged" Margin="10" BorderThickness="1">
             <DataGrid.Columns>

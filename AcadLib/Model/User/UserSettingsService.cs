@@ -37,10 +37,17 @@ namespace AcadLib.User
 
         public static void UsersEditor()
         {
-            if (!General.IsBimUser)
+            try
             {
-                "Доступ только для BIM".WriteToCommandLine();
-                return;
+                if (!General.IsBimUser)
+                {
+                    "Доступ только для BIM".WriteToCommandLine();
+                    return;
+                }
+            }
+            catch
+            {
+                //
             }
             if (users == null)
             {

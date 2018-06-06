@@ -19,18 +19,16 @@ namespace AcadLib.User.UsersEditor
         private List<EditAutocadUsers> users;
         private DbUsers dbUsers;
         private FileLock fileLock;
-        private string filter;
 
         public UsersEditorVM()
         {
             dbUsers = new DbUsers();
-            users = dbUsers.GetUsers().Select(s => new EditAutocadUsers(s)).ToList();
-            Users = new CollectionView<EditAutocadUsers>(users) { Filter  = OnFilter};
-            Groups = PikSettings.UserGroups;
             this.WhenAnyValue(v => v.EditMode).Subscribe(ChangeMode);
-            Save = CreateCommand(dbUsers.Save, this.WhenAnyValue(v=>v.EditMode));
             this.WhenAnyValue(v => v.SelectedUsers).Subscribe(s => OnSelected());
-            this.WhenAnyValue(v => v.Filter).Subscribe(s => Users.Refresh());
+            this.WhenAnyValue(v => v.Filter).Skip(1).Subscribe(s => Users.Refresh());
+            Save = CreateCommand(dbUsers.Save, this.WhenAnyValue(v=>v.EditMode));
+            FindMe = CreateCommand(() => Filter = Environment.UserName);
+            LoadUsers();
         }
 
         public CollectionView<EditAutocadUsers> Users { get; set; }
@@ -43,6 +41,14 @@ namespace AcadLib.User.UsersEditor
         public ReactiveCommand Apply { get; set; }
         public bool EditMode { get; set; }
         public string Filter { get; set; }
+        public ReactiveCommand FindMe { get; set; }
+
+        private void LoadUsers()
+        {
+            users = dbUsers.GetUsers().Select(s => new EditAutocadUsers(s)).ToList();
+            Users = new CollectionView<EditAutocadUsers>(users) { Filter  = OnFilter};
+            Groups = PikSettings.UserGroups ?? LoadUserGroups();
+        }
 
         private bool OnFilter(object obj)
         {
@@ -53,6 +59,20 @@ namespace AcadLib.User.UsersEditor
             return true;
         }
 
+        private static List<string> LoadUserGroups()
+        {
+            var stringList = new List<string>();
+            try
+            {
+                const string file = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\Адаптация\Общие\Dll\groups.json";
+                stringList = file.Deserialize<Dictionary<string, string>>().Keys.ToList();
+            }
+            catch
+            {
+            }
+            return stringList;
+        }
+
         private void ChangeMode(bool editMode)
         {
             if (editMode)
@@ -61,8 +81,14 @@ namespace AcadLib.User.UsersEditor
                 fileLock = new FileLock(Path.GetSharedCommonFile("UsersEditor", "UsersEditor.lock"));
                 if (!fileLock.IsLockSuccess)
                 {
-                    ShowMessage(fileLock.GetMessage(), "Доступ заблокирован");
+                    ShowMessage(fileLock.GetMessage(), "Занято, редактирует:");
                     EditMode = false;
+                }
+                else
+                {
+                    // Обновить данные
+                    LoadUsers();
+                    Users.Refresh();
                 }
             }
             else
@@ -112,6 +138,7 @@ namespace AcadLib.User.UsersEditor
 
         private T GetValue<T>(Func<EditAutocadUsers, T> prop)
         {
+            if (SelectedUsers == null) return default;
             var res = SelectedUsers.GroupBy(prop).Select(s => s.Key);
             var moreOne = res.Skip(1).Any();
             var value = res.First();

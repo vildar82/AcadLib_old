@@ -10,6 +10,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Runtime;
 using JetBrains.Annotations;
 using NetLib;
+using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
 namespace AcadLib
 {
@@ -34,18 +35,18 @@ namespace AcadLib
         public const string UserGroupOV = "ОВ";
         public const string UserGroupSS = "СС";
         public const string UserGroupVK = "ВК";
-        public static readonly RXClass ClassAttDef = RXObject.GetClass(typeof(AttributeDefinition));
-        public static readonly RXClass ClassBlRef = RXObject.GetClass(typeof(BlockReference));
-        public static readonly RXClass ClassDBDic = RXObject.GetClass(typeof(DBDictionary));
-        public static readonly RXClass ClassDbTextRX = RXObject.GetClass(typeof(DBText));
-        public static readonly RXClass ClassDimension = RXObject.GetClass(typeof(Dimension));
-        public static readonly RXClass ClassHatch = RXObject.GetClass(typeof(Hatch));
-        public static readonly RXClass ClassMLeaderRX = RXObject.GetClass(typeof(MLeader));
-        public static readonly RXClass ClassMTextRX = RXObject.GetClass(typeof(MText));
-        public static readonly RXClass ClassPolyline = RXObject.GetClass(typeof(Polyline));
-        public static readonly RXClass ClassRecord = RXObject.GetClass(typeof(Xrecord));
-        public static readonly RXClass ClassRegion = RXObject.GetClass(typeof(Region));
-        public static readonly RXClass ClassVport = RXObject.GetClass(typeof(Viewport));
+        public static readonly RXClass ClassAttDef;
+        public static readonly RXClass ClassBlRef;
+        public static readonly RXClass ClassDBDic;
+        public static readonly RXClass ClassDbTextRX;
+        public static readonly RXClass ClassDimension;
+        public static readonly RXClass ClassHatch;
+        public static readonly RXClass ClassMLeaderRX;
+        public static readonly RXClass ClassMTextRX;
+        public static readonly RXClass ClassPolyline;
+        public static readonly RXClass ClassRecord;
+        public static readonly RXClass ClassRegion;
+        public static readonly RXClass ClassVport;
 
         private static readonly List<string> bimUsers = new List<string>
         {
@@ -59,11 +60,30 @@ namespace AcadLib
         /// <summary>
         ///     BIM-manager - отдел поддержки пользователей
         /// </summary>
-        public static bool IsBimUser { get; }
+        public static bool IsBimUser { get; set; }
 
         static General()
         {
-            IsBimUser = bimUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName)) || IsBimUserByUserData();
+            try
+            {
+                IsBimUser = bimUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName)) || IsBimUserByUserData();
+                ClassAttDef = RXObject.GetClass(typeof(AttributeDefinition));
+                ClassBlRef = RXObject.GetClass(typeof(BlockReference));
+                ClassDBDic = RXObject.GetClass(typeof(DBDictionary));
+                ClassDbTextRX = RXObject.GetClass(typeof(DBText));
+                ClassDimension = RXObject.GetClass(typeof(Dimension));
+                ClassHatch = RXObject.GetClass(typeof(Hatch));
+                ClassMLeaderRX = RXObject.GetClass(typeof(MLeader));
+                ClassMTextRX = RXObject.GetClass(typeof(MText));
+                ClassPolyline = RXObject.GetClass(typeof(Polyline));
+                ClassRecord = RXObject.GetClass(typeof(Xrecord));
+                ClassRegion = RXObject.GetClass(typeof(Region));
+                ClassVport = RXObject.GetClass(typeof(Viewport));
+            }
+            catch
+            {
+                //
+            }
         }
 
         private static bool IsBimUserByUserData()

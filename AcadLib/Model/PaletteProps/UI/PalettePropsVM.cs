@@ -11,10 +11,7 @@ namespace AcadLib.PaletteProps.UI
 
         public PalettePropsType SelectedType { get; set; }
 
-        public PalettePropVM SelectedProp { 
-            get; 
-            set;
-        }
+        public PalettePropVM SelectedProp { get; set;}
 
         public PalettePropsVM()
         {
