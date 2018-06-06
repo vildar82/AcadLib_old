@@ -38,7 +38,7 @@
                     <ContextMenu ItemsSource="{Binding SelectedCommand.ContexMenuItems}">
                         <ContextMenu.ItemContainerStyle>
                             <Style TargetType="{x:Type MenuItem}">
-                                <Setter Property="Icon" Value="{Binding Icon}" />
+                                <Setter Property="Icon" Value="{Binding Image}" />
                                 <Setter Property="Header" Value="{Binding Name}" />
                                 <Setter Property="Command" Value="{Binding Command}" />
                             </Style>
@@ -72,7 +72,7 @@
                     <ContextMenu ItemsSource="{Binding ContexMenuItems}">
                         <ContextMenu.ItemContainerStyle>
                             <Style TargetType="{x:Type MenuItem}">
-                                <Setter Property="Icon" Value="{Binding Icon}" />
+                                <Setter Property="Icon" Value="{Binding Image}" />
                                 <Setter Property="Header" Value="{Binding Name}" />
                                 <Setter Property="Command" Value="{Binding Command}" />
                             </Style>

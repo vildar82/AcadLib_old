@@ -1,13 +1,20 @@
-﻿using System;
-using AcadLib.User.UI;
+﻿using AcadLib.User.UI;
 using AcadLib.User.UsersEditor;
 using AutoCAD_PIK_Manager.User;
+using JetBrains.Annotations;
+using Path = AcadLib.IO.Path;
 
 namespace AcadLib.User
 {
+    [PublicAPI]
     public static class UserSettingsService
     {
         private static UsersEditorView users;
+
+        private static string GetFileUserSettings()
+        {
+            return Path.GetUserPluginFile("", "UserSettings.json");
+        }
 
         public static void Show()
         {
@@ -38,7 +45,7 @@ namespace AcadLib.User
             if (users == null)
             {
                 users = new UsersEditorView(new UsersEditorVM());
-                users.Closed += (o,e) => users = null;
+                users.Closed += (o, e) => users = null;
             }
             users.Show();
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Data;
 using AcadLib.IO;
 using AcadLib.User.DB;
 using AutoCAD_PIK_Manager.Settings;

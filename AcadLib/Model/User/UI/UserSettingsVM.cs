@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using AutoCAD_PIK_Manager.Settings;
 using AutoCAD_PIK_Manager.User;
 using NetLib;
@@ -13,7 +12,7 @@ namespace AcadLib.User.UI
 {
     public class UserSettingsVM : BaseViewModel
     {
-        public UserSettingsVM(AutocadUser user = null)
+        public UserSettingsVM(AutocadUser user)
         {
             User = user;
             Groups = LoadGroups();
