@@ -12,10 +12,10 @@ namespace AcadLib.UI.Properties
         {
             Value = value;
             OK = ReactiveCommand.Create(() => DialogResult = true);
-            Reset = AddCommand(ReactiveCommand.Create(() =>
+            Reset = CreateCommand(() =>
             {
                 if (reset != null) Value = reset(value);
-            }));
+            });
         }
 
         [Reactive] public object Value { get; set; }

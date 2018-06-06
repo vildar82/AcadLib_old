@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.Geometry;
+﻿using System.Linq;
+using Autodesk.AutoCAD.Geometry;
 using JetBrains.Annotations;
 using NetLib;
 using General = AcadLib.General;
@@ -18,7 +19,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         /// <param name="blRef"></param>
         public static void FlattenZ(this BlockReference blRef)
         {
-            if (blRef.Position.Z.IsEqual6(0))
+            if (!blRef.Position.Z.IsEqual6(0))
             {
                 if (!blRef.IsWriteEnabled) blRef = (BlockReference)blRef.Id.GetObject(OpenMode.ForWrite, false, true);
                 blRef.Position = new Point3d(blRef.Position.X, blRef.Position.Y, 0);
@@ -59,6 +60,23 @@ namespace Autodesk.AutoCAD.DatabaseServices
             var mat = Matrix3d.Identity;
             var blockExt = GetBlockExtents(blRef, ref mat, new Extents3d());
             return blockExt;
+        }
+
+        public static Extents3d GeometricExtentsVisible([NotNull] this BlockReference blRef)
+        {
+#pragma warning disable 618
+            using (var btr = (BlockTableRecord) blRef.BlockTableRecord.Open(OpenMode.ForRead))
+#pragma warning restore 618
+            {
+                var ext = new Extents3d();
+                foreach (var extents3D in btr.GetObjects<Entity>().Where(w => w.Visible && w.Bounds.HasValue)
+                    // ReSharper disable once PossibleInvalidOperationException
+                    .Select(s => s.Bounds.Value))
+                {
+                    ext.AddExtents(extents3D);
+                }
+                return ext;
+            }
         }
 
         /// <summary>
@@ -111,8 +129,15 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 {
                     using (var enTr = en.GetTransformedCopy(mat))
                     {
-                        (enTr as Dimension)?.RecomputeDimensionBlock(true);
-                        (enTr as Table)?.RecomputeTableBlock(true);
+                        switch (enTr)
+                        {
+                            case Dimension dim:
+                                dim.RecomputeDimensionBlock(true);
+                                break;
+                            case Table table:
+                                table.RecomputeTableBlock(true);
+                                break;
+                        }
 
                         if (IsEmptyExt(ref ext))
                         {

@@ -26,7 +26,7 @@ namespace AcadLib.Blocks.Visual.UI
         public VisualBlocksViewModel([NotNull] List<IVisualBlock> visuals)
         {
             Groups = visuals.GroupBy(g => g.Group).Select(s => new VisualGroup { Name = s.Key, Blocks = s.ToList() }).ToList();
-            Insert = ReactiveCommand.Create<IVisualBlock>(OnInsertExecute);
+            Insert = CreateCommand<IVisualBlock>(OnInsertExecute);
             VisibleSeparator = Groups.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
         }
 

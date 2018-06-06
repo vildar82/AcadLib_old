@@ -26,8 +26,8 @@ namespace AcadLib.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=cad01pik;Initial Catalog=SAPR;Persist Security Info=True;User ID=cad_" +
-            "ar;Password=qwerty!2345")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=VPP-SQL04;Initial Catalog=CAD_REVIT_STATISTICS;User ID=CAD_AllUsers;P" +
+            "assword=qwerty!2345")]
         public string SAPRConnectionString {
             get {
                 return ((string)(this["SAPRConnectionString"]));
@@ -126,6 +126,15 @@ namespace AcadLib.Properties {
             }
             set {
                 this["PalettePropsHelpVisible"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"metadata=res://*/Model.User.DB.Users.csdl|res://*/Model.User.DB.Users.ssdl|res://*/Model.User.DB.Users.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=vpp-sql04;initial catalog=CAD_AutoCAD;persist security info=True;user id=CAD_AllUsers;password=qwerty!2345;MultipleActiveResultSets=True;App=EntityFramework&quot;"" providerName=""System.Data.EntityClient")]
+        public string EFAutocadUsersConStr {
+            get {
+                return ((string)(this["EFAutocadUsersConStr"]));
             }
         }
     }

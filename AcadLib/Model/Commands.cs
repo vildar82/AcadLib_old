@@ -29,13 +29,17 @@ using AcadLib.Properties;
 using AcadLib.Statistic;
 using AcadLib.Template;
 using AcadLib.UI.Ribbon;
+using AcadLib.UI.StatusBar;
+using AcadLib.User;
 using AcadLib.Utils;
 using AutoCAD_PIK_Manager.Settings;
+using AutoCAD_PIK_Manager.User;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using JetBrains.Annotations;
 using NetLib.IO;
+using NetLib.Notification;
 using Exception = System.Exception;
 using Path = System.IO.Path;
 
@@ -83,8 +87,31 @@ namespace AcadLib
             try
             {
                 Logger.Log.Info("start Initialize AcadLib");
-                "MODEMACRO".SetSystemVariableTry(PikSettings.UserGroup);
+                try
+                {
+                    StatusBarEx.AddPaneUserGroup();
+                }
+                catch
+                {
+                    //
+                }
                 PluginStatisticsHelper.StartAutoCAD();
+                if (PikSettings.IsDisabledSettings)
+                {
+                    Logger.Log.Info("Настройки отключены (PikSettings.IsDisabledSettings) - загрузка прервана.");
+                    AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                    EventsStatisticService.Start();
+                    return;
+                }
+                try
+                {
+                    Notify.SetScreenSettings(new NotifyOptions(with: 400));
+                    CheckUpdates.Start();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Error(ex,"Notify и CheckUpdates");
+                }
                 if (Settings.Default.UpgradeRequired)
                 {
                     Settings.Default.Upgrade();
@@ -111,6 +138,10 @@ namespace AcadLib
                 YoutubeStatisticInit();
                 EventsStatisticService.Start();
                 AcadLibAssembly.AcadLoadInfo();
+                if (AutocadUserService.User == null)
+                {
+                    UserSettingsService.Show();
+                }
             }
             catch (Exception ex)
             {
@@ -153,6 +184,18 @@ namespace AcadLib
             });
         }
 
+        [CommandMethod(Group, "PIK_UserSettings", CommandFlags.Modal)]
+        public void PIK_UserSettings()
+        {
+            CommandStart.Start(doc => { UserSettingsService.Show(); });
+        }
+
+        [CommandMethod(Group, "PIK_Users", CommandFlags.Modal)]
+        public void PIK_Users()
+        {
+            CommandStart.Start(doc => { UserSettingsService.UsersEditor(); });
+        }
+
         /// <summary>
         ///     Список общих команд
         /// </summary>
@@ -169,7 +212,8 @@ namespace AcadLib
                     new PaletteCommand("Проверка и очистка", Resources.purge, nameof(PIK_PurgeAuditRegen),
                         "Очистка (_purge), проверка (_audit), сброс списка масштабов аннотации (_scalelistedit) и регенерация чертежа.",
                         GroupCommon),
-                    new PaletteCommand("Последние ошибки", Resources.error, nameof(PIK_Errors), "Показать окно последних ошибок", GroupCommon)
+                    new PaletteCommand("Последние ошибки", Resources.error, nameof(PIK_Errors), "Показать окно последних ошибок", GroupCommon),
+                    new PaletteCommand("Настройки", Resources.userSettings, nameof(PIK_UserSettings), "Настройки пользователя", GroupCommon)
                 };
             }
             catch (Exception ex)
@@ -529,6 +573,12 @@ namespace AcadLib
         public void PIK_PaletteProperties()
         {
             CommandStart.Start(d => PalletePropsService.Start());
+        }
+
+        [CommandMethod(Group, nameof(PIK_CheckUpdates), CommandFlags.Transparent)]
+        public void PIK_CheckUpdates()
+        {
+            CommandStart.Start(d => CheckUpdates.CheckUpdatesNotify(false));
         }
     }
 }

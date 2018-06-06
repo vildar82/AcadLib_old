@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -33,7 +34,11 @@ namespace AcadLib.Statistic
             try
             {
                 if (PikSettings.IsUpdatedSettings)
-                    InsertStatistic($"{App} Update", "AcadLib", "Настройки последние", Commands.AcadLibVersion.ToString(), "");
+                {
+                    InsertStatistic($"{App} Update", "AcadLib",
+                        PikSettings.IsDisabledSettings ? "Настройки отключены" : "Настройки последние",
+                        Commands.AcadLibVersion.ToString(), "");
+                }
             }
             catch (Exception ex)
             {
@@ -76,7 +81,6 @@ namespace AcadLib.Statistic
         {
             try
             {
-                if (!IsUserCanAddStatistic()) return;
                 InsertStatistic($"{App} {AcadYear} Run", "AcadLib", $"{App} Run", Commands.AcadLibVersion.ToString(), "");
                 // Статистика обновления настроек
                 UpdateSettings();
@@ -101,7 +105,7 @@ namespace AcadLib.Statistic
                     using (var pg = new C_PluginStatisticTableAdapter())
                     {
                         pg.Insert(appName, plugin ?? "", command ?? "", version ?? "",
-                            doc ?? "", Environment.UserName, DateTime.Now, null);
+                            doc ?? "", Environment.UserName, DateTime.Now, null, Path.GetFileName(doc));
                     }
                 }
                 catch (Exception ex)

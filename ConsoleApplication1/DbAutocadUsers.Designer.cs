@@ -10,7 +10,7 @@
 
 #pragma warning disable 1591
 
-namespace AcadLib.Model.Statistic {
+namespace ConsoleApplication1 {
     
     
     /// <summary>
@@ -20,17 +20,17 @@ namespace AcadLib.Model.Statistic {
     [global::System.ComponentModel.DesignerCategoryAttribute("code")]
     [global::System.ComponentModel.ToolboxItem(true)]
     [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedDataSetSchema")]
-    [global::System.Xml.Serialization.XmlRootAttribute("DataSetStatistic")]
+    [global::System.Xml.Serialization.XmlRootAttribute("DbAutocadUsers")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.DataSet")]
-    public partial class DataSetStatistic : global::System.Data.DataSet {
+    public partial class DbAutocadUsers : global::System.Data.DataSet {
         
-        private C_PluginStatisticDataTable tableC_PluginStatistic;
+        private AutocadUsersDataTable tableAutocadUsers;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        public DataSetStatistic() {
+        public DbAutocadUsers() {
             this.BeginInit();
             this.InitClass();
             global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
@@ -41,7 +41,7 @@ namespace AcadLib.Model.Statistic {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        protected DataSetStatistic(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+        protected DbAutocadUsers(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                 base(info, context, false) {
             if ((this.IsBinarySerialized(info, context) == true)) {
                 this.InitVars(false);
@@ -54,8 +54,8 @@ namespace AcadLib.Model.Statistic {
             if ((this.DetermineSchemaSerializationMode(info, context) == global::System.Data.SchemaSerializationMode.IncludeSchema)) {
                 global::System.Data.DataSet ds = new global::System.Data.DataSet();
                 ds.ReadXmlSchema(new global::System.Xml.XmlTextReader(new global::System.IO.StringReader(strSchema)));
-                if ((ds.Tables["C_PluginStatistic"] != null)) {
-                    base.Tables.Add(new C_PluginStatisticDataTable(ds.Tables["C_PluginStatistic"]));
+                if ((ds.Tables["AutocadUsers"] != null)) {
+                    base.Tables.Add(new AutocadUsersDataTable(ds.Tables["AutocadUsers"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -79,9 +79,9 @@ namespace AcadLib.Model.Statistic {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public C_PluginStatisticDataTable C_PluginStatistic {
+        public AutocadUsersDataTable AutocadUsers {
             get {
-                return this.tableC_PluginStatistic;
+                return this.tableAutocadUsers;
             }
         }
         
@@ -127,7 +127,7 @@ namespace AcadLib.Model.Statistic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         public override global::System.Data.DataSet Clone() {
-            DataSetStatistic cln = ((DataSetStatistic)(base.Clone()));
+            DbAutocadUsers cln = ((DbAutocadUsers)(base.Clone()));
             cln.InitVars();
             cln.SchemaSerializationMode = this.SchemaSerializationMode;
             return cln;
@@ -152,8 +152,8 @@ namespace AcadLib.Model.Statistic {
                 this.Reset();
                 global::System.Data.DataSet ds = new global::System.Data.DataSet();
                 ds.ReadXml(reader);
-                if ((ds.Tables["C_PluginStatistic"] != null)) {
-                    base.Tables.Add(new C_PluginStatisticDataTable(ds.Tables["C_PluginStatistic"]));
+                if ((ds.Tables["AutocadUsers"] != null)) {
+                    base.Tables.Add(new AutocadUsersDataTable(ds.Tables["AutocadUsers"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -188,10 +188,10 @@ namespace AcadLib.Model.Statistic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         internal void InitVars(bool initTable) {
-            this.tableC_PluginStatistic = ((C_PluginStatisticDataTable)(base.Tables["C_PluginStatistic"]));
+            this.tableAutocadUsers = ((AutocadUsersDataTable)(base.Tables["AutocadUsers"]));
             if ((initTable == true)) {
-                if ((this.tableC_PluginStatistic != null)) {
-                    this.tableC_PluginStatistic.InitVars();
+                if ((this.tableAutocadUsers != null)) {
+                    this.tableAutocadUsers.InitVars();
                 }
             }
         }
@@ -199,18 +199,18 @@ namespace AcadLib.Model.Statistic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         private void InitClass() {
-            this.DataSetName = "DataSetStatistic";
+            this.DataSetName = "DbAutocadUsers";
             this.Prefix = "";
-            this.Namespace = "http://tempuri.org/DataSetStatistic.xsd";
+            this.Namespace = "http://tempuri.org/DbAutocadUsers.xsd";
             this.EnforceConstraints = true;
             this.SchemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
-            this.tableC_PluginStatistic = new C_PluginStatisticDataTable();
-            base.Tables.Add(this.tableC_PluginStatistic);
+            this.tableAutocadUsers = new AutocadUsersDataTable();
+            base.Tables.Add(this.tableAutocadUsers);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        private bool ShouldSerializeC_PluginStatistic() {
+        private bool ShouldSerializeAutocadUsers() {
             return false;
         }
         
@@ -225,7 +225,7 @@ namespace AcadLib.Model.Statistic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedDataSetSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
-            DataSetStatistic ds = new DataSetStatistic();
+            DbAutocadUsers ds = new DbAutocadUsers();
             global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
             global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
             global::System.Xml.Schema.XmlSchemaAny any = new global::System.Xml.Schema.XmlSchemaAny();
@@ -270,39 +270,31 @@ namespace AcadLib.Model.Statistic {
         }
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        public delegate void C_PluginStatisticRowChangeEventHandler(object sender, C_PluginStatisticRowChangeEvent e);
+        public delegate void AutocadUsersRowChangeEventHandler(object sender, AutocadUsersRowChangeEvent e);
         
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class C_PluginStatisticDataTable : global::System.Data.TypedTableBase<C_PluginStatisticRow> {
+        public partial class AutocadUsersDataTable : global::System.Data.TypedTableBase<AutocadUsersRow> {
             
-            private global::System.Data.DataColumn columnID_Statistic_Mark;
+            private global::System.Data.DataColumn columnID;
             
-            private global::System.Data.DataColumn columnApplication;
+            private global::System.Data.DataColumn columnLogin;
             
-            private global::System.Data.DataColumn columnPlugin;
+            private global::System.Data.DataColumn columnFIO;
             
-            private global::System.Data.DataColumn columnCommand;
+            private global::System.Data.DataColumn columnGroup;
             
-            private global::System.Data.DataColumn columnBuild;
+            private global::System.Data.DataColumn columnDisabled;
             
-            private global::System.Data.DataColumn columnDoc;
-            
-            private global::System.Data.DataColumn columnUserName;
-            
-            private global::System.Data.DataColumn columnDateStart;
-            
-            private global::System.Data.DataColumn columnCommandId;
-            
-            private global::System.Data.DataColumn columnDocName;
+            private global::System.Data.DataColumn columnDescription;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public C_PluginStatisticDataTable() {
-                this.TableName = "C_PluginStatistic";
+            public AutocadUsersDataTable() {
+                this.TableName = "AutocadUsers";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
@@ -310,7 +302,7 @@ namespace AcadLib.Model.Statistic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            internal C_PluginStatisticDataTable(global::System.Data.DataTable table) {
+            internal AutocadUsersDataTable(global::System.Data.DataTable table) {
                 this.TableName = table.TableName;
                 if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
                     this.CaseSensitive = table.CaseSensitive;
@@ -327,88 +319,56 @@ namespace AcadLib.Model.Statistic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            protected C_PluginStatisticDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+            protected AutocadUsersDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                     base(info, context) {
                 this.InitVars();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn ID_Statistic_MarkColumn {
+            public global::System.Data.DataColumn IDColumn {
                 get {
-                    return this.columnID_Statistic_Mark;
+                    return this.columnID;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn ApplicationColumn {
+            public global::System.Data.DataColumn LoginColumn {
                 get {
-                    return this.columnApplication;
+                    return this.columnLogin;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn PluginColumn {
+            public global::System.Data.DataColumn FIOColumn {
                 get {
-                    return this.columnPlugin;
+                    return this.columnFIO;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn CommandColumn {
+            public global::System.Data.DataColumn GroupColumn {
                 get {
-                    return this.columnCommand;
+                    return this.columnGroup;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn BuildColumn {
+            public global::System.Data.DataColumn DisabledColumn {
                 get {
-                    return this.columnBuild;
+                    return this.columnDisabled;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn DocColumn {
+            public global::System.Data.DataColumn DescriptionColumn {
                 get {
-                    return this.columnDoc;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn UserNameColumn {
-                get {
-                    return this.columnUserName;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn DateStartColumn {
-                get {
-                    return this.columnDateStart;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn CommandIdColumn {
-                get {
-                    return this.columnCommandId;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn DocNameColumn {
-                get {
-                    return this.columnDocName;
+                    return this.columnDescription;
                 }
             }
             
@@ -423,61 +383,57 @@ namespace AcadLib.Model.Statistic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public C_PluginStatisticRow this[int index] {
+            public AutocadUsersRow this[int index] {
                 get {
-                    return ((C_PluginStatisticRow)(this.Rows[index]));
+                    return ((AutocadUsersRow)(this.Rows[index]));
                 }
             }
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public event C_PluginStatisticRowChangeEventHandler C_PluginStatisticRowChanging;
+            public event AutocadUsersRowChangeEventHandler AutocadUsersRowChanging;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public event C_PluginStatisticRowChangeEventHandler C_PluginStatisticRowChanged;
+            public event AutocadUsersRowChangeEventHandler AutocadUsersRowChanged;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public event C_PluginStatisticRowChangeEventHandler C_PluginStatisticRowDeleting;
+            public event AutocadUsersRowChangeEventHandler AutocadUsersRowDeleting;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public event C_PluginStatisticRowChangeEventHandler C_PluginStatisticRowDeleted;
+            public event AutocadUsersRowChangeEventHandler AutocadUsersRowDeleted;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void AddC_PluginStatisticRow(C_PluginStatisticRow row) {
+            public void AddAutocadUsersRow(AutocadUsersRow row) {
                 this.Rows.Add(row);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public C_PluginStatisticRow AddC_PluginStatisticRow(string Application, string Plugin, string Command, string Build, string Doc, string UserName, System.DateTime DateStart, int CommandId, string DocName) {
-                C_PluginStatisticRow rowC_PluginStatisticRow = ((C_PluginStatisticRow)(this.NewRow()));
+            public AutocadUsersRow AddAutocadUsersRow(string Login, string FIO, string Group, bool Disabled, string Description) {
+                AutocadUsersRow rowAutocadUsersRow = ((AutocadUsersRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
-                        Application,
-                        Plugin,
-                        Command,
-                        Build,
-                        Doc,
-                        UserName,
-                        DateStart,
-                        CommandId,
-                        DocName};
-                rowC_PluginStatisticRow.ItemArray = columnValuesArray;
-                this.Rows.Add(rowC_PluginStatisticRow);
-                return rowC_PluginStatisticRow;
+                        Login,
+                        FIO,
+                        Group,
+                        Disabled,
+                        Description};
+                rowAutocadUsersRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowAutocadUsersRow);
+                return rowAutocadUsersRow;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public C_PluginStatisticRow FindByID_Statistic_Mark(int ID_Statistic_Mark) {
-                return ((C_PluginStatisticRow)(this.Rows.Find(new object[] {
-                            ID_Statistic_Mark})));
+            public AutocadUsersRow FindByID(int ID) {
+                return ((AutocadUsersRow)(this.Rows.Find(new object[] {
+                            ID})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public override global::System.Data.DataTable Clone() {
-                C_PluginStatisticDataTable cln = ((C_PluginStatisticDataTable)(base.Clone()));
+                AutocadUsersDataTable cln = ((AutocadUsersDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
@@ -485,94 +441,75 @@ namespace AcadLib.Model.Statistic {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             protected override global::System.Data.DataTable CreateInstance() {
-                return new C_PluginStatisticDataTable();
+                return new AutocadUsersDataTable();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             internal void InitVars() {
-                this.columnID_Statistic_Mark = base.Columns["ID_Statistic_Mark"];
-                this.columnApplication = base.Columns["Application"];
-                this.columnPlugin = base.Columns["Plugin"];
-                this.columnCommand = base.Columns["Command"];
-                this.columnBuild = base.Columns["Build"];
-                this.columnDoc = base.Columns["Doc"];
-                this.columnUserName = base.Columns["UserName"];
-                this.columnDateStart = base.Columns["DateStart"];
-                this.columnCommandId = base.Columns["CommandId"];
-                this.columnDocName = base.Columns["DocName"];
+                this.columnID = base.Columns["ID"];
+                this.columnLogin = base.Columns["Login"];
+                this.columnFIO = base.Columns["FIO"];
+                this.columnGroup = base.Columns["Group"];
+                this.columnDisabled = base.Columns["Disabled"];
+                this.columnDescription = base.Columns["Description"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             private void InitClass() {
-                this.columnID_Statistic_Mark = new global::System.Data.DataColumn("ID_Statistic_Mark", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnID_Statistic_Mark);
-                this.columnApplication = new global::System.Data.DataColumn("Application", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnApplication);
-                this.columnPlugin = new global::System.Data.DataColumn("Plugin", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnPlugin);
-                this.columnCommand = new global::System.Data.DataColumn("Command", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnCommand);
-                this.columnBuild = new global::System.Data.DataColumn("Build", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnBuild);
-                this.columnDoc = new global::System.Data.DataColumn("Doc", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnDoc);
-                this.columnUserName = new global::System.Data.DataColumn("UserName", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnUserName);
-                this.columnDateStart = new global::System.Data.DataColumn("DateStart", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnDateStart);
-                this.columnCommandId = new global::System.Data.DataColumn("CommandId", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnCommandId);
-                this.columnDocName = new global::System.Data.DataColumn("DocName", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnDocName);
+                this.columnID = new global::System.Data.DataColumn("ID", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnID);
+                this.columnLogin = new global::System.Data.DataColumn("Login", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnLogin);
+                this.columnFIO = new global::System.Data.DataColumn("FIO", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnFIO);
+                this.columnGroup = new global::System.Data.DataColumn("Group", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnGroup);
+                this.columnDisabled = new global::System.Data.DataColumn("Disabled", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDisabled);
+                this.columnDescription = new global::System.Data.DataColumn("Description", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDescription);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnID_Statistic_Mark}, true));
-                this.columnID_Statistic_Mark.AutoIncrement = true;
-                this.columnID_Statistic_Mark.AutoIncrementSeed = -1;
-                this.columnID_Statistic_Mark.AutoIncrementStep = -1;
-                this.columnID_Statistic_Mark.AllowDBNull = false;
-                this.columnID_Statistic_Mark.ReadOnly = true;
-                this.columnID_Statistic_Mark.Unique = true;
-                this.columnApplication.AllowDBNull = false;
-                this.columnApplication.MaxLength = 50;
-                this.columnPlugin.AllowDBNull = false;
-                this.columnPlugin.MaxLength = 50;
-                this.columnCommand.MaxLength = 2000;
-                this.columnBuild.AllowDBNull = false;
-                this.columnBuild.MaxLength = 50;
-                this.columnDoc.AllowDBNull = false;
-                this.columnDoc.MaxLength = 500;
-                this.columnUserName.AllowDBNull = false;
-                this.columnUserName.MaxLength = 50;
-                this.columnDateStart.AllowDBNull = false;
-                this.columnDocName.MaxLength = 200;
+                                this.columnID}, true));
+                this.columnID.AutoIncrement = true;
+                this.columnID.AutoIncrementSeed = -1;
+                this.columnID.AutoIncrementStep = -1;
+                this.columnID.AllowDBNull = false;
+                this.columnID.ReadOnly = true;
+                this.columnID.Unique = true;
+                this.columnLogin.AllowDBNull = false;
+                this.columnLogin.MaxLength = 150;
+                this.columnFIO.MaxLength = 150;
+                this.columnGroup.MaxLength = 50;
+                this.columnDisabled.AllowDBNull = false;
+                this.columnDescription.MaxLength = 150;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public C_PluginStatisticRow NewC_PluginStatisticRow() {
-                return ((C_PluginStatisticRow)(this.NewRow()));
+            public AutocadUsersRow NewAutocadUsersRow() {
+                return ((AutocadUsersRow)(this.NewRow()));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
-                return new C_PluginStatisticRow(builder);
+                return new AutocadUsersRow(builder);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             protected override global::System.Type GetRowType() {
-                return typeof(C_PluginStatisticRow);
+                return typeof(AutocadUsersRow);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowChanged(e);
-                if ((this.C_PluginStatisticRowChanged != null)) {
-                    this.C_PluginStatisticRowChanged(this, new C_PluginStatisticRowChangeEvent(((C_PluginStatisticRow)(e.Row)), e.Action));
+                if ((this.AutocadUsersRowChanged != null)) {
+                    this.AutocadUsersRowChanged(this, new AutocadUsersRowChangeEvent(((AutocadUsersRow)(e.Row)), e.Action));
                 }
             }
             
@@ -580,8 +517,8 @@ namespace AcadLib.Model.Statistic {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowChanging(e);
-                if ((this.C_PluginStatisticRowChanging != null)) {
-                    this.C_PluginStatisticRowChanging(this, new C_PluginStatisticRowChangeEvent(((C_PluginStatisticRow)(e.Row)), e.Action));
+                if ((this.AutocadUsersRowChanging != null)) {
+                    this.AutocadUsersRowChanging(this, new AutocadUsersRowChangeEvent(((AutocadUsersRow)(e.Row)), e.Action));
                 }
             }
             
@@ -589,8 +526,8 @@ namespace AcadLib.Model.Statistic {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowDeleted(e);
-                if ((this.C_PluginStatisticRowDeleted != null)) {
-                    this.C_PluginStatisticRowDeleted(this, new C_PluginStatisticRowChangeEvent(((C_PluginStatisticRow)(e.Row)), e.Action));
+                if ((this.AutocadUsersRowDeleted != null)) {
+                    this.AutocadUsersRowDeleted(this, new AutocadUsersRowChangeEvent(((AutocadUsersRow)(e.Row)), e.Action));
                 }
             }
             
@@ -598,14 +535,14 @@ namespace AcadLib.Model.Statistic {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowDeleting(e);
-                if ((this.C_PluginStatisticRowDeleting != null)) {
-                    this.C_PluginStatisticRowDeleting(this, new C_PluginStatisticRowChangeEvent(((C_PluginStatisticRow)(e.Row)), e.Action));
+                if ((this.AutocadUsersRowDeleting != null)) {
+                    this.AutocadUsersRowDeleting(this, new AutocadUsersRowChangeEvent(((AutocadUsersRow)(e.Row)), e.Action));
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void RemoveC_PluginStatisticRow(C_PluginStatisticRow row) {
+            public void RemoveAutocadUsersRow(AutocadUsersRow row) {
                 this.Rows.Remove(row);
             }
             
@@ -614,7 +551,7 @@ namespace AcadLib.Model.Statistic {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                DataSetStatistic ds = new DataSetStatistic();
+                DbAutocadUsers ds = new DbAutocadUsers();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -632,7 +569,7 @@ namespace AcadLib.Model.Statistic {
                 type.Attributes.Add(attribute1);
                 global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute2.Name = "tableTypeName";
-                attribute2.FixedValue = "C_PluginStatisticDataTable";
+                attribute2.FixedValue = "AutocadUsersDataTable";
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
@@ -676,176 +613,132 @@ namespace AcadLib.Model.Statistic {
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class C_PluginStatisticRow : global::System.Data.DataRow {
+        public partial class AutocadUsersRow : global::System.Data.DataRow {
             
-            private C_PluginStatisticDataTable tableC_PluginStatistic;
+            private AutocadUsersDataTable tableAutocadUsers;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            internal C_PluginStatisticRow(global::System.Data.DataRowBuilder rb) : 
+            internal AutocadUsersRow(global::System.Data.DataRowBuilder rb) : 
                     base(rb) {
-                this.tableC_PluginStatistic = ((C_PluginStatisticDataTable)(this.Table));
+                this.tableAutocadUsers = ((AutocadUsersDataTable)(this.Table));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public int ID_Statistic_Mark {
+            public int ID {
                 get {
-                    return ((int)(this[this.tableC_PluginStatistic.ID_Statistic_MarkColumn]));
+                    return ((int)(this[this.tableAutocadUsers.IDColumn]));
                 }
                 set {
-                    this[this.tableC_PluginStatistic.ID_Statistic_MarkColumn] = value;
+                    this[this.tableAutocadUsers.IDColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string Application {
+            public string Login {
                 get {
-                    return ((string)(this[this.tableC_PluginStatistic.ApplicationColumn]));
+                    return ((string)(this[this.tableAutocadUsers.LoginColumn]));
                 }
                 set {
-                    this[this.tableC_PluginStatistic.ApplicationColumn] = value;
+                    this[this.tableAutocadUsers.LoginColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string Plugin {
-                get {
-                    return ((string)(this[this.tableC_PluginStatistic.PluginColumn]));
-                }
-                set {
-                    this[this.tableC_PluginStatistic.PluginColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string Command {
+            public string FIO {
                 get {
                     try {
-                        return ((string)(this[this.tableC_PluginStatistic.CommandColumn]));
+                        return ((string)(this[this.tableAutocadUsers.FIOColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Command\' in table \'C_PluginStatistic\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'FIO\' in table \'AutocadUsers\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableC_PluginStatistic.CommandColumn] = value;
+                    this[this.tableAutocadUsers.FIOColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string Build {
-                get {
-                    return ((string)(this[this.tableC_PluginStatistic.BuildColumn]));
-                }
-                set {
-                    this[this.tableC_PluginStatistic.BuildColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string Doc {
-                get {
-                    return ((string)(this[this.tableC_PluginStatistic.DocColumn]));
-                }
-                set {
-                    this[this.tableC_PluginStatistic.DocColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string UserName {
-                get {
-                    return ((string)(this[this.tableC_PluginStatistic.UserNameColumn]));
-                }
-                set {
-                    this[this.tableC_PluginStatistic.UserNameColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public System.DateTime DateStart {
-                get {
-                    return ((global::System.DateTime)(this[this.tableC_PluginStatistic.DateStartColumn]));
-                }
-                set {
-                    this[this.tableC_PluginStatistic.DateStartColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public int CommandId {
+            public string Group {
                 get {
                     try {
-                        return ((int)(this[this.tableC_PluginStatistic.CommandIdColumn]));
+                        return ((string)(this[this.tableAutocadUsers.GroupColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'CommandId\' in table \'C_PluginStatistic\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Group\' in table \'AutocadUsers\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableC_PluginStatistic.CommandIdColumn] = value;
+                    this[this.tableAutocadUsers.GroupColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string DocName {
+            public bool Disabled {
+                get {
+                    return ((bool)(this[this.tableAutocadUsers.DisabledColumn]));
+                }
+                set {
+                    this[this.tableAutocadUsers.DisabledColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public string Description {
                 get {
                     try {
-                        return ((string)(this[this.tableC_PluginStatistic.DocNameColumn]));
+                        return ((string)(this[this.tableAutocadUsers.DescriptionColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'DocName\' in table \'C_PluginStatistic\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Description\' in table \'AutocadUsers\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableC_PluginStatistic.DocNameColumn] = value;
+                    this[this.tableAutocadUsers.DescriptionColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public bool IsCommandNull() {
-                return this.IsNull(this.tableC_PluginStatistic.CommandColumn);
+            public bool IsFIONull() {
+                return this.IsNull(this.tableAutocadUsers.FIOColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void SetCommandNull() {
-                this[this.tableC_PluginStatistic.CommandColumn] = global::System.Convert.DBNull;
+            public void SetFIONull() {
+                this[this.tableAutocadUsers.FIOColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public bool IsCommandIdNull() {
-                return this.IsNull(this.tableC_PluginStatistic.CommandIdColumn);
+            public bool IsGroupNull() {
+                return this.IsNull(this.tableAutocadUsers.GroupColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void SetCommandIdNull() {
-                this[this.tableC_PluginStatistic.CommandIdColumn] = global::System.Convert.DBNull;
+            public void SetGroupNull() {
+                this[this.tableAutocadUsers.GroupColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public bool IsDocNameNull() {
-                return this.IsNull(this.tableC_PluginStatistic.DocNameColumn);
+            public bool IsDescriptionNull() {
+                return this.IsNull(this.tableAutocadUsers.DescriptionColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void SetDocNameNull() {
-                this[this.tableC_PluginStatistic.DocNameColumn] = global::System.Convert.DBNull;
+            public void SetDescriptionNull() {
+                this[this.tableAutocadUsers.DescriptionColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -853,22 +746,22 @@ namespace AcadLib.Model.Statistic {
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        public class C_PluginStatisticRowChangeEvent : global::System.EventArgs {
+        public class AutocadUsersRowChangeEvent : global::System.EventArgs {
             
-            private C_PluginStatisticRow eventRow;
+            private AutocadUsersRow eventRow;
             
             private global::System.Data.DataRowAction eventAction;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public C_PluginStatisticRowChangeEvent(C_PluginStatisticRow row, global::System.Data.DataRowAction action) {
+            public AutocadUsersRowChangeEvent(AutocadUsersRow row, global::System.Data.DataRowAction action) {
                 this.eventRow = row;
                 this.eventAction = action;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public C_PluginStatisticRow Row {
+            public AutocadUsersRow Row {
                 get {
                     return this.eventRow;
                 }
@@ -884,7 +777,7 @@ namespace AcadLib.Model.Statistic {
         }
     }
 }
-namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
+namespace ConsoleApplication1.DbAutocadUsersTableAdapters {
     
     
     /// <summary>
@@ -896,7 +789,7 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
     [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
         ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-    public partial class C_PluginStatisticTableAdapter : global::System.ComponentModel.Component {
+    public partial class AutocadUsersTableAdapter : global::System.ComponentModel.Component {
         
         private global::System.Data.SqlClient.SqlDataAdapter _adapter;
         
@@ -910,7 +803,7 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        public C_PluginStatisticTableAdapter() {
+        public AutocadUsersTableAdapter() {
             this.ClearBeforeFill = true;
         }
         
@@ -1007,84 +900,66 @@ namespace AcadLib.Model.Statistic.DataSetStatisticTableAdapters {
             this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
-            tableMapping.DataSetTable = "C_PluginStatistic";
-            tableMapping.ColumnMappings.Add("ID_Statistic_Mark", "ID_Statistic_Mark");
-            tableMapping.ColumnMappings.Add("Application", "Application");
-            tableMapping.ColumnMappings.Add("Plugin", "Plugin");
-            tableMapping.ColumnMappings.Add("Command", "Command");
-            tableMapping.ColumnMappings.Add("Build", "Build");
-            tableMapping.ColumnMappings.Add("Doc", "Doc");
-            tableMapping.ColumnMappings.Add("UserName", "UserName");
-            tableMapping.ColumnMappings.Add("DateStart", "DateStart");
-            tableMapping.ColumnMappings.Add("CommandId", "CommandId");
-            tableMapping.ColumnMappings.Add("DocName", "DocName");
+            tableMapping.DataSetTable = "AutocadUsers";
+            tableMapping.ColumnMappings.Add("ID", "ID");
+            tableMapping.ColumnMappings.Add("Login", "Login");
+            tableMapping.ColumnMappings.Add("FIO", "FIO");
+            tableMapping.ColumnMappings.Add("Group", "Group");
+            tableMapping.ColumnMappings.Add("Disabled", "Disabled");
+            tableMapping.ColumnMappings.Add("Description", "Description");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [dbo].[C_PluginStatistic] WHERE (([ID_Statistic_Mark] = @Original_ID_Statistic_Mark) AND ([Application] = @Original_Application) AND ([Plugin] = @Original_Plugin) AND ((@IsNull_Command = 1 AND [Command] IS NULL) OR ([Command] = @Original_Command)) AND ([Build] = @Original_Build) AND ([Doc] = @Original_Doc) AND ([UserName] = @Original_UserName) AND ([DateStart] = @Original_DateStart) AND ((@IsNull_CommandId = 1 AND [CommandId] IS NULL) OR ([CommandId] = @Original_CommandId)) AND ((@IsNull_DocName = 1 AND [DocName] IS NULL) OR ([DocName] = @Original_DocName)))";
+            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [dbo].[AutocadUsers] WHERE (([ID] = @Original_ID) AND ([Login] = @Original_Login) AND ((@IsNull_FIO = 1 AND [FIO] IS NULL) OR ([FIO] = @Original_FIO)) AND ((@IsNull_Group = 1 AND [Group] IS NULL) OR ([Group] = @Original_Group)) AND ([Disabled] = @Original_Disabled) AND ((@IsNull_Description = 1 AND [Description] IS NULL) OR ([Description] = @Original_Description)))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID_Statistic_Mark", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID_Statistic_Mark", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Application", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Application", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Plugin", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Plugin", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_Command", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Command", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Command", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Command", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Build", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Build", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Doc", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Doc", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_UserName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "UserName", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_DateStart", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DateStart", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_CommandId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CommandId", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_CommandId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CommandId", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_DocName", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DocName", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_DocName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DocName", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Login", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Login", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_FIO", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FIO", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_FIO", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FIO", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_Group", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Group", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Group", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Disabled", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Disabled", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_Description", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [dbo].[C_PluginStatistic] ([Application], [Plugin], [Command], [Build], [Doc], [UserName], [DateStart], [CommandId], [DocName]) VALUES (@Application, @Plugin, @Command, @Build, @Doc, @UserName, @DateStart, @CommandId, @DocName);
-SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, DateStart, CommandId, DocName FROM C_PluginStatistic WHERE (ID_Statistic_Mark = SCOPE_IDENTITY())";
+            this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[AutocadUsers] ([Login], [FIO], [Group], [Disabled], [Descripti" +
+                "on]) VALUES (@Login, @FIO, @Group, @Disabled, @Description);\r\nSELECT ID, Login, " +
+                "FIO, [Group], Disabled, Description FROM AutocadUsers WHERE (ID = SCOPE_IDENTITY" +
+                "())";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Application", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Application", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Plugin", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Plugin", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Command", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Command", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Build", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Build", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Doc", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Doc", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@UserName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "UserName", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@DateStart", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DateStart", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CommandId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CommandId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@DocName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DocName", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Login", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Login", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FIO", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FIO", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Group", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Disabled", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Disabled", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[C_PluginStatistic] SET [Application] = @Application, [Plugin] = @Plugin, [Command] = @Command, [Build] = @Build, [Doc] = @Doc, [UserName] = @UserName, [DateStart] = @DateStart, [CommandId] = @CommandId, [DocName] = @DocName WHERE (([ID_Statistic_Mark] = @Original_ID_Statistic_Mark) AND ([Application] = @Original_Application) AND ([Plugin] = @Original_Plugin) AND ((@IsNull_Command = 1 AND [Command] IS NULL) OR ([Command] = @Original_Command)) AND ([Build] = @Original_Build) AND ([Doc] = @Original_Doc) AND ([UserName] = @Original_UserName) AND ([DateStart] = @Original_DateStart) AND ((@IsNull_CommandId = 1 AND [CommandId] IS NULL) OR ([CommandId] = @Original_CommandId)) AND ((@IsNull_DocName = 1 AND [DocName] IS NULL) OR ([DocName] = @Original_DocName)));
-SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, DateStart, CommandId, DocName FROM C_PluginStatistic WHERE (ID_Statistic_Mark = @ID_Statistic_Mark)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[AutocadUsers] SET [Login] = @Login, [FIO] = @FIO, [Group] = @Group, [Disabled] = @Disabled, [Description] = @Description WHERE (([ID] = @Original_ID) AND ([Login] = @Original_Login) AND ((@IsNull_FIO = 1 AND [FIO] IS NULL) OR ([FIO] = @Original_FIO)) AND ((@IsNull_Group = 1 AND [Group] IS NULL) OR ([Group] = @Original_Group)) AND ([Disabled] = @Original_Disabled) AND ((@IsNull_Description = 1 AND [Description] IS NULL) OR ([Description] = @Original_Description)));
+SELECT ID, Login, FIO, [Group], Disabled, Description FROM AutocadUsers WHERE (ID = @ID)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Application", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Application", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Plugin", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Plugin", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Command", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Command", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Build", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Build", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Doc", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Doc", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@UserName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "UserName", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@DateStart", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DateStart", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CommandId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CommandId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@DocName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DocName", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID_Statistic_Mark", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID_Statistic_Mark", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Application", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Application", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Plugin", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Plugin", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_Command", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Command", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Command", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Command", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Build", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Build", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Doc", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Doc", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_UserName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "UserName", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_DateStart", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DateStart", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_CommandId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CommandId", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_CommandId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CommandId", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_DocName", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DocName", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_DocName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "DocName", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID_Statistic_Mark", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "ID_Statistic_Mark", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Login", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Login", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FIO", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FIO", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Group", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Disabled", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Disabled", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Login", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Login", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_FIO", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FIO", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_FIO", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FIO", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_Group", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Group", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Group", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Disabled", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Disabled", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_Description", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::AcadLib.Properties.Settings.Default.SAPRConnectionString;
+            this._connection.ConnectionString = global::ConsoleApplication1.Properties.Settings.Default.CAD_AutoCADConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1093,8 +968,7 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Dat" +
-                "eStart, CommandId, DocName FROM dbo.C_PluginStatistic";
+            this._commandCollection[0].CommandText = "SELECT ID, Login, FIO, [Group], Disabled, Description FROM dbo.AutocadUsers";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -1102,7 +976,7 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(DataSetStatistic.C_PluginStatisticDataTable dataTable) {
+        public virtual int Fill(DbAutocadUsers.AutocadUsersDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -1115,9 +989,9 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual DataSetStatistic.C_PluginStatisticDataTable GetData() {
+        public virtual DbAutocadUsers.AutocadUsersDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            DataSetStatistic.C_PluginStatisticDataTable dataTable = new DataSetStatistic.C_PluginStatisticDataTable();
+            DbAutocadUsers.AutocadUsersDataTable dataTable = new DbAutocadUsers.AutocadUsersDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
@@ -1125,15 +999,15 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(DataSetStatistic.C_PluginStatisticDataTable dataTable) {
+        public virtual int Update(DbAutocadUsers.AutocadUsersDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(DataSetStatistic dataSet) {
-            return this.Adapter.Update(dataSet, "C_PluginStatistic");
+        public virtual int Update(DbAutocadUsers dataSet) {
+            return this.Adapter.Update(dataSet, "AutocadUsers");
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1155,62 +1029,38 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(int Original_ID_Statistic_Mark, string Original_Application, string Original_Plugin, string Original_Command, string Original_Build, string Original_Doc, string Original_UserName, System.DateTime Original_DateStart, global::System.Nullable<int> Original_CommandId, string Original_DocName) {
-            this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_ID_Statistic_Mark));
-            if ((Original_Application == null)) {
-                throw new global::System.ArgumentNullException("Original_Application");
+        public virtual int Delete(int Original_ID, string Original_Login, string Original_FIO, string Original_Group, bool Original_Disabled, string Original_Description) {
+            this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_ID));
+            if ((Original_Login == null)) {
+                throw new global::System.ArgumentNullException("Original_Login");
             }
             else {
-                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_Application));
+                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_Login));
             }
-            if ((Original_Plugin == null)) {
-                throw new global::System.ArgumentNullException("Original_Plugin");
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[2].Value = ((string)(Original_Plugin));
-            }
-            if ((Original_Command == null)) {
-                this.Adapter.DeleteCommand.Parameters[3].Value = ((object)(1));
-                this.Adapter.DeleteCommand.Parameters[4].Value = global::System.DBNull.Value;
+            if ((Original_FIO == null)) {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[3].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.DeleteCommand.Parameters[3].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[4].Value = ((string)(Original_Command));
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[3].Value = ((string)(Original_FIO));
             }
-            if ((Original_Build == null)) {
-                throw new global::System.ArgumentNullException("Original_Build");
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[5].Value = ((string)(Original_Build));
-            }
-            if ((Original_Doc == null)) {
-                throw new global::System.ArgumentNullException("Original_Doc");
+            if ((Original_Group == null)) {
+                this.Adapter.DeleteCommand.Parameters[4].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[5].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.DeleteCommand.Parameters[6].Value = ((string)(Original_Doc));
+                this.Adapter.DeleteCommand.Parameters[4].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[5].Value = ((string)(Original_Group));
             }
-            if ((Original_UserName == null)) {
-                throw new global::System.ArgumentNullException("Original_UserName");
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[7].Value = ((string)(Original_UserName));
-            }
-            this.Adapter.DeleteCommand.Parameters[8].Value = ((System.DateTime)(Original_DateStart));
-            if ((Original_CommandId.HasValue == true)) {
-                this.Adapter.DeleteCommand.Parameters[9].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[10].Value = ((int)(Original_CommandId.Value));
+            this.Adapter.DeleteCommand.Parameters[6].Value = ((bool)(Original_Disabled));
+            if ((Original_Description == null)) {
+                this.Adapter.DeleteCommand.Parameters[7].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[8].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.DeleteCommand.Parameters[9].Value = ((object)(1));
-                this.Adapter.DeleteCommand.Parameters[10].Value = global::System.DBNull.Value;
-            }
-            if ((Original_DocName == null)) {
-                this.Adapter.DeleteCommand.Parameters[11].Value = ((object)(1));
-                this.Adapter.DeleteCommand.Parameters[12].Value = global::System.DBNull.Value;
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[11].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[12].Value = ((string)(Original_DocName));
+                this.Adapter.DeleteCommand.Parameters[7].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[8].Value = ((string)(Original_Description));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -1232,55 +1082,31 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(string Application, string Plugin, string Command1, string Build, string Doc, string UserName, System.DateTime DateStart, global::System.Nullable<int> CommandId, string DocName) {
-            if ((Application == null)) {
-                throw new global::System.ArgumentNullException("Application");
+        public virtual int Insert(string Login, string FIO, string Group, bool Disabled, string Description) {
+            if ((Login == null)) {
+                throw new global::System.ArgumentNullException("Login");
             }
             else {
-                this.Adapter.InsertCommand.Parameters[0].Value = ((string)(Application));
+                this.Adapter.InsertCommand.Parameters[0].Value = ((string)(Login));
             }
-            if ((Plugin == null)) {
-                throw new global::System.ArgumentNullException("Plugin");
+            if ((FIO == null)) {
+                this.Adapter.InsertCommand.Parameters[1].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.InsertCommand.Parameters[1].Value = ((string)(Plugin));
+                this.Adapter.InsertCommand.Parameters[1].Value = ((string)(FIO));
             }
-            if ((Command1 == null)) {
+            if ((Group == null)) {
                 this.Adapter.InsertCommand.Parameters[2].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.InsertCommand.Parameters[2].Value = ((string)(Command1));
+                this.Adapter.InsertCommand.Parameters[2].Value = ((string)(Group));
             }
-            if ((Build == null)) {
-                throw new global::System.ArgumentNullException("Build");
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[3].Value = ((string)(Build));
-            }
-            if ((Doc == null)) {
-                throw new global::System.ArgumentNullException("Doc");
+            this.Adapter.InsertCommand.Parameters[3].Value = ((bool)(Disabled));
+            if ((Description == null)) {
+                this.Adapter.InsertCommand.Parameters[4].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.InsertCommand.Parameters[4].Value = ((string)(Doc));
-            }
-            if ((UserName == null)) {
-                throw new global::System.ArgumentNullException("UserName");
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[5].Value = ((string)(UserName));
-            }
-            this.Adapter.InsertCommand.Parameters[6].Value = ((System.DateTime)(DateStart));
-            if ((CommandId.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[7].Value = ((int)(CommandId.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
-            }
-            if ((DocName == null)) {
-                this.Adapter.InsertCommand.Parameters[8].Value = global::System.DBNull.Value;
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[8].Value = ((string)(DocName));
+                this.Adapter.InsertCommand.Parameters[4].Value = ((string)(Description));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -1302,133 +1128,65 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(
-                    string Application, 
-                    string Plugin, 
-                    string Command1, 
-                    string Build, 
-                    string Doc, 
-                    string UserName, 
-                    System.DateTime DateStart, 
-                    global::System.Nullable<int> CommandId, 
-                    string DocName, 
-                    int Original_ID_Statistic_Mark, 
-                    string Original_Application, 
-                    string Original_Plugin, 
-                    string Original_Command, 
-                    string Original_Build, 
-                    string Original_Doc, 
-                    string Original_UserName, 
-                    System.DateTime Original_DateStart, 
-                    global::System.Nullable<int> Original_CommandId, 
-                    string Original_DocName, 
-                    int ID_Statistic_Mark) {
-            if ((Application == null)) {
-                throw new global::System.ArgumentNullException("Application");
+        public virtual int Update(string Login, string FIO, string Group, bool Disabled, string Description, int Original_ID, string Original_Login, string Original_FIO, string Original_Group, bool Original_Disabled, string Original_Description, int ID) {
+            if ((Login == null)) {
+                throw new global::System.ArgumentNullException("Login");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[0].Value = ((string)(Application));
+                this.Adapter.UpdateCommand.Parameters[0].Value = ((string)(Login));
             }
-            if ((Plugin == null)) {
-                throw new global::System.ArgumentNullException("Plugin");
+            if ((FIO == null)) {
+                this.Adapter.UpdateCommand.Parameters[1].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(Plugin));
+                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(FIO));
             }
-            if ((Command1 == null)) {
+            if ((Group == null)) {
                 this.Adapter.UpdateCommand.Parameters[2].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(Command1));
+                this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(Group));
             }
-            if ((Build == null)) {
-                throw new global::System.ArgumentNullException("Build");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Build));
-            }
-            if ((Doc == null)) {
-                throw new global::System.ArgumentNullException("Doc");
+            this.Adapter.UpdateCommand.Parameters[3].Value = ((bool)(Disabled));
+            if ((Description == null)) {
+                this.Adapter.UpdateCommand.Parameters[4].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Doc));
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Description));
             }
-            if ((UserName == null)) {
-                throw new global::System.ArgumentNullException("UserName");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(UserName));
-            }
-            this.Adapter.UpdateCommand.Parameters[6].Value = ((System.DateTime)(DateStart));
-            if ((CommandId.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[7].Value = ((int)(CommandId.Value));
+            this.Adapter.UpdateCommand.Parameters[5].Value = ((int)(Original_ID));
+            if ((Original_Login == null)) {
+                throw new global::System.ArgumentNullException("Original_Login");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((string)(Original_Login));
             }
-            if ((DocName == null)) {
+            if ((Original_FIO == null)) {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((object)(1));
                 this.Adapter.UpdateCommand.Parameters[8].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(DocName));
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(Original_FIO));
             }
-            this.Adapter.UpdateCommand.Parameters[9].Value = ((int)(Original_ID_Statistic_Mark));
-            if ((Original_Application == null)) {
-                throw new global::System.ArgumentNullException("Original_Application");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(Original_Application));
-            }
-            if ((Original_Plugin == null)) {
-                throw new global::System.ArgumentNullException("Original_Plugin");
+            if ((Original_Group == null)) {
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[11].Value = ((string)(Original_Plugin));
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(Original_Group));
             }
-            if ((Original_Command == null)) {
+            this.Adapter.UpdateCommand.Parameters[11].Value = ((bool)(Original_Disabled));
+            if ((Original_Description == null)) {
                 this.Adapter.UpdateCommand.Parameters[12].Value = ((object)(1));
                 this.Adapter.UpdateCommand.Parameters[13].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[12].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(Original_Command));
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(Original_Description));
             }
-            if ((Original_Build == null)) {
-                throw new global::System.ArgumentNullException("Original_Build");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[14].Value = ((string)(Original_Build));
-            }
-            if ((Original_Doc == null)) {
-                throw new global::System.ArgumentNullException("Original_Doc");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[15].Value = ((string)(Original_Doc));
-            }
-            if ((Original_UserName == null)) {
-                throw new global::System.ArgumentNullException("Original_UserName");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[16].Value = ((string)(Original_UserName));
-            }
-            this.Adapter.UpdateCommand.Parameters[17].Value = ((System.DateTime)(Original_DateStart));
-            if ((Original_CommandId.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[18].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[19].Value = ((int)(Original_CommandId.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[18].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[19].Value = global::System.DBNull.Value;
-            }
-            if ((Original_DocName == null)) {
-                this.Adapter.UpdateCommand.Parameters[20].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[21].Value = global::System.DBNull.Value;
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[20].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[21].Value = ((string)(Original_DocName));
-            }
-            this.Adapter.UpdateCommand.Parameters[22].Value = ((int)(ID_Statistic_Mark));
+            this.Adapter.UpdateCommand.Parameters[14].Value = ((int)(ID));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -1449,27 +1207,8 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(
-                    string Application, 
-                    string Plugin, 
-                    string Command1, 
-                    string Build, 
-                    string Doc, 
-                    string UserName, 
-                    System.DateTime DateStart, 
-                    global::System.Nullable<int> CommandId, 
-                    string DocName, 
-                    int Original_ID_Statistic_Mark, 
-                    string Original_Application, 
-                    string Original_Plugin, 
-                    string Original_Command, 
-                    string Original_Build, 
-                    string Original_Doc, 
-                    string Original_UserName, 
-                    System.DateTime Original_DateStart, 
-                    global::System.Nullable<int> Original_CommandId, 
-                    string Original_DocName) {
-            return this.Update(Application, Plugin, Command1, Build, Doc, UserName, DateStart, CommandId, DocName, Original_ID_Statistic_Mark, Original_Application, Original_Plugin, Original_Command, Original_Build, Original_Doc, Original_UserName, Original_DateStart, Original_CommandId, Original_DocName, Original_ID_Statistic_Mark);
+        public virtual int Update(string Login, string FIO, string Group, bool Disabled, string Description, int Original_ID, string Original_Login, string Original_FIO, string Original_Group, bool Original_Disabled, string Original_Description) {
+            return this.Update(Login, FIO, Group, Disabled, Description, Original_ID, Original_Login, Original_FIO, Original_Group, Original_Disabled, Original_Description, Original_ID);
         }
     }
     
@@ -1485,7 +1224,7 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         
         private UpdateOrderOption _updateOrder;
         
-        private C_PluginStatisticTableAdapter _c_PluginStatisticTableAdapter;
+        private AutocadUsersTableAdapter _autocadUsersTableAdapter;
         
         private bool _backupDataSetBeforeUpdate;
         
@@ -1507,12 +1246,12 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         [global::System.ComponentModel.EditorAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterManagerPropertyEditor, Microso" +
             "ft.VSDesigner, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3" +
             "a", "System.Drawing.Design.UITypeEditor")]
-        public C_PluginStatisticTableAdapter C_PluginStatisticTableAdapter {
+        public AutocadUsersTableAdapter AutocadUsersTableAdapter {
             get {
-                return this._c_PluginStatisticTableAdapter;
+                return this._autocadUsersTableAdapter;
             }
             set {
-                this._c_PluginStatisticTableAdapter = value;
+                this._autocadUsersTableAdapter = value;
             }
         }
         
@@ -1535,9 +1274,9 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
                 if ((this._connection != null)) {
                     return this._connection;
                 }
-                if (((this._c_PluginStatisticTableAdapter != null) 
-                            && (this._c_PluginStatisticTableAdapter.Connection != null))) {
-                    return this._c_PluginStatisticTableAdapter.Connection;
+                if (((this._autocadUsersTableAdapter != null) 
+                            && (this._autocadUsersTableAdapter.Connection != null))) {
+                    return this._autocadUsersTableAdapter.Connection;
                 }
                 return null;
             }
@@ -1552,7 +1291,7 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         public int TableAdapterInstanceCount {
             get {
                 int count = 0;
-                if ((this._c_PluginStatisticTableAdapter != null)) {
+                if ((this._autocadUsersTableAdapter != null)) {
                     count = (count + 1);
                 }
                 return count;
@@ -1564,14 +1303,14 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        private int UpdateUpdatedRows(DataSetStatistic dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
+        private int UpdateUpdatedRows(DbAutocadUsers dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
             int result = 0;
-            if ((this._c_PluginStatisticTableAdapter != null)) {
-                global::System.Data.DataRow[] updatedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.ModifiedCurrent);
+            if ((this._autocadUsersTableAdapter != null)) {
+                global::System.Data.DataRow[] updatedRows = dataSet.AutocadUsers.Select(null, null, global::System.Data.DataViewRowState.ModifiedCurrent);
                 updatedRows = this.GetRealUpdatedRows(updatedRows, allAddedRows);
                 if (((updatedRows != null) 
                             && (0 < updatedRows.Length))) {
-                    result = (result + this._c_PluginStatisticTableAdapter.Update(updatedRows));
+                    result = (result + this._autocadUsersTableAdapter.Update(updatedRows));
                     allChangedRows.AddRange(updatedRows);
                 }
             }
@@ -1583,13 +1322,13 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        private int UpdateInsertedRows(DataSetStatistic dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
+        private int UpdateInsertedRows(DbAutocadUsers dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
             int result = 0;
-            if ((this._c_PluginStatisticTableAdapter != null)) {
-                global::System.Data.DataRow[] addedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.Added);
+            if ((this._autocadUsersTableAdapter != null)) {
+                global::System.Data.DataRow[] addedRows = dataSet.AutocadUsers.Select(null, null, global::System.Data.DataViewRowState.Added);
                 if (((addedRows != null) 
                             && (0 < addedRows.Length))) {
-                    result = (result + this._c_PluginStatisticTableAdapter.Update(addedRows));
+                    result = (result + this._autocadUsersTableAdapter.Update(addedRows));
                     allAddedRows.AddRange(addedRows);
                 }
             }
@@ -1601,13 +1340,13 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        private int UpdateDeletedRows(DataSetStatistic dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows) {
+        private int UpdateDeletedRows(DbAutocadUsers dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows) {
             int result = 0;
-            if ((this._c_PluginStatisticTableAdapter != null)) {
-                global::System.Data.DataRow[] deletedRows = dataSet.C_PluginStatistic.Select(null, null, global::System.Data.DataViewRowState.Deleted);
+            if ((this._autocadUsersTableAdapter != null)) {
+                global::System.Data.DataRow[] deletedRows = dataSet.AutocadUsers.Select(null, null, global::System.Data.DataViewRowState.Deleted);
                 if (((deletedRows != null) 
                             && (0 < deletedRows.Length))) {
-                    result = (result + this._c_PluginStatisticTableAdapter.Update(deletedRows));
+                    result = (result + this._autocadUsersTableAdapter.Update(deletedRows));
                     allChangedRows.AddRange(deletedRows);
                 }
             }
@@ -1643,15 +1382,15 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        public virtual int UpdateAll(DataSetStatistic dataSet) {
+        public virtual int UpdateAll(DbAutocadUsers dataSet) {
             if ((dataSet == null)) {
                 throw new global::System.ArgumentNullException("dataSet");
             }
             if ((dataSet.HasChanges() == false)) {
                 return 0;
             }
-            if (((this._c_PluginStatisticTableAdapter != null) 
-                        && (this.MatchTableAdapterConnection(this._c_PluginStatisticTableAdapter.Connection) == false))) {
+            if (((this._autocadUsersTableAdapter != null) 
+                        && (this.MatchTableAdapterConnection(this._autocadUsersTableAdapter.Connection) == false))) {
                 throw new global::System.ArgumentException("All TableAdapters managed by a TableAdapterManager must use the same connection s" +
                         "tring.");
             }
@@ -1687,13 +1426,13 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
             try {
                 // ---- Prepare for update -----------
                 //
-                if ((this._c_PluginStatisticTableAdapter != null)) {
-                    revertConnections.Add(this._c_PluginStatisticTableAdapter, this._c_PluginStatisticTableAdapter.Connection);
-                    this._c_PluginStatisticTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(workConnection));
-                    this._c_PluginStatisticTableAdapter.Transaction = ((global::System.Data.SqlClient.SqlTransaction)(workTransaction));
-                    if (this._c_PluginStatisticTableAdapter.Adapter.AcceptChangesDuringUpdate) {
-                        this._c_PluginStatisticTableAdapter.Adapter.AcceptChangesDuringUpdate = false;
-                        adaptersWithAcceptChangesDuringUpdate.Add(this._c_PluginStatisticTableAdapter.Adapter);
+                if ((this._autocadUsersTableAdapter != null)) {
+                    revertConnections.Add(this._autocadUsersTableAdapter, this._autocadUsersTableAdapter.Connection);
+                    this._autocadUsersTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(workConnection));
+                    this._autocadUsersTableAdapter.Transaction = ((global::System.Data.SqlClient.SqlTransaction)(workTransaction));
+                    if (this._autocadUsersTableAdapter.Adapter.AcceptChangesDuringUpdate) {
+                        this._autocadUsersTableAdapter.Adapter.AcceptChangesDuringUpdate = false;
+                        adaptersWithAcceptChangesDuringUpdate.Add(this._autocadUsersTableAdapter.Adapter);
                     }
                 }
                 // 
@@ -1754,9 +1493,9 @@ SELECT ID_Statistic_Mark, Application, Plugin, Command, Build, Doc, UserName, Da
                 if (workConnOpened) {
                     workConnection.Close();
                 }
-                if ((this._c_PluginStatisticTableAdapter != null)) {
-                    this._c_PluginStatisticTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(revertConnections[this._c_PluginStatisticTableAdapter]));
-                    this._c_PluginStatisticTableAdapter.Transaction = null;
+                if ((this._autocadUsersTableAdapter != null)) {
+                    this._autocadUsersTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(revertConnections[this._autocadUsersTableAdapter]));
+                    this._autocadUsersTableAdapter.Transaction = null;
                 }
                 if ((0 < adaptersWithAcceptChangesDuringUpdate.Count)) {
                     global::System.Data.Common.DataAdapter[] adapters = new System.Data.Common.DataAdapter[adaptersWithAcceptChangesDuringUpdate.Count];

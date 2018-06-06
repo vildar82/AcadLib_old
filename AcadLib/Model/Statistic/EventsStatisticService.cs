@@ -31,7 +31,7 @@ namespace AcadLib.Statistic
         {
             Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
             Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
-            Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
+            //Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
             Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
             try
             {
@@ -75,10 +75,10 @@ namespace AcadLib.Statistic
             }
         }
 
-        private static void DocumentManager_DocumentActivated(object sender, [NotNull] DocumentCollectionEventArgs e)
-        {
-            SubscribeDoc(e.Document);
-        }
+        //private static void DocumentManager_DocumentActivated(object sender, [NotNull] DocumentCollectionEventArgs e)
+        //{
+        //    SubscribeDoc(e.Document);
+        //}
 
         private static void SubscribeDoc([CanBeNull] Document doc)
         {

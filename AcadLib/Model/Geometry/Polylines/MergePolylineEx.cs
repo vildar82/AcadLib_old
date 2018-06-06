@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AcadLib.Comparers;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
@@ -31,7 +28,7 @@ namespace AcadLib.Geometry.Polylines
 
         private void Add(List<Polyline> plsCopy, Polyline joinPl, Point3d ptJoin)
         {
-
+            //TODO Merge Polyline 
         }
 
         private static Polyline GetFirstPolyline([NotNull] List<Polyline> pls)

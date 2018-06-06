@@ -30,6 +30,14 @@ namespace AcadLib.Geometry
             SelfIntersection = 4,
         }
 
+        public static Point3d GetClosestVertex([NotNull] this Polyline pl, Point3d pt)
+        {
+            var closest = pl.GetClosestPointTo(pt, false);
+            var parameter = pl.GetParameterAtPoint(closest);
+            var index = (int) NetLib.DoubleExt.Round(parameter,0);
+            return pl.GetPoint3dAt(index);
+        }
+
         /// <summary>
         /// Breaks the polyline at specified point.
         /// </summary>

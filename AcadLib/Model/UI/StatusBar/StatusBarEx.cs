@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using AcadLib.Statistic;
+using AutoCAD_PIK_Manager;
+using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.Windows;
 using JetBrains.Annotations;
+using NetLib;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using StatusBarMenu = AcadLib.UI.StatusBar.View.StatusBarMenu;
 
@@ -40,6 +45,56 @@ namespace AcadLib.UI.StatusBar
             Application.StatusBar.Update();
             return pane;
         }
-        
+
+        public static void AddPane(string name, string toolTip,
+            [CanBeNull] Action<Pane,StatusBarMouseDownEventArgs> onClick = null,
+            int minWith = 20, int maxWith = 200, [CanBeNull] Icon icon = null, PaneStyles style = PaneStyles.Normal)
+        {
+            var pane = new Pane
+            {
+                Text = name,
+                ToolTipText = toolTip,
+                Visible = false,
+                MinimumWidth = minWith,
+                MaximumWidth = maxWith,
+                Style = style
+            };
+            if (icon != null) pane.Icon = icon;
+            pane.MouseDown += (s, e) => onClick?.Invoke(pane, e);
+            Application.StatusBar.Panes.Insert(0, pane);
+            pane.Visible = true;
+            Application.StatusBar.Update();
+        }
+
+        public static void AddPaneUserGroup()
+        {
+            AddPane(PikSettings.UserGroup,
+                $"{GetGroupVersionInfo(PikSettings.Versions)}",
+                (p,e)=>
+                {
+                    p.ToolTipText = GetGroupVersionInfo(Update.GetVersions());
+                    AcadHelper.Doc.SendStringToExecute($"{nameof(Commands.PIK_CheckUpdates)} ", true, false, true);
+                    AcadHelper.Doc.SendStringToExecute($"{nameof(Commands.PIK_UserSettings)} ", true, false, true);
+                });
+        }
+
+        [NotNull]
+        private static string GetGroupVersionInfo([NotNull] List<GroupInfo> groupInfos)
+        {
+            return $"{groupInfos.JoinToString(GetGroupInfo, "\n")}";
+            string GetGroupInfo (GroupInfo groupInfo)
+            {
+                var info = $"{groupInfo.GroupName}: вер. {groupInfo.VersionLocal}";
+                if (groupInfo.UpdateRequired)
+                {
+                    info += $", на сервере {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
+                }
+                if (CheckUpdates.NeedNotify(groupInfo.UpdateDescription, out var descResult))
+                {
+                    info += $" '{descResult}'";
+                }
+                return info;
+            }
+        }
     }
 }
