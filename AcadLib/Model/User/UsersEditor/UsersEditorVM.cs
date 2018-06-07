@@ -106,10 +106,10 @@ namespace AcadLib.User.UsersEditor
                 {
                     if (!dictUsersEx.TryGetValue(u.Login, out var exUser))
                     {
-                        var uData = u.Login.Try(l => ADUtils.GetUserData(l, null));
+                        var uData = u.Login.Try(l => ADUtils.GetUserData(l, null), e=>null);
                         var dep  = uData?.Department ?? "не определено";
                         var pos = uData?.Position ?? "не определено";
-                        var image = u.Login.Try(l => UserSettingsService.LoadHomePikImage(l, "main")) ?? imageNo;
+                        var image = u.Login.Try(l => UserSettingsService.LoadHomePikImage(l, "main"), e => null) ?? imageNo;
                         exUser =(dep, pos, image);
                         dictUsersEx.TryAdd(u.Login, exUser);
                     }
