@@ -1,4 +1,8 @@
-﻿using AcadLib.Model.User.DB;
+﻿#if Utils
+using UtilsEditUsers.Model.User.DB;
+#else
+using AcadLib.Model.User.DB;
+#endif
 using NetLib.WPF;
 
 namespace AcadLib.User.UsersEditor

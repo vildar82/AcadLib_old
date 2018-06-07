@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
-using AcadLib.IO;
 using AcadLib.User.DB;
+#if !Utils
+using AcadLib.IO;
 using AutoCAD_PIK_Manager.Settings;
+#endif
 using NetLib;
+using NetLib.AD;
 using NetLib.Locks;
 using NetLib.WPF;
 using NetLib.WPF.Data;
@@ -47,7 +50,11 @@ namespace AcadLib.User.UsersEditor
         {
             users = dbUsers.GetUsers().Select(s => new EditAutocadUsers(s)).ToList();
             Users = new CollectionView<EditAutocadUsers>(users) { Filter  = OnFilter};
-            Groups = PikSettings.UserGroups ?? LoadUserGroups();
+#if Utils
+            Groups = LoadUserGroups();
+#else
+            Groups = PikSettings.UserGroups;
+#endif
         }
 
         private bool OnFilter(object obj)
@@ -78,7 +85,12 @@ namespace AcadLib.User.UsersEditor
             if (editMode)
             {
                 // Создать файл блокировки
-                fileLock = new FileLock(Path.GetSharedCommonFile("UsersEditor", "UsersEditor.lock"));
+#if Utils
+                const string file = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\ShareSettings\UsersEditor\UsersEditor.lock";
+#else
+                var file = Path.GetSharedCommonFile("UsersEditor", "UsersEditor.lock");
+#endif
+                fileLock = new FileLock(file);
                 if (!fileLock.IsLockSuccess)
                 {
                     ShowMessage(fileLock.GetMessage(), "Занято, редактирует:");
@@ -105,7 +117,15 @@ namespace AcadLib.User.UsersEditor
                 EditUserEnable = false;
                 return;
             }
+#if Utils
+            var groups = ADUtils.GetCurrentUserADGroups(out _);
+            EditUserEnable = groups.Any(g => g.EqualsIgnoreCase("010583_Отдел разработки и автоматизации") ||
+                                    g.EqualsIgnoreCase("010596_Отдел внедрения ВIM") ||
+                                    g.EqualsIgnoreCase("010576_УИТ"));
+#else
             EditUserEnable = General.IsBimUser;
+#endif
+            
             IsOneUserSelected = SelectedUsers.Count == 1;
             SelectedUser = new EditAutocadUsers
             {
@@ -116,7 +136,7 @@ namespace AcadLib.User.UsersEditor
                 Description = GetValue(u => u.Description),
             };
             Apply = CreateCommand(() => ApplyExecute(SelectedUser, SelectedUsers),
-                SelectedUser.Changed.Skip(1).Select(s => true));
+                SelectedUser.Changed.Select(s => true));
         }
 
         private void ApplyExecute(EditAutocadUsers selectedUser, List<EditAutocadUsers> selectedUsers)
