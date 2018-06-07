@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Autodesk\AutoCAD 2017\acad.exe</StartProgram>
-    <StartArguments>/nologo</StartArguments>
+    <StartArguments>/nologo /product ACAD /b "C:\dev\AcadLib\TestAcadlib\AutoCADNetLoad.scr"</StartArguments>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
