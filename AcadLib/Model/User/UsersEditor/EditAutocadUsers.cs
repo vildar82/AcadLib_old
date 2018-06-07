@@ -1,9 +1,12 @@
-﻿#if Utils
+﻿
+using System.Windows.Media.Imaging;
+#if Utils
 using UtilsEditUsers.Model.User.DB;
 #else
 using AcadLib.Model.User.DB;
 #endif
 using NetLib.WPF;
+using ReactiveUI;
 
 namespace AcadLib.User.UsersEditor
 {
@@ -12,6 +15,9 @@ namespace AcadLib.User.UsersEditor
         public AutocadUsers DbUser { get; set; }
         public string Login { get; set; }
         public string FIO { get; set; }
+        public string AdDepartment { get; set; }
+        public string AdPosition { get; set; }
+        public BitmapImage Image { get; set; }
         public string Group { get; set; }
         public bool? Disabled { get; set; }
         public string Description { get; set; }
@@ -41,7 +47,7 @@ namespace AcadLib.User.UsersEditor
 
         public override string ToString()
         {
-            return $"{Login}, {FIO}, {Group}, {Description}";
+            return $"{Login}, {FIO}, {Description}, {AdDepartment}, {AdPosition}";
         }
     }
 }

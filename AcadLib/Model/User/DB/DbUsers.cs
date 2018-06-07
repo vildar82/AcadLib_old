@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Data.Entity.Core.EntityClient;
 using System.Data.SqlClient;
 using System.Linq;
-using AcadLib.Model.User.DB;
+#if Utils
+using UtilsEditUsers.Model.User.DB;
+#else
+using AcadLib.Model.User.DB;    
+#endif
 using JetBrains.Annotations;
 
 namespace AcadLib.User.DB
@@ -36,6 +40,11 @@ namespace AcadLib.User.DB
         public List<AutocadUsers> GetUsers()
         {
             return entities.AutocadUsers.ToList();
+        }
+
+        public void DeleteUser(AutocadUsers user)
+        {
+            entities.AutocadUsers.Remove(user);
         }
 
         public void Save()

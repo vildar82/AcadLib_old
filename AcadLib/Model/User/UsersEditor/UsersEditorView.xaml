@@ -9,6 +9,7 @@
         d:DataContext="{d:DesignInstance local:UsersEditorVM}"
         mc:Ignorable="d"
                 Topmost="True"
+                ShowMaxRestoreButton="True"
         Title="Пользователи">
     <Grid>
         <Grid.RowDefinitions>
@@ -17,22 +18,51 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0"  Orientation="Horizontal">
-            <TextBox Text="{Binding Filter, Delay=400, UpdateSourceTrigger=PropertyChanged}" 
-                 mah:TextBoxHelper.Watermark="Фильтр" MinWidth="80" Margin="20,10,2,2" HorizontalAlignment="Left"/>
-            <Button Content="Я" Command="{Binding FindMe}" Margin="10,10,2,2" VerticalAlignment="Center" MinWidth="50"/>
+        <StackPanel Grid.Row="0"  Orientation="Horizontal" Margin="10,5,0,0">
+            <TextBlock Text="{Binding UsersCount}"/>
+            <TextBox Text="{Binding Filter, Delay=400, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0"
+                 mah:TextBoxHelper.Watermark="Фильтр" MinWidth="100"  HorizontalAlignment="Left" mah:TextBoxHelper.ClearTextButton="True"/>
+            <Button Content="Я" Command="{Binding FindMe}"  VerticalAlignment="Center" MinWidth="30"/>
+            <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                <TextBlock Text="Группа: "/>
+                <ComboBox ItemsSource="{Binding FilterGroups}" SelectedItem="{Binding FilterGroup}" VerticalAlignment="Center"
+                          MinWidth="70"/>
+            </StackPanel>
         </StackPanel>
-        <DataGrid Name="dgUsers" Grid.Row="1" ItemsSource="{Binding Users}" AutoGenerateColumns="False"
+        <DataGrid Name="dgUsers" Grid.Row="1" ItemsSource="{Binding Users}" AutoGenerateColumns="False" IsReadOnly="True"
                   SelectionMode="Extended" SelectionChanged="Selector_OnSelectionChanged" Margin="10" BorderThickness="1">
             <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Фото">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="local:EditAutocadUsers">
+                            <Image Source="{Binding Image}" Height="30">
+                                <Image.ToolTip>
+                                    <Image Source="{Binding Image}"/>
+                                </Image.ToolTip>
+                            </Image>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}"/>
                 <DataGridTextColumn Header="Логин" Binding="{Binding Login}"/>
                 <DataGridTextColumn Header="Группа" Binding="{Binding Group}"/>
                 <DataGridTextColumn Header="Отключен" Binding="{Binding Disabled}"/>
-                <DataGridTextColumn Header="Примечание" Binding="{Binding Description}"/>
+                <DataGridTextColumn Header="Примечание" Binding="{Binding Description}" Width="150"/>
+                <DataGridTextColumn Header="Отдел" Binding="{Binding AdDepartment}" Width="250"/>
+                <DataGridTextColumn Header="Должность" Binding="{Binding AdPosition}" Width="250"/>
+                <DataGridTemplateColumn Header="Удалить">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="local:EditAutocadUsers">
+                            <Button Content="x" VerticalContentAlignment="Center" 
+                                    Command="{Binding DataContext.DeleteUser, ElementName=dgUsers}" HorizontalAlignment="Center"
+                                    CommandParameter="{Binding}"
+                                    VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Grid Grid.Row="2" Margin="10" mah:VisibilityHelper.IsVisible="{Binding EditUserEnable}">
+        <Grid Grid.Row="2" Margin="10" IsEnabled="{Binding EditMode}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition/>
@@ -64,11 +94,12 @@
             <TextBlock Grid.Column="0" Grid.Row="4" Text="Примечание"/>
             <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding SelectedUser.Description}" Margin="2"/>
             <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Применить" Command="{Binding Apply}" Margin="0,5,0,0"/>
+                <Button Content="Применить" Command="{Binding Apply}" Margin="0,5,0,0"
+                        mah:VisibilityHelper.IsVisible="{Binding EditMode}"/>
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
-            <mah:ToggleSwitch IsChecked="{Binding EditMode}" Margin="5" Content="Редатирование"/>
+            <mah:ToggleSwitch IsChecked="{Binding EditMode}" Margin="5" Content="Редатирование" mah:VisibilityHelper.IsVisible="{Binding IsBimUser}"/>
             <Button Content="Сохранить" Command="{Binding Save}" Margin="5" VerticalAlignment="Center"/>
         </StackPanel>
     </Grid>
