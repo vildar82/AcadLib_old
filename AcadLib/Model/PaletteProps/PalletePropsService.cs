@@ -57,6 +57,10 @@ namespace AcadLib.PaletteProps
                 //palette.AddVisual("Свойства", propsView);
             }
             palette.Visible = true;
+#if DEBUG
+            var testView = new TestPaletteView(new PalettePropsView(propsVM));
+            testView.Show();
+#endif
         }
 
         private static void Palette_StateChanged(object sender, [NotNull] PaletteSetStateEventArgs e)

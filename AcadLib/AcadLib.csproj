@@ -192,9 +192,13 @@
     <Compile Include="Model\PaletteProps\Data\PalettePropsType.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsProvider.cs" />
     <Compile Include="Model\PaletteProps\Data\Values\BaseValueVM.cs" />
+    <Compile Include="Model\PaletteProps\Data\Values\IntListValueView.xaml.cs">
+      <DependentUpon>IntListValueView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\PaletteProps\Data\Values\IntValueView.xaml.cs">
       <DependentUpon>IntValueView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\PaletteProps\Data\Values\IntListValueVM.cs" />
     <Compile Include="Model\PaletteProps\Data\Values\IntValueVM.cs" />
     <Compile Include="Model\PaletteProps\PalletePropsService.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsGroup.cs" />
@@ -203,6 +207,9 @@
     </Compile>
     <Compile Include="Model\PaletteProps\UI\PalettePropsVM.cs" />
     <Compile Include="Model\Lisp\LispAutoloader.cs" />
+    <Compile Include="Model\PaletteProps\UI\TestPaletteView.xaml.cs">
+      <DependentUpon>TestPaletteView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\SettingsGroupInfo.cs" />
     <Compile Include="Model\Statistic\CheckUpdates.cs" />
     <Compile Include="Model\Statistic\CivilTest.cs" />
@@ -650,6 +657,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Model\PaletteProps\Data\Values\IntListValueView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Model\PaletteProps\Data\Values\IntValueView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -659,6 +670,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\PaletteProps\UI\PalettePropsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model\PaletteProps\UI\TestPaletteView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

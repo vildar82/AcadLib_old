@@ -25,7 +25,7 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition/>
 			<RowDefinition Height="2"/>
-			<RowDefinition Height="{Binding PalettePropsHelpHeight,Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
+			<RowDefinition Height="{Binding PropsHelpHeight}"/>
 		</Grid.RowDefinitions>
 		<Grid Grid.Row="0">
 			<Grid.ColumnDefinitions>
@@ -44,8 +44,8 @@
 				</ComboBox.ItemTemplate>
 			</ComboBox>
 			<StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="1" VerticalAlignment="Center">
-				<ToggleButton IsChecked="{Binding PalettePropsHelpVisible, Source={x:Static properties:Settings.Default}}"
-				              Content="{iconPacks:FontAwesome InfoSolid, Width=15}" Width="20" Height="20"
+				<ToggleButton IsChecked="{Binding PropsHelpVisible}"
+				              Content="{iconPacks:FontAwesome InfoSolid, Width=10, Height=10}" Width="20" Height="20"
 				              ToolTip="Показать панель описания свойств" VerticalAlignment="Center"/>
 			</StackPanel>
 		</Grid>
@@ -79,7 +79,7 @@
                                 <Button Grid.Column="1" Content="{Binding ButtonExpandContent}"
 										Command="{Binding ButtonExpandCommand}" HorizontalAlignment="Right" 
 								        Style="{StaticResource bExpandStyle}" Margin="0,0,0,5"
-                                        Foreground="{DynamicResource FlyoutBackgroundBrush}"/>
+                                        Foreground="{DynamicResource IdealForegroundColorBrush}" ToolTip="{Binding ButtonExpandTooltip}"/>
 							</Grid>
 							<!--Список свойств группы-->
 							<ListBox Grid.Row="1" ItemsSource="{Binding Properties}" 
@@ -123,9 +123,7 @@
 			</ItemsControl>
 		</ScrollViewer>
 		<GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="2"/>
-		<Border Grid.Row="3" BorderBrush="{DynamicResource AccentColorBrush4}" BorderThickness="1" Margin="1"
-		        mah:VisibilityHelper.IsVisible="{Binding PalettePropsHelpVisible, 
-			Source={x:Static properties:Settings.Default}}">
+		<Border Grid.Row="3" BorderBrush="{DynamicResource AccentColorBrush4}" BorderThickness="1" Margin="1">
 			<StackPanel Orientation="Horizontal">
 				<TextBlock Text="{Binding SelectedProp.Tooltip}" TextWrapping="Wrap" Margin="1" VerticalAlignment="Top"/>
 			</StackPanel>

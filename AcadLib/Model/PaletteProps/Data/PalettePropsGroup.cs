@@ -11,7 +11,11 @@ namespace AcadLib.PaletteProps
     {
         public PalettePropsGroup()
         {
-            this.WhenAnyValue(v => v.IsExpanded).Subscribe(s=> { ButtonExpandContent = s ? "-" : "+"; });
+            this.WhenAnyValue(v => v.IsExpanded).Subscribe(s =>
+            {
+                ButtonExpandContent = s ? "-" : "+";
+                ButtonExpandTooltip = s ? "Свернуть" : "Развернуть";
+            });
             ButtonExpandCommand = CreateCommand(() => IsExpanded = !IsExpanded);
         }
 
@@ -24,6 +28,7 @@ namespace AcadLib.PaletteProps
 
         public bool IsExpanded { get; set; } = true;
         public string ButtonExpandContent { get; set; }
+        public string ButtonExpandTooltip { get; set; }
         public ReactiveCommand ButtonExpandCommand { get; set; }
 
         public List<PalettePropVM> Properties { get; set; }
