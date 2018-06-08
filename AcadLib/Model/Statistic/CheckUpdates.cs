@@ -113,16 +113,18 @@ namespace AcadLib.Statistic
         {
             if (updateDesc.StartsWith("@"))
             {
-                var match = Regex.Match(updateDesc, @"([\w-_]+)");
-                if (match.Success)
+                var matchs = Regex.Matches(updateDesc, @"@([\w-_]+)", RegexOptions.Multiline);
+                foreach (Match match in matchs)
                 {
-                    var groups = match.Groups.Cast<Group>().Skip(1).ToList();
-                    if (groups.Any(g => g.Value.EqualsIgnoreCase(Environment.UserName)))
+                    if (match.Success)
                     {
-                        // Персональное сообщение
-                        var lastGroup = groups.Last();
-                        descResult = updateDesc.Substring(lastGroup.Index + lastGroup.Length).Trim();
-                        return true;
+                        var gv = match.Groups[1].Value;
+                        if (gv.EqualsIgnoreCase(Environment.UserName))
+                        {
+                            // Персональное сообщение
+                            descResult = updateDesc;
+                            return true;
+                        }
                     }
                 }
                 descResult = updateDesc;
