@@ -3,12 +3,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Autodesk\AutoCAD 2017\acad.exe</StartProgram>
-    <StartArguments>/product ACAD /nologo</StartArguments>
+    <StartArguments>/nologo /product ACAD</StartArguments>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
     <EnableSQLServerDebugging>false</EnableSQLServerDebugging>
   </PropertyGroup>
   <PropertyGroup>
     <ReferencePath>C:\dev\ObjectARX\ObjectARX2015\</ReferencePath>
-    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
 </Project>

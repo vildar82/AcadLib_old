@@ -14,7 +14,7 @@
 					<ControlTemplate.Triggers>
 						<Trigger Property="Tag" Value="Horizontal">
 							<Setter TargetName="CornerScrollBarRectangle" Property="Width" Value="Auto" />
-							<Setter TargetName="CornerScrollBarRectangle" Property="Height" Value="6" />
+							<Setter TargetName="CornerScrollBarRectangle" Property="Height" Value="5" />
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
@@ -25,11 +25,11 @@
 		<Setter Property="Stylus.IsFlicksEnabled" Value="false" />
 		<Setter Property="Foreground" Value="#ADABAB" />
 		<Setter Property="Background" Value="Transparent" />
-		<Setter Property="Width" Value="7" />
+		<Setter Property="Width" Value="5" />
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type ScrollBar}">
-					<Grid x:Name="GridRoot" Width="7" Background="{TemplateBinding Background}">
+					<Grid x:Name="GridRoot" Width="5" Background="{TemplateBinding Background}">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="0.00001*" />
 						</Grid.RowDefinitions>
@@ -69,7 +69,7 @@
 								</Setter.Value>
 							</Setter>
 							<Setter Property="Width" Value="Auto" />
-							<Setter Property="Height" Value="8" />
+							<Setter Property="Height" Value="5" />
 							<Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
 							<Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
 							<Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />

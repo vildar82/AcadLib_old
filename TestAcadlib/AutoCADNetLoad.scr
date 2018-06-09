@@ -1,2 +1,3 @@
 ;netload "c:\dev\AcadLib\TestAcadlib\bin\Debug\TestAcadlib.dll"
+PIK_PaletteProperties
 TestPalettePropsCom

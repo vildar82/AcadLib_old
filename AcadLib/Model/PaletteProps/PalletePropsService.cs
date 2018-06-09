@@ -38,16 +38,16 @@ namespace AcadLib.PaletteProps
 
         public static void Start()
         {
-            Application.DocumentManager.DocumentCreated +=
-                (sender, args) => DocumentSelectionChangeSubscribe(args.Document);
-            foreach (var doc in Application.DocumentManager)
-            {
-                DocumentSelectionChangeSubscribe(doc as Document);
-            }
-
             stop = false;
             if (palette == null)
             {
+                Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
+                Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
+                foreach (var doc in Application.DocumentManager)
+                {
+                    DocumentSelectionChangeSubscribe(doc as Document);
+                }
+
                 palette = new PaletteSet("ПИК Свойства", nameof(Commands.PIK_PaletteProperties), 
                     new Guid("F1FFECA8-A9AE-47D6-8682-752D6AF1A15B"));
                 palette.StateChanged += Palette_StateChanged;
@@ -57,6 +57,15 @@ namespace AcadLib.PaletteProps
                 //palette.AddVisual("Свойства", propsView);
             }
             palette.Visible = true;
+#if DEBUG
+            var testView = new TestPaletteView(new PalettePropsView(propsVM));
+            testView.Show();
+#endif
+        }
+
+        private static void DocumentManager_DocumentCreated(object sender, DocumentCollectionEventArgs e)
+        {
+            DocumentSelectionChangeSubscribe(e.Document);
         }
 
         private static void Palette_StateChanged(object sender, [NotNull] PaletteSetStateEventArgs e)
@@ -75,13 +84,21 @@ namespace AcadLib.PaletteProps
         private static void DocumentSelectionChangeSubscribe([CanBeNull] Document doc)
         {
             if (doc == null) return;
+            doc.ImpliedSelectionChanged -= Document_ImpliedSelectionChanged;
             doc.ImpliedSelectionChanged += Document_ImpliedSelectionChanged;
         }
 
         private static void Document_ImpliedSelectionChanged(object sender, EventArgs e)
         {
             if (stop || !providers.Any()) return;
-            ShowSelection();
+            try
+            {
+                ShowSelection();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex);
+            }
         }
 
         private static void ShowSelection()

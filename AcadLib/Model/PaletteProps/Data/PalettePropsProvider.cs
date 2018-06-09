@@ -18,7 +18,7 @@ namespace AcadLib.PaletteProps
             this.getTypes = getTypes;
         }
 
-        public string Name { get; set; }
+        public string Name { get; }
 
         public List<PalettePropsType> GetTypes(ObjectId[] ids, Document doc)
         {

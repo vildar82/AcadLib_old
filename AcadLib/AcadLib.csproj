@@ -188,13 +188,18 @@
     <Compile Include="Model\Filer\ReferenceFilerResult.cs" />
     <Compile Include="Model\Geometry\LineExt.cs" />
     <Compile Include="Model\Geometry\Polylines\MergePolylineEx.cs" />
+    <Compile Include="Model\PaletteProps\InputBindingsManager.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropVM.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsType.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsProvider.cs" />
     <Compile Include="Model\PaletteProps\Data\Values\BaseValueVM.cs" />
+    <Compile Include="Model\PaletteProps\Data\Values\IntListValueView.xaml.cs">
+      <DependentUpon>IntListValueView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\PaletteProps\Data\Values\IntValueView.xaml.cs">
       <DependentUpon>IntValueView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\PaletteProps\Data\Values\IntListValueVM.cs" />
     <Compile Include="Model\PaletteProps\Data\Values\IntValueVM.cs" />
     <Compile Include="Model\PaletteProps\PalletePropsService.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsGroup.cs" />
@@ -203,6 +208,9 @@
     </Compile>
     <Compile Include="Model\PaletteProps\UI\PalettePropsVM.cs" />
     <Compile Include="Model\Lisp\LispAutoloader.cs" />
+    <Compile Include="Model\PaletteProps\UI\TestPaletteView.xaml.cs">
+      <DependentUpon>TestPaletteView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\SettingsGroupInfo.cs" />
     <Compile Include="Model\Statistic\CheckUpdates.cs" />
     <Compile Include="Model\Statistic\CivilTest.cs" />
@@ -404,6 +412,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Users.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Model\User\UI\UserGroup.cs" />
     <Compile Include="Model\User\UI\UserSettingsView.xaml.cs">
       <DependentUpon>UserSettingsView.xaml</DependentUpon>
     </Compile>
@@ -570,7 +579,7 @@
       <DependentUpon>Users.edmx</DependentUpon>
       <LastGenOutput>Users.cs</LastGenOutput>
     </Content>
-    <None Include="Resources\no-user.png" />
+    <Resource Include="Resources\no-user.png" />
     <EntityDeploy Include="Model\User\DB\Users.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Users.Designer.cs</LastGenOutput>
@@ -650,6 +659,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Model\PaletteProps\Data\Values\IntListValueView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Model\PaletteProps\Data\Values\IntValueView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -659,6 +672,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\PaletteProps\UI\PalettePropsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model\PaletteProps\UI\TestPaletteView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -775,7 +792,9 @@
       <Version>3.99.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

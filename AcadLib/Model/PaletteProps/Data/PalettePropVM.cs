@@ -2,6 +2,9 @@
 
 namespace AcadLib.PaletteProps
 {
+    /// <summary>
+    /// Свойство для палитры
+    /// </summary>
     public class PalettePropVM
     {
         public string Name { get; set; }
