@@ -19,6 +19,7 @@ namespace AcadLib.User.UsersEditor
         public string AdPosition { get; set; }
         public BitmapImage Image { get; set; }
         public string Group { get; set; }
+        public string Version { get; set; }
         public bool? Disabled { get; set; }
         public string Description { get; set; }
 
@@ -34,6 +35,7 @@ namespace AcadLib.User.UsersEditor
             Disabled = dbUser.Disabled;
             Description = dbUser.Description;
             Group = dbUser.Group;
+            Version = dbUser.Version;
         }
 
         public void SaveToDbUser()

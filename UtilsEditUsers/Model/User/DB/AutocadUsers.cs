@@ -20,5 +20,6 @@ namespace UtilsEditUsers.Model.User.DB
         public string Group { get; set; }
         public bool Disabled { get; set; }
         public string Description { get; set; }
+        public string Version { get; set; }
     }
 }

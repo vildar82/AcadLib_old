@@ -8,6 +8,7 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         d:DataContext="{d:DesignInstance local:UsersEditorVM}"
         mc:Ignorable="d"
+                WindowState="Maximized"
                 Topmost="True"
                 ShowMaxRestoreButton="True"
         Title="Пользователи">
@@ -28,6 +29,24 @@
                 <ComboBox ItemsSource="{Binding FilterGroups}" SelectedItem="{Binding FilterGroup}" VerticalAlignment="Center"
                           MinWidth="70"/>
             </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                <TextBlock Text="Версии на сервере: "/>
+                <ComboBox ItemsSource="{Binding GroupServerVersions}" MinWidth="120"
+                          SelectedItem="{Binding GroupServerVersion}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Name}" ToolTip="{Binding Description}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Version}" Margin="10,0,0,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
         </StackPanel>
         <DataGrid Name="dgUsers" Grid.Row="1" ItemsSource="{Binding Users}" AutoGenerateColumns="False" IsReadOnly="True"
                   SelectionMode="Extended" SelectionChanged="Selector_OnSelectionChanged" Margin="10" BorderThickness="1">
@@ -46,6 +65,7 @@
                 <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}"/>
                 <DataGridTextColumn Header="Логин" Binding="{Binding Login}"/>
                 <DataGridTextColumn Header="Группа" Binding="{Binding Group}"/>
+                <DataGridTextColumn Header="Версия" Binding="{Binding Version}"/>
                 <DataGridTextColumn Header="Отключен" Binding="{Binding Disabled}"/>
                 <DataGridTextColumn Header="Примечание" Binding="{Binding Description}" Width="150"/>
                 <DataGridTextColumn Header="Отдел" Binding="{Binding AdDepartment}" Width="250"/>

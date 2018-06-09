@@ -188,6 +188,7 @@
     <Compile Include="Model\Filer\ReferenceFilerResult.cs" />
     <Compile Include="Model\Geometry\LineExt.cs" />
     <Compile Include="Model\Geometry\Polylines\MergePolylineEx.cs" />
+    <Compile Include="Model\PaletteProps\InputBindingsManager.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropVM.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsType.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsProvider.cs" />
@@ -411,6 +412,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Users.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Model\User\UI\UserGroup.cs" />
     <Compile Include="Model\User\UI\UserSettingsView.xaml.cs">
       <DependentUpon>UserSettingsView.xaml</DependentUpon>
     </Compile>
@@ -577,7 +579,7 @@
       <DependentUpon>Users.edmx</DependentUpon>
       <LastGenOutput>Users.cs</LastGenOutput>
     </Content>
-    <None Include="Resources\no-user.png" />
+    <Resource Include="Resources\no-user.png" />
     <EntityDeploy Include="Model\User\DB\Users.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Users.Designer.cs</LastGenOutput>
@@ -790,7 +792,9 @@
       <Version>3.99.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

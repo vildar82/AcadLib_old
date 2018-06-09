@@ -22,9 +22,8 @@ namespace UtilsEditUsers.Model.User.DB
         {
         }
 
-        public CAD_AutoCADEntities(DbConnection con) : base(con, true)
+        public CAD_AutoCADEntities(DbConnection con): base(con, true)
         {
-            
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Controls;
 using AcadLib;
 using AcadLib.PaletteProps;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.Internal;
 using Autodesk.AutoCAD.Runtime;
 using JetBrains.Annotations;
 using ReactiveUI;
 using MathExt = NetLib.MathExt;
+using TransactionManager = Autodesk.AutoCAD.ApplicationServices.TransactionManager;
 
 namespace TestAcadlib.PaletteProps
 {
@@ -28,12 +31,12 @@ namespace TestAcadlib.PaletteProps
         public static List<PalettePropsType> GetTypes([NotNull] ObjectId[] ids, Document doc)
         {
             var types = new List<PalettePropsType>();
-            foreach (var typeEnts in ids.GetObjects<Entity>().GroupBy(g=>g.GetType()))
+            foreach (var typeEnts in ids.GetObjects<Circle>().GroupBy(g=>g.GetType()))
             {
                 var ents = typeEnts.ToList();
                 var typeProps = new PalettePropsType
                 {
-                    Name = typeEnts.Key.Name,
+                    Name = "Круг",
                     Groups = new List<PalettePropsGroup>
                     {
                         new PalettePropsGroup
@@ -69,34 +72,42 @@ namespace TestAcadlib.PaletteProps
             if (ci)
             {
                 var ivm = new IntListValueVM {Value = i, AllowCustomValue = DateTime.Now.Ticks % 2 == 0};
-                ivm.WhenAnyValue(v => v.Value).Subscribe(s => UpdateValue(s, ids));
+                ivm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(s => UpdateValue(s, ids));
                 return new IntListValueView(ivm);
             }
             var ilvm = new IntValueVM {Value = i, Min = 1, Max = 10};
-            ilvm.WhenAnyValue(v => v.Value).Subscribe(s => UpdateValue(s, ids));
+            ilvm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(s => UpdateValue(s, ids));
             return new IntValueView(ilvm);
         }
 
         [NotNull]
-        private static List<PalettePropVM> GetProperties(List<Entity> ents)
+        private static List<PalettePropVM> GetProperties(List<Circle> ents)
         {
             return new List<PalettePropVM>
             {
-                GetProp(ents, nameof(Entity.Color)),
+                GetProp(ents, "Радиус"),
             };
         }
 
         [NotNull]
-        private static PalettePropVM GetProp(List<Entity> ents, string propName)
+        private static PalettePropVM GetProp(List<Circle> ents, string propName)
         {
+            var vm = new IntValueVM {Value = GetValue(ents.GroupBy(g => (int) g.Radius).Select(s => s.Key))};
+            vm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(s => UpdateValue(s, ents.Select(e => e.Id).ToList()));
             return new PalettePropVM
             {
                 Name = propName,
-                ValueControl =GetRandomValueControl(ents.Count, ents.Select(s=>s.Id).ToList())
+                ValueControl = new IntValueView(vm)
             };
         }
 
-        private static void UpdateValue(int value, List<ObjectId> ids)
+        private static int? GetValue(IEnumerable<int> values)
+        {
+            if (values.Skip(1).Any()) return null;
+            return values.First();
+        }
+
+        private static void UpdateValue(int? value, List<ObjectId> ids)
         {
             var doc = AcadHelper.Doc;
             using (doc.LockDocument())
@@ -104,9 +115,10 @@ namespace TestAcadlib.PaletteProps
             {
                 foreach (var circle in ids.GetObjects<Circle>(OpenMode.ForWrite))
                 {
-                    circle.Radius = value;
+                    circle.Radius = value ?? 100;
                 }
                 t.Commit();
+                Utils.FlushGraphics();
             }
         }
     }

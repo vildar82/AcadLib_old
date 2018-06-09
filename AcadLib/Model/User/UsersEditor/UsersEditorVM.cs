@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using AcadLib.User.DB;
+using AcadLib.User.UI;
 #if !Utils
-using AcadLib.IO;
+using Path = AcadLib.IO.Path;
 using AutoCAD_PIK_Manager.Settings;
 using AcadLib.Model.User.DB;
 #endif
@@ -24,6 +26,10 @@ namespace AcadLib.User.UsersEditor
 {
     public class UsersEditorVM : BaseViewModel
     {
+#if Utils
+        const string serverSettingsDir = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\Адаптация";
+        const string serverShareDir = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\ShareSettings";
+#endif
         private ConcurrentDictionary<string, (string dep, string pos, BitmapImage img)> dictUsersEx =
             new ConcurrentDictionary<string, (string dep, string pos, BitmapImage img)>();
         private List<EditAutocadUsers> users;
@@ -35,6 +41,7 @@ namespace AcadLib.User.UsersEditor
         public UsersEditorVM()
         {
 #if Utils
+            imageNo = new BitmapImage(new Uri("pack://application:,,,/Resources/no-user.png"));
             var groups = ADUtils.GetCurrentUserADGroups(out _);
             IsBimUser = groups.Any(g => g.EqualsIgnoreCase("010583_Отдел разработки и автоматизации") ||
                                     g.EqualsIgnoreCase("010596_Отдел внедрения ВIM") ||
@@ -42,12 +49,16 @@ namespace AcadLib.User.UsersEditor
 #else
             IsBimUser = General.IsBimUser;
 #endif
-
-            imageNo = new BitmapImage(new Uri("pack://application:,,,/Resources/no-user.png"));
+            
             dbUsers = new DbUsers();
             this.WhenAnyValue(v => v.EditMode).Subscribe(ChangeMode);
             this.WhenAnyValue(v => v.SelectedUsers).Subscribe(s => OnSelected());
-            this.WhenAnyValue(v => v.Filter, v=>v.FilterGroup).Skip(1).Subscribe(s => Users.Refresh());
+            this.WhenAnyValue(v => v.Filter, v=>v.FilterGroup).Skip(1).Subscribe(s =>
+            {
+                var serverVer = GroupServerVersions.FirstOrDefault(g => g.Name == s.Item2);
+                if (serverVer != null) GroupServerVersion = serverVer;
+                Users.Refresh();
+            });
             canEdit = this.WhenAnyValue(v => v.EditMode);
             Save = CreateCommand(dbUsers.Save, canEdit);
             FindMe = CreateCommand(() => Filter = Environment.UserName);
@@ -69,9 +80,11 @@ namespace AcadLib.User.UsersEditor
         public ReactiveCommand FindMe { get; set; }
         public List<string> FilterGroups { get; set; }
         public string FilterGroup { get; set; }
+        public List<UserGroup> GroupServerVersions { get; set; }
+        public UserGroup GroupServerVersion { get; set; }
         public int UsersCount { get; set; }
 
-        private void LoadUsers()
+        private async void LoadUsers()
         {
             users = dbUsers.GetUsers().Select(s => new EditAutocadUsers(s)).ToList();
             Users = new CollectionView<EditAutocadUsers>(users) { Filter  = OnFilter};
@@ -84,6 +97,35 @@ namespace AcadLib.User.UsersEditor
             LoadUsersEx();
             FilterGroups = users.SelectMany(s => GetGroups(s.Group)).GroupBy(g=>g).Select(s=>s.Key).OrderBy(o=>o).ToList();
             FilterGroups.Insert(0, "Все");
+            GroupServerVersions = await LoadGroupServerVersionsAsync();
+        }
+
+        private Task<List<UserGroup>> LoadGroupServerVersionsAsync()
+        {
+            return Task.Run(() =>
+            {
+                var groups = new List<UserGroup>();
+#if Utils
+                var dirGroups = serverSettingsDir;
+#else
+                var dirGroups = PikSettings.ServerSettingsFolder;
+#endif
+                
+                foreach (var dirGroup in Directory.EnumerateDirectories(dirGroups).OrderBy(o=>o))
+                {
+                    var groupName = System.IO.Path.GetFileName(dirGroup);
+                    if (string.IsNullOrEmpty(groupName)) continue;
+                    var verFile = System.IO.Path.Combine(dirGroup, $"{groupName}.ver");
+                    var ver = verFile.Try(f=> File.ReadLines(f).FirstOrDefault());
+                    if (ver.IsNullOrEmpty()) continue;
+                    groups.Add(new UserGroup
+                    {
+                        Name = groupName,
+                        Version = ver
+                    });
+                }
+                return groups;
+            });
         }
 
         private IEnumerable<string> GetGroups(string userGroup)
@@ -142,12 +184,14 @@ namespace AcadLib.User.UsersEditor
             return res;
         }
 
+#if Utils
         private static List<string> LoadUserGroups()
         {
             var stringList = new List<string>();
             try
             {
-                const string file = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\Адаптация\Общие\Dll\groups.json";
+
+                const string file =serverSettingsDir + @"\Общие\Dll\groups.json";
                 stringList = file.Deserialize<Dictionary<string, string>>().Keys.ToList();
             }
             catch
@@ -156,6 +200,7 @@ namespace AcadLib.User.UsersEditor
             }
             return stringList;
         }
+#endif
 
         private void ChangeMode(bool editMode)
         {
@@ -163,7 +208,7 @@ namespace AcadLib.User.UsersEditor
             {
                 // Создать файл блокировки
 #if Utils
-                const string file = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\ShareSettings\UsersEditor\UsersEditor.lock";
+                const string file = serverShareDir + @"\UsersEditor\UsersEditor.lock";
 #else
                 var file = Path.GetSharedCommonFile("UsersEditor", "UsersEditor.lock");
 #endif
