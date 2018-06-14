@@ -41,7 +41,6 @@ namespace AcadLib.PaletteProps
             stop = false;
             if (palette == null)
             {
-                Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
                 Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
                 foreach (var doc in Application.DocumentManager)
                 {
@@ -84,21 +83,20 @@ namespace AcadLib.PaletteProps
         private static void DocumentSelectionChangeSubscribe([CanBeNull] Document doc)
         {
             if (doc == null) return;
-            doc.ImpliedSelectionChanged -= Document_ImpliedSelectionChanged;
             doc.ImpliedSelectionChanged += Document_ImpliedSelectionChanged;
         }
 
         private static void Document_ImpliedSelectionChanged(object sender, EventArgs e)
         {
             if (stop || !providers.Any()) return;
-            try
+            //try
             {
                 ShowSelection();
             }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    Logger.Log.Error(ex);
+            //}
         }
 
         private static void ShowSelection()
@@ -119,15 +117,15 @@ namespace AcadLib.PaletteProps
             {
                 foreach (var provider in providers)
                 {
-                    try
+                    //try
                     {
                         var types = provider.GetTypes(ids, doc).Where(w=>w?.Groups?.Any(g=>g?.Properties?.Any() == true) == true);
                         groups.AddRange(types);
                     }
-                    catch (Exception ex)
-                    {
-                        Inspector.AddError($"Ошибка обработки группы свойств '{provider.Name}' - {ex}");
-                    }
+                    //catch (Exception ex)
+                    //{
+                    //    Inspector.AddError($"Ошибка обработки группы свойств '{provider.Name}' - {ex}");
+                    //}
                 }
                 t.Commit();
             }

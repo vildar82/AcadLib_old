@@ -2,10 +2,9 @@
 
 namespace AcadLib.PaletteProps
 {
-    public class IntListValueVM : BaseValueVM
+    public class IntListValueVM : IntValueVM
     {
         public bool AllowCustomValue { get; set; }
-        public List<int> Values { get; set; }
-        public int Value { get; set; }
+        public IEnumerable<int> Values { get; set; }
     }
 }

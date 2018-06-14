@@ -6,7 +6,6 @@ using UtilsEditUsers.Model.User.DB;
 using AcadLib.Model.User.DB;
 #endif
 using NetLib.WPF;
-using ReactiveUI;
 
 namespace AcadLib.User.UsersEditor
 {

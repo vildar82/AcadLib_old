@@ -49,20 +49,20 @@ namespace TestAcadlib.PaletteProps
                 };
                 types.Add(typeProps);
             }
-            types.AddRange(Enumerable.Range(0,1).Select(s=> new PalettePropsType
-            {
-                Name = $"Type{s}",
-                Groups = Enumerable.Range(0,5).Select(g=>new PalettePropsGroup
-                {
-                    Name = $"Group{g}",
-                    Properties = Enumerable.Range(0,15).Select(p=> new PalettePropVM
-                    {
-                        Name = $"Prop{p}",
-                        ValueControl = GetRandomValueControl(p, ids.ToList()),
-                        Tooltip = $"Hello {s} {g} {p}"
-                    }).ToList()
-                }).ToList()
-            }));
+            //types.AddRange(Enumerable.Range(0,1).Select(s=> new PalettePropsType
+            //{
+            //    Name = $"Type{s}",
+            //    Groups = Enumerable.Range(0,5).Select(g=>new PalettePropsGroup
+            //    {
+            //        Name = $"Group{g}",
+            //        Properties = Enumerable.Range(0,15).Select(p=> new PalettePropVM
+            //        {
+            //            Name = $"Prop{p}",
+            //            ValueControl = GetRandomValueControl(p, ids.ToList()),
+            //            Tooltip = $"Hello {s} {g} {p}"
+            //        }).ToList()
+            //    }).ToList()
+            //}));
             return types;
         }
 
@@ -85,19 +85,49 @@ namespace TestAcadlib.PaletteProps
         {
             return new List<PalettePropVM>
             {
-                GetProp(ents, "Радиус"),
+                GetIntProp(ents, "Целое", false),
+                GetIntProp(ents, "Целое чтение", true),
+                GetIntListProp(ents, "Список целых", false, true),
+                GetIntListProp(ents, "Список целых", false, false),
+                GetIntListProp(ents, "Список целых", true, true),
+                GetIntListProp(ents, "Список целых", true, false)
             };
         }
 
         [NotNull]
-        private static PalettePropVM GetProp(List<Circle> ents, string propName)
+        private static PalettePropVM GetIntProp(List<Circle> ents, string propName, bool isReadObly)
         {
-            var vm = new IntValueVM {Value = GetValue(ents.GroupBy(g => (int) g.Radius).Select(s => s.Key))};
+            var vm = new IntValueVM
+            {
+                Value = GetValue(ents.GroupBy(g => (int) g.Radius).Select(s => s.Key)),
+                IsReadOnly = isReadObly,
+                Min = 1, Max = 1000
+            };
             vm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(s => UpdateValue(s, ents.Select(e => e.Id).ToList()));
             return new PalettePropVM
             {
                 Name = propName,
-                ValueControl = new IntValueView(vm)
+                ValueControl = new IntValueView(vm),
+                Tooltip = $"Help IntValueVM isReadObly={isReadObly}.",
+            };
+        }
+        [NotNull]
+        private static PalettePropVM GetIntListProp(List<Circle> ents, string propName, bool isReadObly, bool allowCustomValue)
+        {
+            var vm = new IntListValueVM
+            {
+                Values = new List<int> { 1, 10, 50, 100, 500, 1000 },
+                Value = GetValue(ents.GroupBy(g => (int) g.Radius).Select(s => s.Key)), 
+                AllowCustomValue = allowCustomValue,
+                IsReadOnly = isReadObly,
+                Min = 1, Max = 1000
+            };
+            vm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(s => UpdateValue(s, ents.Select(e => e.Id).ToList()));
+            return new PalettePropVM
+            {
+                Name = propName,
+                ValueControl = new IntListValueView(vm),
+                Tooltip = $"Help IntListValueVM isReadObly={isReadObly}, allowCustomValue={allowCustomValue}"
             };
         }
 

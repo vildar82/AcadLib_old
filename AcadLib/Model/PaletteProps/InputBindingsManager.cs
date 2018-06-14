@@ -41,13 +41,20 @@ namespace AcadLib.PaletteProps
 
             if (e.OldValue != null)
             {
+                element.LostKeyboardFocus -= Element_LostKeyboardFocus;
                 element.PreviewKeyDown -= HandlePreviewKeyDown;
             }
 
             if (e.NewValue != null)
             {
+                element.LostKeyboardFocus += Element_LostKeyboardFocus;
                 element.PreviewKeyDown += HandlePreviewKeyDown;
             }
+        }
+
+        private static void Element_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            DoUpdateSource(e.Source);
         }
 
         static void HandlePreviewKeyDown(object sender, KeyEventArgs e)

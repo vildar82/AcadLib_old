@@ -8,7 +8,31 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         d:DataContext="{d:DesignInstance paletteProps:IntListValueVM}"
         mc:Ignorable="d">
-    <ComboBox ItemsSource="{Binding Values}" Text="{Binding Value}" IsEditable="{Binding AllowCustomValue}"
+    <UserControl.Resources>
+        <ControlTemplate x:Key="DetailedTemplate" TargetType="{x:Type ContentControl}">
+            <TextBlock Text="{Binding}"/>
+            <!--<mah:NumericUpDown Value="{Binding}" Minimum="{Binding DataContext.Min, ElementName=cbValue}" 
+                               Maximum="{Binding DataContext.Max, ElementName=cbValue}" 
+                               NumericInputMode="Numbers" IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=cbValue}"
+                               HideUpDownButtons="False"
+                               paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="mah:NumericUpDown.Value"/>-->
+        </ControlTemplate>
+</UserControl.Resources>
+    <ComboBox x:Name="cbValue" ItemsSource="{Binding Values}" Text="{Binding Value}" IsEditable="{Binding AllowCustomValue}"
               IsReadOnly="{Binding IsReadOnly}">
+        <ComboBox.ItemTemplate>
+            <DataTemplate DataType="paletteProps:IntListValueVM">
+                <mah:NumericUpDown Value="{Binding}" Minimum="{Binding DataContext.Min, ElementName=cbValue}" 
+                               Maximum="{Binding DataContext.Max, ElementName=cbValue}" 
+                               NumericInputMode="Numbers" IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=cbValue}"
+                               HideUpDownButtons="{Binding DataContext.IsReadOnly, ElementName=cbValue}"
+                               paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="mah:NumericUpDown.Value"/>
+            </DataTemplate>
+        </ComboBox.ItemTemplate>
+        <ComboBox.ItemContainerStyle>
+            <Style TargetType="{x:Type ComboBoxItem}">
+                <Setter Property="Template" Value="{StaticResource DetailedTemplate}"/>
+            </Style>
+        </ComboBox.ItemContainerStyle>
     </ComboBox>
 </wpf:BaseUserControl>

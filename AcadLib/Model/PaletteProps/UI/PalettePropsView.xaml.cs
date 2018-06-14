@@ -14,7 +14,7 @@ namespace AcadLib.PaletteProps.UI
             InitializeComponent();
         }
 
-        private void PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (!e.Handled)
             {

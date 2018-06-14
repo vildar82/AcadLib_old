@@ -29,6 +29,9 @@ namespace AcadLib.PaletteProps.UI
 
         public double PropsHelpHeight { get; set;}
 
+        /// <summary>
+        /// Отображение подсказок свойств в нижней части палитры
+        /// </summary>
         public bool PropsHelpVisible { get; set; } = Settings.Default.PalettePropsHelpVisible;
 
         public void Clear()

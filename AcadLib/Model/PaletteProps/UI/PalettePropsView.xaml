@@ -10,7 +10,7 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         d:DataContext="{d:DesignInstance local:DesignPalettePropsVM}"
-                     Background="{DynamicResource WindowBackgroundBrush}"
+        Background="{DynamicResource WindowBackgroundBrush}"
 		Name="palette"
 		mc:Ignorable="d">
 	<UserControl.Resources>
@@ -20,7 +20,7 @@
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</UserControl.Resources>
-	<Grid HorizontalAlignment="Stretch">
+	<Grid HorizontalAlignment="Stretch" mah:VisibilityHelper.IsHidden="{Binding Types, Converter={conv:IsNullConverter}}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition/>
@@ -32,7 +32,8 @@
 				<ColumnDefinition/>
 				<ColumnDefinition Width="Auto"/>
 			</Grid.ColumnDefinitions>
-			<ComboBox Grid.Column="0" ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType}" HorizontalAlignment="Left"
+			<ComboBox Grid.Column="0" ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType}" 
+			          HorizontalAlignment="Left"
 			          Margin="5" MinWidth="100">
 				<ComboBox.ItemTemplate>
 					<DataTemplate>
@@ -85,7 +86,7 @@
 							<ListBox Grid.Row="1" ItemsSource="{Binding Properties}" 
 							              mah:VisibilityHelper.IsVisible="{Binding IsExpanded}"
 							         SelectedItem="{Binding DataContext.SelectedProp, ElementName=palette}"
-							         PreviewMouseWheel="PreviewMouseWheel" >
+							         PreviewMouseWheel="OnPreviewMouseWheel" >
 								<ListBox.ItemContainerStyle>
 									<Style TargetType="{x:Type ListBoxItem}">
 									<Style.Triggers>
@@ -106,12 +107,13 @@
 												<ColumnDefinition Width="{Binding PalettePropsNameWidth, 
 													Source={x:Static properties:Settings.Default}, 
 													Converter={conv:GridLengthConverter}, Mode=TwoWay}"/>
-												<ColumnDefinition Width="2" />
+												<ColumnDefinition Width="3" />
 												<ColumnDefinition />
 											</Grid.ColumnDefinitions>
 											<TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource tbPropNameStyle}"
 											           ToolTip="{Binding Tooltip}"/>
-											<GridSplitter Grid.Column="1" Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+											<GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"
+											              Background="Transparent"/>
 											<ContentControl Grid.Column="2" Content="{Binding ValueControl}" />
 										</Grid>
 									</DataTemplate>
