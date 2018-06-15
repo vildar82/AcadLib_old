@@ -123,14 +123,7 @@ namespace AcadLib
                 AutoLayersService.Init();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 // Загрузка сборок из папки ../Script/Net - без вложенных папок
-                LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
-                    1);
-                // Загрузка сборок из папки ../Script/Net/[UserGroup]
-                foreach (var userGroup in PikSettings.UserGroupsCombined)
-                {
-                    var dirGroup = Path.Combine(PikSettings.LocalSettingsFolder, $@"Script\NET\{userGroup}");
-                    LoadService.LoadFromFolder(dirGroup);
-                }
+                LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),1);
                 // автозагрузка стартового общего лиспа
                 LispAutoloader.Start();
                 if (PaletteSetCommands._paletteSets.Any()) RibbonBuilder.InitRibbon();
