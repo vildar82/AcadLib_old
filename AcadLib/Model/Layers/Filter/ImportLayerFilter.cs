@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using AcadLib.Errors;
+using AcadLib.Layers.LayerState;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.LayerManager;
 using JetBrains.Annotations;
@@ -13,6 +14,7 @@ namespace AcadLib.Layers.Filter
     /// <summary>
     ///     Импорт фильтрами слоев
     /// </summary>
+    [PublicAPI]
     public static class ImportLayerFilter
     {
         [NotNull]
@@ -24,6 +26,28 @@ namespace AcadLib.Layers.Filter
             if (layerIds.Count > 0)
                 dbSrc.WblockCloneObjects(layerIds, dbDest.LayerTableId, idmap, DuplicateRecordCloning.Replace, false);
             return idmap;
+        }
+
+        public static void ImportLayerFilterAndState([NotNull] this Database dbDest, string sourceFile)
+        {
+            try
+            {
+                using (var dbSrc = new Database(false, false))
+                {
+                    dbSrc.ReadDwgFile(sourceFile, FileOpenMode.OpenForReadAndAllShare, false, string.Empty);
+                    dbSrc.CloseInput(true);
+                    using (var t = dbSrc.TransactionManager.StartTransaction())
+                    {
+                        ImportLayerFilterTree(dbSrc, dbDest);
+                        ImportLayerState.ImportLayerStates(dbDest, dbSrc);
+                        t.Commit();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inspector.AddError($"Ошибка имполра фильтра слоев из из файла '{sourceFile}' - {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -42,12 +66,7 @@ namespace AcadLib.Layers.Filter
                     dbSrc.CloseInput(true);
                     using (var t = dbSrc.TransactionManager.StartTransaction())
                     {
-                        // Копирование слоев
-                        var idmap = CopyLayers(dbSrc, dbDest);
-                        // Импорт фильтров
-                        var lft = dbDest.LayerFilters;
-                        ImportNestedFilters(dbSrc.LayerFilters.Root, lft.Root, idmap);
-                        dbDest.LayerFilters = lft;
+                        ImportLayerFilterTree(dbSrc, dbDest);
                         t.Commit();
                     }
                 }
@@ -56,6 +75,16 @@ namespace AcadLib.Layers.Filter
             {
                 Inspector.AddError($"Ошибка имполра фильтра слоев из из файла '{sourceFile}' - {ex.Message}");
             }
+        }
+
+        private static void ImportLayerFilterTree(Database dbSrc, Database dbDest)
+        {
+            // Копирование слоев
+            var idmap = CopyLayers(dbSrc, dbDest);
+            // Импорт фильтров
+            var lft = dbDest.LayerFilters;
+            ImportNestedFilters(dbSrc.LayerFilters.Root, lft.Root, idmap);
+            dbDest.LayerFilters = lft;
         }
 
         private static void ImportNestedFilters([NotNull] LayerFilter srcFilter, LayerFilter destFilter, IdMapping idmap)
