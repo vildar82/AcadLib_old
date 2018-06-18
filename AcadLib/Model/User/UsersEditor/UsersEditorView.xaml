@@ -66,6 +66,15 @@
                 <DataGridTextColumn Header="Логин" Binding="{Binding Login}"/>
                 <DataGridTextColumn Header="Группа" Binding="{Binding Group}"/>
                 <DataGridTextColumn Header="Версия" Binding="{Binding Version}"/>
+                <DataGridTemplateColumn Header="Версия">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="local:EditAutocadUsers">
+                            <TextBlock Text="{Binding Version}" VerticalAlignment="Center"
+                                       Background="{Binding VersionColor}"
+                                       ToolTip="{Binding VersionTooltip}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Отключен" Binding="{Binding Disabled}"/>
                 <DataGridTextColumn Header="Примечание" Binding="{Binding Description}" Width="150"/>
                 <DataGridTextColumn Header="Отдел" Binding="{Binding AdDepartment}" Width="250"/>

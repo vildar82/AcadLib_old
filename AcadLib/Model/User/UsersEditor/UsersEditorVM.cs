@@ -6,10 +6,13 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AcadLib.User.DB;
 using AcadLib.User.UI;
-#if !Utils
+#if Utils
+using UtilsEditUsers.Model.User.DB;
+#else
 using Path = AcadLib.IO.Path;
 using AutoCAD_PIK_Manager.Settings;
 using AcadLib.Model.User.DB;
@@ -26,6 +29,8 @@ namespace AcadLib.User.UsersEditor
 {
     public class UsersEditorVM : BaseViewModel
     {
+        private static Brush colorOk = new SolidColorBrush(System.Windows.Media.Colors.MediumSeaGreen);
+        private static Brush colorErr = new SolidColorBrush(System.Windows.Media.Colors.IndianRed);
 #if Utils
         const string serverSettingsDir = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\Адаптация";
         const string serverShareDir = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\ShareSettings";
@@ -86,7 +91,8 @@ namespace AcadLib.User.UsersEditor
 
         private async void LoadUsers()
         {
-            users = dbUsers.GetUsers().Select(s => new EditAutocadUsers(s)).ToList();
+            GroupServerVersions = await LoadGroupServerVersionsAsync();
+            users = dbUsers.GetUsers().Select(GetUser).ToList();
             Users = new CollectionView<EditAutocadUsers>(users) { Filter  = OnFilter};
             Users.CollectionChanged += (o,e) => UsersCount = Users.Count();
 #if Utils
@@ -97,7 +103,40 @@ namespace AcadLib.User.UsersEditor
             LoadUsersEx();
             FilterGroups = users.SelectMany(s => GetGroups(s.Group)).GroupBy(g=>g).Select(s=>s.Key).OrderBy(o=>o).ToList();
             FilterGroups.Insert(0, "Все");
-            GroupServerVersions = await LoadGroupServerVersionsAsync();
+        }
+
+        private EditAutocadUsers GetUser(AutocadUsers userDb)
+        {
+            var (brush, tooltip) = GetUserVerionInfo(userDb);
+            return new EditAutocadUsers(userDb)
+            {
+                VersionColor = brush,
+                VersionTooltip = tooltip
+            };
+        }
+
+        private (Brush color, string tooltip) GetUserVerionInfo(AutocadUsers userDb)
+        {
+            if (userDb.Group.IsNullOrEmpty() || userDb.Version.IsNullOrEmpty()) return (null, null);
+            var color = colorOk;
+            var tooltip = string.Empty;
+            foreach (var @group in GetGroups(userDb.Group))
+            {
+                var serGroup = GroupServerVersions.FirstOrDefault(f => f.Name == group);
+                if (serGroup == null) continue;
+                var verSer = serGroup.Version;
+                var verMatch = Regex.Match(userDb.Version, $@"{@group}=(\d+)");
+                if (verMatch.Success)
+                {
+                    var verLoc = verMatch.Groups[1].Value;
+                    if (verLoc != verSer)
+                    {
+                        color = colorErr;
+                        tooltip += $"{group} локально {verLoc}, на сервере {verSer}\n";
+                    }
+                }
+            }
+            return (color, tooltip);
         }
 
         private Task<List<UserGroup>> LoadGroupServerVersionsAsync()

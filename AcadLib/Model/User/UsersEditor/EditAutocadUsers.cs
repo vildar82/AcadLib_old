@@ -1,4 +1,5 @@
 ﻿
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #if Utils
 using UtilsEditUsers.Model.User.DB;
@@ -19,6 +20,8 @@ namespace AcadLib.User.UsersEditor
         public BitmapImage Image { get; set; }
         public string Group { get; set; }
         public string Version { get; set; }
+        public Brush VersionColor { get; set; }
+        public string VersionTooltip { get; set; }
         public bool? Disabled { get; set; }
         public string Description { get; set; }
 
