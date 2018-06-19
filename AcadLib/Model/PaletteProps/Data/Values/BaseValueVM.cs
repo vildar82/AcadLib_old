@@ -1,4 +1,5 @@
-﻿using NetLib.WPF;
+﻿using System;
+using NetLib.WPF;
 
 namespace AcadLib.PaletteProps
 {

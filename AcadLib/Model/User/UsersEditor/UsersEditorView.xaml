@@ -8,9 +8,8 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         d:DataContext="{d:DesignInstance local:UsersEditorVM}"
         mc:Ignorable="d"
-                WindowState="Maximized"
-                Topmost="True"
-                ShowMaxRestoreButton="True"
+        WindowState="Maximized"
+        ShowMaxRestoreButton="True"
         Title="Пользователи">
     <Grid>
         <Grid.RowDefinitions>

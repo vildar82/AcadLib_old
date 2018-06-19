@@ -18,7 +18,7 @@ namespace AcadLib.PaletteProps
 
         static InputBindingsManager()
         {
-
+            
         }
 
         public static void SetUpdatePropertySourceWhenEnterPressed(DependencyObject dp, DependencyProperty value)

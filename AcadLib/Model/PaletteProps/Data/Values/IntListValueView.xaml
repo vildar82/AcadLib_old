@@ -10,22 +10,17 @@
         mc:Ignorable="d">
     <UserControl.Resources>
         <ControlTemplate x:Key="DetailedTemplate" TargetType="{x:Type ContentControl}">
-            <TextBlock Text="{Binding}"/>
-            <!--<mah:NumericUpDown Value="{Binding}" Minimum="{Binding DataContext.Min, ElementName=cbValue}" 
-                               Maximum="{Binding DataContext.Max, ElementName=cbValue}" 
-                               NumericInputMode="Numbers" IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=cbValue}"
-                               HideUpDownButtons="False"
-                               paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="mah:NumericUpDown.Value"/>-->
+            <TextBlock Text="{Binding}" Margin="1"/>
         </ControlTemplate>
 </UserControl.Resources>
-    <ComboBox x:Name="cbValue" ItemsSource="{Binding Values}" Text="{Binding Value}" IsEditable="{Binding AllowCustomValue}"
-              IsReadOnly="{Binding IsReadOnly}">
+    <ComboBox x:Name="CbValue" ItemsSource="{Binding Values}" Text="{Binding Value, Delay=500}"
+              IsEditable="{Binding AllowCustomValue}" IsReadOnly="{Binding IsReadOnly}">
         <ComboBox.ItemTemplate>
             <DataTemplate DataType="paletteProps:IntListValueVM">
-                <mah:NumericUpDown Value="{Binding}" Minimum="{Binding DataContext.Min, ElementName=cbValue}" 
-                               Maximum="{Binding DataContext.Max, ElementName=cbValue}" 
-                               NumericInputMode="Numbers" IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=cbValue}"
-                               HideUpDownButtons="{Binding DataContext.IsReadOnly, ElementName=cbValue}"
+                <mah:NumericUpDown Value="{Binding ., Delay=500}" Minimum="{Binding DataContext.Min, ElementName=CbValue}" 
+                               Maximum="{Binding DataContext.Max, ElementName=CbValue}" 
+                               NumericInputMode="Numbers" IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=CbValue}"
+                               HideUpDownButtons="{Binding DataContext.IsReadOnly, ElementName=CbValue}"
                                paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="mah:NumericUpDown.Value"/>
             </DataTemplate>
         </ComboBox.ItemTemplate>

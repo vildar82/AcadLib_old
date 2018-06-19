@@ -11,7 +11,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         d:DataContext="{d:DesignInstance local:DesignPalettePropsVM}"
         Background="{DynamicResource WindowBackgroundBrush}"
-		Name="palette"
+		Name="Palette"
 		mc:Ignorable="d">
 	<UserControl.Resources>
 		<ResourceDictionary>
@@ -85,7 +85,7 @@
 							<!--Список свойств группы-->
 							<ListBox Grid.Row="1" ItemsSource="{Binding Properties}" 
 							              mah:VisibilityHelper.IsVisible="{Binding IsExpanded}"
-							         SelectedItem="{Binding DataContext.SelectedProp, ElementName=palette}"
+							         SelectedItem="{Binding DataContext.SelectedProp, ElementName=Palette}"
 							         PreviewMouseWheel="OnPreviewMouseWheel" >
 								<ListBox.ItemContainerStyle>
 									<Style TargetType="{x:Type ListBoxItem}">
@@ -125,11 +125,9 @@
 			</ItemsControl>
 		</ScrollViewer>
 		<GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="2"/>
-		<Border Grid.Row="3" BorderBrush="{DynamicResource AccentColorBrush4}" BorderThickness="1" Margin="1">
-			<StackPanel Orientation="Horizontal">
-				<TextBlock Text="{Binding SelectedProp.Tooltip}" TextWrapping="Wrap" Margin="1" VerticalAlignment="Top"/>
-			</StackPanel>
-		</Border>
-	</Grid>
+        <Border Grid.Row="3" BorderBrush="{DynamicResource AccentColorBrush4}" BorderThickness="1" Margin="1">
+            <TextBlock Text="{Binding SelectedProp.Tooltip}" TextWrapping="Wrap" Margin="1" VerticalAlignment="Top"/>
+        </Border>
+    </Grid>
 </wpf:BaseUserControl>
 

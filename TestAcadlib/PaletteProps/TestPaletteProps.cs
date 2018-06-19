@@ -42,7 +42,7 @@ namespace TestAcadlib.PaletteProps
                         new PalettePropsGroup
                         {
                             Name = "Entity",
-                            Ids = ents.Select(s => s.Id).ToList(),
+                            Count = ents.Count,
                             Properties = GetProperties(ents)
                         }
                     }

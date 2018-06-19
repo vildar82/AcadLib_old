@@ -24,7 +24,14 @@ namespace AcadLib.PaletteProps
         /// </summary>
         public string Name { get; set; }
 
-        public List<ObjectId> Ids { get; set; }
+        /// <summary>
+        /// Кол-во объектов
+        /// </summary>
+        public int Count { get; set; }
+        /// <summary>
+        /// Связанный объект
+        /// </summary>
+        public object Tag { get; set; }
 
         public bool IsExpanded { get; set; } = true;
         public string ButtonExpandContent { get; set; }

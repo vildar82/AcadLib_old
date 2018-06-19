@@ -28,7 +28,7 @@ namespace AcadLib.PaletteProps
         /// Добавление провайдера
         /// </summary>
         /// <param name="name">Название</param>
-        /// <param name="getTypes">Для выделенных объектов вернуть группы типов свойств</param>
+        /// <param name="getTypes">Для выделенных объектов вернуть группы типов свойств. Транзакция уже запущена.</param>
         public static void Registry(string name, Func<ObjectId[], Document, List<PalettePropsType>> getTypes)
         {
             if (providers.Any(p => p.Name == name)) 
@@ -89,14 +89,14 @@ namespace AcadLib.PaletteProps
         private static void Document_ImpliedSelectionChanged(object sender, EventArgs e)
         {
             if (stop || !providers.Any()) return;
-            //try
+            try
             {
                 ShowSelection();
             }
-            //catch (Exception ex)
-            //{
-            //    Logger.Log.Error(ex);
-            //}
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex);
+            }
         }
 
         private static void ShowSelection()
@@ -117,15 +117,15 @@ namespace AcadLib.PaletteProps
             {
                 foreach (var provider in providers)
                 {
-                    //try
+                    try
                     {
                         var types = provider.GetTypes(ids, doc).Where(w=>w?.Groups?.Any(g=>g?.Properties?.Any() == true) == true);
                         groups.AddRange(types);
                     }
-                    //catch (Exception ex)
-                    //{
-                    //    Inspector.AddError($"Ошибка обработки группы свойств '{provider.Name}' - {ex}");
-                    //}
+                    catch (Exception ex)
+                    {
+                        Inspector.AddError($"Ошибка обработки группы свойств '{provider.Name}' - {ex}");
+                    }
                 }
                 t.Commit();
             }

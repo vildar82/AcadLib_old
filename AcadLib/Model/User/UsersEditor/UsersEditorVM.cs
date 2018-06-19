@@ -118,9 +118,12 @@ namespace AcadLib.User.UsersEditor
         private (Brush color, string tooltip) GetUserVerionInfo(AutocadUsers userDb)
         {
             if (userDb.Group.IsNullOrEmpty() || userDb.Version.IsNullOrEmpty()) return (null, null);
-            var color = colorOk;
+            Brush color = null;
             var tooltip = string.Empty;
-            foreach (var @group in GetGroups(userDb.Group))
+            var userGroups = GetGroups(userDb.Group).ToList();
+            userGroups.Add("Общие");
+            var isOk = false;
+            foreach (var @group in userGroups)
             {
                 var serGroup = GroupServerVersions.FirstOrDefault(f => f.Name == group);
                 if (serGroup == null) continue;
@@ -128,14 +131,20 @@ namespace AcadLib.User.UsersEditor
                 var verMatch = Regex.Match(userDb.Version, $@"{@group}=(\d+)");
                 if (verMatch.Success)
                 {
+                    isOk = true;
                     var verLoc = verMatch.Groups[1].Value;
                     if (verLoc != verSer)
                     {
                         color = colorErr;
-                        tooltip += $"{group} локально {verLoc}, на сервере {verSer}\n";
+                        tooltip += $"{group} - на сервере {verSer}\n";
                     }
                 }
             }
+            if (isOk && color == null)
+            {
+                color = colorOk;
+            }
+            tooltip =tooltip.Trim();
             return (color, tooltip);
         }
 

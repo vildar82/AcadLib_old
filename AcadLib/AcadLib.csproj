@@ -188,6 +188,10 @@
     <Compile Include="Model\Filer\ReferenceFilerResult.cs" />
     <Compile Include="Model\Geometry\LineExt.cs" />
     <Compile Include="Model\Geometry\Polylines\MergePolylineEx.cs" />
+    <Compile Include="Model\PaletteProps\Data\Values\ColorValueView.xaml.cs">
+      <DependentUpon>ColorValueView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PaletteProps\Data\Values\ColorValueVM.cs" />
     <Compile Include="Model\PaletteProps\InputBindingsManager.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropVM.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsType.cs" />
@@ -656,6 +660,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model\Layers\LayersSelected\LayersSelectedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model\PaletteProps\Data\Values\ColorValueView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
