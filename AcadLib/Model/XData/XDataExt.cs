@@ -47,10 +47,16 @@ namespace AcadLib
             {
                 var rb = new ResultBuffer(new TypedValue(1001, regAppName));
                 // ReSharper disable once UpgradeOpen
-                dbo.UpgradeOpen();
+                var isWriteEnabled = dbo.IsWriteEnabled;
+                if (!isWriteEnabled) dbo.UpgradeOpen();
                 dbo.XData = rb;
-                dbo.DowngradeOpen();
+                if (!isWriteEnabled) dbo.DowngradeOpen();
             }
+        }
+
+        public static bool HasXData([NotNull] this DBObject dbo, [NotNull] string regApp)
+        {
+            return dbo.GetXDataForApplication(regApp) != null;
         }
 
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
@@ -162,12 +168,13 @@ namespace AcadLib
         /// <typeparam name="T">Тип значения - int, double, string</typeparam>        
         /// <returns>Значение или дефолтное значение для этого типа (0,0,null) если не найдено</returns>
         // ReSharper disable once MemberCanBePrivate.Global
+        [CanBeNull]
         public static T GetXData<T>([NotNull] this DBObject dbo, string regAppName)
         {
-            var dxfT = dictXDataTypedValues[typeof(T)];
             var rb = dbo.GetXDataForApplication(regAppName);
             if (rb != null)
             {
+                var dxfT = dictXDataTypedValues[typeof(T)];
                 foreach (var item in rb)
                 {
                     if (item.TypeCode == dxfT)

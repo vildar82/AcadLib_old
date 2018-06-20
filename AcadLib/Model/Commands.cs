@@ -419,7 +419,7 @@ namespace AcadLib
                 using (var t = db.TransactionManager.StartTransaction())
                 {
                     var allTypes = new Dictionary<string, int>();
-                    var ms = (BlockTableRecord) SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
+                    var ms = db.CurrentSpaceId.GetObjectT<BlockTableRecord>(OpenMode.ForRead);
                     foreach (var id in ms)
                     {
                         if (allTypes.ContainsKey(id.ObjectClass.Name))
@@ -572,6 +572,31 @@ namespace AcadLib
         public void PIK_CheckUpdates()
         {
             CommandStart.Start(d => CheckUpdates.CheckUpdatesNotify(false));
+        }
+
+        [CommandMethod(Group, nameof(PIK_RegAppsList), CommandFlags.Transparent)]
+        public void PIK_RegAppsList()
+        {
+            CommandStart.Start(d =>
+            {
+                var dlg = new SaveFileDialog
+                {
+                    Title = "Сохранение файла со списком зарегистрированных приложенией",
+                    FileName = $"regApps_{Path.GetFileNameWithoutExtension(AcadHelper.Doc.Name)}.txt",
+                    DefaultExt = ".txt",
+                    AddExtension = true
+                };
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllLines(dlg.FileName, d.Database.GetRegApps());
+                }
+            });
+        }
+
+        [CommandMethod(Group, nameof(PIK_CleanRegApps), CommandFlags.Transparent)]
+        public void PIK_CleanRegApps()
+        {
+            CommandStart.Start(d => d.Database.CleanRegApps());
         }
     }
 }

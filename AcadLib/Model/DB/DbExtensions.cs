@@ -3,8 +3,11 @@ using AutoCAD_PIK_Manager.Settings;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using AcadLib.Filer;
 using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 // ReSharper disable once CheckNamespace
@@ -325,5 +328,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             return GetStyleId(db, styleName, d => d.TextStyleTableId);
         }
+
+        
     }
 }
