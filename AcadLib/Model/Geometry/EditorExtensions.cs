@@ -1,11 +1,11 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using AcRx = Autodesk.AutoCAD.Runtime;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.EditorInput
 {
+    using DatabaseServices;
+    using Geometry;
+    using JetBrains.Annotations;
+    using AcRx = Autodesk.AutoCAD.Runtime;
+
     /// <summary>
     /// Provides extension methods for the Editor type.
     /// </summary>
@@ -43,6 +43,7 @@ namespace Autodesk.AutoCAD.EditorInput
                         throw new AcRx.Exception(AcRx.ErrorStatus.CannotChangeActiveViewport);
                     }
                 }
+
                 return vp.DCS2PSDCS();
             }
         }
@@ -66,6 +67,7 @@ namespace Autodesk.AutoCAD.EditorInput
                     Matrix3d.Displacement(vtr.Target - Point3d.Origin) *
                     Matrix3d.PlaneToWorld(vtr.ViewDirection);
             }
+
             if (!tilemode)
                 ed.SwitchToPaperSpace();
             return retVal;

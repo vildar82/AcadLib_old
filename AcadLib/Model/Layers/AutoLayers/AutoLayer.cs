@@ -1,14 +1,14 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-
-namespace AcadLib.Layers.AutoLayers
+﻿namespace AcadLib.Layers.AutoLayers
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public abstract class AutoLayer
     {
-        protected List<string> Commands { get; set; }
-
         public LayerInfo Layer { get; set; }
+
+        protected List<string> Commands { get; set; }
 
         [NotNull]
         public string GetInfo()

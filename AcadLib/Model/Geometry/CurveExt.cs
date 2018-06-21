@@ -1,13 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnitsNet.Extensions.NumberToAngle;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+    using UnitsNet.Extensions.NumberToAngle;
+
     [PublicAPI]
     public static class CurveExt
     {
@@ -33,13 +33,15 @@ namespace AcadLib.Geometry
         [NotNull]
         public static List<Point3d> GetPoints([NotNull] this Curve curve)
         {
-            if (curve is Polyline pl) return pl.GetPoints().Select(s => s.Convert3d()).ToList();
+            if (curve is Polyline pl)
+                return pl.GetPoints().Select(s => s.Convert3d()).ToList();
             var pts = new List<Point3d>();
             for (var i = curve.StartParam; i <= curve.EndParam; i += 0.1)
             {
                 var pt = curve.GetPointAtParameter(i);
                 pts.Add(pt);
             }
+
             return pts;
         }
 
@@ -61,6 +63,7 @@ namespace AcadLib.Geometry
                 ray.TransformBy(Matrix3d.Rotation(5.Radians().Radians, Vector3d.ZAxis, ray.BasePoint));
                 return IsPointInsidePolylineByRay(ray, pt, c, tolerance);
             }
+
             return NetLib.MathExt.IsOdd(pts.Count) || IsPointOnPolyline(c, pt, tolerance);
         }
 

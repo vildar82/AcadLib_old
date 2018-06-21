@@ -1,10 +1,10 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib.Dim
+﻿namespace AcadLib.Dim
 {
+    using System;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class DimensionExt
     {
@@ -22,6 +22,7 @@ namespace AcadLib.Dim
                 {
                     Application.SetSystemVariable("DIMBLK", blkName);
                 }
+
                 return bt[blkName];
             }
         }
@@ -31,26 +32,26 @@ namespace AcadLib.Dim
         {
             switch (dimBlk)
             {
-                case DimBlkEnum.FilledClosed: return "";
+                case DimBlkEnum.FilledClosed: return string.Empty;
                 case DimBlkEnum.DOT: return "_DOT";
                 case DimBlkEnum.DOTSMALL: return "_DOTSMALL";
-                case DimBlkEnum.DOTBLANK:return "_DOTBLANK";
-                case DimBlkEnum.ORIGIN:return "_ORIGIN";
-                case DimBlkEnum.ORIGIN2:return "_ORIGIN2";
-                case DimBlkEnum.OPEN:return "_OPEN";
-                case DimBlkEnum.OPEN90:return "_OPEN90";
-                case DimBlkEnum.OPEN30:return "_OPEN30";
-                case DimBlkEnum.CLOSED:return "_CLOSED";
-                case DimBlkEnum.SMALL:return "_SMALL";
-                case DimBlkEnum.NONE:return "_NONE";
-                case DimBlkEnum.OBLIQUE:return "_OBLIQUE";
-                case DimBlkEnum.BOXFILLED:return "_BOXFILLED";
-                case DimBlkEnum.BOXBLANK:return "_BOXBLANK";
-                case DimBlkEnum.CLOSEDBLANK:return "_CLOSEDBLANK";
-                case DimBlkEnum.DATUMFILLED:return "_DATUMFILLED";
-                case DimBlkEnum.DATUMBLANK:return "_DATUMBLANK";
-                case DimBlkEnum.INTEGRAL:return "_INTEGRAL";
-                case DimBlkEnum.ARCHTICK:return "_ARCHTICK";
+                case DimBlkEnum.DOTBLANK: return "_DOTBLANK";
+                case DimBlkEnum.ORIGIN: return "_ORIGIN";
+                case DimBlkEnum.ORIGIN2: return "_ORIGIN2";
+                case DimBlkEnum.OPEN: return "_OPEN";
+                case DimBlkEnum.OPEN90: return "_OPEN90";
+                case DimBlkEnum.OPEN30: return "_OPEN30";
+                case DimBlkEnum.CLOSED: return "_CLOSED";
+                case DimBlkEnum.SMALL: return "_SMALL";
+                case DimBlkEnum.NONE: return "_NONE";
+                case DimBlkEnum.OBLIQUE: return "_OBLIQUE";
+                case DimBlkEnum.BOXFILLED: return "_BOXFILLED";
+                case DimBlkEnum.BOXBLANK: return "_BOXBLANK";
+                case DimBlkEnum.CLOSEDBLANK: return "_CLOSEDBLANK";
+                case DimBlkEnum.DATUMFILLED: return "_DATUMFILLED";
+                case DimBlkEnum.DATUMBLANK: return "_DATUMBLANK";
+                case DimBlkEnum.INTEGRAL: return "_INTEGRAL";
+                case DimBlkEnum.ARCHTICK: return "_ARCHTICK";
                 default: throw new ArgumentOutOfRangeException(nameof(dimBlk), dimBlk, null);
             }
         }

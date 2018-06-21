@@ -1,53 +1,55 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2017 06 27 10:07
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Automation;
-using System.Windows.Forms;
 using AcadLib;
-using AcadLib.Blocks.Visual;
-using AcadLib.Colors;
-using AcadLib.DbYouTubeTableAdapters;
-using AcadLib.Editors;
-using AcadLib.Errors;
-using AcadLib.Field;
-using AcadLib.Layers;
-using AcadLib.Layers.AutoLayers;
-using AcadLib.Layers.LayersSelected;
-using AcadLib.Lisp;
-using AcadLib.PaletteCommands;
-using AcadLib.PaletteProps;
-using AcadLib.Plot;
-using AcadLib.Properties;
-using AcadLib.Statistic;
-using AcadLib.Template;
-using AcadLib.UI.Ribbon;
-using AcadLib.UI.StatusBar;
-using AcadLib.User;
-using AcadLib.Utils;
-using AutoCAD_PIK_Manager.Settings;
-using AutoCAD_PIK_Manager.User;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
-using JetBrains.Annotations;
-using NetLib.IO;
-using NetLib.Notification;
-using Exception = System.Exception;
-using Path = System.IO.Path;
 
 [assembly: CommandClass(typeof(Commands))]
 [assembly: ExtensionApplication(typeof(Commands))]
 
 namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using System.Windows.Automation;
+    using System.Windows.Forms;
+    using AutoCAD_PIK_Manager.Settings;
+    using AutoCAD_PIK_Manager.User;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Runtime;
+    using Blocks.Visual;
+    using Colors;
+    using DbYouTubeTableAdapters;
+    using Editors;
+    using Errors;
+    using Field;
+    using JetBrains.Annotations;
+    using Layers;
+    using Layers.AutoLayers;
+    using Layers.LayersSelected;
+    using Lisp;
+    using NetLib.IO;
+    using NetLib.Notification;
+    using PaletteCommands;
+    using PaletteProps;
+    using Plot;
+    using Properties;
+    using Statistic;
+    using Template;
+    using UI.Ribbon;
+    using UI.StatusBar;
+    using User;
+    using Utils;
+    using Exception = System.Exception;
+    using Path = System.IO.Path;
+
     [PublicAPI]
     public class Commands : IExtensionApplication
     {
@@ -56,18 +58,17 @@ namespace AcadLib
 
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
 
-        //public const string CommandInsertBlockPikLogo = "PIK_InsertBlockLogo";
         public const string CommandXDataView = "PIK_XDataView";
 
         public const string GroupCommon = "Общие";
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
 
-        internal static readonly string fileCommonBlocks =
-            Path.Combine(PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
-        
         public static readonly Assembly AcadLibAssembly = Assembly.GetExecutingAssembly();
         public static readonly Version AcadLibVersion = AcadLibAssembly.GetName().Version;
         public static readonly string CurDllDir = Path.GetDirectoryName(AcadLibAssembly.Location);
+
+        internal static readonly string FileCommonBlocks =
+            Path.Combine(PikSettings.LocalSettingsFolder, @"Blocks\Блоки-оформления.dwg");
 
         private readonly Timer timer = new Timer();
 
@@ -95,6 +96,7 @@ namespace AcadLib
                 {
                     //
                 }
+
                 PluginStatisticsHelper.StartAutoCAD();
                 if (PikSettings.IsDisabledSettings)
                 {
@@ -103,6 +105,7 @@ namespace AcadLib
                     EventsStatisticService.Start();
                     return;
                 }
+
                 try
                 {
                     Notify.SetScreenSettings(new NotifyOptions(with: 400));
@@ -110,23 +113,29 @@ namespace AcadLib
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log.Error(ex,"Notify и CheckUpdates");
+                    Logger.Log.Error(ex, "Notify и CheckUpdates");
                 }
+
                 if (Settings.Default.UpgradeRequired)
                 {
                     Settings.Default.Upgrade();
                     Settings.Default.UpgradeRequired = false;
                     Settings.Default.Save();
                 }
+
                 AllCommandsCommon();
+
                 // Автослоиtest
                 AutoLayersService.Init();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
                 // Загрузка сборок из папки ../Script/Net - без вложенных папок
-                LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),1);
+                LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), 1);
+
                 // автозагрузка стартового общего лиспа
                 LispAutoloader.Start();
-                if (PaletteSetCommands._paletteSets.Any()) RibbonBuilder.InitRibbon();
+                if (PaletteSetCommands._paletteSets.Any())
+                    RibbonBuilder.InitRibbon();
                 Logger.Log.Info("end Initialize AcadLib");
                 YoutubeStatisticInit();
                 EventsStatisticService.Start();
@@ -140,25 +149,6 @@ namespace AcadLib
             {
                 $"PIK. Ошибка загрузки AcadLib, версия:{AcadLibVersion} - {ex.Message}.".WriteToCommandLine();
                 Logger.Log.Error(ex, "AcadLib Initialize.");
-            }
-        }
-
-        private void YoutubeStatisticInit()
-        {
-            try
-            {
-                var procsR = Process.GetProcessesByName("Acad");
-                if (procsR.Length == 1)
-                {
-                    player = new C_PlayStatisticTableAdapter();
-                    timer.Interval = 60000 * 3;
-                    timer.Tick += Timer_Tick;
-                    timer.Start();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "YoutubeStatisticInit");
             }
         }
 
@@ -189,33 +179,6 @@ namespace AcadLib
             CommandStart.Start(doc => { UserSettingsService.UsersEditor(); });
         }
 
-        /// <summary>
-        ///     Список общих команд
-        /// </summary>
-        internal static void AllCommandsCommon()
-        {
-            try
-            {
-                CommandsPalette = new List<IPaletteCommand>
-                {
-                    new PaletteInsertBlock("PIK_Project-Logo", fileCommonBlocks, "Блок логотипа", Resources.logo,
-                        "Вставка блока логотипа ПИК.", GroupCommon),
-                    new PaletteCommand("Просмотр расширенных данных примитива", Resources.PIK_XDataView, CommandXDataView,
-                        "Просмотр расширенных данных (XData) примитива.", GroupCommon),
-                    new PaletteCommand("Проверка и очистка", Resources.purge, nameof(PIK_PurgeAuditRegen),
-                        "Очистка (_purge), проверка (_audit), сброс списка масштабов аннотации (_scalelistedit) и регенерация чертежа.",
-                        GroupCommon),
-                    new PaletteCommand("Последние ошибки", Resources.error, nameof(PIK_Errors), "Показать окно последних ошибок", GroupCommon),
-                    new PaletteCommand("Настройки", Resources.userSettings, nameof(PIK_UserSettings), "Настройки пользователя", GroupCommon)
-                };
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "AcadLib.AllCommandsCommon()");
-                CommandsPalette = new List<IPaletteCommand>();
-            }
-        }
-
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
         public void BlockListCommand()
         {
@@ -237,44 +200,6 @@ namespace AcadLib
         public void ColorBookNCS()
         {
             CommandStart.Start(doc => ColorBookHelper.GenerateNCS());
-        }
-
-        [CanBeNull]
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            if (dllsResolve == null)
-            {
-                // Сборки в основной папке dll
-                dllsResolve = DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
-                // Все сборки из папки Script\NET
-                dllsResolve.AddRange(DllResolve.GetDllResolve(
-                    Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
-                    SearchOption.AllDirectories));
-                // Все сборки из локальной папки packages
-                //dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
-                // Оставить только сборки под текущую версию автокада
-                dllsResolve = FilterDllResolveVersions(dllsResolve);
-            }
-            var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
-            if (dllResolver == null) return null;
-            try
-            {
-                var asm = dllResolver.LoadAssembly();
-                Logger.Log.Info($"resolve assembly - {asm.FullName}");
-                return asm;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
-            }
-            return null;
-        }
-
-        [NotNull]
-        private List<DllResolve> FilterDllResolveVersions(List<DllResolve> dllResolves)
-        {
-            return LoadService.GetDllsForCurVerAcad(dllsResolve.Select(s => s.DllFile).ToList())
-                .Select(s => new DllResolve(s.Dll) {DllName = s.FileWoVer}).ToList();
         }
 
         [CommandMethod(Group, nameof(PIK_AutoLayersAll), CommandFlags.Modal)]
@@ -317,14 +242,15 @@ namespace AcadLib
                 var db = doc.Database;
                 using (var t = db.TransactionManager.StartTransaction())
                 {
-                    var bt = (BlockTable) db.BlockTableId.GetObject(OpenMode.ForRead);
+                    var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
                     foreach (var id in bt)
                     {
-                        var btr = (BlockTableRecord) id.GetObject(OpenMode.ForRead);
-                        if (btr.IsLayout || btr.IsAnonymous || btr.IsDependent) continue;
+                        var btr = (BlockTableRecord)id.GetObject(OpenMode.ForRead);
+                        if (btr.IsLayout || btr.IsAnonymous || btr.IsDependent)
+                            continue;
                         if (btr.Units != UnitsValue.Undefined)
                         {
-                            btr = (BlockTableRecord) id.GetObject(OpenMode.ForWrite);
+                            btr = (BlockTableRecord)id.GetObject(OpenMode.ForWrite);
                             btr.Units = UnitsValue.Undefined;
                         }
                     }
@@ -343,7 +269,8 @@ namespace AcadLib
                 var allTypes = new Dictionary<string, int>();
                 for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
                 {
-                    if (!db.TryGetObjectId(new Handle(i), out var id)) continue;
+                    if (!db.TryGetObjectId(new Handle(i), out var id))
+                        continue;
                     if (allTypes.ContainsKey(id.ObjectClass.Name))
                         allTypes[id.ObjectClass.Name]++;
                     else
@@ -360,7 +287,8 @@ namespace AcadLib
         {
             CommandStart.Start(doc =>
             {
-                if (!doc.IsNamedDrawing) throw new Exception("Чертеж не сохранен на диске");
+                if (!doc.IsNamedDrawing)
+                    throw new Exception("Чертеж не сохранен на диске");
                 var tData = TemplateManager.LoadFromDb(doc.Database);
                 var file = Path.ChangeExtension(doc.Name, "json");
                 tData.ExportToJson(file ?? throw new InvalidOperationException());
@@ -383,9 +311,11 @@ namespace AcadLib
         {
             try
             {
-                if (rb == null) return;
+                if (rb == null)
+                    return;
                 var tvs = rb.AsArray();
-                if (!tvs.Any()) return;
+                if (!tvs.Any())
+                    return;
                 var fileName = tvs[0].Value.ToString();
                 var layerName = tvs[1].Value.ToString();
                 var layer = new LayerInfo(layerName);
@@ -471,12 +401,13 @@ namespace AcadLib
             {
                 var ed = doc.Editor;
                 var res = ed.GetString("\nВведи ObjectID, например:8796086050096");
-                if (res.Status != PromptStatus.OK) return;
+                if (res.Status != PromptStatus.OK)
+                    return;
                 var id = long.Parse(res.StringResult);
                 var db = doc.Database;
                 using (var t = db.TransactionManager.StartTransaction())
                 {
-                    var ms = (BlockTableRecord) SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
+                    var ms = (BlockTableRecord)SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
 #pragma warning disable 618
                     var entId = ms.Cast<ObjectId>().FirstOrDefault(f => f.OldId == id);
 #pragma warning restore 618
@@ -489,53 +420,10 @@ namespace AcadLib
             });
         }
 
-        [CommandMethod(Group, nameof(PIK_Test), CommandFlags.Modal)]
-        public void PIK_Test()
-        {
-            CommandStart.Start(doc =>
-            {
-                //var templateFile = TemplateManager.GetTemplateFile("PIK_Masterplan_24.08.17_на согласование.dwt");
-                //doc.Database.ImportLayerFilterTree(templateFile);
-                //doc.Database.ImportLayerStates(templateFile);
-            });
-        }
-
         [CommandMethod(Group, nameof(PIK_UpdateFieldsInObjects), CommandFlags.Modal)]
         public void PIK_UpdateFieldsInObjects()
         {
             CommandStart.Start(doc => UpdateField.UpdateInSelected());
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            Task.Run(() =>
-            {
-                var procsChrome = Process.GetProcessesByName("chrome");
-                if (procsChrome.Length <= 0)
-                {
-                }
-                else
-                {
-                    foreach (var proc in procsChrome)
-                    {
-                        if (proc.MainWindowHandle == IntPtr.Zero) continue;
-                        var root = AutomationElement.FromHandle(proc.MainWindowHandle);
-                        var activeTabName = root.Current.Name;
-                        if (activeTabName.ToLower().Contains("youtube"))
-                        {
-                            try
-                            {
-                                player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Log.Error(ex, "Video Statistic");
-                            }
-                        }
-                    }
-                }
-            });
         }
 
         [CommandMethod(Group, CommandXDataView, CommandFlags.Modal)]
@@ -561,7 +449,7 @@ namespace AcadLib
         {
             CommandStart.Start(d => Styles.StyleManager.StyleManagerService.ManageStyles());
         }
-        
+
         [CommandMethod(Group, nameof(PIK_PaletteProperties), CommandFlags.Modal)]
         public void PIK_PaletteProperties()
         {
@@ -589,6 +477,7 @@ namespace AcadLib
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     File.WriteAllLines(dlg.FileName, d.Database.GetRegApps());
+                    Process.Start(dlg.FileName);
                 }
             });
         }
@@ -597,6 +486,149 @@ namespace AcadLib
         public void PIK_CleanRegApps()
         {
             CommandStart.Start(d => d.Database.CleanRegApps());
+        }
+
+        /// <summary>
+        ///     Список общих команд
+        /// </summary>
+        internal static void AllCommandsCommon()
+        {
+            try
+            {
+                CommandsPalette = new List<IPaletteCommand>
+                {
+                    new PaletteInsertBlock(
+                        "PIK_Project-Logo",
+                        FileCommonBlocks,
+                        "Блок логотипа",
+                        Resources.logo,
+                        "Вставка блока логотипа ПИК.",
+                        GroupCommon),
+                    new PaletteCommand(
+                        "Просмотр расширенных данных примитива",
+                        Resources.PIK_XDataView,
+                        CommandXDataView,
+                        "Просмотр расширенных данных (XData) примитива.",
+                        GroupCommon),
+                    new PaletteCommand(
+                        "Проверка и очистка",
+                        Resources.purge,
+                        nameof(PIK_PurgeAuditRegen),
+                        "Очистка (_purge), проверка (_audit), сброс списка масштабов аннотации (_scalelistedit) и регенерация чертежа.",
+                        GroupCommon),
+                    new PaletteCommand(
+                        "Последние ошибки",
+                        Resources.error,
+                        nameof(PIK_Errors),
+                        "Показать окно последних ошибок",
+                        GroupCommon),
+                    new PaletteCommand("Настройки",
+                        Resources.userSettings,
+                        nameof(PIK_UserSettings),
+                        "Настройки пользователя",
+                        GroupCommon)
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "AcadLib.AllCommandsCommon()");
+                CommandsPalette = new List<IPaletteCommand>();
+            }
+        }
+
+        private void YoutubeStatisticInit()
+        {
+            try
+            {
+                var procsR = Process.GetProcessesByName("Acad");
+                if (procsR.Length == 1)
+                {
+                    player = new C_PlayStatisticTableAdapter();
+                    timer.Interval = 60000 * 3;
+                    timer.Tick += Timer_Tick;
+                    timer.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "YoutubeStatisticInit");
+            }
+        }
+
+        [CanBeNull]
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (dllsResolve == null)
+            {
+                // Сборки в основной папке dll
+                dllsResolve = DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
+
+                // Все сборки из папки Script\NET
+                dllsResolve.AddRange(DllResolve.GetDllResolve(
+                    Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
+                    SearchOption.AllDirectories));
+
+                // Все сборки из локальной папки packages
+                // dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
+                // Оставить только сборки под текущую версию автокада
+                dllsResolve = FilterDllResolveVersions(dllsResolve);
+            }
+
+            var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
+            if (dllResolver == null)
+                return null;
+            try
+            {
+                var asm = dllResolver.LoadAssembly();
+                Logger.Log.Info($"resolve assembly - {asm.FullName}");
+                return asm;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"Ошибка AssemblyResolve - {dllResolver.DllFile}.");
+            }
+
+            return null;
+        }
+
+        [NotNull]
+        private List<DllResolve> FilterDllResolveVersions(List<DllResolve> dllResolves)
+        {
+            return LoadService.GetDllsForCurVerAcad(dllsResolve.Select(s => s.DllFile).ToList())
+                .Select(s => new DllResolve(s.Dll) { DllName = s.FileWoVer }).ToList();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            Task.Run(() =>
+            {
+                var procsChrome = Process.GetProcessesByName("chrome");
+                if (procsChrome.Length <= 0)
+                {
+                }
+                else
+                {
+                    foreach (var proc in procsChrome)
+                    {
+                        if (proc.MainWindowHandle == IntPtr.Zero)
+                            continue;
+                        var root = AutomationElement.FromHandle(proc.MainWindowHandle);
+                        var activeTabName = root.Current.Name;
+                        if (activeTabName.ToLower().Contains("youtube"))
+                        {
+                            try
+                            {
+                                player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Log.Error(ex, "Video Statistic");
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 }

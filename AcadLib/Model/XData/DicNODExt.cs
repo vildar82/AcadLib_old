@@ -1,8 +1,8 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-namespace AcadLib.XData
+﻿namespace AcadLib.XData
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public static class DicNODExt
     {
         [CanBeNull]

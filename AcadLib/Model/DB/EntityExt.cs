@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Extensions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class EntityExt
     {
@@ -32,7 +32,8 @@ namespace AcadLib.Extensions
         /// <returns>Да - видим, Нет - не видим, слой выключен или заморожен</returns>
         public static bool IsVisibleLayerOnAndUnfrozen([NotNull] this Entity ent)
         {
-            if (!ent.Visible) return false;
+            if (!ent.Visible)
+                return false;
             using (var lt = (LayerTable)ent.Database.LayerTableId.GetObject(OpenMode.ForRead))
             using (var lay = (LayerTableRecord)lt[ent.Layer].GetObject(OpenMode.ForRead))
             {
@@ -67,6 +68,7 @@ namespace AcadLib.Extensions
             {
                 contextAnnoScale = occ.GetContext(nameScale);
             }
+
             ent.Annotative = AnnotativeStates.True;
             ent.AddContext(contextAnnoScale);
             ent.RemoveContext(ent.Database.Cannoscale);

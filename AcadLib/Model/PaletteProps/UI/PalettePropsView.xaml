@@ -24,8 +24,6 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition/>
-			<RowDefinition Height="2"/>
-			<RowDefinition Height="{Binding PropsHelpHeight}"/>
 		</Grid.RowDefinitions>
 		<Grid Grid.Row="0">
 			<Grid.ColumnDefinitions>
@@ -33,25 +31,19 @@
 				<ColumnDefinition Width="Auto"/>
 			</Grid.ColumnDefinitions>
 			<ComboBox Grid.Column="0" ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType}" 
-			          HorizontalAlignment="Left"
-			          Margin="5" MinWidth="100">
+			          Margin="1" MinWidth="100">
 				<ComboBox.ItemTemplate>
 					<DataTemplate>
 						<StackPanel Orientation="Horizontal" Margin="1">
 							<TextBlock Text="{Binding Name}" Margin="1" ToolTip="Название объекта"/>
-							<TextBlock Text="{Binding Count}" Margin="10,1,1,1" ToolTip="Кол-во объектов"/>
+							<TextBlock Text="{Binding Count}" Margin="5,1,1,1" ToolTip="Кол-во объектов"/>
 						</StackPanel>
 					</DataTemplate>
 				</ComboBox.ItemTemplate>
 			</ComboBox>
-			<StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="1" VerticalAlignment="Center">
-				<ToggleButton IsChecked="{Binding PropsHelpVisible}"
-				              Content="{iconPacks:FontAwesome InfoSolid, Width=10, Height=10}" Width="20" Height="20"
-				              ToolTip="Показать панель описания свойств" VerticalAlignment="Center"/>
-			</StackPanel>
 		</Grid>
-		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-			<ItemsControl ItemsSource="{Binding SelectedType.Groups}" Margin="2"  >
+		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+			<ItemsControl ItemsSource="{Binding SelectedType.Groups}" Margin="0"  >
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						<Grid >
@@ -59,7 +51,7 @@
 								<RowDefinition Height="Auto" />
 								<RowDefinition />
 							</Grid.RowDefinitions>
-                            <Grid Name="groupGrid" Grid.Row="0" Margin="2">
+                            <Grid Name="groupGrid" Grid.Row="0" Margin="0">
 								<Grid.Style>
 									<Style TargetType="Grid">
                                         <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}"/>
@@ -76,58 +68,51 @@
 								</Grid.ColumnDefinitions>
 								<!--Имя группы свойств-->
 								<TextBlock Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Left"
-								           Style="{StaticResource tbGroupNameStyle}"/>
+								           Style="{StaticResource TbGroupNameStyle}"/>
                                 <Button Grid.Column="1" Content="{Binding ButtonExpandContent}"
 										Command="{Binding ButtonExpandCommand}" HorizontalAlignment="Right" 
-								        Style="{StaticResource bExpandStyle}" Margin="0,0,0,5"
+								        Style="{StaticResource BExpandStyle}" Margin="0,0,0,5"
                                         Foreground="{DynamicResource IdealForegroundColorBrush}" ToolTip="{Binding ButtonExpandTooltip}"/>
 							</Grid>
 							<!--Список свойств группы-->
-							<ListBox Grid.Row="1" ItemsSource="{Binding Properties}" 
+							<ItemsControl Grid.Row="1" ItemsSource="{Binding Properties}" 
 							              mah:VisibilityHelper.IsVisible="{Binding IsExpanded}"
-							         SelectedItem="{Binding DataContext.SelectedProp, ElementName=Palette}"
-							         PreviewMouseWheel="OnPreviewMouseWheel" >
-								<ListBox.ItemContainerStyle>
-									<Style TargetType="{x:Type ListBoxItem}">
-									<Style.Triggers>
-										<Trigger Property="IsSelected" Value="True">
-											<Setter Property="Background" Value="{x:Null}" />
-											<Setter Property="BorderBrush" Value="{x:Null}" />
-										</Trigger>
-										<Trigger Property="IsKeyboardFocusWithin" Value="True">
-											<Setter Property="IsSelected" Value="True"/>
-										</Trigger>
-									</Style.Triggers>
-									</Style>
-								</ListBox.ItemContainerStyle>
-								<ListBox.ItemTemplate>
+							         PreviewMouseWheel="OnPreviewMouseWheel">
+								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<Grid >
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="{Binding PalettePropsNameWidth, 
+                                        <Border BorderThickness="1" BorderBrush="{DynamicResource GrayBrush2}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="{Binding PalettePropsNameWidth, 
 													Source={x:Static properties:Settings.Default}, 
 													Converter={conv:GridLengthConverter}, Mode=TwoWay}"/>
-												<ColumnDefinition Width="3" />
-												<ColumnDefinition />
-											</Grid.ColumnDefinitions>
-											<TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource tbPropNameStyle}"
-											           ToolTip="{Binding Tooltip}"/>
-											<GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"
+                                                    <ColumnDefinition Width="3" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource TbPropNameStyle}"/>
+                                                <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"
 											              Background="Transparent"/>
-											<ContentControl Grid.Column="2" Content="{Binding ValueControl}" />
-										</Grid>
-									</DataTemplate>
-								</ListBox.ItemTemplate>
-							</ListBox>
+                                                <ContentControl Grid.Column="2" Content="{Binding ValueControl}" VerticalAlignment="Center"/>
+                                                <Grid.ToolTip>
+                                                    <StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Name}"/>
+                                                            <TextBlock Text=" - "/>
+                                                            <TextBlock Text="{Binding ValueControl.DataContext.Value}"/>
+                                                        </StackPanel>
+                                                        <TextBlock Text="{Binding Tooltip}" Visibility="{Binding Tooltip, Converter={conv:NullCollapseVisibilityConverter}}"/>
+                                                    </StackPanel>
+                                                </Grid.ToolTip>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
 						</Grid>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 		</ScrollViewer>
-		<GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="2"/>
-        <Border Grid.Row="3" BorderBrush="{DynamicResource AccentColorBrush4}" BorderThickness="1" Margin="1">
-            <TextBlock Text="{Binding SelectedProp.Tooltip}" TextWrapping="Wrap" Margin="1" VerticalAlignment="Top"/>
-        </Border>
     </Grid>
 </wpf:BaseUserControl>
 

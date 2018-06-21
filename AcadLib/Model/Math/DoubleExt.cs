@@ -1,8 +1,8 @@
-﻿using System;
-using JetBrains.Annotations;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class DoubleExt
     {

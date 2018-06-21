@@ -1,19 +1,19 @@
-﻿using System;
-using NetLib.WPF;
-
-namespace AcadLib.PaletteProps
+﻿namespace AcadLib.PaletteProps
 {
+    using System;
+    using NetLib.WPF;
+
     public abstract class BaseValueVM : BaseModel
     {
         public bool IsReadOnly { get; set; }
 
-        protected static void Update<T>(T color, Action<T> update)
+        protected static void Update<T>(T value, Action<T> update)
         {
             var doc = AcadHelper.Doc;
             using (doc.LockDocument())
             using (var t = doc.TransactionManager.StartTransaction())
             {
-                update(color);
+                update(value);
                 t.Commit();
             }
         }

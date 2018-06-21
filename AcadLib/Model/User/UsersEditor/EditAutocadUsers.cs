@@ -1,30 +1,16 @@
-﻿
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-#if Utils
-using UtilsEditUsers.Model.User.DB;
-#else
-using AcadLib.Model.User.DB;
-#endif
-using NetLib.WPF;
-
-namespace AcadLib.User.UsersEditor
+﻿namespace AcadLib.User.UsersEditor
 {
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using NetLib.WPF;
+#if Utils
+    using UtilsEditUsers.Model.User.DB;
+#else
+    using AcadLib.Model.User.DB;
+#endif
+
     public class EditAutocadUsers : BaseModel
     {
-        public AutocadUsers DbUser { get; set; }
-        public string Login { get; set; }
-        public string FIO { get; set; }
-        public string AdDepartment { get; set; }
-        public string AdPosition { get; set; }
-        public BitmapImage Image { get; set; }
-        public string Group { get; set; }
-        public string Version { get; set; }
-        public Brush VersionColor { get; set; }
-        public string VersionTooltip { get; set; }
-        public bool? Disabled { get; set; }
-        public string Description { get; set; }
-
         public EditAutocadUsers()
         {
         }
@@ -39,6 +25,30 @@ namespace AcadLib.User.UsersEditor
             Group = dbUser.Group;
             Version = dbUser.Version;
         }
+
+        public AutocadUsers DbUser { get; set; }
+
+        public string Login { get; set; }
+
+        public string FIO { get; set; }
+
+        public string AdDepartment { get; set; }
+
+        public string AdPosition { get; set; }
+
+        public BitmapImage Image { get; set; }
+
+        public string Group { get; set; }
+
+        public string Version { get; set; }
+
+        public Brush VersionColor { get; set; }
+
+        public string VersionTooltip { get; set; }
+
+        public bool? Disabled { get; set; }
+
+        public string Description { get; set; }
 
         public void SaveToDbUser()
         {

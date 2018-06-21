@@ -1,9 +1,9 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-
-namespace AcadLib.Layouts
+﻿namespace AcadLib.Layouts
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public static class LayoutExt
     {
         [NotNull]
@@ -25,6 +25,7 @@ namespace AcadLib.Layouts
                     }
                 }
             }
+
             return layouts;
         }
     }

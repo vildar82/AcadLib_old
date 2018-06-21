@@ -1,11 +1,11 @@
-﻿using System;
-using Autodesk.AutoCAD.Colors;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using NetLib;
-
-namespace AcadLib.Colors
+﻿namespace AcadLib.Colors
 {
+    using System;
+    using Autodesk.AutoCAD.Colors;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using NetLib;
+
     [PublicAPI]
     public static class ColorExt
     {
@@ -21,12 +21,15 @@ namespace AcadLib.Colors
         [CanBeNull]
         public static Color AcadColorFromString2(this string color)
         {
-            if (color.IsNullOrEmpty()) return null;
+            if (color.IsNullOrEmpty())
+                return null;
+
             // Index
             if (short.TryParse(color, out var colorIndex))
             {
                 return Color.FromColorIndex(ColorMethod.ByAci, colorIndex);
             }
+
             // RGB
             var rgb = color.Split(',');
             return rgb.Length == 3 ? Color.FromRgb(byte.Parse(rgb[0]), byte.Parse(rgb[1]), byte.Parse(rgb[2])) : null;
@@ -36,7 +39,7 @@ namespace AcadLib.Colors
         [NotNull]
         public static string AcadColorToStrig([CanBeNull] this Color color)
         {
-            return color?.ColorValue.ColorToString() ?? "";
+            return color?.ColorValue.ColorToString() ?? string.Empty;
         }
 
         /// <summary>
@@ -45,9 +48,12 @@ namespace AcadLib.Colors
         [NotNull]
         public static string AcadColorToString2([CanBeNull] this Color color)
         {
-            if (color == null) return "";
-            if (color.IsByLayer) return "256";
-            if (color.IsByBlock) return "0";
+            if (color == null)
+                return string.Empty;
+            if (color.IsByLayer)
+                return "256";
+            if (color.IsByBlock)
+                return "0";
             return color.IsByAci ? color.ColorIndex.ToString() : $"{color.Red},{color.Green},{color.Blue}";
         }
 
@@ -60,9 +66,11 @@ namespace AcadLib.Colors
             if (color.IsByLayer)
             {
                 var layer = ent.LayerId.GetObject<LayerTableRecord>();
-                if (layer == null) return color;
+                if (layer == null)
+                    return color;
                 color = layer.Color;
             }
+
             return color;
         }
     }

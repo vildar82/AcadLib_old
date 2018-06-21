@@ -1,11 +1,11 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System.Windows.Input;
-using System.Windows.Media;
-using MicroMvvm;
-
-namespace AcadLib.Blocks.Visual
+﻿namespace AcadLib.Blocks.Visual
 {
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using MicroMvvm;
+
     public class VisualBlock : IVisualBlock
     {
         public VisualBlock([NotNull] BlockTableRecord btr)
@@ -14,10 +14,15 @@ namespace AcadLib.Blocks.Visual
             Image = BlockPreviewHelper.GetPreview(btr);
             Redefine = new RelayCommand(RedefineBlockExecute, CanRedefineBlockExecute);
         }
+
         public ICommand Redefine { get; set; }
+
         public string Group { get; set; }
+
         public string Name { get; set; }
+
         public ImageSource Image { get; set; }
+
         public string File { get; set; }
 
         private bool CanRedefineBlockExecute()

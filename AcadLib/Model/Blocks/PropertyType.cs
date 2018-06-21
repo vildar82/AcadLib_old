@@ -6,10 +6,12 @@
         /// Не установлено
         /// </summary>
         None,
+
         /// <summary>
         /// Аттрибут
         /// </summary>
         Attribute,
+
         /// <summary>
         /// Динамическое свойство
         /// </summary>

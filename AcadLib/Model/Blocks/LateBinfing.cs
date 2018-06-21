@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using BF = System.Reflection.BindingFlags;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using JetBrains.Annotations;
+    using BF = System.Reflection.BindingFlags;
+
     [PublicAPI]
     public static class LateBinding
     {
@@ -25,8 +25,14 @@ namespace AcadLib
 
         public static object GetOrCreateInstance(string appName)
         {
-            try { return GetInstance(appName); }
-            catch { return CreateInstance(appName); }
+            try
+            {
+                return GetInstance(appName);
+            }
+            catch
+            {
+                return CreateInstance(appName);
+            }
         }
 
         public static object Invoke([NotNull] this object obj, string methName, params object[] parameter)

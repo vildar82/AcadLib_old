@@ -95,8 +95,7 @@
 						</ListBox.ItemContainerStyle>
 					</ListBox>
 					<Expander.Style>
-						<Style>
-						</Style>
+						<Style />
 					</Expander.Style>
 				</Expander>
 			</DataTemplate>
@@ -124,8 +123,7 @@
 				</MenuItem>
 				<MenuItem Header="Удалить дубликаты" Command="{Binding DeleteSelectedDublicateBlocks}"
 							 ToolTip="Удаление дублирующихся блоков в выделенных ошибках."
-                      Visibility="{Binding IsDublicateBlocksEnabled, Converter={converters:BooleanToHidingVisibilityConverter}}">
-				</MenuItem>
+                      Visibility="{Binding IsDublicateBlocksEnabled, Converter={converters:BooleanToHidingVisibilityConverter}}" />
 			</ContextMenu>
 		</Grid.Resources>
 		<Grid.RowDefinitions>

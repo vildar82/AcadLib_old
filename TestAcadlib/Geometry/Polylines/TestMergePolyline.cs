@@ -18,19 +18,21 @@ namespace TestAcadlib.Geometry.Polylines
             var ed = doc.Editor;
 
             var selRes = ed.Select("Выбери полилинии для объединения");
-            if (selRes.Count==0) return;
+            if (selRes.Count == 0)
+                return;
 
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var pls = new List<Polyline>();
                 foreach (var item in selRes)
                 {
-                    if (!item.IsValidEx()) continue;
+                    if (!item.IsValidEx())
+                        continue;
                     var pl = item.GetObject(OpenMode.ForRead) as Polyline;
                     if (pl != null)
                     {
                         pls.Add(pl);
-                    }                            
+                    }
                 }
 
                 try
@@ -49,6 +51,6 @@ namespace TestAcadlib.Geometry.Polylines
 
                 t.Commit();
             }
-        }            
+        }
     }
 }

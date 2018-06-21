@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Globalization;
-using System.Windows.Data;
-
-namespace AcadLib.WPF.Converters
+﻿namespace AcadLib.WPF.Converters
 {
+    using System;
+    using System.Globalization;
+    using System.Windows.Data;
+    using JetBrains.Annotations;
+
     [Obsolete]
     [ValueConversion(typeof(int), typeof(string))]
     [ValueConversion(typeof(double), typeof(string))]

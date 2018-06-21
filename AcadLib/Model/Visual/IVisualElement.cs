@@ -1,8 +1,8 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using System.Collections.Generic;
-
-namespace AcadLib.Visual
+﻿namespace AcadLib.Visual
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+
     /// <summary>
     /// Элемент который может визуализироваться
     /// </summary>
@@ -10,7 +10,7 @@ namespace AcadLib.Visual
     {
         /// <summary>
         /// Создание элементов визуализации
-        /// </summary>        
+        /// </summary>
         List<Entity> CreateVisual();
     }
 }

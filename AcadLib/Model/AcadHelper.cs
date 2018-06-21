@@ -1,19 +1,34 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.IO;
-using System.Linq;
-using Autodesk.AutoCAD.Runtime;
-using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
+﻿
 namespace AcadLib
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Runtime;
+    using JetBrains.Annotations;
+    using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+
+    /// <summary>
+    /// Вспомогательные функции для работы с автокадом
+    /// </summary>
     [PublicAPI]
     public static class AcadHelper
     {
+        /// <summary>
+        /// Текущий документ.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Если нет активного чертежа.</exception>
+        [NotNull]
+        public static Document Doc => DocumentManager.MdiActiveDocument ?? throw new InvalidOperationException();
+
+        /// <summary>
+        /// Основной номер версии Автокада
+        /// </summary>
+        public static int VersionMajor => Application.Version.Major;
+
         /// <summary>
         /// Это русская версия AutoCAD ru-RU
         /// </summary>
@@ -22,14 +37,6 @@ namespace AcadLib
         {
             return SystemObjects.DynamicLinker.ProductLcid == 1049;
         }
-
-        /// <summary>
-        /// Текущий документ.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">Если нет активного чертежа.</exception>
-        [NotNull]
-        public static Document Doc => DocumentManager.MdiActiveDocument ?? throw new InvalidOperationException();
-        public static int VersionMajor => Application.Version.Major;
 
         [CanBeNull]
         public static Document GetOpenedDocument(string file)

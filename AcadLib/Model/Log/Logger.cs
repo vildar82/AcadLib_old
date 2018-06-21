@@ -1,12 +1,13 @@
-﻿using JetBrains.Annotations;
-using System;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using JetBrains.Annotations;
+
     public static class Logger
     {
         public static readonly LoggAddinExt Log;
+
         [PublicAPI]
         public static readonly string UserGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;
 

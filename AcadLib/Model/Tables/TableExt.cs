@@ -1,13 +1,13 @@
-﻿using AcadLib.Geometry;
-using AcadLib.Hatches;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System.Linq;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using Geometry;
+    using Hatches;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class TableExt
     {
@@ -16,7 +16,8 @@ namespace AcadLib
         [NotNull]
         public static Cell SetValue([NotNull] this Cell cell, [CanBeNull] object value)
         {
-            if (value == null) return cell;
+            if (value == null)
+                return cell;
             cell.SetValue(value, ParseOption.ParseOptionNone);
             return cell;
         }
@@ -28,12 +29,13 @@ namespace AcadLib
 
         public static Cell MoveRight([NotNull] this Cell cell)
         {
-            return cell.ParentTable.Cells[cell.Row, cell.Column+1];
+            return cell.ParentTable.Cells[cell.Row, cell.Column + 1];
         }
 
         public static void SetBorders([NotNull] this Table table, LineWeight lw)
         {
-            if (table.Rows.Count < 2) return;
+            if (table.Rows.Count < 2)
+                return;
 
             var rowTitle = table.Rows[0];
             SetRowTitle(rowTitle);
@@ -54,8 +56,13 @@ namespace AcadLib
         /// Штриховка добавляется в базу.
         /// </summary>
         [NotNull]
-        public static Hatch SetCellHatch([NotNull] this Cell cell, int colorIndex = 0, LineWeight lineWeight = LineWeight.LineWeight015,
-            double patternScale = 1, string standartPattern = "LINE", double patternAngleRad = 0)
+        public static Hatch SetCellHatch(
+            [NotNull] this Cell cell,
+            int colorIndex = 0,
+            LineWeight lineWeight = LineWeight.LineWeight015,
+            double patternScale = 1,
+            string standartPattern = "LINE",
+            double patternAngleRad = 0)
         {
             var table = cell.ParentTable;
             table.RecomputeTableBlock(true);
@@ -81,13 +88,15 @@ namespace AcadLib
         private static Extents3d OffsetExtToMarginCell(Extents3d ext, [NotNull] Cell cell)
         {
             return new Extents3d(
-                new Point3d(ext.MinPoint.X - cell.Borders.Horizontal.Margin ?? 0, ext.MinPoint.Y - cell.Borders.Top.Margin ?? 0, 0),
-                new Point3d(ext.MaxPoint.X + cell.Borders.Horizontal.Margin ?? 0, ext.MaxPoint.Y + cell.Borders.Top.Margin ?? 0, 0));
+                new Point3d(ext.MinPoint.X - cell.Borders.Horizontal.Margin ?? 0, ext.MinPoint.Y - cell.Borders.Top.Margin ?? 0,
+                    0),
+                new Point3d(ext.MaxPoint.X + cell.Borders.Horizontal.Margin ?? 0, ext.MaxPoint.Y + cell.Borders.Top.Margin ?? 0,
+                    0));
         }
 
         private static void SetCell([NotNull] CellBorder cell, LineWeight lw, bool visible)
         {
-            //cell.Overrides = GridProperties.Visibility | GridProperties.LineWeight;
+            // cell.Overrides = GridProperties.Visibility | GridProperties.LineWeight;
             cell.LineWeight = lw;
             cell.IsVisible = visible;
         }

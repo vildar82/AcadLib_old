@@ -1,13 +1,13 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2018 02 12 14:42
 
-using System.Collections.Generic;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.EditorInput;
-using JetBrains.Annotations;
-
 namespace AcadLib.Layers.LayersSelected
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using JetBrains.Annotations;
+
     public static class LayersSelectedService
     {
         public static void Show(Document doc)
@@ -31,6 +31,7 @@ namespace AcadLib.Layers.LayersSelected
                 layers = sel.Value.GetObjectIds().Layers();
                 t.Commit();
             }
+
             return layers;
         }
     }

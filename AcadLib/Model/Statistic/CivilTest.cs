@@ -1,7 +1,7 @@
-﻿using Autodesk.Civil.ApplicationServices;
-
-namespace AcadLib.Statistic
+﻿namespace AcadLib.Statistic
 {
+    using Autodesk.Civil.ApplicationServices;
+
     public static class CivilTest
     {
         private static bool? isCivil;
@@ -20,6 +20,7 @@ namespace AcadLib.Statistic
                     isCivil = false;
                 }
             }
+
             return isCivil.Value;
         }
     }

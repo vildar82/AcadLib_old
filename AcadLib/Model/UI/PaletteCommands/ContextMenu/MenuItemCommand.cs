@@ -1,16 +1,22 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows.Input;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
+    using System.Collections.ObjectModel;
+    using System.Windows.Input;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Контекстное меню команды
     /// </summary>
     [PublicAPI]
     public class MenuItemCommand
     {
+        public MenuItemCommand(string name, ICommand command)
+        {
+            Name = name;
+            Command = command;
+        }
+
         public ICommand Command { get; set; }
 
         public object CommandParameter { get; set; }
@@ -20,11 +26,5 @@ namespace AcadLib.PaletteCommands
         public string Name { get; set; }
 
         public ObservableCollection<MenuItemCommand> SubItems { get; set; }
-
-        public MenuItemCommand(string name, ICommand command)
-        {
-            Name = name;
-            Command = command;
-        }
     }
 }

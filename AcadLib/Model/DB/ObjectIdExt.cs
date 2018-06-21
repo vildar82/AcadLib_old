@@ -1,15 +1,15 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using JetBrains.Annotations;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+
     [PublicAPI]
     public static class ObjectIdExt
     {
@@ -20,7 +20,7 @@ namespace AcadLib
         /// <param name="ed"></param>
         public static void Select(this ObjectId entId, [NotNull] Editor ed)
         {
-            ed.SetImpliedSelection(new []{ entId });
+            ed.SetImpliedSelection(new[] { entId });
         }
 
         public static void HighlightEntity(this ObjectId entId)
@@ -49,13 +49,18 @@ namespace AcadLib
 
         public static void FlickObjectHighlight([NotNull] this Entity ent, int num = 2, int delay1 = 50, int delay2 = 50)
         {
-            FlickObjectHighlight(new []{ ent }, num, delay1, delay2);
+            FlickObjectHighlight(new[] { ent }, num, delay1, delay2);
         }
 
-        public static void FlickObjectHighlight([NotNull] this IEnumerable<Entity> ents, int num = 2, int delay1 = 50, int delay2 = 50)
+        public static void FlickObjectHighlight(
+            [NotNull] this IEnumerable<Entity> ents,
+            int num = 2,
+            int delay1 = 50,
+            int delay2 = 50)
         {
             var list = ents.ToList();
-            if (list.Any() != true) return;
+            if (list.Any() != true)
+                return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             for (var i = 0; i < num; i++)
             {
@@ -64,24 +69,33 @@ namespace AcadLib
                 {
                     entity.Highlight();
                 }
+
                 doc.Editor.UpdateScreen();
+
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
+
                 // Unhighlight entity
                 foreach (var entity in list)
                 {
                     entity.Unhighlight();
                 }
+
                 doc.Editor.UpdateScreen();
+
                 // Wait for delay2 msecs
                 Thread.Sleep(delay2);
             }
         }
 
-        public static void FlickObjectHighlight([CanBeNull] this List<ObjectId> ids,
-            int num = 2, int delay1 = 50, int delay2 = 50)
+        public static void FlickObjectHighlight(
+            [CanBeNull] this List<ObjectId> ids,
+            int num = 2,
+            int delay1 = 50,
+            int delay2 = 50)
         {
-            if (ids?.Any() != true) return;
+            if (ids?.Any() != true)
+                return;
             var doc = Application.DocumentManager.MdiActiveDocument;
 #pragma warning disable 618
             using (var ents = new DisposableSet<Entity>(ids.Select(s => (Entity)s.Open(OpenMode.ForRead))))
@@ -94,15 +108,20 @@ namespace AcadLib
                     {
                         entity.Highlight();
                     }
+
                     doc.Editor.UpdateScreen();
+
                     // Wait for delay1 msecs
                     Thread.Sleep(delay1);
+
                     // Unhighlight entity
                     foreach (var entity in ents)
                     {
                         entity.Unhighlight();
                     }
+
                     doc.Editor.UpdateScreen();
+
                     // Wait for delay2 msecs
                     Thread.Sleep(delay2);
                 }
@@ -126,15 +145,19 @@ namespace AcadLib
                 using (var tr = doc.TransactionManager.StartTransaction())
                 {
                     var en = (Entity)tr.GetObject(id, OpenMode.ForWrite);
-                    var ids = new ObjectId[1]; ids[0] = id;
+                    var ids = new ObjectId[1];
+                    ids[0] = id;
                     var index = new SubentityId(SubentityType.Null, IntPtr.Zero);
                     var path = new FullSubentityPath(ids, index);
                     en.Highlight(path, true);
                     tr.Commit();
                 }
+
                 doc.Editor.UpdateScreen();
+
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
+
                 // Unhighlight entity
                 using (doc.LockDocument())
                 using (var tr = doc.TransactionManager.StartTransaction())
@@ -147,7 +170,9 @@ namespace AcadLib
                     en.Unhighlight(path, true);
                     tr.Commit();
                 }
+
                 doc.Editor.UpdateScreen();
+
                 // Wait for delay2 msecs
                 Thread.Sleep(delay2);
             }
@@ -175,9 +200,12 @@ namespace AcadLib
                     ent.Highlight(path, true);
                     tr.Commit();
                 }
+
                 doc.Editor.UpdateScreen();
+
                 // Wait for delay1 msecs
                 Thread.Sleep(delay1);
+
                 // Unhighlight entity
                 using (doc.LockDocument())
                 using (var tr = doc.TransactionManager.StartTransaction())
@@ -188,7 +216,9 @@ namespace AcadLib
                     ent.Unhighlight(path, true);
                     tr.Commit();
                 }
+
                 doc.Editor.UpdateScreen();
+
                 // Wait for delay2 msecs
                 Thread.Sleep(delay2);
             }
@@ -202,7 +232,8 @@ namespace AcadLib
         public static void ShowEnt(this ObjectId id, int num, int delay1, int delay2)
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null || !id.IsValidEx()) return;
+            if (doc == null || !id.IsValidEx())
+                return;
 
             using (doc.LockDocument())
             using (var t = id.Database.TransactionManager.StartTransaction())
@@ -213,14 +244,16 @@ namespace AcadLib
                     {
                         doc.Editor.Zoom(ent.GeometricExtents.Offset());
                         id.FlickObjectHighlight(num, delay1, delay2);
-                        doc.Editor.SetImpliedSelection(new [] { id });
-                        //doc.Editor.AddEntToImpliedSelection(id);
+                        doc.Editor.SetImpliedSelection(new[] { id });
+
+                        // doc.Editor.AddEntToImpliedSelection(id);
                     }
                     catch
                     {
                         //
                     }
                 }
+
                 t.Commit();
             }
         }
@@ -243,8 +276,9 @@ namespace AcadLib
                 {
                     docOrig.Editor.Zoom(ext);
                     id.FlickObjectHighlight(2, 100, 100);
-                    docOrig.Editor.SetImpliedSelection(new [] { id });
-                    //docOrig.Editor.AddEntToImpliedSelection(id);
+                    docOrig.Editor.SetImpliedSelection(new[] { id });
+
+                    // docOrig.Editor.AddEntToImpliedSelection(id);
                 }
                 else
                 {

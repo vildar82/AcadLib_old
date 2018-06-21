@@ -1,13 +1,13 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2018 02 14 9:24
 
-using System;
-using System.Linq;
-using AcadLib.Errors;
-using Autodesk.AutoCAD.DatabaseServices;
-
 namespace AcadLib.Layers.LayerState
 {
+    using System;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Errors;
+
     public static class ImportLayerState
     {
         /// <summary>

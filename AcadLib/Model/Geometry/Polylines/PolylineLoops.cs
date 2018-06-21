@@ -1,12 +1,12 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class PolylineLoops
     {
@@ -20,8 +20,12 @@ namespace AcadLib.Geometry
         /// <param name="includePtIntersects">Включать ли сами точки пересечения в результат</param>
         /// <returns>Список точек петли пересечения</returns>
         [NotNull]
-        public static List<Point2d> GetLoopSideBetweenHorizontalIntersectPoints([NotNull] this Polyline contour,
-            Point3d ptIntersect1, Point3d ptIntersect2, bool above = true, bool includePtIntersects = true)
+        public static List<Point2d> GetLoopSideBetweenHorizontalIntersectPoints(
+            [NotNull] this Polyline contour,
+            Point3d ptIntersect1,
+            Point3d ptIntersect2,
+            bool above = true,
+            bool includePtIntersects = true)
         {
             var res = above
                 ? GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.Y > seg.EndPoint.Y,
@@ -35,8 +39,12 @@ namespace AcadLib.Geometry
         /// Точки петли полилинии слева/справа от точек пересечения
         /// </summary>
         [NotNull]
-        public static List<Point2d> GetLoopSideBetweenVerticalIntersectPoints([NotNull] this Polyline contour,
-            Point3d ptIntersect1, Point3d ptIntersect2, bool isRightSide = true, bool includePtIntersects = true)
+        public static List<Point2d> GetLoopSideBetweenVerticalIntersectPoints(
+            [NotNull] this Polyline contour,
+            Point3d ptIntersect1,
+            Point3d ptIntersect2,
+            bool isRightSide = true,
+            bool includePtIntersects = true)
         {
             var res = isRightSide
                 ? GetLoopSide(contour, ptIntersect1, ptIntersect2, (seg) => seg.StartPoint.X > seg.EndPoint.X,
@@ -62,8 +70,12 @@ namespace AcadLib.Geometry
         }
 
         [NotNull]
-        private static List<Point2d> GetLoopSide([NotNull] this Polyline contour,
-            Point3d ptIntersect1, Point3d ptIntersect2, Func<LineSegment3d, bool> checkSeg, bool includePtIntersects = true)
+        private static List<Point2d> GetLoopSide(
+            [NotNull] this Polyline contour,
+            Point3d ptIntersect1,
+            Point3d ptIntersect2,
+            Func<LineSegment3d, bool> checkSeg,
+            bool includePtIntersects = true)
         {
             var pointsLoopSide = new List<Point2d>();
 
@@ -99,6 +111,7 @@ namespace AcadLib.Geometry
                     {
                         AddPoint(pointsLoopSide, dir, ref indexCur, contour);
                     }
+
                     // Добавление последней вершины
                     AddPoint(pointsLoopSide, dir, ref indexCur, contour);
                 }
@@ -110,9 +123,11 @@ namespace AcadLib.Geometry
             return pointsLoopSide;
         }
 
-        private static int GetStartIndex([NotNull] Polyline contour, Point3d ptIntersect1,
+        private static int GetStartIndex(
+            [NotNull] Polyline contour,
+            Point3d ptIntersect1,
             Func<LineSegment3d, bool> checkSeg,
-             out int dir)
+            out int dir)
         {
             var param = contour.GetParameterAtPointTry(ptIntersect1);
 
@@ -138,6 +153,7 @@ namespace AcadLib.Geometry
                     dir = -1;
                 }
             }
+
             return indexStart;
         }
     }

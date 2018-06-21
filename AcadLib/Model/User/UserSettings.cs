@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace AcadLib.User
+﻿namespace AcadLib.User
 {
+    using System.Collections.Generic;
+
     public class UserSettings
     {
         /// <summary>
@@ -21,7 +21,9 @@ namespace AcadLib.User
     public class UserProperty
     {
         public string Name { get; set; }
+
         public object Value { get; set; }
+
         public string Description { get; set; }
     }
 }

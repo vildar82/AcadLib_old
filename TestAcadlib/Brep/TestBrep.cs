@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Runtime;
-using AcadLib;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace TestAcadlib.Brep
+﻿namespace TestAcadlib.Brep
 {
+    using System.Collections.Generic;
+    using AcadLib;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Runtime;
+
     public class TestBrep
     {
         [CommandMethod("TestBrepCreateRegionHatch")]
@@ -20,7 +20,8 @@ namespace TestAcadlib.Brep
                     var h = ed.SelectEntity<Hatch>("Выбери штриховку для построения региона", "Штриховку")
                         .GetObjectT<Hatch>();
                     var region = h.CreateRegion();
-                    if (region == null) throw new System.Exception($"Пустой регион = null.");
+                    if (region == null)
+                        throw new System.Exception($"Пустой регион = null.");
                     region.AddEntityToCurrentSpace();
                     t.Commit();
                 }
@@ -28,16 +29,17 @@ namespace TestAcadlib.Brep
         }
 
         [CommandMethod("TestBrepUnion")]
-        public void TestBrepUnion ()
+        public void TestBrepUnion()
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
             var ed = doc.Editor;
 
             var tvs = new[] { new TypedValue((int)DxfCode.Start, "LWPOLYLINE") };
-            var selFilter = new SelectionFilter(tvs);                                        
+            var selFilter = new SelectionFilter(tvs);
             var sel = ed.GetSelection(selFilter);
-            if (sel.Status != PromptStatus.OK) return;
+            if (sel.Status != PromptStatus.OK)
+                return;
 
             using (var t = db.TransactionManager.StartTransaction())
             {
@@ -45,18 +47,11 @@ namespace TestAcadlib.Brep
                 var pls = new List<Polyline>();
                 foreach (var item in idsPls)
                 {
-                    var pl = item.GetObject(OpenMode.ForRead) as Polyline;                    
+                    var pl = item.GetObject(OpenMode.ForRead) as Polyline;
                     pls.Add(pl);
                 }
 
-                var union = pls.Union(null);               
-
-                //var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;                
-                //if (union != null)
-                //{                     
-                //    cs.AppendEntity(union);
-                //    t.AddNewlyCreatedDBObject(union, true);
-                //}                
+                var union = pls.Union(null);
 
                 t.Commit();
             }

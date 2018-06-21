@@ -1,27 +1,29 @@
-﻿using AcadLib.UI.Properties;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Windows.Forms;
-
-namespace AcadLib.Plot
+﻿namespace AcadLib.Plot
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Windows.Forms;
+    using JetBrains.Annotations;
+    using UI.Properties;
+
     public class OnePdfOrEachConverter : BooleanConverter
     {
-        public override object ConvertFrom(ITypeDescriptorContext context,
-          CultureInfo culture,
-          object value)
+        public override object ConvertFrom(
+            ITypeDescriptorContext context,
+            CultureInfo culture,
+            object value)
         {
             return (string)value == "Общий";
         }
 
         [NotNull]
-        public override object ConvertTo(ITypeDescriptorContext context,
-                CultureInfo culture,
-          [NotNull] object value,
-          Type destType)
+        public override object ConvertTo(
+            ITypeDescriptorContext context,
+            CultureInfo culture,
+            [NotNull] object value,
+            Type destType)
         {
             return (bool)value ? "Общий" : "Для каждого dwg";
         }
@@ -39,6 +41,12 @@ namespace AcadLib.Plot
         private const string KeyOnePdfOrEachDwg = "OnePdfOrEachDwg";
         private const string KeySortTabOrName = "SortTabOrName";
         private const string REGKEY = "PlotOptions";
+
+        public PlotOptions()
+        {
+            Load();
+        }
+
         [Category("Печать")]
         [DisplayName("Печать по умолчанию:")]
         [Description("При вызове команды установить опцию поумолчанию печати из текущего чертежа или выбор папки.")]
@@ -54,7 +62,8 @@ namespace AcadLib.Plot
 
         [Category("Фильтр")]
         [DisplayName("Фильтр по номерам вкладок:")]
-        [Description("Печатать только указанные номера вкладок. Номера через запятую и/или тире. Отрицательные числа считаются с конца вкладок.\n\r Например: 16--4 печать с 16 листа до 4 с конца; -1--3 печать трех последних листов.")]
+        [Description(
+            "Печатать только указанные номера вкладок. Номера через запятую и/или тире. Отрицательные числа считаются с конца вкладок.\n\r Например: 16--4 печать с 16 листа до 4 с конца; -1--3 печать трех последних листов.")]
         [DefaultValue("")]
         public string FilterByNumbers { get; set; }
 
@@ -86,11 +95,6 @@ namespace AcadLib.Plot
         [TypeConverter(typeof(SortLayoutConverter))]
         public bool SortTabOrName { get; set; }
 
-        public PlotOptions()
-        {
-            Load();
-        }
-
         public void Load()
         {
             // загрузка настроек из реестра
@@ -98,8 +102,8 @@ namespace AcadLib.Plot
             {
                 SortTabOrName = reg.Load(KeySortTabOrName, true);
                 OnePdfOrEachDwg = reg.Load(KeyOnePdfOrEachDwg, true);
-                FilterByNumbers = reg.Load(KeyFilterByNumbers, "");
-                FilterByNames = reg.Load(KeyFilterByNames, "");
+                FilterByNumbers = reg.Load(KeyFilterByNumbers, string.Empty);
+                FilterByNames = reg.Load(KeyFilterByNames, string.Empty);
                 FilterState = reg.Load(KeyFilterState, false);
                 DefaultPlotSource = reg.Load(KeyDefaultPlotSource, "Текущего");
                 IncludeSubdirs = reg.Load(KeyIncludeSubdirs, false);
@@ -123,7 +127,7 @@ namespace AcadLib.Plot
 
         public void Show()
         {
-            //var formOpt = new UI.FormProperties();
+            // var formOpt = new UI.FormProperties();
             var copyOptions = (PlotOptions)MemberwiseClone();
             if (PropertiesService.ShowForm(copyOptions) == DialogResult.OK)
             {
@@ -172,18 +176,20 @@ namespace AcadLib.Plot
 
     public class SortLayoutConverter : BooleanConverter
     {
-        public override object ConvertFrom(ITypeDescriptorContext context,
-          CultureInfo culture,
-          object value)
+        public override object ConvertFrom(
+            ITypeDescriptorContext context,
+            CultureInfo culture,
+            object value)
         {
             return (string)value == "Вкладкам";
         }
 
         [NotNull]
-        public override object ConvertTo(ITypeDescriptorContext context,
-                CultureInfo culture,
-          [NotNull] object value,
-          Type destType)
+        public override object ConvertTo(
+            ITypeDescriptorContext context,
+            CultureInfo culture,
+            [NotNull] object value,
+            Type destType)
         {
             return (bool)value ? "Вкладкам" : "Именам";
         }
@@ -197,10 +203,11 @@ namespace AcadLib.Plot
         }
 
         [NotNull]
-        public override object ConvertTo(ITypeDescriptorContext context,
-                CultureInfo culture,
-          [NotNull] object value,
-          Type destType)
+        public override object ConvertTo(
+            ITypeDescriptorContext context,
+            CultureInfo culture,
+            [NotNull] object value,
+            Type destType)
         {
             return (bool)value ? "Да" : "Нет";
         }

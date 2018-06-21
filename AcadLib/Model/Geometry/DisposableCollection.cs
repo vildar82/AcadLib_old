@@ -1,14 +1,14 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public interface IDisposableCollection<T> : ICollection<T>, IDisposable
-      where T : IDisposable
+        where T : IDisposable
     {
         void AddRange(IEnumerable<T> items);
 
@@ -16,7 +16,7 @@ namespace AcadLib
     }
 
     public class DisposableSet<T> : HashSet<T>, IDisposableCollection<T>
-       where T : IDisposable
+        where T : IDisposable
     {
         public DisposableSet()
         {
@@ -56,6 +56,7 @@ namespace AcadLib
                         }
                     }
                 }
+
                 if (last != null)
                     throw last;
             }
@@ -64,9 +65,12 @@ namespace AcadLib
         [CanBeNull]
         public IEnumerable<T> RemoveRange([CanBeNull] IEnumerable<T> items)
         {
-            if (items == null) return null;
+            if (items == null)
+                return null;
+
             // ReSharper disable once PossibleMultipleEnumeration
             ExceptWith(items);
+
             // ReSharper disable once PossibleMultipleEnumeration
             return items;
         }

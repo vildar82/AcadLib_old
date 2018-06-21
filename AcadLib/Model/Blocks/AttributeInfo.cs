@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Описание атрибута
     /// Для AttributeDefinition или AttributeReference
@@ -12,11 +12,6 @@ namespace AcadLib.Blocks
     [PublicAPI]
     public class AttributeInfo
     {
-        public string Tag { get; set; }
-        public string Text { get; set; }
-        public ObjectId IdAtr { get; set; }
-        public bool IsAtrDefinition { get; set; }
-
         /// <summary>
         /// DBText - должен быть или AttributeDefinition или AttributeReference
         /// иначе исключение ArgumentException
@@ -39,6 +34,7 @@ namespace AcadLib.Blocks
                     throw new ArgumentException("requires an AttributeDefintion or AttributeReference");
                 }
             }
+
             Text = attr.TextString;
             IdAtr = attr.Id;
         }
@@ -49,6 +45,14 @@ namespace AcadLib.Blocks
             Text = atrRef.TextString;
             IdAtr = atrRef.Id;
         }
+
+        public string Tag { get; set; }
+
+        public string Text { get; set; }
+
+        public ObjectId IdAtr { get; set; }
+
+        public bool IsAtrDefinition { get; set; }
 
         [NotNull]
         public static List<AttributeInfo> GetAttrDefs(ObjectId idBtr)
@@ -76,6 +80,7 @@ namespace AcadLib.Blocks
                     }
                 }
             }
+
             return resVal;
         }
 
@@ -87,7 +92,8 @@ namespace AcadLib.Blocks
             {
                 foreach (ObjectId idAttrRef in blRef.AttributeCollection)
                 {
-                    if (!idAttrRef.IsValidEx()) continue;
+                    if (!idAttrRef.IsValidEx())
+                        continue;
 #pragma warning disable 618
                     using (var atrRef = (AttributeReference)idAttrRef.Open(OpenMode.ForRead, false, true))
 #pragma warning restore 618
@@ -100,6 +106,7 @@ namespace AcadLib.Blocks
                     }
                 }
             }
+
             return resVal;
         }
     }

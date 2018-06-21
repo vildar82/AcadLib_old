@@ -1,9 +1,9 @@
-﻿using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-
-namespace AcadLib.Comparers
+﻿namespace AcadLib.Comparers
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Сравнение точек с заданным допуском
     /// </summary>
@@ -11,16 +11,11 @@ namespace AcadLib.Comparers
     public class Point3dEqualityComparer : IEqualityComparer<Point3d>
     {
         /// <summary>
-        /// Допуск 1 мм.
-        /// </summary>
-        [NotNull]
-        public static Point3dEqualityComparer Comparer1 => new Point3dEqualityComparer(1);
-        public Tolerance Tolerance { get; set; } = Tolerance.Global;
-
-        /// <summary>
         /// С допуском поумолчанию - Global
         /// </summary>
-        public Point3dEqualityComparer() { }
+        public Point3dEqualityComparer()
+        {
+        }
 
         /// <summary>
         /// Задается допуск для точек
@@ -29,6 +24,14 @@ namespace AcadLib.Comparers
         {
             Tolerance = new Tolerance(Tolerance.Global.EqualVector, equalPoint);
         }
+
+        /// <summary>
+        /// Допуск 1 мм.
+        /// </summary>
+        [NotNull]
+        public static Point3dEqualityComparer Comparer1 => new Point3dEqualityComparer(1);
+
+        public Tolerance Tolerance { get; set; } = Tolerance.Global;
 
         public bool Equals(Point3d p1, Point3d p2)
         {

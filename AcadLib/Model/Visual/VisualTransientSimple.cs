@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-namespace AcadLib.Visual
+﻿namespace AcadLib.Visual
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public class VisualTransientSimple : VisualTransient
     {
         private readonly List<Entity> ents;
@@ -17,12 +17,12 @@ namespace AcadLib.Visual
         [NotNull]
         public override List<Entity> CreateVisual()
         {
-            return ents.Select(s=>(Entity)s.Clone()).ToList();
+            return ents.Select(s => (Entity)s.Clone()).ToList();
         }
 
         public override void Dispose()
         {
-            ents.ForEach(e=>e.Dispose());
+            ents.ForEach(e => e.Dispose());
             base.Dispose();
         }
     }

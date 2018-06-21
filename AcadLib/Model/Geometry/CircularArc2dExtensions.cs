@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Provides extension methods for the CircularArc2dType
     /// </summary>
@@ -18,9 +18,7 @@ namespace AcadLib.Geometry
         public static double AlgebricArea([NotNull] this CircularArc2d arc)
         {
             var rad = arc.Radius;
-            var ang = arc.IsClockWise ?
-                arc.StartAngle - arc.EndAngle :
-                arc.EndAngle - arc.StartAngle;
+            var ang = arc.IsClockWise ? arc.StartAngle - arc.EndAngle : arc.EndAngle - arc.StartAngle;
             return rad * rad * (ang - Math.Sin(ang)) / 2.0;
         }
 
@@ -91,7 +89,10 @@ namespace AcadLib.Geometry
         /// <param name="flags">An enum value specifying which type of tangent is returned.</param>
         /// <returns>An array of LineSegment2d representing the tangents (maybe 2 or 4) or null if there is none.</returns>
         [CanBeNull]
-        public static LineSegment2d[] GetTangentsTo([NotNull] this CircularArc2d arc, [NotNull] CircularArc2d other, TangentType flags)
+        public static LineSegment2d[] GetTangentsTo(
+            [NotNull] this CircularArc2d arc,
+            [NotNull] CircularArc2d other,
+            TangentType flags)
         {
             // check if a circle is inside the other
             var dist = arc.Center.GetDistanceTo(other.Center);
@@ -156,6 +157,7 @@ namespace AcadLib.Geometry
                 result[i] = new LineSegment2d(arc.Center + vec1 * arc.Radius, other.Center + vec1.Negate() * other.Radius);
                 result[j] = new LineSegment2d(arc.Center + vec2 * arc.Radius, other.Center + vec2.Negate() * other.Radius);
             }
+
             return result;
         }
 

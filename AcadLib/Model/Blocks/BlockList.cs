@@ -1,15 +1,14 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using Path = NetLib.IO.Path;
-
-// ReSharper disable once CheckNamespace
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using OfficeOpenXml;
+    using Path = NetLib.IO.Path;
+
     public static class BlockList
     {
         public static void List([NotNull] this Database db)
@@ -26,8 +25,10 @@ namespace AcadLib
                         list.Add(btr.Name);
                     }
                 }
+
                 t.Commit();
             }
+
             // Запись в Excel
             if (list.Count > 0)
             {
@@ -48,8 +49,10 @@ namespace AcadLib
                         sheet.Cells[row, 2].Value = name;
                         row++;
                     }
+
                     excel.Save();
                 }
+
                 Process.Start(tempFile.FullName);
             }
         }

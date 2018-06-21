@@ -1,11 +1,12 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using NetLib;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AcadLib.Layers.AutoLayers
+﻿namespace AcadLib.Layers.AutoLayers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using NetLib;
+    using General = AcadLib.General;
+
     /// <summary>
     /// Авто-слои для размеров
     /// </summary>

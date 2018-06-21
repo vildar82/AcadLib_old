@@ -1,13 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Windows.Data;
-using JetBrains.Annotations;
-using System.Drawing;
-using System.IO;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
-namespace AcadLib.Blocks.Visual
+﻿namespace AcadLib.Blocks.Visual
 {
+    using System.Drawing;
+    using System.IO;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Windows.Data;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class BlockPreviewHelper
     {

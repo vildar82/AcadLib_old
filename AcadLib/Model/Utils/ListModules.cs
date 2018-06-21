@@ -1,14 +1,14 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Windows.Forms;
-using JetBrains.Annotations;
-
-namespace AcadLib.Utils
+﻿namespace AcadLib.Utils
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+    using System.Windows.Forms;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Список загруженных модулей
     /// </summary>
@@ -18,9 +18,9 @@ namespace AcadLib.Utils
         {
             var modules = AppDomain.CurrentDomain.GetAssemblies().Select(s => new
             {
-                Name =$"{s.FullName}_{GetLocation(s)}",
+                Name = $"{s.FullName}_{GetLocation(s)}",
                 References = s.GetReferencedAssemblies().Select(r => r.FullName).ToList()
-            }).OrderBy(o=>o.Name).ToList();
+            }).OrderBy(o => o.Name).ToList();
             var sb = new StringBuilder($"Список модулей {Environment.UserName}_{Environment.MachineName}_{DateTime.Now}");
             sb.AppendLine();
             var i = 1;
@@ -32,6 +32,7 @@ namespace AcadLib.Utils
                     sb.AppendLine($"\t\t{reference}");
                 }
             }
+
             var file = PromptSaveFile();
             File.WriteAllText(file, sb.ToString());
             Process.Start(file);
@@ -46,7 +47,7 @@ namespace AcadLib.Utils
             }
             catch
             {
-                return "";
+                return string.Empty;
             }
         }
 
@@ -64,6 +65,7 @@ namespace AcadLib.Utils
             {
                 return dlg.FileName;
             }
+
             throw new OperationCanceledException();
         }
     }

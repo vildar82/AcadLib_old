@@ -1,13 +1,13 @@
-﻿using AcadLib.Jigs;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using JetBrains.Annotations;
-using NetLib;
-using System.Linq;
-
-namespace AcadLib.Tables
+﻿namespace AcadLib.Tables
 {
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using JetBrains.Annotations;
+    using Jigs;
+    using NetLib;
+
     /// <summary>
     /// Построение таблицы
     /// 1 CalcRows
@@ -20,25 +20,31 @@ namespace AcadLib.Tables
         protected readonly Database db;
         protected readonly double scale;
 
-        public string Layer { get; set; }
-        public LineWeight LwBold { get; set; } = LineWeight.LineWeight050;
-        public int NumColumns { get; set; }
-        public int NumRows { get; set; }
-        /// <summary>
-        /// Имя стиля из шаблона. Если пусто, то ПИК
-        /// </summary>
-        public string StyleName { get; set; }
-        /// <summary>
-        /// Имя шаблона
-        /// </summary>
-        public string TemplateName { get; set; }
-        public string Title { get; set; }
-
         public CreateTable(Database db)
         {
             this.db = db;
             scale = Scale.ScaleHelper.GetCurrentAnnoScale(db);
         }
+
+        public string Layer { get; set; }
+
+        public LineWeight LwBold { get; set; } = LineWeight.LineWeight050;
+
+        public int NumColumns { get; set; }
+
+        public int NumRows { get; set; }
+
+        /// <summary>
+        /// Имя стиля из шаблона. Если пусто, то ПИК
+        /// </summary>
+        public string StyleName { get; set; }
+
+        /// <summary>
+        /// Имя шаблона
+        /// </summary>
+        public string TemplateName { get; set; }
+
+        public string Title { get; set; }
 
         public abstract void CalcRows();
 
@@ -64,7 +70,9 @@ namespace AcadLib.Tables
         {
             var table = new Table();
             table.SetDatabaseDefaults(db);
-            table.TableStyle = StyleName.IsNullOrEmpty() ? db.GetTableStylePIK() : db.GetTableStylePIK(StyleName, TemplateName);
+            table.TableStyle = StyleName.IsNullOrEmpty()
+                ? db.GetTableStylePIK()
+                : db.GetTableStylePIK(StyleName, TemplateName);
 
             if (!string.IsNullOrEmpty(Layer))
             {
@@ -80,7 +88,8 @@ namespace AcadLib.Tables
             var rowTitle = table.Cells[0, 0];
             rowTitle.Alignment = CellAlignment.MiddleCenter;
             rowTitle.TextHeight = 5;
-            if (Title != null) rowTitle.TextString = Title;
+            if (Title != null)
+                rowTitle.TextString = Title;
 
             // Строка заголовков столбцов
             var rowHeaders = table.Rows[1];
@@ -113,6 +122,7 @@ namespace AcadLib.Tables
                     cs.AppendEntity(table);
                     t.AddNewlyCreatedDBObject(table, true);
                 }
+
                 t.Commit();
             }
         }

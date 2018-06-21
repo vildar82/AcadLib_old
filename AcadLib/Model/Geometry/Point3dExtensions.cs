@@ -1,15 +1,15 @@
-﻿using AcadLib.Geometry;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using JetBrains.Annotations;
-using System;
-using System.Globalization;
-using AcRx = Autodesk.AutoCAD.Runtime;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.Geometry
 {
+    using System;
+    using System.Globalization;
+    using AcadLib.Geometry;
+    using ApplicationServices.Core;
+    using DatabaseServices;
+    using EditorInput;
+    using JetBrains.Annotations;
+    using AcRx = Autodesk.AutoCAD.Runtime;
+
     /// <summary>
     /// Provides extension methods for the Point3d type.
     /// </summary>
@@ -19,9 +19,9 @@ namespace Autodesk.AutoCAD.Geometry
         public static Point3d Center(this Point3d pt, Point3d other)
         {
             return new Point3d(
-                    pt.X + (other.X - pt.X) * 0.5,
-                    pt.Y + (other.Y - pt.Y) * 0.5,
-                    pt.Z + (other.Z - pt.Z) * 0.5);
+                pt.X + (other.X - pt.X) * 0.5,
+                pt.Y + (other.Y - pt.Y) * 0.5,
+                pt.Z + (other.Z - pt.Z) * 0.5);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Autodesk.AutoCAD.Geometry
         {
             var hs = side * 0.5;
             return new Extents3d(new Point3d(center.X - hs, center.Y - hs, 0),
-                                 new Point3d(center.X + hs, center.Y + hs, 0));
+                new Point3d(center.X + hs, center.Y + hs, 0));
         }
 
         /// <summary>
@@ -150,7 +150,8 @@ namespace Autodesk.AutoCAD.Geometry
         /// <returns>The corresponding 3d point.</returns>
         /// <exception cref="Runtime.Exception">
         /// eInvalidInput is thrown if 3 (CoordSystem.PSDCS) is used with other than 2 (CoordSystem.DCS).</exception>
-        public static Point3d Trans(this Point3d pt, Editor ed, int from, int to) => pt.Trans(ed, (CoordSystem)from, (CoordSystem)to);
+        public static Point3d Trans(this Point3d pt, Editor ed, int from, int to) =>
+            pt.Trans(ed, (CoordSystem)from, (CoordSystem)to);
 
         /// <summary>
         /// Transforms a point from a coordinate system to another one in the current editor.
@@ -201,6 +202,7 @@ namespace Autodesk.AutoCAD.Geometry
                             mat = Matrix3d.Identity;
                             break;
                     }
+
                     break;
 
                 case CoordSystem.UCS:
@@ -222,6 +224,7 @@ namespace Autodesk.AutoCAD.Geometry
                             mat = Matrix3d.Identity;
                             break;
                     }
+
                     break;
 
                 case CoordSystem.DCS:
@@ -243,6 +246,7 @@ namespace Autodesk.AutoCAD.Geometry
                             mat = Matrix3d.Identity;
                             break;
                     }
+
                     break;
 
                 case CoordSystem.PSDCS:
@@ -264,8 +268,10 @@ namespace Autodesk.AutoCAD.Geometry
                             mat = Matrix3d.Identity;
                             break;
                     }
+
                     break;
             }
+
             return pt.TransformBy(mat);
         }
     }

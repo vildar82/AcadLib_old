@@ -1,14 +1,13 @@
-﻿using Autodesk.AutoCAD.Colors;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-namespace AcadLib.Hatches
+﻿namespace AcadLib.Hatches
 {
+    using Autodesk.AutoCAD.Colors;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public class HatchOptions
     {
         public HatchOptions()
         {
-
         }
 
         public HatchOptions([NotNull] Hatch h)
@@ -21,9 +20,13 @@ namespace AcadLib.Hatches
         }
 
         public string PatternName { get; set; }
+
         public HatchPatternType PatternType { get; set; }
+
         public double? PatternScale { get; set; }
+
         public double? PatternAngle { get; set; }
+
         public Color BackgroundColor { get; set; }
     }
 }

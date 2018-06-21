@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Windows.Markup;
-
-namespace AcadLib.WPF.Converters
+﻿namespace AcadLib.WPF.Converters
 {
+    using System;
+    using System.Windows.Markup;
+    using JetBrains.Annotations;
+
     [Obsolete]
     public static class EnumDescriptionExt
     {
@@ -21,10 +21,21 @@ namespace AcadLib.WPF.Converters
     public class EnumBindingSourceExtension : MarkupExtension
     {
         private Type _enumType;
+
+        public EnumBindingSourceExtension()
+        {
+        }
+
+        public EnumBindingSourceExtension(Type enumType)
+        {
+            EnumType = enumType;
+        }
+
         public Type EnumType
         {
             get => _enumType;
-            set {
+            set
+            {
                 if (value != _enumType)
                 {
                     if (null != value)
@@ -37,15 +48,6 @@ namespace AcadLib.WPF.Converters
                     _enumType = value;
                 }
             }
-        }
-
-        public EnumBindingSourceExtension()
-        {
-        }
-
-        public EnumBindingSourceExtension(Type enumType)
-        {
-            EnumType = enumType;
         }
 
         [NotNull]

@@ -1,33 +1,22 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2018 02 13 19:53
 
-using System;
-using System.Linq;
-using AcadLib.Errors;
-using AcadLib.Layers.LayerState;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.LayerManager;
-using JetBrains.Annotations;
-
 namespace AcadLib.Layers.Filter
 {
+    using System;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.LayerManager;
+    using Errors;
+    using JetBrains.Annotations;
+    using LayerState;
+
     /// <summary>
     ///     Импорт фильтрами слоев
     /// </summary>
     [PublicAPI]
     public static class ImportLayerFilter
     {
-        [NotNull]
-        private static IdMapping CopyLayers([NotNull] Database dbSrc, Database dbDest)
-        {
-            var lt = dbSrc.LayerTableId.GetObjectT<LayerTable>();
-            var layerIds = new ObjectIdCollection(lt.GetObjects<LayerTableRecord>().Select(s => s.Id).ToArray());
-            var idmap = new IdMapping();
-            if (layerIds.Count > 0)
-                dbSrc.WblockCloneObjects(layerIds, dbDest.LayerTableId, idmap, DuplicateRecordCloning.Replace, false);
-            return idmap;
-        }
-
         public static void ImportLayerFilterAndState([NotNull] this Database dbDest, string sourceFile)
         {
             try
@@ -77,10 +66,22 @@ namespace AcadLib.Layers.Filter
             }
         }
 
+        [NotNull]
+        private static IdMapping CopyLayers([NotNull] Database dbSrc, Database dbDest)
+        {
+            var lt = dbSrc.LayerTableId.GetObjectT<LayerTable>();
+            var layerIds = new ObjectIdCollection(lt.GetObjects<LayerTableRecord>().Select(s => s.Id).ToArray());
+            var idmap = new IdMapping();
+            if (layerIds.Count > 0)
+                dbSrc.WblockCloneObjects(layerIds, dbDest.LayerTableId, idmap, DuplicateRecordCloning.Replace, false);
+            return idmap;
+        }
+
         private static void ImportLayerFilterTree(Database dbSrc, Database dbDest)
         {
             // Копирование слоев
             var idmap = CopyLayers(dbSrc, dbDest);
+
             // Импорт фильтров
             var lft = dbDest.LayerFilters;
             ImportNestedFilters(dbSrc.LayerFilters.Root, lft.Root, idmap);
@@ -100,7 +101,7 @@ namespace AcadLib.Layers.Filter
                     {
                         // Создаем новую группу слоев если ничего не найдено
                         var sfgroup = sf as LayerGroup;
-                        var dfgroup = new LayerGroup {Name = sf.Name};
+                        var dfgroup = new LayerGroup { Name = sf.Name };
                         df = dfgroup;
                         var lyrs = sfgroup.LayerIds;
                         foreach (ObjectId lid in lyrs)
@@ -111,6 +112,7 @@ namespace AcadLib.Layers.Filter
                                 dfgroup.LayerIds.Add(idp.Value);
                             }
                         }
+
                         destFilter.NestedFilters.Add(df);
                     }
                     else
@@ -124,6 +126,7 @@ namespace AcadLib.Layers.Filter
                         destFilter.NestedFilters.Add(df);
                     }
                 }
+
                 // Импортируем другие фильтры
                 ImportNestedFilters(sf, df, idmap);
             }

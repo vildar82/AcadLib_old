@@ -1,13 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class MergePolyline
     {
@@ -21,7 +21,8 @@ namespace AcadLib.Geometry
         [CanBeNull]
         public static Polyline Merge([CanBeNull] this List<Polyline> pls, double tolerancePoint = 2)
         {
-            if (pls == null || pls.Count == 0) return null;
+            if (pls == null || pls.Count == 0)
+                return null;
 
             Polyline merge = null;
             if (pls.Count == 1)
@@ -51,12 +52,14 @@ namespace AcadLib.Geometry
                         merge = plMerge;
                     }
                 }
+
                 if (plsRemove.Count > 0)
                 {
                     foreach (var item in plsRemove)
                     {
                         plsList.Remove(item);
                     }
+
                     plsList.Insert(0, fpl);
                 }
 
@@ -68,25 +71,38 @@ namespace AcadLib.Geometry
                     break;
                 }
             }
+
             return merge;
         }
 
         [NotNull]
-        private static Polyline AddVertex([NotNull] Polyline pl1, [NotNull] Polyline pl2, int indexInPl1, int indexInPl2, Point2d ptInPl2, int dir = 1)
+        private static Polyline AddVertex(
+            [NotNull] Polyline pl1,
+            [NotNull] Polyline pl2,
+            int indexInPl1,
+            int indexInPl2,
+            Point2d ptInPl2,
+            int dir = 1)
         {
             var plNew = (Polyline)pl1.Clone();
             for (var i = 0; i < pl2.NumberOfVertices; i++)
             {
                 plNew.AddVertexAt(indexInPl1++, ptInPl2, 0, 0, 0);
+
                 // След вершина на второй линии
                 indexInPl2 = NextIndex(indexInPl2, pl2, dir);
                 ptInPl2 = pl2.GetPoint2dAt(indexInPl2);
             }
+
             return plNew;
         }
 
         [NotNull]
-        private static Polyline Merge([NotNull] Polyline pl1, [NotNull] Polyline pl2, [NotNull] PolylineVertex ptInPl1, [NotNull] PolylineVertex ptInPl2)
+        private static Polyline Merge(
+            [NotNull] Polyline pl1,
+            [NotNull] Polyline pl2,
+            [NotNull] PolylineVertex ptInPl1,
+            [NotNull] PolylineVertex ptInPl2)
         {
             var indexInPl1 = ptInPl1.Index + 1;
             var indexInPl2 = ptInPl2.Index;
@@ -97,6 +113,7 @@ namespace AcadLib.Geometry
                 plMerged.Dispose();
                 plMerged = AddVertex(pl1, pl2, indexInPl1, indexInPl2, pt, -1);
             }
+
             return plMerged;
         }
 
@@ -104,6 +121,7 @@ namespace AcadLib.Geometry
         private static Polyline MergeTwoPl([NotNull] Polyline pl1, [NotNull] Polyline pl2, double tolerance)
         {
             Polyline plMerged = null;
+
             // Точки полилиний
             var plVertexes = PolylineVertex.GetVertexes(pl1, "1");
             plVertexes.AddRange(PolylineVertex.GetVertexes(pl2, "2"));
@@ -116,6 +134,7 @@ namespace AcadLib.Geometry
             {
                 return null;
             }
+
             // Попытка создать объединенную полилинию - от первой найденной общей точки двух полинилиний
             var fpt = nearsPts.FirstOrDefault();
             if (fpt != null)
@@ -124,6 +143,7 @@ namespace AcadLib.Geometry
                 var ptInPl2 = fpt.First(f => f.Name == "2");
                 plMerged = Merge(pl1, pl2, ptInPl1, ptInPl2);
             }
+
             if (plMerged != null && !plMerged.CheckCross())
             {
                 // Вторая попытка - от последней общей точки
@@ -136,12 +156,14 @@ namespace AcadLib.Geometry
                     plMerged = Merge(pl1, pl2, ptInPl1, ptInPl2);
                 }
             }
+
             if (plMerged != null && !plMerged.CheckCross())
             {
                 // Неудалось объединить полилинии без самопересечений
                 plMerged.Dispose();
                 throw new Exception("Ошибка объединения полининий без самопересечения.");
             }
+
             return plMerged;
         }
 
@@ -156,6 +178,7 @@ namespace AcadLib.Geometry
             {
                 next = pl.NumberOfVertices - 1;
             }
+
             return next;
         }
 
@@ -169,7 +192,8 @@ namespace AcadLib.Geometry
             var res = new List<Polyline>();
             var plsCenters = pls.Select(s => new { pl = s, center = s.GeometricExtents.Center() })
                 .OrderBy(o => o.center.X + o.center.Y).ToList();
-            //.OrderBy(o => o.center.X).ThenBy(o => o.center.Y).ToList();
+
+            // .OrderBy(o => o.center.X).ThenBy(o => o.center.Y).ToList();
             var fPlC = plsCenters.First();
             res.Add(fPlC.pl);
             plsCenters.Remove(fPlC);
@@ -181,6 +205,7 @@ namespace AcadLib.Geometry
                 plsCenters.Remove(plCMin);
                 plCPrew = plCMin;
             }
+
             return res;
         }
     }

@@ -1,20 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public class BlockAttribute
     {
-        // Public read only properties
-        public string Name { get; private set; }
-
-        public Dictionary<string, string> Attributes { get; private set; }
-
-        public string this[[NotNull] string key] => Attributes[key.ToUpper()];
-
         // Constructors
         public BlockAttribute([NotNull] BlockReference br)
         {
@@ -29,6 +22,13 @@ namespace AcadLib.Blocks
                 SetProperties((BlockReference)tr.GetObject(idBlRef, OpenMode.ForRead));
             }
         }
+
+        // Public read only properties
+        public string Name { get; private set; }
+
+        public Dictionary<string, string> Attributes { get; private set; }
+
+        public string this[[NotNull] string key] => Attributes[key.ToUpper()];
 
         // Public method
         public new string ToString()
@@ -55,7 +55,8 @@ namespace AcadLib.Blocks
     {
         public bool Equals(BlockAttribute x, BlockAttribute y)
         {
-            if (x == null || y == null) return false;
+            if (x == null || y == null)
+                return false;
             return x.Name.Equals(y.Name, StringComparison.CurrentCultureIgnoreCase) &&
                    x.Attributes.SequenceEqual(y.Attributes);
         }

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Windows.Forms;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.UI
 {
+    using System;
+    using System.Windows.Forms;
+
     public partial class FormProperties : Form
     {
         public FormProperties()

@@ -1,9 +1,9 @@
-﻿using System;
-using JetBrains.Annotations;
-using System.Text.RegularExpressions;
-
-namespace AcadLib.Regexes
+﻿namespace AcadLib.Regexes
 {
+    using System;
+    using System.Text.RegularExpressions;
+    using JetBrains.Annotations;
+
     [Obsolete]
     [PublicAPI]
     public static class RegexExt
@@ -20,6 +20,7 @@ namespace AcadLib.Regexes
             {
                 int.TryParse(resRegex.Value, out value);
             }
+
             return value;
         }
     }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Globalization;
-using System.Windows.Data;
-using JetBrains.Annotations;
-
-namespace AcadLib.WPF.Converters
+﻿namespace AcadLib.WPF.Converters
 {
+    using System;
+    using System.Globalization;
+    using System.Windows.Data;
+    using JetBrains.Annotations;
+
     [Obsolete]
     [PublicAPI]
     [ValueConversion(typeof(Enum), typeof(string))]

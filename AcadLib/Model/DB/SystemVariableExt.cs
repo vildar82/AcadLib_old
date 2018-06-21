@@ -1,8 +1,8 @@
-﻿using System;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+
     public static class SystemVariableExt
     {
         public static void SetSystemVariable(this string name, object value)
@@ -16,7 +16,7 @@ namespace AcadLib
             {
                 Application.SetSystemVariable(name, value);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error($"SetSystemVariableTry name={name}, value={value}", ex);
             }

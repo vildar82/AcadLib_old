@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-namespace AcadLib.RTree.SpatialIndex
+﻿namespace AcadLib.RTree.SpatialIndex
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class RectangleExt
     {
@@ -34,11 +34,16 @@ namespace AcadLib.RTree.SpatialIndex
             var max = fr._max;
             foreach (var rec in recs.Skip(1))
             {
-                if (rec._min[0] < min[0]) min[0] = rec._min[0];
-                if (rec._min[1] < min[1]) min[1] = rec._min[1];
-                if (rec._max[0] > max[0]) max[0] = rec._max[0];
-                if (rec._max[1] > max[1]) max[1] = rec._max[1];
+                if (rec._min[0] < min[0])
+                    min[0] = rec._min[0];
+                if (rec._min[1] < min[1])
+                    min[1] = rec._min[1];
+                if (rec._max[0] > max[0])
+                    max[0] = rec._max[0];
+                if (rec._max[1] > max[1])
+                    max[1] = rec._max[1];
             }
+
             return new Rectangle(min, max);
         }
     }

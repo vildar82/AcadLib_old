@@ -1,27 +1,27 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2018 02 12 14:38
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.ApplicationServices;
-using JetBrains.Annotations;
-using NetLib;
-using NetLib.WPF;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
 namespace AcadLib.Layers.LayersSelected
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using JetBrains.Annotations;
+    using NetLib;
+    using NetLib.WPF;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+
     public class LayersSelectedVM : BaseViewModel
     {
-        [Reactive]
-        public List<LayerInfo> Layers { get; set; }
-
         public LayersSelectedVM()
         {
             Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
             BindingDoc(AcadHelper.Doc);
         }
+
+        [Reactive]
+        public List<LayerInfo> Layers { get; set; }
 
         private void BindingDoc([NotNull] Document doc)
         {

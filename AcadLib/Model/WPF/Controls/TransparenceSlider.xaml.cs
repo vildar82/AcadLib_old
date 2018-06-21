@@ -1,9 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using JetBrains.Annotations;
-
-namespace AcadLib.WPF.Controls
+﻿namespace AcadLib.WPF.Controls
 {
+    using System.Windows;
+    using System.Windows.Controls;
+    using JetBrains.Annotations;
+
     /// <inheritdoc cref="UserControl" />
     /// <summary>
     /// Interaction logic for TransparenceSlider.xaml
@@ -15,15 +15,15 @@ namespace AcadLib.WPF.Controls
             DependencyProperty.Register("Transparence", typeof(byte), typeof(TransparenceSlider),
                 new FrameworkPropertyMetadata((byte)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        public TransparenceSlider()
+        {
+            InitializeComponent();
+        }
+
         public byte Transparence
         {
             get => (byte)GetValue(TransparenceProperty);
             set => SetValue(TransparenceProperty, value);
-        }
-
-        public TransparenceSlider()
-        {
-            InitializeComponent();
         }
     }
 }

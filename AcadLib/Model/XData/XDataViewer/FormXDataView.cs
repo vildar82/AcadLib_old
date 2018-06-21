@@ -1,8 +1,8 @@
-﻿using System.Windows.Forms;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.XData.Viewer
 {
+    using System.Windows.Forms;
+
     public partial class FormXDataView : Form
     {
         public FormXDataView(string info, string entName)

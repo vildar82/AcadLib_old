@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using AcRx = Autodesk.AutoCAD.Runtime;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+    using AcRx = Autodesk.AutoCAD.Runtime;
+
     /// <summary>
     /// Provides extension methods for the Spline type.
     /// </summary>

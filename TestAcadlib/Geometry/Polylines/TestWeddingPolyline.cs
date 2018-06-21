@@ -20,20 +20,19 @@ namespace TestAcadlib.Geometry.Polylines
             selOpt.SetRejectMessage("\nТолько полилинию");
             selOpt.AddAllowedClass(typeof(Polyline), true);
             var selRes = ed.GetEntity(selOpt);
-            if (selRes.Status != PromptStatus.OK) return;
+            if (selRes.Status != PromptStatus.OK)
+                return;
 
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var pl = selRes.ObjectId.GetObject(OpenMode.ForWrite) as Polyline;
                 pl.TestDrawVertexNumbers(Color.FromColor(System.Drawing.Color.Green));
 
-
                 pl.Wedding(new Autodesk.AutoCAD.Geometry.Tolerance (0.02,0.1));
-
 
                 pl.TestDrawVertexNumbers(Color.FromColor(System.Drawing.Color.Red));
                 t.Commit();
             }
-        }            
+        }
     }
 }

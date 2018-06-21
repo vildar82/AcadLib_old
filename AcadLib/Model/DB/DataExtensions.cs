@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using AcadLib;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace System.Data
 {
+    using AcadLib;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Collections.Generic;
+    using IO;
+    using JetBrains.Annotations;
+    using Linq;
+
     [PublicAPI]
     public static class DataExtensions
     {
@@ -22,7 +22,7 @@ namespace System.Data
         [NotNull]
         public static Table ToAcadTable([NotNull] this DataTable dataTbl, double rowHeight, double columnWidth)
         {
-            //return dataTbl.Rows.Cast<DataRow>().ToAcadTable(dataTbl.TableName, dataTbl.GetColumnNames(), rowHeight, columnWidth);
+            // return dataTbl.Rows.Cast<DataRow>().ToAcadTable(dataTbl.TableName, dataTbl.GetColumnNames(), rowHeight, columnWidth);
             var tbl = new Table();
             tbl.Rows[0].Height = rowHeight;
             tbl.Columns[0].Width = columnWidth;
@@ -77,6 +77,7 @@ namespace System.Data
                     worksheet.Set("Name", sheetName);
                 }
             }
+
             var range = worksheet.Get("Cells");
             dataTbl.GetColumnNames()
                 .Iterate((name, i) => range.Get("Item", 1, i + 1).Set("Value2", name));
@@ -97,10 +98,12 @@ namespace System.Data
                 {
                     var fileFormat =
                         string.CompareOrdinal("11.0", (string)xlApp.Get("Version")) < 0 &&
-                        filename.EndsWith(".xlsx", StringComparison.CurrentCultureIgnoreCase) ?
-                            51 : -4143;
+                        filename.EndsWith(".xlsx", StringComparison.CurrentCultureIgnoreCase)
+                            ? 51
+                            : -4143;
                     workbook.Invoke("Saveas", filename, fileFormat, string.Empty, string.Empty, false, false, 1, 1);
                 }
+
                 workbook.Invoke("Close");
                 xlApp.ReleaseInstance();
             }

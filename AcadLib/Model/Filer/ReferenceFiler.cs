@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-namespace AcadLib.Filer
+﻿namespace AcadLib.Filer
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public class ReferenceFiler : DwgFiler
     {
         // member data
         public List<ObjectId> SoftPointerIds { get; } = new List<ObjectId>();
-        public List<ObjectId> HardPointerIds { get; } =  new List<ObjectId>();
-        public List<ObjectId> SoftOwnershipIds { get; } =  new List<ObjectId>();
-        public List<ObjectId> HardOwnershipIds { get; } =  new List<ObjectId>();
 
-        public override void ResetFilerStatus()
-        {
-        }
+        public List<ObjectId> HardPointerIds { get; } = new List<ObjectId>();
+
+        public List<ObjectId> SoftOwnershipIds { get; } = new List<ObjectId>();
+
+        public List<ObjectId> HardOwnershipIds { get; } = new List<ObjectId>();
 
         public override Autodesk.AutoCAD.Runtime.ErrorStatus FilerStatus
         {
@@ -28,6 +27,10 @@ namespace AcadLib.Filer
         public override FilerType FilerType => FilerType.IdFiler;
 
         public override long Position => 0;
+
+        public override void ResetFilerStatus()
+        {
+        }
 
         public override void Seek(long offset, int method)
         {
@@ -101,7 +104,7 @@ namespace AcadLib.Filer
         [NotNull]
         public override string ReadString()
         {
-            return "";
+            return string.Empty;
         }
 
         public override ushort ReadUInt16()
@@ -225,25 +228,28 @@ namespace AcadLib.Filer
         {
         }
 
-
         public override void WriteHardOwnershipId(ObjectId value)
         {
-            if (!value.IsNull) HardOwnershipIds.Add(value);
+            if (!value.IsNull)
+                HardOwnershipIds.Add(value);
         }
 
         public override void WriteHardPointerId(ObjectId value)
         {
-            if (!value.IsNull) HardPointerIds.Add(value);
+            if (!value.IsNull)
+                HardPointerIds.Add(value);
         }
 
         public override void WriteSoftOwnershipId(ObjectId value)
         {
-            if (!value.IsNull) SoftOwnershipIds.Add(value);
+            if (!value.IsNull)
+                SoftOwnershipIds.Add(value);
         }
 
         public override void WriteSoftPointerId(ObjectId value)
         {
-            if (!value.IsNull) HardPointerIds.Add(value);
+            if (!value.IsNull)
+                HardPointerIds.Add(value);
         }
 
         public void Reset()

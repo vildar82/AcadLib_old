@@ -1,14 +1,14 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib.Visual
+﻿namespace AcadLib.Visual
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+
     [PublicAPI]
     public static class VisualHelper
     {
@@ -27,6 +27,7 @@ namespace AcadLib.Visual
         public static Hatch CreateHatch([NotNull] List<Point2d> points, VisualOption opt)
         {
             var pts = DistincPoints(points);
+
             // Штриховка
             var ptCol = new Point2dCollection(pts) { points[0] };
             var dCol = new DoubleCollection(new double[points.Count]);
@@ -61,6 +62,7 @@ namespace AcadLib.Visual
             {
                 pl.AddVertexAt(i, pts[i], 0, 0, 0);
             }
+
             pl.Closed = true;
             SetEntityOpt(pl, opt);
             return pl;
@@ -91,10 +93,14 @@ namespace AcadLib.Visual
 
         public static void SetEntityOpt([CanBeNull] this Entity ent, VisualOption opt)
         {
-            if (ent == null) return;
-            if (opt.Color != null) ent.Color = opt.Color;
-            if (opt.Transparency.Alpha != 0) ent.Transparency = opt.Transparency;
-            if (opt.LineWeight.HasValue) ent.LineWeight = opt.LineWeight.Value;
+            if (ent == null)
+                return;
+            if (opt.Color != null)
+                ent.Color = opt.Color;
+            if (opt.Transparency.Alpha != 0)
+                ent.Transparency = opt.Transparency;
+            if (opt.LineWeight.HasValue)
+                ent.LineWeight = opt.LineWeight.Value;
             if (opt.TextHeight.HasValue)
             {
                 switch (ent)
@@ -116,18 +122,20 @@ namespace AcadLib.Visual
         private static void CheckTextStyle(ObjectId textStyleId)
         {
             var textStyle = (TextStyleTableRecord)textStyleId.GetObject(OpenMode.ForRead);
+
             // Шрифт
             if (!textStyle.FileName.Equals(textStyleFontFile, StringComparison.OrdinalIgnoreCase))
             {
                 textStyle = textStyle.Id.GetObject<TextStyleTableRecord>(OpenMode.ForWrite);
-                if (textStyle != null) textStyle.FileName = textStyleFontFile;
+                if (textStyle != null)
+                    textStyle.FileName = textStyleFontFile;
             }
         }
 
         [NotNull]
         private static Point2d[] DistincPoints([NotNull] List<Point2d> points)
         {
-            //  Отсеивание одинаковых точек
+            // Отсеивание одинаковых точек
             return points.Distinct(new Comparers.Point2dEqualityComparer()).ToArray();
         }
     }

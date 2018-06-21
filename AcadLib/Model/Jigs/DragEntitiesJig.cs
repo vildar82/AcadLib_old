@@ -1,24 +1,25 @@
-﻿using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.GraphicsInterface;
-using JetBrains.Annotations;
-
-namespace AcadLib.Jigs
+﻿namespace AcadLib.Jigs
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using Autodesk.AutoCAD.GraphicsInterface;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public class DragEntitiesJig : DrawJig
     {
         private readonly IEnumerable<Entity> ents;
         private Point3d basePoint;
-        public Point3d DragPoint { get; private set; }
 
         public DragEntitiesJig(IEnumerable<Entity> ents, Point3d basePoint)
         {
             this.basePoint = basePoint;
             this.ents = ents;
         }
+
+        public Point3d DragPoint { get; private set; }
 
         protected override SamplerStatus Sampler([NotNull] JigPrompts prompts)
         {
@@ -45,6 +46,7 @@ namespace AcadLib.Jigs
             {
                 wGeom.Draw(ent);
             }
+
             wGeom.PopModelTransform();
             return true;
         }

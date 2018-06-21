@@ -1,4 +1,4 @@
-//   RTree.java
+// RTree.java
 //   Java Spatial Index Library
 //   Copyright (C) 2002 Infomatiq Limited
 //   Copyright (C) 2008 Aled Morris aled@sourceforge.net
@@ -16,16 +16,14 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
 //  Ported to C# By Dror Gluska, April 9th, 2009
 
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-// ReSharper disable once CheckNamespace
 namespace RTreeLib
 {
+    using System;
+    using System.Collections.Generic;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// This is a lightweight RTree implementation, specifically designed
     /// for the following features (in order of importance):
@@ -50,6 +48,7 @@ namespace RTreeLib
     public class RTree<T>
     {
         internal int maxNodeEntries;
+
         // parameters of the tree
         private const int DEFAULT_MAX_NODE_ENTRIES = 10;
 
@@ -57,24 +56,28 @@ namespace RTreeLib
         private const int ENTRY_STATUS_ASSIGNED = 0;
 
         private const int ENTRY_STATUS_UNASSIGNED = 1;
+
         // internal consistency checking - set to true if debugging tree corruption
         private const bool INTERNAL_CONSISTENCY_CHECKING = false;
 
         private const string version = "1.0b2p1";
+
         // Deleted Node&lt;T&gt; objects are retained in the nodeMap,
         // so that they can be reused. Store the IDs of nodes
         // which can be reused.
-        //private TIntStack deletedNodeIds = new TIntStack();
+        // private TIntStack deletedNodeIds = new TIntStack();
         private Stack<int> deletedNodeIds = new Stack<int>();
 
         private byte[] entryStatus;
+
         // Enables creation of new nodes
-        //private int highestUsedNodeId = rootNodeId;
+        // private int highestUsedNodeId = rootNodeId;
         private int highestUsedNodeId;
 
         private volatile int idcounter = int.MinValue;
-        //Added dictionaries to support generic objects..
-        //possibility to change the code to support objects without dictionaries.
+
+        // Added dictionaries to support generic objects..
+        // possibility to change the code to support objects without dictionaries.
         private Dictionary<int, T> IdsToItems = new Dictionary<int, T>();
 
         private byte[] initialEntryStatus;
@@ -83,33 +86,30 @@ namespace RTreeLib
 
         // List of nearest rectangles. Use a member variable to
         // avoid recreating the object each time nearest() is called.
-        //private TIntArrayList nearestIds = new TIntArrayList();
+        // private TIntArrayList nearestIds = new TIntArrayList();
         private List<int> nearestIds = new List<int>();
 
         // map of nodeId -&gt; Node&lt;T&gt; object
         // [x] TODO eliminate this map - it should not be needed. Nodes
         // can be found by traversing the tree.
-        //private TIntObjectHashMap nodeMap = new TIntObjectHashMap();
+        // private TIntObjectHashMap nodeMap = new TIntObjectHashMap();
         private Dictionary<int, Node<T>> nodeMap = new Dictionary<int, Node<T>>();
 
         private Rectangle oldRectangle = new Rectangle(0, 0, 0, 0, 0, 0);
+
         // stacks used to store nodeId and entry index of each Node&lt;T&gt;
         // from the root down to the leaf. Enables fast lookup
         // of nodes when a split is propagated up the tree.
-        //private TIntStack parents = new TIntStack();
+        // private TIntStack parents = new TIntStack();
         private Stack<int> parents = new Stack<int>();
 
-        //private TIntStack parentsEntry = new TIntStack();
+        // private TIntStack parentsEntry = new TIntStack();
         private Stack<int> parentsEntry = new Stack<int>();
 
         private int rootNodeId;
+
         // initialisation
         private int treeHeight = 1; // leaves are always level 1
-
-        //the recursion methods require a delegate to retrieve data
-        private delegate void intproc(int x);
-
-        public int Count { get; private set; }
 
         /// <summary>
         /// Initialize implementation dependent properties of the RTree.
@@ -136,6 +136,11 @@ namespace RTreeLib
             Init();
         }
 
+        // the recursion methods require a delegate to retrieve data
+        private delegate void intproc(int x);
+
+        public int Count { get; private set; }
+
         /// <summary>
         /// Adds an item to the spatial index
         /// </summary>
@@ -161,10 +166,7 @@ namespace RTreeLib
         public List<T> Contains(Rectangle r)
         {
             var retval = new List<T>();
-            Contains(r, delegate (int id)
-            {
-                retval.Add(IdsToItems[id]);
-            });
+            Contains(r, delegate(int id) { retval.Add(IdsToItems[id]); });
             return retval;
         }
 
@@ -184,6 +186,7 @@ namespace RTreeLib
                 IdsToItems.Remove(id);
                 ItemsToIds.Remove(item);
             }
+
             return success;
         }
 
@@ -197,6 +200,7 @@ namespace RTreeLib
             {
                 bounds = n.GetMBR().Copy();
             }
+
             return bounds;
         }
 
@@ -224,10 +228,7 @@ namespace RTreeLib
         public List<T> Intersects(Rectangle r)
         {
             var retval = new List<T>();
-            Intersects(r, delegate (int id)
-            {
-                retval.Add(IdsToItems[id]);
-            });
+            Intersects(r, delegate(int id) { retval.Add(IdsToItems[id]); });
             return retval;
         }
 
@@ -241,10 +242,7 @@ namespace RTreeLib
         public List<T> Nearest(Point p, double furthestDistance)
         {
             var retval = new List<T>();
-            Nearest(p, delegate (int id)
-            {
-                retval.Add(IdsToItems[id]);
-            }, furthestDistance);
+            Nearest(p, delegate(int id) { retval.Add(IdsToItems[id]); }, furthestDistance);
             return retval;
         }
 
@@ -316,7 +314,7 @@ namespace RTreeLib
 
                 if (parent.ids[entry] != n.nodeId)
                 {
-                    //log.Error("Error: entry " + entry + " in Node<T> " +
+                    // log.Error("Error: entry " + entry + " in Node<T> " +
                     //     parent.nodeId + " should point to Node<T> " +
                     //     n.nodeId + "; actually points to Node<T> " + parent.ids[entry]);
                 }
@@ -354,6 +352,7 @@ namespace RTreeLib
                 n = parent;
                 nn = newNode;
             }
+
             return nn;
         }
 
@@ -366,6 +365,7 @@ namespace RTreeLib
             {
                 mbr.Add(n.entries[i]);
             }
+
             return mbr;
         }
 
@@ -398,6 +398,7 @@ namespace RTreeLib
                 {
                     return n;
                 }
+
                 // CL3 [Choose subtree] If N is not at the desired level, let F be the entry in N
                 // whose rectangle FI needs least enlargement to include EI. Resolve
                 // ties by choosing the entry with the rectangle of smaller area.
@@ -407,10 +408,12 @@ namespace RTreeLib
                 for (var i = 1; i < n.entryCount; i++)
                 {
                     var tempRectangle = n.GetEntry(i);
+
                     // ReSharper disable once PossibleNullReferenceException
                     var tempEnlargement = tempRectangle.Enlargement(r);
                     if (tempEnlargement < leastEnlargement ||
                         Math.Abs(tempEnlargement - leastEnlargement) < 0.0001 &&
+
                         // ReSharper disable once PossibleNullReferenceException
                         tempRectangle.Area() < n.GetEntry(index).Area())
                     {
@@ -433,8 +436,10 @@ namespace RTreeLib
             // CT1 [Initialize] Set n=l. Set the list of eliminated
             // nodes to be empty.
             var n = l;
-            //TIntStack eliminatedNodeIds = new TIntStack();
+
+            // TIntStack eliminatedNodeIds = new TIntStack();
             var eliminatedNodeIds = new Stack<int>();
+
             // CT2 [Find parent entry] If N is the root, go to CT6. Otherwise
             // let P be the parent of N, and let En be N's entry in P
             while (n.level != treeHeight)
@@ -460,6 +465,7 @@ namespace RTreeLib
                         parent.RecalculateMBR(oldRectangle);
                     }
                 }
+
                 // CT5 [Move up one level in tree] Set N=P and repeat from CT2
                 n = parent;
             }
@@ -477,6 +483,7 @@ namespace RTreeLib
                     Add(e.entries[j], e.ids[j], e.level);
                     e.entries[j] = null;
                 }
+
                 e.entryCount = 0;
                 deletedNodeIds.Push(e.nodeId);
             }
@@ -486,7 +493,6 @@ namespace RTreeLib
         {
             // find all rectangles in the tree that are contained by the passed rectangle
             // written to be non-recursive (should model other searches on this?)
-
             parents.Clear();
             parents.Push(rootNodeId);
 
@@ -495,7 +501,6 @@ namespace RTreeLib
 
             // TODO: possible shortcut here - could test for intersection with the
             // MBR of the root node. If no intersection, return immediately.
-
             while (parents.Count > 0)
             {
                 var n = GetNode(parents.Peek());
@@ -519,6 +524,7 @@ namespace RTreeLib
                             break; // ie go to next iteration of while()
                         }
                     }
+
                     if (intersects)
                     {
                         continue;
@@ -536,6 +542,7 @@ namespace RTreeLib
                         }
                     }
                 }
+
                 parents.Pop();
                 parentsEntry.Pop();
             }
@@ -560,7 +567,7 @@ namespace RTreeLib
             parentsEntry.Clear();
             parentsEntry.Push(-1);
             Node<T> n = null;
-            var foundIndex = -1;  // index of entry to be deleted in leaf
+            var foundIndex = -1; // index of entry to be deleted in leaf
 
             while (foundIndex == -1 && parents.Count > 0)
             {
@@ -569,7 +576,7 @@ namespace RTreeLib
 
                 if (!n.IsLeaf())
                 {
-                    //deleteLog.Debug("searching Node<T> " + n.nodeId + ", from index " + startIndex);
+                    // deleteLog.Debug("searching Node<T> " + n.nodeId + ", from index " + startIndex);
                     var contains = false;
                     for (var i = startIndex; i < n.entryCount; i++)
                     {
@@ -583,6 +590,7 @@ namespace RTreeLib
                             break; // ie go to next iteration of while()
                         }
                     }
+
                     if (contains)
                     {
                         continue;
@@ -639,6 +647,7 @@ namespace RTreeLib
             {
                 nextNodeId = 1 + highestUsedNodeId++;
             }
+
             return nextNodeId;
         }
 
@@ -659,14 +668,14 @@ namespace RTreeLib
             // per node, but will be inefficient.
             if (maxNodeEntries < 2)
             {
-                //log.Warn("Invalid MaxNodeEntries = " + maxNodeEntries + " Resetting to default value of " + DEFAULT_MAX_NODE_ENTRIES);
+                // log.Warn("Invalid MaxNodeEntries = " + maxNodeEntries + " Resetting to default value of " + DEFAULT_MAX_NODE_ENTRIES);
                 maxNodeEntries = DEFAULT_MAX_NODE_ENTRIES;
             }
 
             // The MinNodeEntries must be less than or equal to (int) (MaxNodeEntries / 2)
             if (minNodeEntries < 1 || minNodeEntries > maxNodeEntries / 2)
             {
-                //log.Warn("MinNodeEntries must be between 1 and MaxNodeEntries / 2");
+                // log.Warn("MinNodeEntries must be between 1 and MaxNodeEntries / 2");
                 minNodeEntries = maxNodeEntries / 2;
             }
 
@@ -681,7 +690,7 @@ namespace RTreeLib
             var root = new Node<T>(rootNodeId, 1, maxNodeEntries);
             nodeMap.Add(rootNodeId, root);
 
-            //log.Info("init() " + " MaxNodeEntries = " + maxNodeEntries + ", MinNodeEntries = " + minNodeEntries);
+            // log.Info("init() " + " MaxNodeEntries = " + maxNodeEntries + ", MinNodeEntries = " + minNodeEntries);
         }
 
         /// <summary>
@@ -749,20 +758,23 @@ namespace RTreeLib
             {
                 var tempDistance = n.entries[i].Distance(p);
                 if (n.IsLeaf())
-                { // for leaves, the distance is an actual nearest distance
+                {
+                    // for leaves, the distance is an actual nearest distance
                     if (tempDistance < nearestDistance)
                     {
                         nearestDistance = tempDistance;
                         nearestIds.Clear();
                     }
+
                     if (tempDistance <= nearestDistance)
                     {
                         nearestIds.Add(n.ids[i]);
                     }
                 }
                 else
-                { // for index nodes, only go into them if they potentially could have
-                  // a rectangle nearer than actualNearest
+                {
+                    // for index nodes, only go into them if they potentially could have
+                    // a rectangle nearer than actualNearest
                     if (tempDistance <= nearestDistance)
                     {
                         // search the child node
@@ -770,6 +782,7 @@ namespace RTreeLib
                     }
                 }
             }
+
             return nearestDistance;
         }
 
@@ -795,7 +808,7 @@ namespace RTreeLib
                 {
                     if (n.entries[i] == null)
                     {
-                        //log.Error("Error: Node<T> " + n.nodeId + ", entry " + i + " is null");
+                        // log.Error("Error: Node<T> " + n.nodeId + ", entry " + i + " is null");
                     }
 
                     // ReSharper disable once AssignNullToNotNullAttribute
@@ -831,6 +844,7 @@ namespace RTreeLib
                         {
                             nextGroup = 1;
                         }
+
                         maxDifference = difference;
                     }
                 }
@@ -891,7 +905,8 @@ namespace RTreeLib
                         tempHighestLowIndex = i;
                     }
                     else
-                    {  // ensure that the same index cannot be both lowestHigh and highestLow
+                    {
+                        // ensure that the same index cannot be both lowestHigh and highestLow
                         var tempHigh = n.entries[i]._max[d];
                         if (tempHigh <= tempLowestHigh)
                         {
@@ -907,7 +922,7 @@ namespace RTreeLib
 
                     if (normalizedSeparation > 1 || normalizedSeparation < -1)
                     {
-                        //log.Error("Invalid normalized separation");
+                        // log.Error("Invalid normalized separation");
                     }
 
                     // PS3 [Select the most extreme pair] Choose the pair with the greatest
@@ -963,7 +978,6 @@ namespace RTreeLib
             // each to a group.
 
             // debug code
-
             Array.Copy(initialEntryStatus, 0, entryStatus, 0, maxNodeEntries);
 
             var newNode = new Node<T>(GetNextNodeId(), n.level, maxNodeEntries);
@@ -988,8 +1002,10 @@ namespace RTreeLib
                             n.entryCount++;
                         }
                     }
+
                     break;
                 }
+
                 if (maxNodeEntries + 1 - n.entryCount == minNodeEntries)
                 {
                     // assign all remaining entries to new node
@@ -1002,6 +1018,7 @@ namespace RTreeLib
                             n.entries[i] = null;
                         }
                     }
+
                     break;
                 }
 

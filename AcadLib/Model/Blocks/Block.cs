@@ -1,12 +1,12 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class Block
     {
@@ -25,6 +25,7 @@ namespace AcadLib.Blocks
             var db = entIds[0].Database;
             var t = db.TransactionManager.TopTransaction;
             ObjectId idBtr;
+
             // создание определения блока
             BlockTableRecord btr;
             using (var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForWrite))
@@ -34,12 +35,14 @@ namespace AcadLib.Blocks
                 idBtr = bt.Add(btr);
                 t.AddNewlyCreatedDBObject(btr, true);
             }
+
             // копирование выбранных объектов в блок
             var idsCol = new ObjectIdCollection(entIds.ToArray());
             using (var mapping = new IdMapping())
             {
                 db.DeepCloneObjects(idsCol, idBtr, mapping, false);
             }
+
             // перемещение объектов в блоке
             btr = (BlockTableRecord)idBtr.GetObject(OpenMode.ForRead);
             var moveMatrix = Matrix3d.Displacement(Point3d.Origin - location);
@@ -48,16 +51,19 @@ namespace AcadLib.Blocks
                 var ent = idEnt.GetObject<Entity>(OpenMode.ForWrite) ?? throw new InvalidOperationException();
                 ent.TransformBy(moveMatrix);
             }
+
             // удаление выбранных объектов
             if (erase)
             {
                 foreach (ObjectId idEnt in idsCol)
                 {
-                    if (!idEnt.IsValidEx()) continue;
+                    if (!idEnt.IsValidEx())
+                        continue;
                     var ent = idEnt.GetObject<Entity>(OpenMode.ForWrite) ?? throw new InvalidOperationException();
                     ent.Erase();
                 }
             }
+
             return idBtr;
         }
 
@@ -100,8 +106,11 @@ namespace AcadLib.Blocks
         /// <param name="destDb">База чертежа в который копируетсяя блок</param>
         /// <param name="mode">Режим для уже существующих элементов - пропускать или заменять.</param>
         /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
-        public static ObjectId CopyBlockFromExternalDrawing(string blName, string fileDrawing, Database destDb,
-                                                  DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
+        public static ObjectId CopyBlockFromExternalDrawing(
+            string blName,
+            string fileDrawing,
+            Database destDb,
+            DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
             if (mode == DuplicateRecordCloning.Ignore)
             {
@@ -115,6 +124,7 @@ namespace AcadLib.Blocks
                     }
                 }
             }
+
             var blNames = new List<string> { blName };
             var resCopy = CopyBlockFromExternalDrawing(blNames, fileDrawing, destDb, mode);
             if (!resCopy.TryGetValue(blName, out var idRes))
@@ -122,6 +132,7 @@ namespace AcadLib.Blocks
                 throw new Autodesk.AutoCAD.Runtime.Exception(Autodesk.AutoCAD.Runtime.ErrorStatus.MissingBlockName,
                     $"Не найден блок {blName}");
             }
+
             return idRes;
         }
 
@@ -131,6 +142,7 @@ namespace AcadLib.Blocks
         public static void Redefine(string name, string file, Database destDb)
         {
             var idBtr = CopyBlockFromExternalDrawing(name, file, destDb, DuplicateRecordCloning.Replace);
+
             // Синхронизация атрибутов
             idBtr.SynchronizeAttributes();
         }
@@ -145,13 +157,16 @@ namespace AcadLib.Blocks
         /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
         /// <returns>Список пар значений имени блока и idBtr</returns>
         [NotNull]
-        public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing(Predicate<string> filter,
-            string fileDrawing, Database destDb, DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
+        public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing(
+            Predicate<string> filter,
+            string fileDrawing,
+            Database destDb,
+            DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
             var resVal = new Dictionary<string, ObjectId>();
             using (var extDb = new Database(false, true))
             {
-                extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, "");
+                extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, string.Empty);
                 extDb.CloseInput(true);
 
                 var valToCopy = new Dictionary<ObjectId, string>();
@@ -173,6 +188,7 @@ namespace AcadLib.Blocks
                         }
                     }
                 }
+
                 // Копир
                 if (valToCopy.Count > 0)
                 {
@@ -190,6 +206,7 @@ namespace AcadLib.Blocks
                     }
                 }
             }
+
             return resVal;
         }
 
@@ -203,8 +220,11 @@ namespace AcadLib.Blocks
         /// <exception cref="Exception">Если нет блока в файле fileDrawing.</exception>
         /// <returns>Список пар значений имени блока и idBtr</returns>
         [NotNull]
-        public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing([NotNull] IList<string> blNames, string fileDrawing,
-            Database destDb, DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
+        public static Dictionary<string, ObjectId> CopyBlockFromExternalDrawing(
+            [NotNull] IList<string> blNames,
+            string fileDrawing,
+            Database destDb,
+            DuplicateRecordCloning mode = DuplicateRecordCloning.Ignore)
         {
             var resVal = new Dictionary<string, ObjectId>();
             var uniqBlNames = blNames.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
@@ -213,7 +233,7 @@ namespace AcadLib.Blocks
             {
                 // Если уже есть эти блоки
 #pragma warning disable 618
-                using (var btDest =(BlockTable) destDb.BlockTableId.Open(OpenMode.ForRead))
+                using (var btDest = (BlockTable)destDb.BlockTableId.Open(OpenMode.ForRead))
 #pragma warning restore 618
                 {
                     var existBls = new List<string>();
@@ -225,12 +245,14 @@ namespace AcadLib.Blocks
                             resVal.Add(uniqBlName, btDest[uniqBlName]);
                         }
                     }
+
                     if (existBls.Any())
                     {
                         uniqBlNames = uniqBlNames.Except(existBls).ToList();
                     }
                 }
             }
+
             if (!uniqBlNames.Any())
             {
                 return resVal;
@@ -238,7 +260,7 @@ namespace AcadLib.Blocks
 
             using (var extDb = new Database(false, true))
             {
-                extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, "");
+                extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, string.Empty);
                 extDb.CloseInput(true);
                 var valToCopy = new Dictionary<ObjectId, string>();
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -254,6 +276,7 @@ namespace AcadLib.Blocks
                         }
                     }
                 }
+
                 // Копир
                 if (valToCopy.Count > 0)
                 {
@@ -296,9 +319,11 @@ namespace AcadLib.Blocks
                             }
                         }
                     }
+
                     t.Commit();
                 }
             }
+
             return resVal;
         }
 
@@ -316,7 +341,8 @@ namespace AcadLib.Blocks
             {
                 var btrSource = (BlockTableRecord)t.GetObject(idBtrSource, OpenMode.ForRead);
                 var bt = (BlockTable)t.GetObject(db.BlockTableId, OpenMode.ForRead);
-                //проверка имени блока
+
+                // проверка имени блока
                 if (bt.Has(name))
                 {
                     idBtrCopy = bt[name];
@@ -328,17 +354,21 @@ namespace AcadLib.Blocks
                     bt = (BlockTable)bt.Id.GetObject(OpenMode.ForWrite);
                     idBtrCopy = bt.Add(btrCopy);
                     t.AddNewlyCreatedDBObject(btrCopy, true);
+
                     // Копирование объектов блока
                     var ids = new ObjectIdCollection();
                     foreach (var idEnt in btrSource)
                     {
                         ids.Add(idEnt);
                     }
+
                     var map = new IdMapping();
                     db.DeepCloneObjects(ids, idBtrCopy, map, false);
                 }
+
                 t.Commit();
             }
+
             return idBtrCopy;
         }
 
@@ -351,6 +381,7 @@ namespace AcadLib.Blocks
             var dbOrig = HostApplicationServices.WorkingDatabase;
             HostApplicationServices.WorkingDatabase = db;
             var lm = LayoutManager.Current;
+
             // Нужно проверить имена. Вдруг нет листа источника, или уже есть копируемый лист.
             lm.CopyLayout(layerSource, layerCopy);
             var idLayoutCopy = lm.GetLayoutId(layerCopy);
@@ -377,6 +408,7 @@ namespace AcadLib.Blocks
                 newLayoutId = lm.CreateLayout(newLayoutName);
                 existLayoutId = lm.GetLayoutId(existLayoutName);
             }
+
             var objIdCol = new ObjectIdCollection();
             ObjectId idBtrNewLayout;
             using (var newLayout = (Layout)newLayoutId.GetObject(OpenMode.ForWrite))
@@ -394,6 +426,7 @@ namespace AcadLib.Blocks
                     }
                 }
             }
+
             var idMap = new IdMapping();
             db.DeepCloneObjects(objIdCol, idBtrNewLayout, idMap, false);
             return newLayoutId;
@@ -408,13 +441,6 @@ namespace AcadLib.Blocks
         public static string GetValidNameForBlock([NotNull] string name)
         {
             return name.GetValidDbSymbolName();
-            //string res = name;
-            ////string testString = "<>/?\";:*|,='";
-            //Regex pattern = new Regex("[<>/?\";:*|,=']");
-            //res = pattern.Replace(name, ".");
-            //res = res.Replace('\\', '.');
-            //SymbolUtilityServices.ValidateSymbolName(res, false);
-            //return res;
         }
 
         /// <summary>
@@ -429,7 +455,7 @@ namespace AcadLib.Blocks
             return
                 blk1.OwnerId == blk2.OwnerId &&
                 blk1.Name == blk2.Name &&
-                Math.Abs(NetLib.DoubleExt.Round(blk1.Rotation,1) - NetLib.DoubleExt.Round(blk2.Rotation, 1)) < 0.001 &&
+                Math.Abs(NetLib.DoubleExt.Round(blk1.Rotation, 1) - NetLib.DoubleExt.Round(blk2.Rotation, 1)) < 0.001 &&
                 blk1.Position.IsEqualTo(blk2.Position, tol) &&
                 blk1.ScaleFactors.IsEqualTo(blk2.ScaleFactors, tol);
         }
@@ -473,9 +499,6 @@ namespace AcadLib.Blocks
             if (blRef.ScaleFactors != scale1)
             {
                 blRef.ScaleFactors = scale1;
-                //var matScale = blRef.ScaleFactors.GetMatrix();
-                //matScale = matScale.Inverse();
-                //mat = mat * matScale;
             }
 
             if (Math.Abs(blRef.Rotation) > 0.0001)
@@ -483,18 +506,6 @@ namespace AcadLib.Blocks
                 var matRotate = Matrix3d.Rotation(-blRef.Rotation, Vector3d.ZAxis, blRef.Position);
                 blRef.TransformBy(matRotate);
             }
-
-            //if (mat != Matrix3d.Identity)
-            //{
-            //    blRef.TransformBy(mat);
-            //    var boundsNew = blRef.GeometricExtents;
-            //    var vecMove = boundsBefore.MinPoint - boundsNew.MinPoint;
-            //    if (vecMove.Length != 0)
-            //    {
-            //        var move = Matrix3d.Displacement(vecMove);
-            //        blRef.TransformBy(move);
-            //    }
-            //}
         }
     }
 }

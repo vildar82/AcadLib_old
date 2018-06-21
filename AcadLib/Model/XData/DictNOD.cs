@@ -1,13 +1,13 @@
-﻿using AcadLib.XData;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using XData;
+
     /// <summary>
     /// Сохранение и извлечение значений из словаря чертежа
     /// Работает с HostApplicationServices.WorkingDatabase при каждом вызове метода сохранения или считывания значения.
@@ -18,7 +18,6 @@ namespace AcadLib
     {
         private readonly string dictInnerName;
         private readonly string dictName;
-        public Database Db { get; set; }
 
         [Obsolete("Используй `innerDict` конструктор.")]
         public DictNOD(string dictName)
@@ -42,6 +41,8 @@ namespace AcadLib
             Db = db;
         }
 
+        public Database Db { get; set; }
+
         /// <summary>
         /// Чтение списка записей для заданной XRecord по имени
         /// </summary>
@@ -53,10 +54,12 @@ namespace AcadLib
         {
             List<TypedValue> values;
             var recId = GetRec(recName, false);
-            if (recId.IsNull) return null;
+            if (recId.IsNull)
+                return null;
             using (var xRec = recId.Open(OpenMode.ForRead) as Xrecord)
             {
-                if (xRec == null) return null;
+                if (xRec == null)
+                    return null;
                 using (var data = xRec.Data)
                 {
                     if (data == null)
@@ -64,6 +67,7 @@ namespace AcadLib
                     values = data.AsArray().ToList();
                 }
             }
+
             return values;
         }
 
@@ -83,13 +87,15 @@ namespace AcadLib
 
             using (var xRec = idRec.Open(OpenMode.ForRead) as Xrecord)
             {
-                if (xRec == null) return res;
+                if (xRec == null)
+                    return res;
                 using (var data = xRec.Data)
                 {
                     if (data == null)
                         return res;
                     var values = data.AsArray();
-                    if (values.Length <= 0) return res;
+                    if (values.Length <= 0)
+                        return res;
                     try
                     {
                         return Convert.ToBoolean(values[0].Value);
@@ -104,6 +110,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return res;
         }
 
@@ -123,13 +130,15 @@ namespace AcadLib
 
             using (var xRec = idRec.Open(OpenMode.ForRead) as Xrecord)
             {
-                if (xRec == null) return res;
+                if (xRec == null)
+                    return res;
                 using (var data = xRec.Data)
                 {
                     if (data == null)
                         return res;
                     var values = data.AsArray();
-                    if (!values.Any()) return res;
+                    if (!values.Any())
+                        return res;
                     try
                     {
                         return (int)values[0].Value;
@@ -144,6 +153,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return res;
         }
 
@@ -163,13 +173,15 @@ namespace AcadLib
 
             using (var xRec = idRec.Open(OpenMode.ForRead) as Xrecord)
             {
-                if (xRec == null) return res;
+                if (xRec == null)
+                    return res;
                 using (var data = xRec.Data)
                 {
                     if (data == null)
                         return res;
                     var values = data.AsArray();
-                    if (!values.Any()) return res;
+                    if (!values.Any())
+                        return res;
                     try
                     {
                         return (double)values[0].Value;
@@ -184,6 +196,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return res;
         }
 
@@ -203,7 +216,8 @@ namespace AcadLib
 
             using (var xRec = idRec.Open(OpenMode.ForRead) as Xrecord)
             {
-                if (xRec == null) return res;
+                if (xRec == null)
+                    return res;
                 using (var data = xRec.Data)
                 {
                     if (data == null)
@@ -215,6 +229,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return res;
         }
 
@@ -233,6 +248,7 @@ namespace AcadLib
             {
                 res.Name = dicName;
             }
+
             return res;
         }
 
@@ -248,6 +264,7 @@ namespace AcadLib
             {
                 res.Name = dictInnerName;
             }
+
             return res;
         }
 
@@ -257,7 +274,8 @@ namespace AcadLib
         /// <param name="dicEd">Словарь для сохранения</param>
         public void Save([CanBeNull] DicED dicEd)
         {
-            if (string.IsNullOrEmpty(dicEd?.Name)) return;
+            if (string.IsNullOrEmpty(dicEd?.Name))
+                return;
             var dicId = GetDicPlugin(true);
             ExtDicHelper.SetDicED(dicId, dicEd);
         }
@@ -271,7 +289,8 @@ namespace AcadLib
         public void Save(bool value, [NotNull] string key)
         {
             var idRec = GetRec(key, true);
-            if (idRec.IsNull) return;
+            if (idRec.IsNull)
+                return;
 
             // ReSharper disable once IdOpenMode
             using (var xRec = (Xrecord)idRec.Open(OpenMode.ForWrite))
@@ -279,7 +298,8 @@ namespace AcadLib
                 using (var rb = new ResultBuffer())
                 {
                     rb.Add(new TypedValue((int)DxfCode.Bool, value));
-                    if (xRec != null) xRec.Data = rb;
+                    if (xRec != null)
+                        xRec.Data = rb;
                 }
             }
         }
@@ -302,7 +322,8 @@ namespace AcadLib
                 using (var rb = new ResultBuffer())
                 {
                     rb.Add(new TypedValue((int)DxfCode.Int32, number));
-                    if (xRec != null) xRec.Data = rb;
+                    if (xRec != null)
+                        xRec.Data = rb;
                 }
             }
         }
@@ -325,7 +346,8 @@ namespace AcadLib
                 using (var rb = new ResultBuffer())
                 {
                     rb.Add(new TypedValue((int)DxfCode.Real, number));
-                    if (xRec != null) xRec.Data = rb;
+                    if (xRec != null)
+                        xRec.Data = rb;
                 }
             }
         }
@@ -348,7 +370,8 @@ namespace AcadLib
                 using (var rb = new ResultBuffer())
                 {
                     rb.Add(new TypedValue((int)DxfCode.Text, text));
-                    if (xRec != null) xRec.Data = rb;
+                    if (xRec != null)
+                        xRec.Data = rb;
                 }
             }
         }
@@ -356,7 +379,8 @@ namespace AcadLib
         [Obsolete("Используй `DicED`")]
         public void Save([CanBeNull] List<TypedValue> values, string key)
         {
-            if (values == null || values.Count == 0) return;
+            if (values == null || values.Count == 0)
+                return;
             var idRec = GetRec(key, true);
             if (idRec.IsNull)
                 return;
@@ -366,7 +390,8 @@ namespace AcadLib
             {
                 using (var rb = new ResultBuffer(values.ToArray()))
                 {
-                    if (xRec != null) xRec.Data = rb;
+                    if (xRec != null)
+                        xRec.Data = rb;
                 }
             }
         }
@@ -385,6 +410,7 @@ namespace AcadLib
                 var dicPluginId = ExtDicHelper.GetDic(dicPikId, dictInnerName, create, false);
                 res = dicPluginId;
             }
+
             return res;
         }
 

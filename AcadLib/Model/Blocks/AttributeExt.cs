@@ -1,13 +1,12 @@
-﻿using AcadLib.Blocks;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-// ReSharper disable once CheckNamespace
-namespace AcadLib.Extensions
+﻿namespace AcadLib.Extensions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Blocks;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Расширенные методы AttributeReference
     /// </summary>
@@ -16,26 +15,32 @@ namespace AcadLib.Extensions
     {
         public static IEnumerable<AttributeInfo> EnumerateAttributes([CanBeNull] this BlockReference blRef)
         {
-            if (blRef == null) yield break;
+            if (blRef == null)
+                yield break;
 
             if (blRef.AttributeCollection != null)
             {
                 foreach (ObjectId idAtr in blRef.AttributeCollection)
                 {
-                    if (!idAtr.IsValidEx()) continue;
+                    if (!idAtr.IsValidEx())
+                        continue;
                     var atr = idAtr.GetObject(OpenMode.ForRead) as AttributeReference;
-                    if (atr == null) continue;
+                    if (atr == null)
+                        continue;
                     yield return new AttributeInfo(atr);
                 }
             }
+
             var btr = (BlockTableRecord)blRef.BlockTableRecord.GetObject(OpenMode.ForRead);
             if (btr.HasAttributeDefinitions)
             {
                 foreach (var id in btr)
                 {
-                    if (!id.IsValidEx()) continue;
+                    if (!id.IsValidEx())
+                        continue;
                     var attdef = id.GetObject(OpenMode.ForRead) as AttributeDefinition;
-                    if (attdef == null) continue;
+                    if (attdef == null)
+                        continue;
                     if (attdef.Constant)
                         yield return new AttributeInfo(attdef);
                 }
@@ -61,17 +66,21 @@ namespace AcadLib.Extensions
             {
                 foreach (ObjectId id in blockRef.AttributeCollection)
                 {
-                    if (id.IsValidEx()) continue;
+                    if (id.IsValidEx())
+                        continue;
                     yield return (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
                 }
             }
+
             if (btr.HasAttributeDefinitions)
             {
                 foreach (var id in btr)
                 {
-                    if (!id.IsValidEx()) continue;
+                    if (!id.IsValidEx())
+                        continue;
                     var attdef = tr.GetObject(id, OpenMode.ForRead) as AttributeDefinition;
-                    if (attdef == null) continue;
+                    if (attdef == null)
+                        continue;
                     if (attdef.Constant)
                         yield return attdef;
                 }
@@ -104,8 +113,8 @@ namespace AcadLib.Extensions
         {
             if (Math.Abs(atr.Rotation) > 0.0001)
             {
-                // ReSharper disable once UpgradeOpen
-                if (!atr.IsWriteEnabled) atr.UpgradeOpen();
+                if (!atr.IsWriteEnabled)
+                    atr.UpgradeOpen();
                 atr.Rotation = 0;
             }
         }
@@ -117,6 +126,7 @@ namespace AcadLib.Extensions
                 case AttributeDefinition attdef: return attdef.Tag;
                 case AttributeReference attref: return attref.Tag;
             }
+
             throw new ArgumentException("requires an AttributeDefintion or AttributeReference");
         }
     }

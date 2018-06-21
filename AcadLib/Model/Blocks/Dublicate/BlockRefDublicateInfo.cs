@@ -1,11 +1,11 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-namespace AcadLib.Blocks.Dublicate
+﻿namespace AcadLib.Blocks.Dublicate
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Данные о вхождении блока
     /// </summary>
@@ -14,16 +14,8 @@ namespace AcadLib.Blocks.Dublicate
     {
         public const double pi2 = 2 * Math.PI;
         public static double toleranceRotateNear360 = pi2 - CheckDublicateBlocks.Tolerance.EqualVector;
-        public int CountDublic { get; set; }
-        public List<BlockRefDublicateInfo> Dublicates { get; set; }
-        public ObjectId IdBlRef { get; set; }
-        public string Name { get; set; }
-        public Point3d Position { get; set; }
-        public double Rotation { get; set; }
-        public Matrix3d Transform { get; set; }
-        public Matrix3d TransformToModel { get; set; }
 
-        //public Extents3d? Bounds { get; set; }
+        // public Extents3d? Bounds { get; set; }
         public BlockRefDublicateInfo([NotNull] BlockReference blRef, Matrix3d transToModel, double rotateToModel)
         {
             IdBlRef = blRef.Id;
@@ -34,12 +26,28 @@ namespace AcadLib.Blocks.Dublicate
             Name = blRef.GetEffectiveName();
 #pragma warning restore 618
             Rotation = getRotateToModel(blRef.Rotation, rotateToModel);
-            //Bounds = blRef.Bounds;
         }
+
+        public int CountDublic { get; set; }
+
+        public List<BlockRefDublicateInfo> Dublicates { get; set; }
+
+        public ObjectId IdBlRef { get; set; }
+
+        public string Name { get; set; }
+
+        public Point3d Position { get; set; }
+
+        public double Rotation { get; set; }
+
+        public Matrix3d Transform { get; set; }
+
+        public Matrix3d TransformToModel { get; set; }
 
         public bool Equals(BlockRefDublicateInfo other)
         {
-            if (other == null) return false;
+            if (other == null)
+                return false;
             var rotDiff = Math.Abs(Rotation - other.Rotation);
             return Name.Equals(other.Name) &&
                    Position.IsEqualTo(other.Position, CheckDublicateBlocks.Tolerance) &&
@@ -47,11 +55,6 @@ namespace AcadLib.Blocks.Dublicate
                        rotDiff < CheckDublicateBlocks.Tolerance.EqualVector ||
                        rotDiff > toleranceRotateNear360
                    );
-            //(
-            //    (Bounds.HasValue && other.Bounds.HasValue)
-            //    && Bounds.Value.IsEqualTo(other.Bounds.Value, CheckDublicateBlocks.Tolerance)
-            //);
-            //TransformToModel.Equals (other.TransformToModel);
         }
 
         public override bool Equals(object obj)
@@ -60,12 +63,14 @@ namespace AcadLib.Blocks.Dublicate
             {
                 return Equals(info);
             }
+
             return false;
         }
 
         public bool Equals(BlockRefDublicateInfo x, BlockRefDublicateInfo y)
         {
-            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, y))
+                return true;
             return x != null && x.Equals(y);
         }
 
@@ -76,7 +81,6 @@ namespace AcadLib.Blocks.Dublicate
 
         public override int GetHashCode()
         {
-            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return Name.GetHashCode();
         }
 
@@ -87,6 +91,7 @@ namespace AcadLib.Blocks.Dublicate
             {
                 res -= pi2;
             }
+
             return res;
         }
     }

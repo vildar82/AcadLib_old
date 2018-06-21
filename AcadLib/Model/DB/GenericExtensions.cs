@@ -1,17 +1,18 @@
-﻿using System.Linq;
-using AcadLib.Blocks;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace System.Collections.Generic
 {
+    using AcadLib.Blocks;
+    using JetBrains.Annotations;
+    using Linq;
+
     [PublicAPI]
     public static class GenericExtensions
     {
         // Applies the given Action to each element of the collection (mimics the F# Seq.iter function).
         public static void Iterate<T>([NotNull] this IEnumerable<T> collection, Action<T> action)
         {
-            foreach (var item in collection) action(item);
+            foreach (var item in collection)
+                action(item);
         }
 
         // Applies the given Action to each element of the collection (mimics the F# Seq.iteri function).
@@ -19,7 +20,8 @@ namespace System.Collections.Generic
         public static void Iterate<T>([NotNull] this IEnumerable<T> collection, Action<T, int> action)
         {
             var i = 0;
-            foreach (var item in collection) action(item, i++);
+            foreach (var item in collection)
+                action(item, i++);
         }
 
         // Creates a System.Data.DataTable from a BlockAttribute collection.
@@ -30,7 +32,8 @@ namespace System.Collections.Generic
             dTable.Columns.Add("Name", typeof(string));
             dTable.Columns.Add("Quantity", typeof(int));
             blockAtts
-                .GroupBy(blk => blk, (blk, blks) => new { Block = blk, Count = blks.Count() }, new BlockAttributeEqualityComparer())
+                .GroupBy(blk => blk, (blk, blks) => new { Block = blk, Count = blks.Count() },
+                    new BlockAttributeEqualityComparer())
                 .Iterate(row =>
                 {
                     var dRow = dTable.Rows.Add(row.Block.Name, row.Count);

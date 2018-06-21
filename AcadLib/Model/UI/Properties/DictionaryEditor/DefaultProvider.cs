@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.UI.Designer
 {
+    using System;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Used to specify whether the requested default value is to be used as Key or Value of a dictionary entry
     /// </summary>
@@ -35,6 +35,7 @@ namespace AcadLib.UI.Designer
         /// <returns>Returns a value of type T to be used as the default</returns>
         /// <remarks>If the default value is to be used as Key it may NOT be null (because the Dictionary doesn't allow null as Key)</remarks>
         [CanBeNull]
+
         // ReSharper disable once UnusedParameter.Global
         public virtual T GetDefault(DefaultUsage usage)
         {

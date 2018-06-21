@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.Core.EntityClient;
-using System.Data.SqlClient;
-using System.Linq;
-#if Utils
-using UtilsEditUsers.Model.User.DB;
-#else
-using AcadLib.Model.User.DB;    
-#endif
-using JetBrains.Annotations;
-
-namespace AcadLib.User.DB
+﻿namespace AcadLib.User.DB
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity.Core.EntityClient;
+    using System.Data.SqlClient;
+    using System.Linq;
+    using JetBrains.Annotations;
+#if Utils
+    using UtilsEditUsers.Model.User.DB;
+#else
+    using AcadLib.Model.User.DB;
+#endif
+
     [PublicAPI]
     public class DbUsers : IDisposable
     {
@@ -27,11 +27,11 @@ namespace AcadLib.User.DB
                 UserID = "CAD_AllUsers",
                 Password = "qwerty!2345",
             };
-            var conBuilder = new EntityConnectionStringBuilder 
+            var conBuilder = new EntityConnectionStringBuilder
             {
                 Provider = "System.Data.SqlClient",
                 ProviderConnectionString = sqlBuilder.ToString(),
-                Metadata =  @"res://*/Model.User.DB.Users.csdl|res://*/Model.User.DB.Users.ssdl|res://*/Model.User.DB.Users.msl"
+                Metadata = @"res://*/Model.User.DB.Users.csdl|res://*/Model.User.DB.Users.ssdl|res://*/Model.User.DB.Users.msl"
             };
             var conStr = conBuilder.ToString();
             entities = new CAD_AutoCADEntities(new EntityConnection(conStr));

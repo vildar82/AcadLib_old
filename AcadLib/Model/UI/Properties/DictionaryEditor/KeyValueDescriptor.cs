@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.ComponentModel;
-using System.Drawing.Design;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.UI.Designer
 {
+    using System;
+    using System.ComponentModel;
+    using System.Drawing.Design;
+    using JetBrains.Annotations;
+
     internal class KeyValueDescriptor : PropertyDescriptor
     {
         private readonly PropertyDescriptor _pd;
@@ -13,14 +13,33 @@ namespace AcadLib.UI.Designer
         private readonly Type m_AttributeProviderType;
         private readonly Type m_ConverterType;
         private readonly Type m_EditorType;
+
+        public KeyValueDescriptor(
+            [NotNull] PropertyDescriptor pd,
+            Type converterType,
+            Type editorType,
+            Type attributeProviderType,
+            string displayName)
+            : base(pd)
+        {
+            _pd = pd;
+
+            m_ConverterType = converterType;
+            m_EditorType = editorType;
+            m_AttributeProviderType = attributeProviderType;
+            DisplayName = displayName;
+        }
+
         public override AttributeCollection Attributes
         {
-            get {
+            get
+            {
                 if (m_AttributeProviderType != null)
                 {
                     return (Activator.CreateInstance(m_AttributeProviderType) as AttributeProvider)?.GetAttributes(
                                PropertyType) ?? throw new InvalidOperationException();
                 }
+
                 return TypeDescriptor.GetAttributes(PropertyType);
             }
         }
@@ -29,7 +48,8 @@ namespace AcadLib.UI.Designer
 
         public override TypeConverter Converter
         {
-            get {
+            get
+            {
                 if (m_ConverterType != null)
                     return Activator.CreateInstance(m_ConverterType) as TypeConverter;
                 return TypeDescriptor.GetConverter(PropertyType);
@@ -41,17 +61,6 @@ namespace AcadLib.UI.Designer
         public override bool IsReadOnly => _pd.IsReadOnly;
 
         public override Type PropertyType => _pd.PropertyType;
-
-        public KeyValueDescriptor([NotNull] PropertyDescriptor pd, Type converterType, Type editorType, Type attributeProviderType, string displayName)
-                                                            : base(pd)
-        {
-            _pd = pd;
-
-            m_ConverterType = converterType;
-            m_EditorType = editorType;
-            m_AttributeProviderType = attributeProviderType;
-            DisplayName = displayName;
-        }
 
         public override bool CanResetValue(object component)
         {

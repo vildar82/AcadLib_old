@@ -1,18 +1,19 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.GraphicsInterface;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-
-namespace AcadLib.Visual
+﻿namespace AcadLib.Visual
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.GraphicsInterface;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Визуализация графики - через TransientManager
     /// </summary>
     [PublicAPI]
     public abstract class VisualTransient : VisualBase
     {
-        public static readonly Autodesk.AutoCAD.Geometry.IntegerCollection vps = new Autodesk.AutoCAD.Geometry.IntegerCollection();
+        public static readonly Autodesk.AutoCAD.Geometry.IntegerCollection
+            vps = new Autodesk.AutoCAD.Geometry.IntegerCollection();
         protected List<Entity> draws;
         private readonly Document doc = AcadHelper.Doc;
 
@@ -55,7 +56,8 @@ namespace AcadLib.Visual
 
         protected override void EraseDraws()
         {
-            if (draws == null || draws.Count == 0) return;
+            if (draws == null || draws.Count == 0)
+                return;
             if (doc == AcadHelper.Doc)
             {
                 var tm = TransientManager.CurrentTransientManager;
@@ -64,6 +66,7 @@ namespace AcadLib.Visual
                     tm?.EraseTransient(item, vps);
                     item.Dispose();
                 }
+
                 draws = null;
             }
             else
@@ -72,13 +75,15 @@ namespace AcadLib.Visual
                 {
                     item.Dispose();
                 }
+
                 draws = null;
             }
         }
 
         private void DisposeDraws()
         {
-            if (draws == null) return;
+            if (draws == null)
+                return;
             try
             {
                 EraseDraws();

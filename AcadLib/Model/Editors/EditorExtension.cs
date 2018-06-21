@@ -1,17 +1,18 @@
-﻿using AcadLib.Editors;
-using Autodesk.AutoCAD.ApplicationServices.Core;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.EditorInput
 {
+    using AcadLib.Editors;
+    using ApplicationServices.Core;
+    using DatabaseServices;
+    using Geometry;
+    using JetBrains.Annotations;
+
     public static class EditorExtension
     {
         public static void Zoom([CanBeNull] this Editor ed, Extents3d ext)
         {
-            if (ed == null) return;
+            if (ed == null)
+                return;
             using (var view = ed.GetCurrentView())
             {
                 ext.TransformBy(view.WorldToEye());
@@ -26,11 +27,12 @@ namespace Autodesk.AutoCAD.EditorInput
 
         public static void ZoomExtents([CanBeNull] this Editor ed)
         {
-            if (ed == null) return;
+            if (ed == null)
+                return;
             var db = ed.Document.Database;
-            var ext = (short)Application.GetSystemVariable("cvport") == 1 ?
-                new Extents3d(db.Pextmin, db.Pextmax) :
-                new Extents3d(db.Extmin, db.Extmax);
+            var ext = (short)Application.GetSystemVariable("cvport") == 1
+                ? new Extents3d(db.Pextmin, db.Pextmax)
+                : new Extents3d(db.Extmin, db.Extmax);
             ed.Zoom(ext);
         }
     }

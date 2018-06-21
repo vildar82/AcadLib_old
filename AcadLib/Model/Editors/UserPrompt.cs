@@ -1,15 +1,15 @@
-﻿using AcadLib.Jigs;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using AcadLib;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.EditorInput
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AcadLib;
+    using AcadLib.Jigs;
+    using DatabaseServices;
+    using Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class UserPrompt
     {
@@ -32,6 +32,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 return res.Value;
             }
+
             throw new OperationCanceledException();
         }
 
@@ -49,6 +50,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 return res.Value.TransformBy(ed.CurrentUserCoordinateSystem);
             }
+
             throw new OperationCanceledException();
         }
 
@@ -61,7 +63,8 @@ namespace Autodesk.AutoCAD.EditorInput
         {
             var jigRect = new RectangleJig(len, height);
             var res = ed.Drag(jigRect);
-            if (res.Status != PromptStatus.OK) throw new OperationCanceledException();
+            if (res.Status != PromptStatus.OK)
+                throw new OperationCanceledException();
             return jigRect.Position;
         }
 
@@ -86,6 +89,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 throw new OperationCanceledException();
             }
+
             return extentsPrompted;
         }
 
@@ -100,13 +104,14 @@ namespace Autodesk.AutoCAD.EditorInput
         public static List<ObjectId> Select([NotNull] this Editor ed, string msg)
         {
             var selOpt = new PromptSelectionOptions();
-            selOpt.Keywords.Add(AcadHelper.IsRussianAcad() ? "Все" : "ALL" );
+            selOpt.Keywords.Add(AcadHelper.IsRussianAcad() ? "Все" : "ALL");
             selOpt.MessageForAdding = msg + selOpt.Keywords.GetDisplayString(true);
             var selRes = ed.GetSelection(selOpt);
             if (selRes.Status == PromptStatus.OK)
             {
                 return selRes.Value.GetObjectIds().ToList();
             }
+
             throw new OperationCanceledException();
         }
 
@@ -116,15 +121,13 @@ namespace Autodesk.AutoCAD.EditorInput
             var selOpt = new PromptSelectionOptions();
             selOpt.Keywords.Add(AcadHelper.IsRussianAcad() ? "Все" : "ALL");
             selOpt.MessageForAdding = msg + selOpt.Keywords.GetDisplayString(true);
-            selOpt.KeywordInput += (s, e) =>
-            {
-                selectAll();
-            };
+            selOpt.KeywordInput += (s, e) => { selectAll(); };
             var selRes = ed.GetSelection(selOpt);
             if (selRes.Status == PromptStatus.OK)
             {
                 return selRes.Value.GetObjectIds().ToList();
             }
+
             throw new OperationCanceledException();
         }
 
@@ -138,6 +141,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 return selRes.Value.GetObjectIds().ToList();
             }
+
             throw new OperationCanceledException();
         }
 
@@ -162,6 +166,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 return selRes.Value.GetObjectIds().ToList();
             }
+
             throw new OperationCanceledException();
         }
 
@@ -184,6 +189,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 throw new OperationCanceledException();
             }
+
             return selRes.ObjectId;
         }
 
@@ -206,6 +212,7 @@ namespace Autodesk.AutoCAD.EditorInput
             {
                 throw new OperationCanceledException();
             }
+
             return selRes.ObjectId;
         }
     }

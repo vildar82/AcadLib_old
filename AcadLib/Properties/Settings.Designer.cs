@@ -105,30 +105,6 @@ namespace AcadLib.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public double PalettePropsHelpHeight {
-            get {
-                return ((double)(this["PalettePropsHelpHeight"]));
-            }
-            set {
-                this["PalettePropsHelpHeight"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool PalettePropsHelpVisible {
-            get {
-                return ((bool)(this["PalettePropsHelpVisible"]));
-            }
-            set {
-                this["PalettePropsHelpVisible"] = value;
-            }
-        }
-        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"metadata=res://*/Model.User.DB.Users.csdl|res://*/Model.User.DB.Users.ssdl|res://*/Model.User.DB.Users.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=vpp-sql04;initial catalog=CAD_AutoCAD;persist security info=True;user id=CAD_AllUsers;password=qwerty!2345;MultipleActiveResultSets=True;App=EntityFramework&quot;"" providerName=""System.Data.EntityClient")]

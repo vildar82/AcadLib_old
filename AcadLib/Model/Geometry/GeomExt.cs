@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// AutoCAD coordinate systems enumeration.
     /// </summary>
@@ -16,7 +16,7 @@ namespace AcadLib.Geometry
         WCS = 0,
 
         /// <summary>
-        /// Current User Coordinate System. 
+        /// Current User Coordinate System.
         /// </summary>
         UCS,
 
@@ -77,8 +77,10 @@ namespace AcadLib.Geometry
                         var flat = crv.GetProjectedCurve(plane, direction);
                         newCol.Add(flat);
                     }
+
                     obj.Dispose();
                 }
+
                 var psc = new PolylineSegmentCollection();
                 for (var i = 0; i < newCol.Count; i++)
                 {
@@ -87,6 +89,7 @@ namespace AcadLib.Geometry
                         psc.AddRange(new PolylineSegmentCollection((Ellipse)newCol[i]));
                         continue;
                     }
+
                     var crv = (Curve)newCol[i];
                     var start = crv.StartPoint;
                     var end = crv.EndPoint;
@@ -96,9 +99,12 @@ namespace AcadLib.Geometry
                         var angle = arc.Center.GetVectorTo(start).GetAngleTo(arc.Center.GetVectorTo(end), arc.Normal);
                         bulge = Math.Tan(angle / 4.0);
                     }
+
                     psc.Add(new PolylineSegment(start.Convert2d(plane), end.Convert2d(plane), bulge));
                 }
-                foreach (DBObject o in newCol) o.Dispose();
+
+                foreach (DBObject o in newCol)
+                    o.Dispose();
                 var projectedPline = psc.Join(new Tolerance(1e-9, 1e-9))[0].ToPolyline();
                 projectedPline.Normal = direction;
                 projectedPline.Elevation =
@@ -109,12 +115,13 @@ namespace AcadLib.Geometry
                     projectedPline.Elevation =
                         plane.PointOnPlane.TransformBy(Matrix3d.WorldToPlane(new Plane(Point3d.Origin, direction))).Z;
                 }
+
                 return projectedPline;
             }
         }
 
         /// <summary>
-        /// Creates a new Polyline that is the result of projecting the transformed MinPoint and MaxPoint of 'extents' 
+        /// Creates a new Polyline that is the result of projecting the transformed MinPoint and MaxPoint of 'extents'
         /// parallel to 'direction' onto 'plane' and returns it.
         /// </summary>
         /// <param name="extents">The Extents3d of a transformed from World to dirPlane Polyline.</param>

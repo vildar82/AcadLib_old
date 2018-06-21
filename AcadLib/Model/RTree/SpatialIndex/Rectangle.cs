@@ -1,4 +1,4 @@
-//   Rectangle.java
+// Rectangle.java
 //   Java Spatial Index Library
 //   Copyright (C) 2002 Infomatiq Limited
 //
@@ -15,23 +15,21 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-
 // Ported to C# By Dror Gluska, April 9th, 2009
-
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Text;
 
 namespace AcadLib.RTree.SpatialIndex
 {
+    using System;
+    using System.Text;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /**
      * Currently hardcoded to 2 dimensions, but could be extended.
      *
      * @author  aled@sourceforge.net
      * @version 1.0b2p1
      */
-
     [PublicAPI]
 #pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public class Rectangle
@@ -59,7 +57,6 @@ namespace AcadLib.RTree.SpatialIndex
          * @param x2 coordinate of the opposite corner
          * @param y2 (see x2)
          */
-
         public Rectangle(double x1, double y1, double x2, double y2, double z1, double z2)
         {
             _min = new double[DIMENSIONS];
@@ -73,14 +70,14 @@ namespace AcadLib.RTree.SpatialIndex
          * @param min array containing the minimum value for each dimension; ie { min(x), min(y) }
          * @param max array containing the maximum value for each dimension; ie { max(x), max(y) }
          */
-
         public Rectangle([NotNull] double[] min, [NotNull] double[] max)
         {
             if (min.Length != DIMENSIONS || max.Length != DIMENSIONS)
             {
                 throw new Exception("Error in Rectangle constructor: " +
-                          "min and max arrays must be of length " + DIMENSIONS);
+                                    "min and max arrays must be of length " + DIMENSIONS);
             }
+
             _min = new double[DIMENSIONS];
             _max = new double[DIMENSIONS];
             Set(min, max);
@@ -104,7 +101,6 @@ namespace AcadLib.RTree.SpatialIndex
           * @param x2 coordinate of the opposite corner
           * @param y2 (see x2)
           */
-
 #pragma warning disable 659
 
         public override bool Equals(object obj)
@@ -114,12 +110,14 @@ namespace AcadLib.RTree.SpatialIndex
             if (obj?.GetType() == typeof(Rectangle))
             {
                 var r = (Rectangle)obj;
-                //#warning possible didn't convert properly
+
+                // #warning possible didn't convert properly
                 if (CompareArrays(r._min, _min) && CompareArrays(r._max, _max))
                 {
                     equals = true;
                 }
             }
+
             return equals;
         }
 
@@ -135,8 +133,10 @@ namespace AcadLib.RTree.SpatialIndex
                 {
                     sb.Append(", ");
                 }
+
                 sb.Append(_min[i]);
             }
+
             sb.Append("), (");
 
             // max coordinates
@@ -146,8 +146,10 @@ namespace AcadLib.RTree.SpatialIndex
                 {
                     sb.Append(", ");
                 }
+
                 sb.Append(_max[i]);
             }
+
             sb.Append(')');
             return sb.ToString();
         }
@@ -160,6 +162,7 @@ namespace AcadLib.RTree.SpatialIndex
                 {
                     _min[i] = r._min[i];
                 }
+
                 if (r._max[i] > _max[i])
                 {
                     _max[i] = r._max[i];
@@ -172,19 +175,6 @@ namespace AcadLib.RTree.SpatialIndex
             return (_max[0] - _min[0]) * (_max[1] - _min[1]);
         }
 
-        private static bool CompareArrays([CanBeNull] double[] a1, [CanBeNull] double[] a2)
-        {
-            if (a1 == null || a2 == null)
-                return false;
-            if (a1.Length != a2.Length)
-                return false;
-
-            for (var i = 0; i < a1.Length; i++)
-                if (Math.Abs(a1[i] - a2[i]) > 0.0001)
-                    return false;
-            return true;
-        }
-
         internal bool ContainedBy(Rectangle r)
         {
             for (var i = 0; i < DIMENSIONS; i++)
@@ -194,6 +184,7 @@ namespace AcadLib.RTree.SpatialIndex
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -206,6 +197,7 @@ namespace AcadLib.RTree.SpatialIndex
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -227,6 +219,7 @@ namespace AcadLib.RTree.SpatialIndex
                     distanceSquared += (greatestMin - leastMax) * (greatestMin - leastMax);
                 }
             }
+
             return Math.Sqrt(distanceSquared);
         }
 
@@ -242,6 +235,7 @@ namespace AcadLib.RTree.SpatialIndex
                     distanceSquared += (greatestMin - leastMax) * (greatestMin - leastMax);
                 }
             }
+
             return Math.Sqrt(distanceSquared);
         }
 
@@ -256,8 +250,10 @@ namespace AcadLib.RTree.SpatialIndex
                     distanceSquared = tempDistance * tempDistance;
                     break;
                 }
+
                 tempDistance = _min[dimension] - point;
             }
+
             return distanceSquared;
         }
 
@@ -270,13 +266,14 @@ namespace AcadLib.RTree.SpatialIndex
                     return true;
                 }
             }
+
             return false;
         }
 
         internal double Enlargement([NotNull] Rectangle r)
         {
             var enlargedArea = (Math.Max(_max[0], r._max[0]) - Math.Min(_min[0], r._min[0])) *
-                                 (Math.Max(_max[1], r._max[1]) - Math.Min(_min[1], r._min[1]));
+                               (Math.Max(_max[1], r._max[1]) - Math.Min(_min[1], r._min[1]));
 
             return enlargedArea - Area();
         }
@@ -288,8 +285,9 @@ namespace AcadLib.RTree.SpatialIndex
             for (var i = 0; i < DIMENSIONS; i++)
             {
                 distanceSquared += Math.Max(r._min[i], r._max[i]);
-                //#warning possible didn't convert properly
-                //distanceSquared += Math.Max(distanceSquared(i, r.min[i]), distanceSquared(i, r.max[i]));
+
+                // #warning possible didn't convert properly
+                // distanceSquared += Math.Max(distanceSquared(i, r.min[i]), distanceSquared(i, r.max[i]));
             }
 
             return Math.Sqrt(distanceSquared);
@@ -306,6 +304,7 @@ namespace AcadLib.RTree.SpatialIndex
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -337,6 +336,19 @@ namespace AcadLib.RTree.SpatialIndex
             var union = Copy();
             union.Add(r);
             return union;
+        }
+
+        private static bool CompareArrays([CanBeNull] double[] a1, [CanBeNull] double[] a2)
+        {
+            if (a1 == null || a2 == null)
+                return false;
+            if (a1.Length != a2.Length)
+                return false;
+
+            for (var i = 0; i < a1.Length; i++)
+                if (Math.Abs(a1[i] - a2[i]) > 0.0001)
+                    return false;
+            return true;
         }
     }
 }

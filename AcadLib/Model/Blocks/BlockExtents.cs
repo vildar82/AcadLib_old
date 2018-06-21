@@ -1,12 +1,11 @@
-﻿using System.Linq;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using NetLib;
-using General = AcadLib.General;
-
-// ReSharper disable once CheckNamespace
-namespace Autodesk.AutoCAD.DatabaseServices
+﻿namespace Autodesk.AutoCAD.DatabaseServices
 {
+    using System.Linq;
+    using Geometry;
+    using JetBrains.Annotations;
+    using NetLib;
+    using General = AcadLib.General;
+
     [PublicAPI]
     public static class BlockExtents
     {
@@ -21,7 +20,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             if (!blRef.Position.Z.IsEqual6(0))
             {
-                if (!blRef.IsWriteEnabled) blRef = (BlockReference)blRef.Id.GetObject(OpenMode.ForWrite, false, true);
+                if (!blRef.IsWriteEnabled)
+                    blRef = (BlockReference)blRef.Id.GetObject(OpenMode.ForWrite, false, true);
                 blRef.Position = new Point3d(blRef.Position.X, blRef.Position.Y, 0);
             }
         }
@@ -65,18 +65,28 @@ namespace Autodesk.AutoCAD.DatabaseServices
         public static Extents3d GeometricExtentsVisible([NotNull] this BlockReference blRef)
         {
 #pragma warning disable 618
-            using (var btr = (BlockTableRecord) blRef.BlockTableRecord.Open(OpenMode.ForRead))
+            using (var btr = (BlockTableRecord)blRef.BlockTableRecord.Open(OpenMode.ForRead))
 #pragma warning restore 618
             {
                 var ext = new Extents3d();
                 foreach (var extents3D in btr.GetObjects<Entity>().Where(w => w.Visible && w.Bounds.HasValue)
-                    // ReSharper disable once PossibleInvalidOperationException
                     .Select(s => s.Bounds.Value))
                 {
                     ext.AddExtents(extents3D);
                 }
+
                 return ext;
             }
+        }
+
+        /// <summary>
+        /// Определят не пустой ли габаритный контейнер.
+        /// </summary>
+        /// <param name="ext">Габаритный контейнер.</param>
+        /// <returns></returns>
+        public static bool IsEmptyExt(ref Extents3d ext)
+        {
+            return ext.MinPoint.DistanceTo(ext.MaxPoint) < Tolerance.Global.EqualPoint;
         }
 
         /// <summary>
@@ -98,9 +108,9 @@ namespace Autodesk.AutoCAD.DatabaseServices
                     {
                         // Пропускаем все тексты.
                         if (id.ObjectClass.IsDerivedFrom(General.ClassDbTextRX) ||
-                           id.ObjectClass.IsDerivedFrom(General.ClassMTextRX) ||
-                           id.ObjectClass.IsDerivedFrom(General.ClassMLeaderRX) ||
-                           id.ObjectClass.IsDerivedFrom(General.ClassDimension))
+                            id.ObjectClass.IsDerivedFrom(General.ClassMTextRX) ||
+                            id.ObjectClass.IsDerivedFrom(General.ClassMLeaderRX) ||
+                            id.ObjectClass.IsDerivedFrom(General.ClassDimension))
                         {
                             continue;
                         }
@@ -141,7 +151,10 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
                         if (IsEmptyExt(ref ext))
                         {
-                            try { ext = enTr.GeometricExtents; }
+                            try
+                            {
+                                ext = enTr.GeometricExtents;
+                            }
                             catch
                             {
                                 // ignored
@@ -149,15 +162,20 @@ namespace Autodesk.AutoCAD.DatabaseServices
                         }
                         else
                         {
-                            try { ext.AddExtents(enTr.GeometricExtents); }
+                            try
+                            {
+                                ext.AddExtents(enTr.GeometricExtents);
+                            }
                             catch
                             {
                                 // ignored
                             }
                         }
+
                         return ext;
                     }
                 }
+
                 try
                 {
                     var curExt = en.GeometricExtents;
@@ -171,19 +189,11 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 {
                     // ignored
                 }
+
                 return ext;
             }
-            return ext;
-        }
 
-        /// <summary>
-        /// Определят не пустой ли габаритный контейнер.
-        /// </summary>
-        /// <param name="ext">Габаритный контейнер.</param>
-        /// <returns></returns>
-        public static bool IsEmptyExt(ref Extents3d ext)
-        {
-            return ext.MinPoint.DistanceTo(ext.MaxPoint) < Tolerance.Global.EqualPoint;
+            return ext;
         }
     }
 }

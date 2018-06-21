@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     [Obsolete]
     public static class EnumExt

@@ -1,14 +1,52 @@
-﻿using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Represents a triangle in the 3d space. It can be viewed as a structure consisting of three Point3d.
     /// </summary>
     public class Triangle3d : Triangle<Point3d>
     {
+        /// <summary>
+        /// Initializes a new instance of Triangle3d; that is empty.
+        /// </summary>
+        public Triangle3d()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle3d that contains elements copied from the specified array.
+        /// </summary>
+        /// <param name="pts">The Point3d array whose elements are copied to the new Triangle3d.</param>
+        public Triangle3d([NotNull] Point3d[] pts) : base(pts)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle3d that contains the specified elements.
+        /// </summary>
+        /// <param name="a">The first vertex of the new Triangle3d (origin).</param>
+        /// <param name="b">The second vertex of the new Triangle3d (2nd vertex).</param>
+        /// <param name="c">The third vertex of the new Triangle3d (3rd vertex).</param>
+        public Triangle3d(Point3d a, Point3d b, Point3d c) : base(a, b, c)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle3d according to an origin and two vectors.
+        /// </summary>
+        /// <param name="org">The origin of the Triangle3d (1st vertex).</param>
+        /// <param name="v1">The vector from origin to the second vertex.</param>
+        /// <param name="v2">The vector from origin to the third vertex.</param>
+        public Triangle3d(Point3d org, Vector3d v1, Vector3d v2)
+        {
+            _pts[0] = _pt0 = org;
+            _pts[0] = _pt1 = org + v1;
+            _pts[0] = _pt2 = org + v2;
+        }
+
         /// <summary>
         /// Gets the triangle area.
         /// </summary>
@@ -27,7 +65,8 @@ namespace AcadLib.Geometry
         [CanBeNull]
         public CircularArc3d CircumscribedCircle
         {
-            get {
+            get
+            {
                 var ca2d = Convert2d().CircumscribedCircle;
                 return ca2d == null ? null : new CircularArc3d(ca2d.Center.Convert3d(GetPlane()), Normal, ca2d.Radius);
             }
@@ -43,7 +82,8 @@ namespace AcadLib.Geometry
         /// </summary>
         public Vector3d GreatestSlope
         {
-            get {
+            get
+            {
                 var norm = Normal;
                 if (norm.IsParallelTo(Vector3d.ZAxis))
                     return new Vector3d(0.0, 0.0, 0.0);
@@ -58,7 +98,8 @@ namespace AcadLib.Geometry
         /// </summary>
         public Vector3d Horizontal
         {
-            get {
+            get
+            {
                 var norm = Normal;
                 return norm.IsParallelTo(Vector3d.ZAxis) ? Vector3d.XAxis : new Vector3d(-norm.Y, norm.X, 0.0).GetNormal();
             }
@@ -70,7 +111,8 @@ namespace AcadLib.Geometry
         [CanBeNull]
         public CircularArc3d InscribedCircle
         {
-            get {
+            get
+            {
                 var ca2d = Convert2d().InscribedCircle;
                 return ca2d == null ? null : new CircularArc3d(ca2d.Center.Convert3d(GetPlane()), Normal, ca2d.Radius);
             }
@@ -91,7 +133,8 @@ namespace AcadLib.Geometry
         /// </summary>
         public double SlopePerCent
         {
-            get {
+            get
+            {
                 var norm = Normal;
                 return Math.Abs(norm.Z) < 0.0001
                     ? double.PositiveInfinity
@@ -105,50 +148,32 @@ namespace AcadLib.Geometry
         /// </summary>
         public Matrix3d SlopeUCS
         {
-            get {
+            get
+            {
                 var origin = Centroid;
                 var zaxis = Normal;
                 var xaxis = Horizontal;
                 var yaxis = zaxis.CrossProduct(xaxis).GetNormal();
-                return new Matrix3d(new[]{
-                    xaxis.X, yaxis.X, zaxis.X, origin.X,
-                    xaxis.Y, yaxis.Y, zaxis.Y, origin.Y,
-                    xaxis.Z, yaxis.Z, zaxis.Z, origin.Z,
-                    0.0, 0.0, 0.0, 1.0});
+                return new Matrix3d(new[]
+                {
+                    xaxis.X,
+                    yaxis.X,
+                    zaxis.X,
+                    origin.X,
+                    xaxis.Y,
+                    yaxis.Y,
+                    zaxis.Y,
+                    origin.Y,
+                    xaxis.Z,
+                    yaxis.Z,
+                    zaxis.Z,
+                    origin.Z,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                });
             }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle3d; that is empty.
-        /// </summary>
-        public Triangle3d()
-        { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle3d that contains elements copied from the specified array.
-        /// </summary>
-        /// <param name="pts">The Point3d array whose elements are copied to the new Triangle3d.</param>
-        public Triangle3d([NotNull] Point3d[] pts) : base(pts) { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle3d that contains the specified elements.
-        /// </summary>
-        /// <param name="a">The first vertex of the new Triangle3d (origin).</param>
-        /// <param name="b">The second vertex of the new Triangle3d (2nd vertex).</param>
-        /// <param name="c">The third vertex of the new Triangle3d (3rd vertex).</param>
-        public Triangle3d(Point3d a, Point3d b, Point3d c) : base(a, b, c) { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle3d according to an origin and two vectors.
-        /// </summary>
-        /// <param name="org">The origin of the Triangle3d (1st vertex).</param>
-        /// <param name="v1">The vector from origin to the second vertex.</param>
-        /// <param name="v2">The vector from origin to the third vertex.</param>
-        public Triangle3d(Point3d org, Vector3d v1, Vector3d v2)
-        {
-            _pts[0] = _pt0 = org;
-            _pts[0] = _pt1 = org + v1;
-            _pts[0] = _pt2 = org + v2;
         }
 
         /// <summary>

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Globalization;
-using System.Windows.Data;
-using JetBrains.Annotations;
-
-namespace AcadLib.WPF.Converters
+﻿namespace AcadLib.WPF.Converters
 {
+    using System;
+    using System.Globalization;
+    using System.Windows.Data;
+    using JetBrains.Annotations;
+
     [Obsolete]
     [PublicAPI]
     [ValueConversion(typeof(bool), typeof(bool))]
@@ -16,6 +16,7 @@ namespace AcadLib.WPF.Converters
             {
                 return !b;
             }
+
             return false;
         }
     }

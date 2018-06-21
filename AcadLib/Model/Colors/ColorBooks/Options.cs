@@ -1,32 +1,38 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using JetBrains.Annotations;
-using System;
-using System.ComponentModel;
-using System.IO;
-using NetLib;
+﻿// ReSharper disable once CheckNamespace
 
-// ReSharper disable once CheckNamespace
 namespace AcadLib.Colors
 {
+    using System;
+    using System.ComponentModel;
+    using System.IO;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using JetBrains.Annotations;
+    using NetLib;
+
     [PublicAPI]
     [Serializable]
     public class Options
     {
         private static readonly string fileOptions = Path.Combine(
-                       AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
-                       "АР\\Палитры цветов\\ColorOptions.xml");
-
-        //@"z:\AutoCAD_server\ShareSettings\АР\Палитры цветов\ColorOptions.xml";
+            AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
+            "АР\\Палитры цветов\\ColorOptions.xml");
 
         private static Options _instance;
+
+        private Options()
+        {
+        }
+
         [NotNull]
         public static Options Instance
         {
-            get {
+            get
+            {
                 if (_instance == null)
                 {
                     _instance = Load();
                 }
+
                 return _instance;
             }
         }
@@ -76,14 +82,11 @@ namespace AcadLib.Colors
         [DefaultValue(210)]
         public int Width { get; set; } = 210;
 
-        private Options()
-        {
-        }
-
         [NotNull]
         public static Options Load()
         {
             Options options;
+
             // загрузка из файла настроек
             if (File.Exists(fileOptions))
             {
@@ -101,6 +104,7 @@ namespace AcadLib.Colors
                     Logger.Log.Error(ex, $"Не удалось десериализовать настройки из файла {fileOptions}");
                 }
             }
+
             options = new Options();
             options.Save();
             return options;
@@ -124,6 +128,7 @@ namespace AcadLib.Colors
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(fileOptions) ?? throw new InvalidOperationException());
                 }
+
                 var xmlSer = new SerializerXml(fileOptions);
                 xmlSer.SerializeList(this);
             }

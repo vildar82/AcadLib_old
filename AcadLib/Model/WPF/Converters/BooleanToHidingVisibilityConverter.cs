@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
-
-namespace AcadLib.WPF.Converters
+﻿namespace AcadLib.WPF.Converters
 {
+    using System;
+    using System.Globalization;
+    using System.Windows;
+    using System.Windows.Data;
+    using JetBrains.Annotations;
+
     [Obsolete]
     [PublicAPI]
     [ValueConversion(typeof(bool), typeof(Visibility))]
@@ -20,6 +20,7 @@ namespace AcadLib.WPF.Converters
             {
                 return Visibility.Visible;
             }
+
             return Visibility.Collapsed;
         }
     }

@@ -1,30 +1,35 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.Runtime;
-using JetBrains.Annotations;
-using System;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Colors
 {
+    using System;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using Autodesk.AutoCAD.Runtime;
+    using JetBrains.Annotations;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+
     [PublicAPI]
     public static class ColorBookHelper
     {
         private static Database db;
         private static Document doc;
         private static Editor ed;
+
         public static double CellHeight { get; set; }
+
         public static double CellWidth { get; set; }
+
         public static ObjectId IdTextStylePik { get; set; }
+
         public static double Margin { get; set; }
+
         public static double TextHeight { get; set; }
 
         public static void GenerateNCS()
         {
-            doc = Application.DocumentManager.Add("");
+            doc = Application.DocumentManager.Add(string.Empty);
             using (doc.LockDocument())
             {
                 ed = doc.Editor;
@@ -33,7 +38,7 @@ namespace AcadLib.Colors
 
                 using (var t = db.TransactionManager.StartTransaction())
                 {
-                    //Форма стартовых настроек
+                    // Форма стартовых настроек
                     Options.Show();
 
                     // Чтение палитры NCS
@@ -51,7 +56,13 @@ namespace AcadLib.Colors
             }
         }
 
-        private static void AddLayout(Point3d pt, int layout, double width, double height, [NotNull] BlockTableRecord cs, [NotNull] Transaction t)
+        private static void AddLayout(
+            Point3d pt,
+            int layout,
+            double width,
+            double height,
+            [NotNull] BlockTableRecord cs,
+            [NotNull] Transaction t)
         {
             // Полилиния контура листа
             var pl = new Polyline(4);
@@ -80,7 +91,12 @@ namespace AcadLib.Colors
             t.AddNewlyCreatedDBObject(text, true);
         }
 
-        private static void CreateLayout([NotNull] Polyline pl, int layout, double widthLay, double heightLay, [NotNull] Transaction t)
+        private static void CreateLayout(
+            [NotNull] Polyline pl,
+            int layout,
+            double widthLay,
+            double heightLay,
+            [NotNull] Transaction t)
         {
             var lm = LayoutManager.Current;
             var idLay = lm.CreateLayout(layout.ToString());
@@ -169,18 +185,22 @@ namespace AcadLib.Colors
                             isBreak = true;
                             break;
                         }
+
                         var colorItem = colorBookNcs.Colors[index];
                         var ptCell = new Point2d(ptCellFirst.X + c * CellWidth, ptCellFirst.Y - r * CellHeight);
                         colorItem.Create(ptCell, cs, t);
                         progress.MeterProgress();
                     }
+
                     if (isBreak)
                     {
                         break;
                     }
                 }
+
                 ptLayout = new Point3d(ptLayout.X, ptLayout.Y + heightLayout, 0);
             }
+
             progress.Stop();
         }
     }

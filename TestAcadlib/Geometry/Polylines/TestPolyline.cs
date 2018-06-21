@@ -68,19 +68,19 @@ namespace TestAcadlib.Geometry.Polylines
             selOpt.SetRejectMessage("\nТолько полилинию");
             selOpt.AddAllowedClass(typeof(Polyline), true);
             var selRes = ed.GetEntity(selOpt);
-            if (selRes.Status != PromptStatus.OK) return;
+            if (selRes.Status != PromptStatus.OK)
+                return;
 
             var pt = ed.GetPointWCS("\nУкажи точку");
 
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var pl = selRes.ObjectId.GetObject( OpenMode.ForRead) as Polyline;
-                var res = pl.IsPointInsidePolygon(pt) ? "Внутри": "Снаружи";
+                var res = pl.IsPointInsidePolygon(pt) ? "Внутри" : "Снаружи";
                 ed.WriteMessage($"\n{res}");
                 t.Commit();
             }
         }
-
 
         [CommandMethod(nameof(TestPointOnPolyline))]
         public void TestPointOnPolyline()
@@ -93,7 +93,8 @@ namespace TestAcadlib.Geometry.Polylines
             selOpt.SetRejectMessage("\nТолько полилинию");
             selOpt.AddAllowedClass(typeof(Polyline), true);
             var selRes = ed.GetEntity(selOpt);
-            if (selRes.Status != PromptStatus.OK) return;
+            if (selRes.Status != PromptStatus.OK)
+                return;
 
             var pt = ed.GetPointWCS("\nУкажи точку");
 

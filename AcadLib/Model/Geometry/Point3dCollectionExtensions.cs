@@ -1,13 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using AcadLib.Comparers;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using Comparers;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Provides extension methods for the Point3dCollection type.
     /// </summary>
@@ -39,6 +39,7 @@ namespace AcadLib.Geometry
                 if (pt.IsEqualTo(pts[i], tol))
                     return true;
             }
+
             return false;
         }
 
@@ -96,11 +97,18 @@ namespace AcadLib.Geometry
         public static Extents3d ToExtents3d([NotNull] this IEnumerable<Point3d> pts)
         {
             // ReSharper disable once PossibleMultipleEnumeration
-            if (pts.Any() != true) throw new ArgumentException("Null or empty sequence");
+            if (pts.Any() != true)
+                throw new ArgumentException("Null or empty sequence");
+
             // ReSharper disable once PossibleMultipleEnumeration
             var pt = pts.First();
+
             // ReSharper disable once PossibleMultipleEnumeration
-            return pts.Aggregate(new Extents3d(pt, pt), (e, p) => { e.AddPoint(p); return e; });
+            return pts.Aggregate(new Extents3d(pt, pt), (e, p) =>
+            {
+                e.AddPoint(p);
+                return e;
+            });
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using Autodesk.AutoCAD.DatabaseServices;
+
     /// <summary>
     /// This class switches the WorkingDatabase. It was created for using in the
     /// tests.

@@ -1,48 +1,24 @@
-﻿using AcadLib.Errors.UI;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using NetLib.WPF;
-using OfficeOpenXml;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Text;
-using System.Windows;
-using NetLib;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Errors
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Reactive.Linq;
+    using System.Text;
+    using System.Windows;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using NetLib;
+    using NetLib.WPF;
+    using OfficeOpenXml;
+    using ReactiveUI;
+    using UI;
+
     public class ErrorsViewModel : BaseViewModel
     {
-        public ReactiveCommand CollapseAll { get; set; }
-
-        [Reactive] public int CountSelectedErrors { get; set; }
-
-        public ReactiveCommand DeleteError { get; set; }
-
-        public ReactiveCommand DeleteSelectedDublicateBlocks { get; set; }
-
-        public new ReactiveList<ErrorModelBase> Errors { get; set; }
-
-        [Reactive] public int ErrorsCountInfo { get; set; }
-
-        public List<IError> ErrorsOrig { get; set; }
-
-        public ReactiveCommand ExpandeAll { get; set; }
-
-        public ReactiveCommand ExportToExcel { get; set; }
-
-        public ReactiveCommand ExportToTxt { get; set; }
-
-        public bool IsDialog { get; set; }
-
-        public bool IsDublicateBlocksEnabled { get; set; }
-
         public ErrorsViewModel()
         {
         }
@@ -50,10 +26,11 @@ namespace AcadLib.Errors
         public ErrorsViewModel([NotNull] List<IError> errors)
         {
             ErrorsOrig = errors;
+
             // Группировка ошибок
-            //"Дублирование блоков"
-            Errors = new ReactiveList<ErrorModelBase>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).
-                GroupBy(g => g.Group).Select(s =>
+            // "Дублирование блоков"
+            Errors = new ReactiveList<ErrorModelBase>(errors.Where(w => !string.IsNullOrEmpty(w.Message)).GroupBy(g => g.Group)
+                .Select(s =>
                 {
                     ErrorModelBase errModel;
                     if (s.Skip(1).Any())
@@ -83,6 +60,32 @@ namespace AcadLib.Errors
             DeleteError = CreateCommand<ErrorModelBase>(DeleteErrorExec);
         }
 
+        public ReactiveCommand CollapseAll { get; set; }
+
+        [Reactive]
+        public int CountSelectedErrors { get; set; }
+
+        public ReactiveCommand DeleteError { get; set; }
+
+        public ReactiveCommand DeleteSelectedDublicateBlocks { get; set; }
+
+        public new ReactiveList<ErrorModelBase> Errors { get; set; }
+
+        [Reactive]
+        public int ErrorsCountInfo { get; set; }
+
+        public List<IError> ErrorsOrig { get; set; }
+
+        public ReactiveCommand ExpandeAll { get; set; }
+
+        public ReactiveCommand ExportToExcel { get; set; }
+
+        public ReactiveCommand ExportToTxt { get; set; }
+
+        public bool IsDialog { get; set; }
+
+        public bool IsDublicateBlocksEnabled { get; set; }
+
         /// <summary>
         /// Удаление выделенных ошибок
         /// </summary>
@@ -110,20 +113,24 @@ namespace AcadLib.Errors
             {
                 Errors.Remove(errorBase);
             }
+
             if (errorBase.Error == null)
             {
                 throw new ArgumentException("Ошибка не найдена.");
             }
+
             if (!errorBase.Error.IdEnt.IsValidEx() && errorBase.Error.HasEntity)
             {
                 throw new Exception("Элемент ошибки не валидный. Возможно был удален.");
             }
+
             var doc = AcadHelper.Doc;
             var db = doc.Database;
             if (errorBase.Error.IdEnt.Database != db)
             {
                 throw new Exception($"Переключитесь на чертеж '{Path.GetFileName(doc.Name)}'");
             }
+
             using (doc.LockDocument())
             using (var t = db.TransactionManager.StartTransaction())
             {
@@ -137,6 +144,7 @@ namespace AcadLib.Errors
                         ent?.Erase();
                     }
                 }
+
                 t.Commit();
             }
         }
@@ -164,6 +172,7 @@ namespace AcadLib.Errors
                     // Открываем книгу
                     var ws = excel.Workbook.Worksheets.Add("Ошибки");
                     var row = 1;
+
                     // Название
                     ws.Cells[row, 1].Value = "Список ошибок";
                     row++;
@@ -183,8 +192,10 @@ namespace AcadLib.Errors
                             row++;
                         }
                     }
+
                     excel.Save();
                 }
+
                 Process.Start(tempFile.FullName);
             }
             catch (Exception ex)
@@ -212,6 +223,7 @@ namespace AcadLib.Errors
                     sbText.AppendLine(err.Message);
                 }
             }
+
             var fileTxt = Path.GetTempPath() + Guid.NewGuid() + ".txt";
             File.WriteAllText(fileTxt, sbText.ToString());
             Process.Start(fileTxt);
@@ -233,12 +245,14 @@ namespace AcadLib.Errors
                 {
                     foreach (var innerErr in errlist.SameErrors)
                     {
-                        if (!innerErr.IsSelected) continue;
+                        if (!innerErr.IsSelected)
+                            continue;
                         selectedErrors.Add(innerErr);
                         errors.Add(innerErr.Error);
                     }
                 }
             }
+
             return selectedErrors;
         }
 
@@ -269,8 +283,11 @@ namespace AcadLib.Errors
                 {
                     Errors.Remove(item);
                 }
-                if (item.IsSelected) countIsSelectedErr++;
+
+                if (item.IsSelected)
+                    countIsSelectedErr++;
             }
+
             ErrorsCountInfo -= selectedErrors.Count;
             CountSelectedErrors -= countIsSelectedErr;
         }

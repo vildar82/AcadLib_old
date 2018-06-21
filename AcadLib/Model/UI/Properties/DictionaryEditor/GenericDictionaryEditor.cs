@@ -1,14 +1,14 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Globalization;
-using System.Reflection;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.UI.Designer
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.ComponentModel.Design;
+    using System.Globalization;
+    using System.Reflection;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// A <see cref="System.Drawing.Design.UITypeEditor">UITypeEditor</see> for editing generic dictionaries in the <see cref="System.Windows.Forms.PropertyGrid">PropertyGrid</see>.
     /// </summary>
@@ -39,8 +39,11 @@ namespace AcadLib.UI.Designer
         /// <returns>The new value of the object. If the value of the object has not changed, this should return the same object it was passed.</returns>
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
-            if (context.PropertyDescriptor != null && context.PropertyDescriptor.Attributes[typeof(GenericDictionaryEditorAttribute)] is GenericDictionaryEditorAttribute attribute)
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            if (context.PropertyDescriptor != null &&
+                context.PropertyDescriptor.Attributes[typeof(GenericDictionaryEditorAttribute)] is
+                    GenericDictionaryEditorAttribute attribute)
             {
                 m_EditorAttribute = attribute;
                 if (m_EditorAttribute.KeyDefaultProviderType == null)
@@ -72,7 +75,8 @@ namespace AcadLib.UI.Designer
             // Die Eigenschaft "CollectionEditable" muss hier per Reflection gesetzt werden (ist protected)
             var formType = m_Form.GetType();
             var pi = formType.GetProperty("CollectionEditable", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (pi != null) pi.SetValue(m_Form, true, null);
+            if (pi != null)
+                pi.SetValue(m_Form, true, null);
             return m_Form;
         }
 
@@ -102,7 +106,8 @@ namespace AcadLib.UI.Designer
             else
                 key = default;
 
-            if (Activator.CreateInstance(m_EditorAttribute.ValueDefaultProviderType) is DefaultProvider<TValue> ValueDefaultProvider)
+            if (Activator.CreateInstance(m_EditorAttribute.ValueDefaultProviderType) is DefaultProvider<TValue>
+                ValueDefaultProvider)
                 value = ValueDefaultProvider.GetDefault(DefaultUsage.Value);
             else
                 value = default;
@@ -133,6 +138,7 @@ namespace AcadLib.UI.Designer
             {
                 throw new ArgumentNullException(nameof(editValue));
             }
+
             var objArray = new object[dictionary.Count];
             var num = 0;
             foreach (var entry in dictionary)
@@ -140,6 +146,7 @@ namespace AcadLib.UI.Designer
                 var entry2 = new EditableKeyValuePair<TKey, TValue>(entry.Key, entry.Value, m_EditorAttribute);
                 objArray[num++] = entry2;
             }
+
             return objArray;
         }
 
@@ -159,11 +166,13 @@ namespace AcadLib.UI.Designer
             {
                 throw new ArgumentNullException(nameof(editValue));
             }
+
             dictionary.Clear();
             foreach (EditableKeyValuePair<TKey, TValue> entry in value)
             {
                 dictionary.Add(new KeyValuePair<TKey, TValue>(entry.Key, entry.Value));
             }
+
             return dictionary;
         }
     }

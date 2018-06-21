@@ -1,12 +1,12 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using AcRx = Autodesk.AutoCAD.Runtime;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+    using AcRx = Autodesk.AutoCAD.Runtime;
+
     /// <summary>
     /// Provides extension methods for the Polyline2d type.
     /// </summary>
@@ -39,6 +39,7 @@ namespace AcadLib.Geometry
                 area += tmpArea;
                 cen += (new Point2d(tmpPt.X, tmpPt.Y) * tmpArea).GetAsVector();
             }
+
             for (var i = 1; i < last; i++)
             {
                 var p1 = vertices[i].Position.Convert2d();
@@ -57,6 +58,7 @@ namespace AcadLib.Geometry
                     cen += (new Point2d(tmpPt.X, tmpPt.Y) * tmpArea).GetAsVector();
                 }
             }
+
             bulge = vertices[last].Bulge;
             if (Math.Abs(bulge) > 0.0001 && pl.Closed)
             {
@@ -66,6 +68,7 @@ namespace AcadLib.Geometry
                 area += tmpArea;
                 cen += (new Point2d(tmpPt.X, tmpPt.Y) * tmpArea).GetAsVector();
             }
+
             cen = cen.DivideBy(area);
             return new Point3d(cen.X, cen.Y, pl.Elevation).TransformBy(Matrix3d.PlaneToWorld(pl.Normal));
         }
@@ -200,6 +203,7 @@ namespace AcadLib.Geometry
                     // ReSharper disable once UpgradeOpen
                     pline.UpgradeOpen();
                 }
+
                 pline.TransformBy(Matrix3d.WorldToPlane(dirPlane));
                 var extents = pline.GeometricExtents;
                 pline.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
@@ -213,7 +217,7 @@ namespace AcadLib.Geometry
         {
             var hs = side * 0.5;
             return new Extents2d(new Point2d(center.X - hs, center.Y - hs),
-                                 new Point2d(center.X + hs, center.Y + hs));
+                new Point2d(center.X + hs, center.Y + hs));
         }
 
         /// <summary>
@@ -237,6 +241,7 @@ namespace AcadLib.Geometry
                 if (vx.VertexType != Vertex2dType.SplineControlVertex)
                     vertices.Add(vx);
             }
+
             return vertices;
         }
     }

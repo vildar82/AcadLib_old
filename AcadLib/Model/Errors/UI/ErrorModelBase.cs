@@ -1,23 +1,37 @@
-﻿using AcadLib.Errors.UI;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using JetBrains.Annotations;
-using NetLib.WPF;
-using Visibility = System.Windows.Visibility;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Errors
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Media.Imaging;
+    using JetBrains.Annotations;
+    using NetLib.WPF;
+    using ReactiveUI;
+    using UI;
+
     [PublicAPI]
     public abstract class ErrorModelBase : BaseModel
     {
         protected IError firstErr;
         private bool isSelected;
+
+        public ErrorModelBase(IError err)
+        {
+            MarginHeader = new Thickness(2);
+            firstErr = err;
+            Show = ReactiveCommand.Create(OnShowExecute);
+            if (firstErr.Icon != null)
+            {
+                Image = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                    firstErr.Icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            }
+
+            HasShow = firstErr.CanShow;
+            Background = firstErr.Background;
+        }
 
         public event EventHandler<bool> SelectionChanged;
 
@@ -38,7 +52,8 @@ namespace AcadLib.Errors
         public bool IsSelected
         {
             get => isSelected;
-            set {
+            set
+            {
                 isSelected = value;
                 this.RaisePropertyChanged();
                 SelectionChanged?.Invoke(this, value);
@@ -54,20 +69,6 @@ namespace AcadLib.Errors
         public bool ShowCount { get; set; }
 
         public Visibility VisibilityCount { get; set; }
-
-        public ErrorModelBase(IError err)
-        {
-            MarginHeader = new Thickness(2);
-            firstErr = err;
-            Show = ReactiveCommand.Create(OnShowExecute);
-            if (firstErr.Icon != null)
-            {
-                Image = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                    firstErr.Icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            }
-            HasShow = firstErr.CanShow;
-            Background = firstErr.Background;
-        }
 
         protected virtual void OnShowExecute()
         {

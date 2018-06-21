@@ -1,9 +1,9 @@
-﻿using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Provides extension methods for the CircularArc2dType
     /// </summary>
@@ -54,8 +54,10 @@ namespace AcadLib.Geometry
             for (var i = 0; i < lines2d.Length; i++)
             {
                 var ls2d = lines2d[i];
-                result[i] = new LineSegment3d(ls2d.StartPoint.Convert3d(normal, elevation), ls2d.EndPoint.Convert3d(normal, elevation));
+                result[i] = new LineSegment3d(ls2d.StartPoint.Convert3d(normal, elevation),
+                    ls2d.EndPoint.Convert3d(normal, elevation));
             }
+
             return result;
         }
 
@@ -74,14 +76,17 @@ namespace AcadLib.Geometry
         /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
         /// eNonCoplanarGeometry is thrown if the objects do not lies on the same plane.</exception>
         [CanBeNull]
-        public static LineSegment3d[] GetTangentsTo([NotNull] this CircularArc3d arc, [NotNull] CircularArc3d other, TangentType flags)
+        public static LineSegment3d[] GetTangentsTo(
+            [NotNull] this CircularArc3d arc,
+            [NotNull] CircularArc3d other,
+            TangentType flags)
         {
             // check if circles lies on the same plane
             var normal = arc.Normal;
             var WCS2OCS = Matrix3d.WorldToPlane(normal);
             var elevation = arc.Center.TransformBy(WCS2OCS).Z;
             if (!(normal.IsParallelTo(other.Normal) &&
-                Math.Abs(elevation - other.Center.TransformBy(WCS2OCS).Z) < Tolerance.Global.EqualPoint))
+                  Math.Abs(elevation - other.Center.TransformBy(WCS2OCS).Z) < Tolerance.Global.EqualPoint))
                 throw new Autodesk.AutoCAD.Runtime.Exception(
                     Autodesk.AutoCAD.Runtime.ErrorStatus.NonCoplanarGeometry);
 
@@ -97,8 +102,10 @@ namespace AcadLib.Geometry
             for (var i = 0; i < lines2d.Length; i++)
             {
                 var ls2d = lines2d[i];
-                result[i] = new LineSegment3d(ls2d.StartPoint.Convert3d(normal, elevation), ls2d.EndPoint.Convert3d(normal, elevation));
+                result[i] = new LineSegment3d(ls2d.StartPoint.Convert3d(normal, elevation),
+                    ls2d.EndPoint.Convert3d(normal, elevation));
             }
+
             return result;
         }
     }

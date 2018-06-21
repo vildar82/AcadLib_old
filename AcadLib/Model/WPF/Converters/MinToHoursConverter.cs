@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Globalization;
-using System.Windows.Data;
-
-namespace AcadLib.WPF.Converters
+﻿namespace AcadLib.WPF.Converters
 {
+    using System;
+    using System.Globalization;
+    using System.Windows.Data;
+    using JetBrains.Annotations;
+
     [Obsolete]
     [PublicAPI]
     [ValueConversion(typeof(int), typeof(double))]
@@ -15,7 +15,7 @@ namespace AcadLib.WPF.Converters
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var min = System.Convert.ToInt32(value);
-            var hours = NetLib.DoubleExt.Round(min / 60d,1);
+            var hours = NetLib.DoubleExt.Round(min / 60d, 1);
             return hours;
         }
     }

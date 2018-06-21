@@ -1,9 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
-namespace AcadLib.PaletteProps.UI
+﻿namespace AcadLib.PaletteProps.UI
 {
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+
     /// <summary>
     /// Interaction logic for PalettePropsView.xaml
     /// </summary>

@@ -1,12 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-
-namespace AcadLib.Hatches
+﻿namespace AcadLib.Hatches
 {
+    using System;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public class HatchLoopPl : IDisposable
     {
         public Curve Loop { get; set; }
+
         public HatchLoopTypes Types { get; set; }
 
         public void Dispose()
@@ -21,6 +22,7 @@ namespace AcadLib.Hatches
             {
                 case Polyline pl: return pl;
             }
+
             return null;
         }
     }

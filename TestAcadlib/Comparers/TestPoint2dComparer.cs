@@ -17,16 +17,18 @@ namespace TestAcadlib.Comparers
             var ed = doc.Editor;
 
             var selRes = ed.GetEntity("Выбери полилинию");
-            if (selRes.Status != PromptStatus.OK) return;
+            if (selRes.Status != PromptStatus.OK)
+                return;
 
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var pl = selRes.ObjectId.GetObject(OpenMode.ForWrite) as Polyline;
-                if (pl == null) return;
+                if (pl == null)
+                    return;
 
-                var pts = pl.GetPoints();                
+                var pts = pl.GetPoints();
                 var comparer = new AcadLib.Comparers.Point2dEqualityComparer(5);
-                var group = pts.GroupBy(g => g, comparer).Select(s=>s.Key).ToList();
+                var group = pts.GroupBy(g => g, comparer).Select(s => s.Key).ToList();
                 var newPl = group.CreatePolyline();
 
                 var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
@@ -35,7 +37,7 @@ namespace TestAcadlib.Comparers
                 pl.Erase();
 
                 t.Commit();
-            }                   
+            }
         }
     }
 }

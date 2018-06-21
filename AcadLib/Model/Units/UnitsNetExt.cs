@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnitsNet;
-
-namespace AcadLib.Units
+﻿namespace AcadLib.Units
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using JetBrains.Annotations;
+    using UnitsNet;
+
     [Obsolete]
     [PublicAPI]
     public static class UnitsNetExt
@@ -25,6 +25,7 @@ namespace AcadLib.Units
                     area += current;
                 }
             }
+
             return area;
         }
 
@@ -43,6 +44,7 @@ namespace AcadLib.Units
                     length += current;
                 }
             }
+
             return length;
         }
     }

@@ -1,19 +1,19 @@
-﻿using AcadLib.Errors;
-using Autodesk.AutoCAD.ApplicationServices.Core;
-using Autodesk.AutoCAD.Colors;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using NetLib;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using Autodesk.AutoCAD.Colors;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using Errors;
+    using JetBrains.Annotations;
+    using NetLib;
+
     /// <inheritdoc />
     /// <summary>
     /// Базовое описание блока
@@ -25,52 +25,6 @@ namespace AcadLib.Blocks
         private Extents3d _extentsToShow;
         private bool _isNullExtents;
 
-        public bool DontAddErrorsToInspector { get; set; }
-        public Database Db { get; private set; }
-        /// <inheritdoc />
-        /// <summary>
-        /// Имя блока - эффективное
-        /// </summary>
-        public string BlName { get; set; }
-        public string BlLayer { get; set; }
-        public ObjectId LayerId { get; set; }
-        public bool IsVisible { get; set; } = true;
-        public virtual Color Color { get; set; }
-        public Point3d Position { get; set; }
-        /// <summary>
-        /// Границы блока Bounds
-        /// </summary>
-        public virtual Extents3d? Bounds { get; set; }
-        /// <summary>
-        /// Id вхождения блока
-        /// </summary>
-        public ObjectId IdBlRef { get; set; }
-        /// <summary>
-        /// Id определения блока - BklockTableRecord (для анонимных - DynamicBlockTableRecord).
-        /// </summary>
-        public ObjectId IdBtr { get; set; }
-        /// <inheritdoc />
-        /// <summary>
-        /// Для динамических блоков - анонимное определение блока
-        /// </summary>
-        [Obsolete("Для дин. блоков определение оригинального дин блока см в IdBtrDyn. Скоро будет удалено.")]
-        public ObjectId IdBtrAnonym { get; set; }
-        public ObjectId IdBtrDyn { get; set; }
-        /// <inheritdoc />
-        /// <summary>
-        /// Пространство в который вставлен этот блок (определение блока)
-        /// </summary>
-        public ObjectId IdBtrOwner { get; set; }
-        /// <inheritdoc />
-        /// <summary>
-        /// Параметры - атрибутв и динамические
-        /// </summary>
-        public List<Property> Properties { get; set; }
-        public Error Error { get; set; }
-        public Matrix3d Transform { get; set; }
-        public double Rotation { get; set; }
-        public Scale3d Scale { get; set; }
-
         /// <summary>
         /// Блок - по имени и ссылке на вхождение блока
         /// Заполняются параметры блока. и граница Bounds
@@ -78,9 +32,73 @@ namespace AcadLib.Blocks
         public BlockBase([NotNull] BlockReference blRef, string blName)
         {
             BlName = blName;
-            // ReSharper disable once VirtualMemberCallInConstructor
+
             Update(blRef);
         }
+
+        public bool DontAddErrorsToInspector { get; set; }
+
+        public Database Db { get; private set; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Имя блока - эффективное
+        /// </summary>
+        public string BlName { get; set; }
+
+        public string BlLayer { get; set; }
+
+        public ObjectId LayerId { get; set; }
+
+        public bool IsVisible { get; set; } = true;
+
+        public virtual Color Color { get; set; }
+
+        public Point3d Position { get; set; }
+
+        /// <summary>
+        /// Границы блока Bounds
+        /// </summary>
+        public virtual Extents3d? Bounds { get; set; }
+
+        /// <summary>
+        /// Id вхождения блока
+        /// </summary>
+        public ObjectId IdBlRef { get; set; }
+
+        /// <summary>
+        /// Id определения блока - BklockTableRecord (для анонимных - DynamicBlockTableRecord).
+        /// </summary>
+        public ObjectId IdBtr { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Для динамических блоков - анонимное определение блока
+        /// </summary>
+        [Obsolete("Для дин. блоков определение оригинального дин блока см в IdBtrDyn. Скоро будет удалено.")]
+        public ObjectId IdBtrAnonym { get; set; }
+
+        public ObjectId IdBtrDyn { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Пространство в который вставлен этот блок (определение блока)
+        /// </summary>
+        public ObjectId IdBtrOwner { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Параметры - атрибутв и динамические
+        /// </summary>
+        public List<Property> Properties { get; set; }
+
+        public Error Error { get; set; }
+
+        public Matrix3d Transform { get; set; }
+
+        public double Rotation { get; set; }
+
+        public Scale3d Scale { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -88,7 +106,8 @@ namespace AcadLib.Blocks
         /// </summary>
         public Extents3d ExtentsToShow
         {
-            get {
+            get
+            {
                 if (!_alreadyCalcExtents)
                 {
 #pragma warning disable CS0618
@@ -108,9 +127,11 @@ namespace AcadLib.Blocks
                     }
 #pragma warning restore CS0618
                 }
+
                 return _extentsToShow;
             }
-            set {
+            set
+            {
                 _alreadyCalcExtents = true;
                 _extentsToShow = value;
             }
@@ -128,9 +149,11 @@ namespace AcadLib.Blocks
             {
                 if (doc.Database != IdBlRef.Database)
                 {
-                    Application.ShowAlertDialog($"Переключитесь на чертеж {Path.GetFileNameWithoutExtension(IdBlRef.Database.Filename)}");
+                    Application.ShowAlertDialog(
+                        $"Переключитесь на чертеж {Path.GetFileNameWithoutExtension(IdBlRef.Database.Filename)}");
                     return;
                 }
+
                 using (doc.LockDocument())
                 {
                     var ed = doc.Editor;
@@ -139,6 +162,7 @@ namespace AcadLib.Blocks
                     {
                         Application.ShowAlertDialog("Границы объекта не определены.");
                     }
+
                     ed.Zoom(ext);
                     IdBlRef.FlickObjectHighlight(2, 100, 100);
                 }
@@ -165,6 +189,7 @@ namespace AcadLib.Blocks
             {
                 propMatch = $"^{propMatch}$";
             }
+
             var prop = GetProperty(propMatch, isRequired);
             if (prop != null)
             {
@@ -186,6 +211,7 @@ namespace AcadLib.Blocks
             {
                 hasProperty = false;
             }
+
             return resVal;
         }
 
@@ -199,7 +225,11 @@ namespace AcadLib.Blocks
         /// <param name="exactMatch">Точное соответствие имени свойства</param>
         /// <param name="writeDefaultValue">Требуется транзакция! Записывать ли значение поумолчанию в свойство, если оно есть и если его значение является дефолтным для данного типа (например:0 для чисел)</param>
         /// <returns>Значение свойства</returns>
-        public T GetPropValue<T>(string propName, T defaultValue, bool isrequired = false, bool exactMatch = true,
+        public T GetPropValue<T>(
+            string propName,
+            T defaultValue,
+            bool isrequired = false,
+            bool exactMatch = true,
             bool writeDefaultValue = false)
         {
             var res = GetPropValue<T>(propName, out var hasProp, isrequired, exactMatch);
@@ -216,8 +246,10 @@ namespace AcadLib.Blocks
                         Logger.Log.Error(ex, $"BlockBase.GetPropValue - FillPropValue - '{propName}', блок {BlName}");
                     }
                 }
+
                 return defaultValue;
             }
+
             return res;
         }
 
@@ -229,6 +261,7 @@ namespace AcadLib.Blocks
             {
                 AddError($"Не определен параметр '{nameMatch}'.");
             }
+
             return prop;
         }
 
@@ -238,49 +271,8 @@ namespace AcadLib.Blocks
             {
                 propMatch = $"^{propMatch}$";
             }
-            FillProp(GetProperty(propMatch, isRequired), value);
-        }
 
-        protected void FillProp([CanBeNull] Property prop, object value)
-        {
-            if (prop == null) return;
-            if (prop.Type == PropertyType.Attribute && !prop.IdAtrRef.IsNull)
-            {
-                var atr = (AttributeReference)prop.IdAtrRef.GetObject(OpenMode.ForWrite, false, true);
-                var text = value?.ToString() ?? "";
-                if (atr.IsMTextAttribute)
-                {
-                    var mt = atr.MTextAttribute;
-                    mt.Contents = text;
-                    atr.MTextAttribute = mt;
-                    atr.UpdateMTextAttribute();
-                }
-                else
-                {
-                    atr.TextString = text;
-                }
-                if (!atr.IsDefaultAlignment) atr.AdjustAlignment(Db);
-            }
-            else if (prop.Type == PropertyType.Dynamic)
-            {
-                if (value == null) return;
-                var blRef = (BlockReference)IdBlRef.GetObject(OpenMode.ForWrite, false, true);
-                var dynProp = blRef.DynamicBlockReferencePropertyCollection.Cast<DynamicBlockReferenceProperty>()
-                    .FirstOrDefault(p => p.PropertyName.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
-                if (dynProp != null)
-                {
-                    try
-                    {
-                        dynProp.Value = value;
-                    }
-                    catch
-                    {
-                        Inspector.AddError($"Не удалосось установить динамический параметр {prop.Name} " +
-                                           $"со значением {prop.Value} в блок {BlName}",
-                            IdBlRef, System.Drawing.SystemIcons.Error);
-                    }
-                }
-            }
+            FillProp(GetProperty(propMatch, isRequired), value);
         }
 
         public void AddError(string msg)
@@ -291,8 +283,10 @@ namespace AcadLib.Blocks
                 {
                     Group = $"Ошибка в блоке '{BlName}'"
                 };
-                if (!DontAddErrorsToInspector) Inspector.AddError(Error);
+                if (!DontAddErrorsToInspector)
+                    Inspector.AddError(Error);
             }
+
             Error.AdditionToMessage(msg);
         }
 
@@ -325,21 +319,23 @@ namespace AcadLib.Blocks
                     return entCopy.Id;
                 }
             }
+
             return ObjectId.Null;
         }
 
         public bool Equals(IBlock other)
         {
             // Если все параметры совпадают
-            if (other == null) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (other == null)
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
             var res = new HashSet<Property>(Properties).SetEquals(other.Properties);
             return res;
         }
 
         public override int GetHashCode()
         {
-            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return BlName.GetHashCode();
         }
 
@@ -357,6 +353,7 @@ namespace AcadLib.Blocks
                 IdBtrAnonym = blRef.AnonymousBlockTableRecord;
 #pragma warning restore 618
             }
+
             BlLayer = blRef.Layer;
             LayerId = blRef.LayerId;
             Properties = Property.GetAllProperties(blRef);
@@ -372,11 +369,58 @@ namespace AcadLib.Blocks
             }
         }
 
+        protected void FillProp([CanBeNull] Property prop, object value)
+        {
+            if (prop == null)
+                return;
+            if (prop.Type == PropertyType.Attribute && !prop.IdAtrRef.IsNull)
+            {
+                var atr = (AttributeReference)prop.IdAtrRef.GetObject(OpenMode.ForWrite, false, true);
+                var text = value?.ToString() ?? string.Empty;
+                if (atr.IsMTextAttribute)
+                {
+                    var mt = atr.MTextAttribute;
+                    mt.Contents = text;
+                    atr.MTextAttribute = mt;
+                    atr.UpdateMTextAttribute();
+                }
+                else
+                {
+                    atr.TextString = text;
+                }
+
+                if (!atr.IsDefaultAlignment)
+                    atr.AdjustAlignment(Db);
+            }
+            else if (prop.Type == PropertyType.Dynamic)
+            {
+                if (value == null)
+                    return;
+                var blRef = (BlockReference)IdBlRef.GetObject(OpenMode.ForWrite, false, true);
+                var dynProp = blRef.DynamicBlockReferencePropertyCollection.Cast<DynamicBlockReferenceProperty>()
+                    .FirstOrDefault(p => p.PropertyName.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
+                if (dynProp != null)
+                {
+                    try
+                    {
+                        dynProp.Value = value;
+                    }
+                    catch
+                    {
+                        Inspector.AddError(
+                            $"Не удалосось установить динамический параметр {prop.Name} " +
+                                           $"со значением {prop.Value} в блок {BlName}",
+                            IdBlRef, 
+                            System.Drawing.SystemIcons.Error);
+                    }
+                }
+            }
+        }
+
         private Color GetColor([NotNull] BlockReference blRef)
         {
             if (blRef.Color.IsByLayer)
             {
-                // ReSharper disable once IdOpenMode
 #pragma warning disable 618
                 using (var lay = (LayerTableRecord)blRef.LayerId.Open(OpenMode.ForRead))
 #pragma warning restore 618
@@ -385,9 +429,11 @@ namespace AcadLib.Blocks
                     {
                         IsVisible = false;
                     }
+
                     return lay.Color;
                 }
             }
+
             return blRef.Color;
         }
     }

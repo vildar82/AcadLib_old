@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using AutoCAD_PIK_Manager.Settings;
-using AutoCAD_PIK_Manager.User;
-using NetLib;
-using NetLib.WPF;
-using ReactiveUI;
-
-namespace AcadLib.User.UI
+﻿namespace AcadLib.User.UI
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using AutoCAD_PIK_Manager.Settings;
+    using AutoCAD_PIK_Manager.User;
+    using NetLib;
+    using NetLib.WPF;
+    using ReactiveUI;
+
     public class UserSettingsVM : BaseViewModel
     {
         public UserSettingsVM(AutocadUser user)
@@ -28,6 +28,7 @@ namespace AcadLib.User.UI
             {
                 Group = Groups[0];
             }
+
             Disabled = user?.Disabled ?? false;
             Ok = CreateCommand(OkExec);
             DeleteExtraGroup = CreateCommand(() => ExtraGroup = null);
@@ -35,13 +36,25 @@ namespace AcadLib.User.UI
         }
 
         public AutocadUser User { get; set; }
+
         public List<UserGroup> Groups { get; set; }
+
         public UserGroup Group { get; set; }
+
         public List<UserGroup> ExtraGroups { get; set; }
+
         public UserGroup ExtraGroup { get; set; }
+
         public bool Disabled { get; set; }
+
         public ReactiveCommand Ok { get; set; }
+
         public ReactiveCommand DeleteExtraGroup { get; set; }
+
+        private static UserGroup FindGroup(List<UserGroup> groups, string name)
+        {
+            return groups.FirstOrDefault(g => g.Name == name);
+        }
 
         private List<UserGroup> LoadGroups()
         {
@@ -51,7 +64,7 @@ namespace AcadLib.User.UI
             {
                 Name = s.Key,
                 Description = s.Value
-            }).OrderBy(o=>o.Name).ToList();
+            }).OrderBy(o => o.Name).ToList();
         }
 
         private void FillGroup(string userGroup)
@@ -59,7 +72,8 @@ namespace AcadLib.User.UI
             var groups = userGroup.Split(',');
             var group = groups[0].Trim();
             Group = FindGroup(Groups, group);
-            if (Group == null || groups.Length <= 1) return;
+            if (Group == null || groups.Length <= 1)
+                return;
             var extraGroup = groups[1].Trim();
             if (extraGroup != group)
             {
@@ -67,15 +81,11 @@ namespace AcadLib.User.UI
             }
         }
 
-        private static UserGroup FindGroup(List<UserGroup> groups, string name)
-        {
-            return groups.FirstOrDefault(g => g.Name == name);
-        }
-
         private void UpdateExtraGroups()
         {
             var groups = Groups.ToList();
-            if (Group != null) groups.Remove(Group);
+            if (Group != null)
+                groups.Remove(Group);
             ExtraGroups = groups;
         }
 
@@ -89,12 +99,14 @@ namespace AcadLib.User.UI
                     Login = Environment.UserName.ToLower()
                 };
             }
+
             User.Group = Group.Name;
             User.Disabled = Disabled;
             if (ExtraGroup != null)
             {
                 User.Group += $", {ExtraGroup.Name}";
             }
+
             DialogResult = true;
         }
     }

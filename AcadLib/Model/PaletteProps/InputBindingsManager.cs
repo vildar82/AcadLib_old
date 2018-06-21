@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
-
-namespace AcadLib.PaletteProps
+﻿namespace AcadLib.PaletteProps
 {
+    using System.Windows;
+    using System.Windows.Data;
+    using System.Windows.Input;
+
     public static class InputBindingsManager
     {
         public static readonly DependencyProperty UpdatePropertySourceWhenEnterPressedProperty =
@@ -18,7 +13,6 @@ namespace AcadLib.PaletteProps
 
         static InputBindingsManager()
         {
-            
         }
 
         public static void SetUpdatePropertySourceWhenEnterPressed(DependencyObject dp, DependencyProperty value)
@@ -28,10 +22,11 @@ namespace AcadLib.PaletteProps
 
         public static DependencyProperty GetUpdatePropertySourceWhenEnterPressed(DependencyObject dp)
         {
-            return (DependencyProperty) dp.GetValue(UpdatePropertySourceWhenEnterPressedProperty);
+            return (DependencyProperty)dp.GetValue(UpdatePropertySourceWhenEnterPressedProperty);
         }
 
-        private static void OnUpdatePropertySourceWhenEnterPressedPropertyChanged(DependencyObject dp,
+        private static void OnUpdatePropertySourceWhenEnterPressedPropertyChanged(
+            DependencyObject dp,
             DependencyPropertyChangedEventArgs e)
         {
             if (!(dp is UIElement element))
@@ -72,10 +67,12 @@ namespace AcadLib.PaletteProps
             {
                 return;
             }
+
             if (!(source is UIElement elt))
             {
                 return;
             }
+
             var binding = BindingOperations.GetBindingExpression(elt, property);
             binding?.UpdateSource();
         }

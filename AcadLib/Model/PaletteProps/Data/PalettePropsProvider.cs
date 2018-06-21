@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-
-namespace AcadLib.PaletteProps
+﻿namespace AcadLib.PaletteProps
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+
     public class PalettePropsProvider
     {
         private readonly Func<ObjectId[], Document, List<PalettePropsType>> getTypes;

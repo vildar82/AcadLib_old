@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace AcadLib.UI.Ribbon.Options
+﻿namespace AcadLib.UI.Ribbon.Options
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Настройки ленты
     /// </summary>

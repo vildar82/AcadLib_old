@@ -1,19 +1,12 @@
-﻿using AcadLib.CommandLock.Data;
-using JetBrains.Annotations;
-using NetLib.WPF;
-using System.Collections.Generic;
-
-namespace AcadLib.CommandLock.UI
+﻿namespace AcadLib.CommandLock.UI
 {
+    using System.Collections.Generic;
+    using Data;
+    using JetBrains.Annotations;
+    using NetLib.WPF;
+
     public class LockViewModel : BaseViewModel
     {
-        public List<Button> Buttons { get; set; }
-
-        public CommandLockInfo Command { get; }
-        public string ImageKey { get; set; }
-        public string Message { get; set; }
-        public string Title { get; set; }
-
         public LockViewModel([NotNull] CommandLockInfo command)
         {
             Command = command;
@@ -35,6 +28,7 @@ namespace AcadLib.CommandLock.UI
                 ImageKey = "../../../Resources/stop.png";
                 Title = "Команда заблокирована";
             }
+
             Buttons.Add(new Button
             {
                 Name = "Выход",
@@ -42,5 +36,15 @@ namespace AcadLib.CommandLock.UI
                 IsCancel = true
             });
         }
+
+        public List<Button> Buttons { get; set; }
+
+        public CommandLockInfo Command { get; }
+
+        public string ImageKey { get; set; }
+
+        public string Message { get; set; }
+
+        public string Title { get; set; }
     }
 }

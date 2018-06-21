@@ -1,26 +1,22 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib.Errors
+﻿namespace AcadLib.Errors
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+
     [PublicAPI]
     public static class Inspector
     {
-        public static List<IError> LastErrors { get; private set; }
         private static Database _db;
         private static Document _doc;
         private static Editor _ed;
-        public static List<IError> Errors { get; private set; }
-
-        public static bool HasErrors => Errors.Count > 0;
 
         static Inspector()
         {
@@ -28,13 +24,20 @@ namespace AcadLib.Errors
             Clear();
 #pragma warning restore 618
         }
-        
+
+        public static List<IError> LastErrors { get; private set; }
+
+        public static List<IError> Errors { get; private set; }
+
+        public static bool HasErrors => Errors.Count > 0;
+
         public static void Clear()
         {
             if (Errors?.Any() == true)
             {
                 LastErrors = Errors.ToList();
             }
+
             Errors = new List<IError>();
             _doc = Application.DocumentManager.MdiActiveDocument;
             if (_doc != null)
@@ -42,11 +45,6 @@ namespace AcadLib.Errors
                 _db = _doc.Database;
                 _ed = _doc.Editor;
             }
-        }
-
-        private static void AddErrorInternal(IError err)
-        {
-            Errors.Add(err);
         }
 
         public static void AddError(IError err)
@@ -238,6 +236,7 @@ namespace AcadLib.Errors
             {
                 Logger.Log.Error($"Окно ошибок: {string.Join("\n", Errors.Select(e => e.Group + e.Message))}");
                 Errors = SortErrors(Errors);
+
                 // WPF
                 Show(Errors);
             }
@@ -253,13 +252,6 @@ namespace AcadLib.Errors
 #pragma warning restore 618
         }
 
-        [NotNull]
-        private static List<IError> SortErrors([NotNull] List<IError> errors)
-        {
-            var comparer = NetLib.Comparers.AlphanumComparator.New;
-            return errors.OrderBy(o => o.Message, comparer).ToList();
-        }
-
         /// <summary>
         /// При прерывании вызывает исключение "Отменено пользователем.".
         /// Т.е. можно не обрабатывает DialogResult.
@@ -270,13 +262,16 @@ namespace AcadLib.Errors
             {
                 Logger.Log.Error(string.Join("\n", Errors.Select(e => e.Message)));
                 Errors = SortErrors(Errors);
+
                 // WPF
                 if (ShowDialog(Errors) == true)
                 {
                     return System.Windows.Forms.DialogResult.OK;
                 }
+
                 throw new OperationCanceledException();
             }
+
             return System.Windows.Forms.DialogResult.OK;
         }
 
@@ -291,15 +286,29 @@ namespace AcadLib.Errors
                 Clear();
 #pragma warning restore 618
             }
+
             return res;
         }
 
         public static void ShowLast()
         {
-            if (LastErrors?.Any() != true) return;
+            if (LastErrors?.Any() != true)
+                return;
             var errVM = new ErrorsViewModel(LastErrors) { IsDialog = false };
             var errView = new ErrorsView(errVM);
             errView.Show();
+        }
+
+        private static void AddErrorInternal(IError err)
+        {
+            Errors.Add(err);
+        }
+
+        [NotNull]
+        private static List<IError> SortErrors([NotNull] List<IError> errors)
+        {
+            var comparer = NetLib.Comparers.AlphanumComparator.New;
+            return errors.OrderBy(o => o.Message, comparer).ToList();
         }
     }
 }

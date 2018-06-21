@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-namespace AcadLib.Jigs
+﻿namespace AcadLib.Jigs
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public class TableJig : EntityJig
     {
@@ -39,6 +39,7 @@ namespace AcadLib.Jigs
                 else
                     return SamplerStatus.NoChange;
             }
+
             return res.Status == PromptStatus.Cancel ? SamplerStatus.Cancel : SamplerStatus.OK;
         }
 
@@ -50,6 +51,7 @@ namespace AcadLib.Jigs
                 table.Position = _position;
                 return true;
             }
+
             return false;
         }
     }

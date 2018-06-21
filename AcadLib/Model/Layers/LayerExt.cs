@@ -1,12 +1,12 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using NetLib;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AcadLib.Layers
+﻿namespace AcadLib.Layers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using NetLib;
+
     [PublicAPI]
     public static class LayerExt
     {
@@ -33,13 +33,8 @@ namespace AcadLib.Layers
                 layers = lt.Cast<ObjectId>().LayersFromLTR();
                 t.Commit();
             }
+
             return layers;
-        }
-        
-        [NotNull]
-        private static List<LayerInfo> LayersFromLTR([NotNull] this IEnumerable<ObjectId> ltrIds)
-        {
-            return ltrIds.Select(s => new LayerInfo(s)).OrderBy(o=>o.Name).ToList();
         }
 
         /// <summary>
@@ -76,6 +71,7 @@ namespace AcadLib.Layers
                     if (layName.IsNullOrEmpty())
                     {
                         layId = db.Clayer;
+
                         // Берем текущиий
                         CheckLayerState(layId, out layName);
                         layer.Name = layName;
@@ -101,10 +97,12 @@ namespace AcadLib.Layers
                         layId = CreateLayer(layer, lt);
 #pragma warning restore 618
                     }
+
                     layer.LayerId = layId;
                     resVal.Add(layName, layId);
                 }
             }
+
             return resVal;
         }
 
@@ -150,6 +148,7 @@ namespace AcadLib.Layers
                 var li = new LayerInfo(item);
                 layersInfo.Add(li);
             }
+
             return CheckLayerState(layersInfo);
         }
 
@@ -162,17 +161,21 @@ namespace AcadLib.Layers
         [Obsolete("Use CheckLayerState")]
         public static ObjectId CreateLayer([NotNull] this LayerInfo layerInfo, [NotNull] LayerTable lt)
         {
-            if (layerInfo.Name.IsNullOrEmpty()) return lt.Database.Clayer;
+            if (layerInfo.Name.IsNullOrEmpty())
+                return lt.Database.Clayer;
             ObjectId idLayer;
+
             // Если слоя нет, то он создается.
             using (var newLayer = new LayerTableRecord())
             {
                 layerInfo.SetProp(newLayer, lt.Database);
+
                 // ReSharper disable once UpgradeOpen
                 lt.UpgradeOpen();
                 idLayer = lt.Add(newLayer);
                 lt.DowngradeOpen();
             }
+
             return idLayer;
         }
 
@@ -187,6 +190,7 @@ namespace AcadLib.Layers
         {
             ObjectId idLayer;
             var db = HostApplicationServices.WorkingDatabase;
+
             // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.
 #pragma warning disable 618
             using (var lt = (LayerTable)db.LayerTableId.Open(OpenMode.ForRead))
@@ -194,13 +198,21 @@ namespace AcadLib.Layers
             {
                 idLayer = lt.Has(layerInfo.Name) ? lt[layerInfo.Name] : CreateLayer(layerInfo, lt);
             }
+
             return idLayer;
+        }
+
+        [NotNull]
+        private static List<LayerInfo> LayersFromLTR([NotNull] this IEnumerable<ObjectId> ltrIds)
+        {
+            return ltrIds.Select(s => new LayerInfo(s)).OrderBy(o => o.Name).ToList();
         }
 
         private static void CheckLayerState(ObjectId layerId, out string layerName)
         {
             layerName = null;
-            if (!layerId.IsValidEx()) return;
+            if (!layerId.IsValidEx())
+                return;
 #pragma warning disable 618
             using (var lay = (LayerTableRecord)layerId.Open(OpenMode.ForRead))
 #pragma warning restore 618
@@ -214,10 +226,12 @@ namespace AcadLib.Layers
                     {
                         lay.IsOff = false;
                     }
+
                     if (lay.IsLocked)
                     {
                         lay.IsLocked = false;
                     }
+
                     if (lay.IsFrozen)
                     {
                         lay.IsFrozen = false;
@@ -244,14 +258,17 @@ namespace AcadLib.Layers
                 case "КР-СБ-ГК":
                     return string.Empty;
             }
+
             if (usergroup.StartsWith("ГП"))
             {
                 return string.Empty;
             }
+
             if (usergroup.Contains(","))
             {
                 return string.Empty;
             }
+
             return usergroup == "ЖБК-ТО" ? "ОЗЖБК" : usergroup;
         }
     }

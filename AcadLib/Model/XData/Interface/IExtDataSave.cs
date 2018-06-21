@@ -1,8 +1,8 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.XData
 {
+    using Autodesk.AutoCAD.ApplicationServices;
+
     public interface IExtDataSave
     {
         /// <summary>

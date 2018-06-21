@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     [Obsolete]
     public static class ResultExtensions
@@ -26,6 +26,7 @@ namespace AcadLib
             {
                 action();
             }
+
             return result;
         }
 
@@ -37,7 +38,8 @@ namespace AcadLib
         [NotNull]
         public static Result OnSuccess([NotNull] this Result result, Action action)
         {
-            if (result.Failure) return result;
+            if (result.Failure)
+                return result;
             action();
             return Result.Ok();
         }
@@ -45,7 +47,8 @@ namespace AcadLib
         [NotNull]
         public static Result OnSuccess<T>([NotNull] this Result<T> result, Action<T> action)
         {
-            if (result.Failure) return result;
+            if (result.Failure)
+                return result;
             action(result.Value);
             return Result.Ok();
         }
@@ -70,23 +73,27 @@ namespace AcadLib
     [PublicAPI]
     public class Result
     {
-        public string Error { get; }
-        public bool Failure => !Success;
-        public bool Success { get; }
-
         protected Result(bool success, string error)
         {
             Success = success;
             Error = error;
         }
 
+        public string Error { get; }
+
+        public bool Failure => !Success;
+
+        public bool Success { get; }
+
         [NotNull]
         public static Result Combine([NotNull] params Result[] results)
         {
             foreach (var result in results)
             {
-                if (result.Failure) return result;
+                if (result.Failure)
+                    return result;
             }
+
             return Ok();
         }
 
@@ -117,11 +124,11 @@ namespace AcadLib
 
     public class Result<T> : Result
     {
-        public T Value { get; private set; }
-
         protected internal Result(T value, bool success, string error) : base(success, error)
         {
             Value = value;
         }
+
+        public T Value { get; private set; }
     }
 }

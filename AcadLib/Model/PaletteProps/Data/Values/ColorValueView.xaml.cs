@@ -5,7 +5,7 @@
     /// </summary>
     public partial class ColorValueView
     {
-        public ColorValueView(ColorValueVM vm) : base (vm)
+        public ColorValueView(ColorValueVM vm) : base(vm)
         {
             InitializeComponent();
         }

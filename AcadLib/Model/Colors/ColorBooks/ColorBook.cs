@@ -1,23 +1,24 @@
-﻿using AcadLib.Errors;
-using JetBrains.Annotations;
-using OfficeOpenXml;
-using System.Collections.Generic;
-using System.IO;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Colors
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using Errors;
+    using JetBrains.Annotations;
+    using OfficeOpenXml;
+
     [PublicAPI]
     public class ColorBook
     {
-        public List<ColorItem> Colors { get; set; }
-        public string Name { get; set; }
-
         public ColorBook(string name)
         {
             Name = name;
             Colors = new List<ColorItem>();
         }
+
+        public List<ColorItem> Colors { get; set; }
+
+        public string Name { get; set; }
 
         [NotNull]
         public static ColorBook ReadFromFile([NotNull] string NcsFile)
@@ -42,12 +43,14 @@ namespace AcadLib.Colors
                         Inspector.AddError($"Ошибка в ячейке [{row},2] - {r.Error}");
                         continue;
                     }
+
                     var g = GetByte(wsNcs.Cells[row, 3].Text);
                     if (g.Failure)
                     {
                         Inspector.AddError($"Ошибка в ячейке [{row},2] - {g.Error}");
                         continue;
                     }
+
                     var b = GetByte(wsNcs.Cells[row, 4].Text);
                     if (b.Failure)
                     {
@@ -59,6 +62,7 @@ namespace AcadLib.Colors
                     colorBookNcs.Colors.Add(colorItem);
                 } while (true);
             }
+
             return colorBookNcs;
         }
 

@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-namespace AcadLib.Comparers
+﻿namespace AcadLib.Comparers
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public class LineEqualityComparer : IEqualityComparer<Line>
     {
@@ -15,7 +15,7 @@ namespace AcadLib.Comparers
         private readonly Tolerance tolerance;
 
         /// <summary>
-        ///
+        /// Проверяет линии на совпадение
         /// </summary>
         /// <param name="vecTolerance">Допус паралельности векторов линий</param>
         /// <param name="maxWidth">Максимальное расстояние между линиями по ширине (расстояние между стартовыми точками двух линий в проекции к перпендикуляру направления линий)</param>
@@ -27,6 +27,7 @@ namespace AcadLib.Comparers
             this.maxInterval = maxInterval;
         }
 
+        /// <inheritdoc />
         public bool Equals(Line l1, Line l2)
         {
             Debug.Assert(l1 != null, nameof(l1) + " != null");
@@ -34,11 +35,20 @@ namespace AcadLib.Comparers
             var dir1 = l1.EndPoint - l1.StartPoint;
             var dir2 = l2.EndPoint - l2.StartPoint;
             var res = dir1.IsParallelTo(dir2, tolerance);
-            if (!res) return false;
-            if (WidthBetweenLines(l1, l2, dir1) > maxWidth) return false;
+            if (!res)
+            {
+                return false;
+            }
+
+            if (WidthBetweenLines(l1, l2, dir1) > maxWidth)
+            {
+                return false;
+            }
+
             return MaxLens(l1, l2) - (l1.Length + l2.Length) <= maxInterval;
         }
 
+        /// <inheritdoc />
         public int GetHashCode(Line line)
         {
             return 0;
@@ -48,10 +58,10 @@ namespace AcadLib.Comparers
         {
             return new[]
             {
-                (l1.StartPoint-l2.StartPoint).Length,
-                (l1.StartPoint-l2.EndPoint).Length,
-                (l1.EndPoint-l2.StartPoint).Length,
-                (l1.EndPoint-l2.EndPoint).Length,
+                (l1.StartPoint - l2.StartPoint).Length,
+                (l1.StartPoint - l2.EndPoint).Length,
+                (l1.EndPoint - l2.StartPoint).Length,
+                (l1.EndPoint - l2.EndPoint).Length,
             }.Max();
         }
 

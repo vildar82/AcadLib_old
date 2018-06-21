@@ -1,12 +1,12 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AcadLib.Jigs
+﻿namespace AcadLib.Jigs
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Перемещение (drag) группы объектов за мышкой
     /// </summary>
@@ -24,7 +24,8 @@ namespace AcadLib.Jigs
         /// <returns></returns>
         public static bool Drag(this Editor ed, [CanBeNull] ObjectId[] ids, Point3d pt)
         {
-            if (ids == null || !ids.Any()) return false;
+            if (ids == null || !ids.Any())
+                return false;
             var tolerance = new Tolerance(0.1, 0.1);
             var selSet = SelectionSet.FromObjectIds(ids);
             var ptInputLast = pt;
@@ -50,11 +51,14 @@ namespace AcadLib.Jigs
                         var ent = (Entity)item.GetObject(OpenMode.ForWrite, false, true);
                         ent.TransformBy(mat);
                     }
+
                     t.Commit();
                 }
+
                 ed.Regen();
                 return true;
             }
+
             using (var t = ed.Document.TransactionManager.StartTransaction())
             {
                 foreach (var id in ids)
@@ -62,8 +66,10 @@ namespace AcadLib.Jigs
                     var ent = id.GetObject(OpenMode.ForWrite);
                     ent.Erase();
                 }
+
                 t.Commit();
             }
+
             ed.Regen();
             return false;
         }
@@ -87,8 +93,10 @@ namespace AcadLib.Jigs
                     t.AddNewlyCreatedDBObject(ent, true);
                     ids.Add(ent.Id);
                 }
+
                 t.Commit();
             }
+
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var pt = Point3d.Origin;
@@ -99,8 +107,10 @@ namespace AcadLib.Jigs
                 {
                     var ent = (Entity)entId.GetObject(OpenMode.ForWrite, false, true);
                     var entExt = ent.GeometricExtents;
+
                     // левая верхняя точка объекта
                     var ptEntLT = new Point3d(entExt.MinPoint.X, entExt.MaxPoint.Y, 0);
+
                     // вектор от мин точки границы до лев верхней
                     var vecFromMinPtToLT = ptEntLT - entExt.MinPoint;
                     var vecHWithDelta = vecFromMinPtToLT * 1.1;
@@ -124,8 +134,10 @@ namespace AcadLib.Jigs
                         pt = pt - vecHWithDelta;
                     }
                 }
+
                 t.Commit();
             }
+
             if (ids.Any())
             {
                 ed.Drag(ids.ToArray(), Point3d.Origin);

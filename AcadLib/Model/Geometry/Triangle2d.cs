@@ -1,15 +1,53 @@
-﻿using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Represents a triangle in a 2d plane. It can be viewed as a structure consisting of three Point2d.
     /// </summary>
     public class Triangle2d : Triangle<Point2d>
     {
+        /// <summary>
+        /// Initializes a new instance of Triangle2d that is empty.
+        /// </summary>
+        public Triangle2d()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle2d that contains elements copied from the specified array.
+        /// </summary>
+        /// <param name="pts">The Point2d array whose elements are copied to the new Triangle2d.</param>
+        public Triangle2d([NotNull] Point2d[] pts) : base(pts)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle2d that contains the specified elements.
+        /// </summary>
+        /// <param name="a">The first vertex of the new Triangle2d (origin).</param>
+        /// <param name="b">The second vertex of the new Triangle2d (2nd vertex).</param>
+        /// <param name="c">The third vertex of the new Triangle2d (3rd vertex).</param>
+        public Triangle2d(Point2d a, Point2d b, Point2d c) : base(a, b, c)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Triangle2d according to an origin and two vectors.
+        /// </summary>
+        /// <param name="org">The origin of the Triangle2d (1st vertex).</param>
+        /// <param name="v1">The vector from origin to the second vertex.</param>
+        /// <param name="v2">The vector from origin to the third vertex.</param>
+        public Triangle2d(Point2d org, Vector2d v1, Vector2d v2)
+        {
+            _pts[0] = _pt0 = org;
+            _pts[1] = _pt1 = org + v1;
+            _pts[2] = _pt2 = org + v2;
+        }
+
         /// <summary>
         /// Gets the triangle algebraic (signed) area.
         /// </summary>
@@ -27,7 +65,8 @@ namespace AcadLib.Geometry
         [CanBeNull]
         public CircularArc2d CircumscribedCircle
         {
-            get {
+            get
+            {
                 var l1 = GetSegmentAt(0).GetBisector();
                 var l2 = GetSegmentAt(1).GetBisector();
                 var inters = l1.IntersectWith(l2);
@@ -41,7 +80,8 @@ namespace AcadLib.Geometry
         [CanBeNull]
         public CircularArc2d InscribedCircle
         {
-            get {
+            get
+            {
                 var v1 = _pt0.GetVectorTo(_pt1).GetNormal();
                 var v2 = _pt0.GetVectorTo(_pt2).GetNormal();
                 var v3 = _pt1.GetVectorTo(_pt2).GetNormal();
@@ -58,39 +98,6 @@ namespace AcadLib.Geometry
         /// Gets a value indicating whether the triangle vertices are clockwise.
         /// </summary>
         public bool IsClockwise => AlgebricArea < 0.0;
-
-        /// <summary>
-        /// Initializes a new instance of Triangle2d that is empty.
-        /// </summary>
-        public Triangle2d()
-        { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle2d that contains elements copied from the specified array.
-        /// </summary>
-        /// <param name="pts">The Point2d array whose elements are copied to the new Triangle2d.</param>
-        public Triangle2d([NotNull] Point2d[] pts) : base(pts) { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle2d that contains the specified elements.
-        /// </summary>
-        /// <param name="a">The first vertex of the new Triangle2d (origin).</param>
-        /// <param name="b">The second vertex of the new Triangle2d (2nd vertex).</param>
-        /// <param name="c">The third vertex of the new Triangle2d (3rd vertex).</param>
-        public Triangle2d(Point2d a, Point2d b, Point2d c) : base(a, b, c) { }
-
-        /// <summary>
-        /// Initializes a new instance of Triangle2d according to an origin and two vectors.
-        /// </summary>
-        /// <param name="org">The origin of the Triangle2d (1st vertex).</param>
-        /// <param name="v1">The vector from origin to the second vertex.</param>
-        /// <param name="v2">The vector from origin to the third vertex.</param>
-        public Triangle2d(Point2d org, Vector2d v1, Vector2d v2)
-        {
-            _pts[0] = _pt0 = org;
-            _pts[1] = _pt1 = org + v1;
-            _pts[2] = _pt2 = org + v2;
-        }
 
         /// <summary>
         /// Converts the triangle into a Triangle3d according to the specified plane.
@@ -125,8 +132,9 @@ namespace AcadLib.Geometry
             const double pi = 3.141592653589793;
             var ang =
                 this[index].GetVectorTo(this[(index + 1) % 3]).GetAngleTo(
-                this[index].GetVectorTo(this[(index + 2) % 3]));
-            if (ang > pi * 2) return pi * 2 - ang;
+                    this[index].GetVectorTo(this[(index + 2) % 3]));
+            if (ang > pi * 2)
+                return pi * 2 - ang;
             return ang;
         }
 
@@ -140,7 +148,8 @@ namespace AcadLib.Geometry
         [NotNull]
         public LineSegment2d GetSegmentAt(int index)
         {
-            if (index > 2) throw new IndexOutOfRangeException("Index out of range");
+            if (index > 2)
+                throw new IndexOutOfRangeException("Index out of range");
             return new LineSegment2d(this[index], this[(index + 1) % 3]);
         }
 
@@ -179,6 +188,7 @@ namespace AcadLib.Geometry
                 if (inters != null && inters.Length != 0 && !result.Contains(inters[0]))
                     result.Add(inters[0]);
             }
+
             return result;
         }
 

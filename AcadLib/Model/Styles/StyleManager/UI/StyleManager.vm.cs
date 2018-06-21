@@ -1,13 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using NetLib.WPF;
-using ReactiveUI;
-
-namespace AcadLib.Styles.StyleManager.UI
+﻿namespace AcadLib.Styles.StyleManager.UI
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using NetLib.WPF;
+    using ReactiveUI;
+
     public class StyleManagerVM : BaseViewModel
     {
         public StyleManagerVM()
@@ -42,7 +42,7 @@ namespace AcadLib.Styles.StyleManager.UI
             {
                 Name = s.Key.ToString(),
                 Id = (ObjectId)s.Value
-            }).OrderBy(o=>o.Name);
+            }).OrderBy(o => o.Name);
             return new StyleTable(this)
             {
                 Name = name,
@@ -55,11 +55,11 @@ namespace AcadLib.Styles.StyleManager.UI
         private StyleTable GetStyleTable(ObjectId symbolTableId, string name)
         {
             var table = symbolTableId.GetObjectT<SymbolTable>();
-            var styles = table.GetObjects<SymbolTableRecord>().Select(s=>new Style(this)
+            var styles = table.GetObjects<SymbolTableRecord>().Select(s => new Style(this)
             {
                 Name = s.Name,
                 Id = s.Id
-            }).OrderBy(o=>o.Name);
+            }).OrderBy(o => o.Name);
             return new StyleTable(this)
             {
                 Name = name,

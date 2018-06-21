@@ -5,7 +5,7 @@
     /// </summary>
     public partial class TestPaletteView
     {
-        public TestPaletteView(PalettePropsView palette) 
+        public TestPaletteView(PalettePropsView palette)
         {
             InitializeComponent();
             Presenter.Content = palette;

@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Windows.Controls;
-
-namespace AcadLib.User.UsersEditor
+﻿namespace AcadLib.User.UsersEditor
 {
+    using System.Linq;
+    using System.Windows.Controls;
+
     /// <summary>
     /// Interaction logic for UsersEditorView.xaml
     /// </summary>
@@ -16,7 +16,7 @@ namespace AcadLib.User.UsersEditor
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var sel = dgUsers.SelectedItems.Cast<EditAutocadUsers>().ToList();
-            ((UsersEditorVM) Model).SelectedUsers = sel;
+            ((UsersEditorVM)Model).SelectedUsers = sel;
         }
     }
 }

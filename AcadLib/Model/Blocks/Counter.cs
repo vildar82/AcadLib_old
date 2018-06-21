@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System.Collections.Generic;
+    using System.Text;
+    using JetBrains.Annotations;
+
     public static class Counter
     {
         private static Dictionary<string, int> _counter;
@@ -44,6 +44,7 @@ namespace AcadLib.Blocks
             {
                 report.AppendLine($"\n{counter.Key} - {counter.Value} блоков.");
             }
+
             return report.ToString();
         }
     }

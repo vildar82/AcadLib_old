@@ -1,16 +1,16 @@
-﻿using AcadLib.Blocks.Dublicate.Tree;
-using AcadLib.Errors;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib.Blocks.Dublicate
+﻿namespace AcadLib.Blocks.Dublicate
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using Errors;
+    using JetBrains.Annotations;
+    using Tree;
+
     /// <summary>
     /// Проверка наложения блоков в пространстве модели
     /// Inspector очищается до и после!
@@ -24,6 +24,7 @@ namespace AcadLib.Blocks.Dublicate
         private static HashSet<ObjectId> attemptedblocks;
         private static int curDepth;
         private static Dictionary<string, Dictionary<PointTree, List<BlockRefDublicateInfo>>> dictBlRefInfos;
+
         public static Tolerance Tolerance { get; set; } = new Tolerance(0.2, 10);
 
         public static void Check()
@@ -59,23 +60,24 @@ namespace AcadLib.Blocks.Dublicate
                         var ms = (BlockTableRecord)SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
                         idsBlRefs = ms;
                     }
+
                     GetDublicateBlocks(idsBlRefs, Matrix3d.Identity, 0);
                     t.Commit();
                 }
 
                 // дублирующиеся блоки
                 AllDublicBlRefInfos = dictBlRefInfos.SelectMany(s => s.Value.Values).Where(w => w.Count > 1)
-                                        .SelectMany(s => s.GroupBy(g => g).Where(w => w.Skip(1).Any()))
-                                        .Select(s =>
-                                           {
-                                               var bi = s.First();
-                                               bi.CountDublic = s.Count();
-                                               bi.Dublicates = s.Skip(1).ToList();
-                                               return bi;
-                                           }).ToList();
+                    .SelectMany(s => s.GroupBy(g => g).Where(w => w.Skip(1).Any()))
+                    .Select(s =>
+                    {
+                        var bi = s.First();
+                        bi.CountDublic = s.Count();
+                        bi.Dublicates = s.Skip(1).ToList();
+                        return bi;
+                    }).ToList();
 
                 // Добавление дубликатов в результирующий список
-                //AddTransformedToModelDublic(dublicBlRefInfos);
+                // AddTransformedToModelDublic(dublicBlRefInfos);
             }
             catch (Exception ex)
             {
@@ -93,10 +95,13 @@ namespace AcadLib.Blocks.Dublicate
                 {
                     var err = new Error($"Дублирование блоков '{dublBlRefInfo.Name}' - " +
                                         $"{dublBlRefInfo.CountDublic} шт. в точке {dublBlRefInfo.Position.ToString()}",
-                       dublBlRefInfo.IdBlRef, dublBlRefInfo.TransformToModel, System.Drawing.SystemIcons.Error)
+                        dublBlRefInfo.IdBlRef,
+                        dublBlRefInfo.TransformToModel,
+                        System.Drawing.SystemIcons.Error)
                     {
                         Tag = dublBlRefInfo
                     };
+
                     _errors.Add(err);
                 }
             }
@@ -125,12 +130,14 @@ namespace AcadLib.Blocks.Dublicate
             {
                 using (var t = blDublicatesToDel.FirstOrDefault()?.IdBlRef.Database.TransactionManager.StartTransaction())
                 {
-                    if (t == null) return;
+                    if (t == null)
+                        return;
                     foreach (var dublBl in blDublicatesToDel)
                     {
                         var blTodel = (BlockReference)dublBl.IdBlRef.GetObject(OpenMode.ForWrite, false, true);
                         blTodel.Erase();
                     }
+
                     t.Commit();
                 }
             }
@@ -144,10 +151,13 @@ namespace AcadLib.Blocks.Dublicate
 
             foreach (var item in ids)
             {
-                if (!(item is ObjectId)) continue;
+                if (!(item is ObjectId))
+                    continue;
                 var idEnt = (ObjectId)item;
-                if (!idEnt.IsValidEx()) continue;
+                if (!idEnt.IsValidEx())
+                    continue;
                 var dbo = idEnt.GetObject(OpenMode.ForRead, false, true);
+
                 // Проверялся ли уже такое определение блока
                 if (isFirstDbo)
                 {
@@ -159,7 +169,8 @@ namespace AcadLib.Blocks.Dublicate
                 }
 
                 var blRef = dbo as BlockReference;
-                if (blRef == null || !blRef.Visible) continue;
+                if (blRef == null || !blRef.Visible)
+                    continue;
                 var blRefInfo = new BlockRefDublicateInfo(blRef, transToModel, rotate);
 
                 if (_ignoreBlocks != null && _ignoreBlocks.Contains(blRefInfo.Name, StringComparer.OrdinalIgnoreCase))
@@ -174,11 +185,13 @@ namespace AcadLib.Blocks.Dublicate
                     dictPointsBlInfos = new Dictionary<PointTree, List<BlockRefDublicateInfo>>();
                     dictBlRefInfos.Add(blRefInfo.Name, dictPointsBlInfos);
                 }
+
                 if (!dictPointsBlInfos.TryGetValue(ptTree, out var listBiAtPoint))
                 {
                     listBiAtPoint = new List<BlockRefDublicateInfo>();
                     dictPointsBlInfos.Add(ptTree, listBiAtPoint);
                 }
+
                 listBiAtPoint.Add(blRefInfo);
 
                 idsBtrNext.Add(new Tuple<ObjectId, Matrix3d, double>(

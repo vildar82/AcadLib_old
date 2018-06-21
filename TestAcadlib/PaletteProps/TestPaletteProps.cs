@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Windows.Controls;
 using AcadLib;
 using AcadLib.PaletteProps;
+using AcadLib.PaletteProps.UI;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
@@ -25,13 +26,15 @@ namespace TestAcadlib.PaletteProps
         public void TestPalettePropsCom()
         {
             PalletePropsService.Registry("Test", GetTypes);
+            var testView = new TestPaletteView(new PalettePropsView(PalletePropsService.propsVM));
+            testView.Show();
         }
 
         [NotNull]
         public static List<PalettePropsType> GetTypes([NotNull] ObjectId[] ids, Document doc)
         {
             var types = new List<PalettePropsType>();
-            foreach (var typeEnts in ids.GetObjects<Circle>().GroupBy(g=>g.GetType()))
+            foreach (var typeEnts in ids.GetObjects<Circle>().GroupBy(g => g.GetType()))
             {
                 var ents = typeEnts.ToList();
                 var typeProps = new PalettePropsType
@@ -49,6 +52,7 @@ namespace TestAcadlib.PaletteProps
                 };
                 types.Add(typeProps);
             }
+
             //types.AddRange(Enumerable.Range(0,1).Select(s=> new PalettePropsType
             //{
             //    Name = $"Type{s}",
@@ -75,6 +79,7 @@ namespace TestAcadlib.PaletteProps
                 ivm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(s => UpdateValue(s, ids));
                 return new IntListValueView(ivm);
             }
+
             var ilvm = new IntValueVM {Value = i, Min = 1, Max = 10};
             ilvm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(s => UpdateValue(s, ids));
             return new IntValueView(ilvm);
@@ -99,7 +104,7 @@ namespace TestAcadlib.PaletteProps
         {
             var vm = new IntValueVM
             {
-                Value = GetValue(ents.GroupBy(g => (int) g.Radius).Select(s => s.Key)),
+                Value = GetValue(ents.GroupBy(g => (int)g.Radius).Select(s => s.Key)),
                 IsReadOnly = isReadObly,
                 Min = 1, Max = 1000
             };
@@ -111,13 +116,14 @@ namespace TestAcadlib.PaletteProps
                 Tooltip = $"Help IntValueVM isReadObly={isReadObly}.",
             };
         }
+
         [NotNull]
         private static PalettePropVM GetIntListProp(List<Circle> ents, string propName, bool isReadObly, bool allowCustomValue)
         {
             var vm = new IntListValueVM
             {
                 Values = new List<int> { 1, 10, 50, 100, 500, 1000 },
-                Value = GetValue(ents.GroupBy(g => (int) g.Radius).Select(s => s.Key)), 
+                Value = GetValue(ents.GroupBy(g => (int)g.Radius).Select(s => s.Key)),
                 AllowCustomValue = allowCustomValue,
                 IsReadOnly = isReadObly,
                 Min = 1, Max = 1000
@@ -133,7 +139,8 @@ namespace TestAcadlib.PaletteProps
 
         private static int? GetValue(IEnumerable<int> values)
         {
-            if (values.Skip(1).Any()) return null;
+            if (values.Skip(1).Any())
+                return null;
             return values.First();
         }
 
@@ -147,6 +154,7 @@ namespace TestAcadlib.PaletteProps
                 {
                     circle.Radius = value ?? 100;
                 }
+
                 t.Commit();
                 Utils.FlushGraphics();
             }
