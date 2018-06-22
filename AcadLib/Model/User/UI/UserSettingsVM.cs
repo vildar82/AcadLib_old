@@ -58,7 +58,7 @@
 
         private List<UserGroup> LoadGroups()
         {
-            var fileGroups = Path.Combine(PikSettings.CurDllLocation, "groups.json");
+            var fileGroups = Path.Combine(PikSettings.ServerSettingsFolder, @"Общие\Dll\groups.json");
             var groups = fileGroups.Deserialize<Dictionary<string, string>>();
             return groups.Select(s => new UserGroup
             {

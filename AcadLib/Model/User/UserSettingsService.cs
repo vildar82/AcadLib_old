@@ -5,6 +5,7 @@
     using System.Net;
     using System.Text;
     using System.Windows.Media.Imaging;
+    using Autodesk.AutoCAD.ApplicationServices;
     using JetBrains.Annotations;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
