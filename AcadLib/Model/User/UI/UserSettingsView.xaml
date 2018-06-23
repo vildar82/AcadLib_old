@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:AcadLib.User.UI"
         xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-                d:DataContext="{d:DesignInstance local:UserSettingsVM}"
+        xmlns:user="clr-namespace:AcadLib.User"
+        xmlns:properties="clr-namespace:AcadLib.Properties"
+        xmlns:converters="clr-namespace:NetLib.WPF.Converters;assembly=NetLib"
+        d:DataContext="{d:DesignInstance local:UserSettingsVM}"
         mc:Ignorable="d"
         Topmost="True"
         ResizeMode="NoResize"
@@ -30,6 +33,31 @@
                     VerticalAlignment="Center"/>
         </StackPanel>
         <CheckBox IsChecked="{Binding Disabled}" Margin="5" Content="Отключить настройки"/>
+        <ItemsControl ItemsSource="{Binding UserSettings.PluginSettings}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="user:PluginSettings">
+                    <ItemsControl ItemsSource="{Binding Properties}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="user:UserProperty">
+                                <Grid ToolTip="{Binding Description}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="{Binding UserSettingsPropsWidth, 
+													Source={x:Static properties:Settings.Default}, 
+													Converter={converters:GridLengthConverter}, Mode=TwoWay}"/>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                                    <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"
+                                                  Background="Transparent"/>
+                                    <ContentControl Grid.Column="2" Content="{Binding ValueControl}" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
         <TextBlock Text="Изменения применятся при перезапуске автокада!" TextWrapping="Wrap" Margin="1,10,1,1"
                    Foreground="OrangeRed"/>
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">

@@ -6,7 +6,7 @@
 
     public static class Logger
     {
-        public static readonly LoggAddinExt Log;
+        [NotNull] public static readonly LoggAddinExt Log;
 
         [PublicAPI]
         public static readonly string UserGroup = AutoCAD_PIK_Manager.Settings.PikSettings.UserGroup;

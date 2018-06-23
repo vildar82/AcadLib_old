@@ -53,6 +53,7 @@ namespace AcadLib
     [PublicAPI]
     public class Commands : IExtensionApplication
     {
+        public static event EventHandler Quite;
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
 
@@ -144,6 +145,9 @@ namespace AcadLib
                 {
                     UserSettingsService.Show();
                 }
+
+                // Восстановление вкладок чертежей
+                Utils.Tabs.RestoreTabs.Restore();
             }
             catch (Exception ex)
             {
@@ -154,6 +158,7 @@ namespace AcadLib
 
         public void Terminate()
         {
+            Quite?.Invoke(null, EventArgs.Empty);
             Logger.Log.Info("Terminatenh AcadLib");
         }
 

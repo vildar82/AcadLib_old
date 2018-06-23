@@ -3,9 +3,10 @@
     /// <summary>
     /// Interaction logic for ColorValueView.xaml
     /// </summary>
-    public partial class ColorValueView
+    public partial class ColorView
     {
-        public ColorValueView(ColorValueVM vm) : base(vm)
+        public ColorView(ColorVM vm)
+            : base(vm)
         {
             InitializeComponent();
         }

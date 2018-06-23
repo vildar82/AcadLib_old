@@ -37,7 +37,7 @@
                     Properties = Enumerable.Range(0, 10).Select(p => new PalettePropVM
                     {
                         Name = $"Prop{p}",
-                        ValueControl = new IntValueView(new IntValueVM { Value = 5, Min = 1, Max = 10 })
+                        ValueControl = new IntView(new IntVM { Value = 5, Min = 1, Max = 10 })
                     }).ToList()
                 }).ToList()
             }));

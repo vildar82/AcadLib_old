@@ -3,9 +3,10 @@
     /// <summary>
     /// Interaction logic for IntListValueView.xaml
     /// </summary>
-    public partial class IntListValueView
+    public partial class IntListView
     {
-        public IntListValueView(IntListValueVM vm) : base(vm, false)
+        public IntListView(IntListVM vm)
+            : base(vm, false)
         {
             InitializeComponent();
         }

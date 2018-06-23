@@ -3,9 +3,10 @@
     /// <summary>
     /// Interaction logic for StringValueView.xaml
     /// </summary>
-    public partial class StringValueView
+    public partial class StringView
     {
-        public StringValueView(StringValueVM vm) : base(vm)
+        public StringView(StringVM vm)
+            : base(vm)
         {
             InitializeComponent();
         }

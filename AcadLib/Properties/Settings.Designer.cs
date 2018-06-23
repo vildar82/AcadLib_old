@@ -113,5 +113,17 @@ namespace AcadLib.Properties {
                 return ((string)(this["EFAutocadUsersConStr"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("150")]
+        public double UserSettingsPropsWidth {
+            get {
+                return ((double)(this["UserSettingsPropsWidth"]));
+            }
+            set {
+                this["UserSettingsPropsWidth"] = value;
+            }
+        }
     }
 }

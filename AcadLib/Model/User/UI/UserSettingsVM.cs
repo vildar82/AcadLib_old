@@ -12,9 +12,10 @@
 
     public class UserSettingsVM : BaseViewModel
     {
-        public UserSettingsVM(AutocadUser user)
+        public UserSettingsVM(AutocadUser user, UserSettings userSettings)
         {
             User = user;
+            UserSettings = userSettings;
             Groups = LoadGroups();
             if (user != null && !user.Group.IsNullOrEmpty())
             {
@@ -35,16 +36,39 @@
             this.WhenAnyValue(v => v.Group).Subscribe(s => UpdateExtraGroups());
         }
 
+        /// <summary>
+        /// Данные пользователя из базы
+        /// </summary>
         public AutocadUser User { get; set; }
 
+        /// <summary>
+        /// Настройки пользователя по плагинам
+        /// </summary>
+        public UserSettings UserSettings { get; }
+
+        /// <summary>
+        /// Группы настроек
+        /// </summary>
         public List<UserGroup> Groups { get; set; }
 
+        /// <summary>
+        /// Выбранная группа настроек
+        /// </summary>
         public UserGroup Group { get; set; }
 
+        /// <summary>
+        /// Список для дополнительной группы настроек
+        /// </summary>
         public List<UserGroup> ExtraGroups { get; set; }
 
+        /// <summary>
+        /// Выбранная дополнительная группа настроек
+        /// </summary>
         public UserGroup ExtraGroup { get; set; }
 
+        /// <summary>
+        /// Отключены настроек
+        /// </summary>
         public bool Disabled { get; set; }
 
         public ReactiveCommand Ok { get; set; }

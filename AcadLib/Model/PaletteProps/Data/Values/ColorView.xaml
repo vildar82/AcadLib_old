@@ -1,4 +1,4 @@
-﻿<wpf:BaseUserControl x:Class="AcadLib.PaletteProps.ColorValueView"
+﻿<wpf:BaseUserControl x:Class="AcadLib.PaletteProps.ColorView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,7 @@
     xmlns:controls="clr-namespace:AcadLib.WPF.Controls"
     xmlns:paletteProps="clr-namespace:AcadLib.PaletteProps"
     xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
-    d:DataContext="{d:DesignInstance paletteProps:ColorValueVM}"
+    d:DataContext="{d:DesignInstance paletteProps:ColorVM}"
     mc:Ignorable="d" >
     <controls:AcadColorPick Color="{Binding Value}"/>
 </wpf:BaseUserControl>
