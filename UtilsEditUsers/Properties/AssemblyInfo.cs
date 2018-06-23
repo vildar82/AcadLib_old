@@ -19,7 +19,7 @@ using System.Windows;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 [assembly: ThemeInfo(
-    ResourceDictionaryLocation.None, 
+    ResourceDictionaryLocation.None,
     ResourceDictionaryLocation.SourceAssembly)]
 
 // Version information for an assembly consists of the following four values:
@@ -32,5 +32,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.172.78")]
-[assembly: AssemblyFileVersion("1.0.172.102")]
+[assembly: AssemblyVersion("1.0.174.80")]
+[assembly: AssemblyFileVersion("1.0.174.104")]

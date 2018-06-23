@@ -173,12 +173,6 @@ namespace AcadLib
             CommandStart.Start(doc => { UserSettingsService.Show(); });
         }
 
-        [CommandMethod(Group, "PIK_Users", CommandFlags.Modal)]
-        public void PIK_Users()
-        {
-            CommandStart.Start(doc => { UserSettingsService.UsersEditor(); });
-        }
-
         [CommandMethod(Group, CommandBlockList, CommandFlags.Modal)]
         public void BlockListCommand()
         {

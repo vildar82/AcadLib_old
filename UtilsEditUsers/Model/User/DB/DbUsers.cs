@@ -1,4 +1,4 @@
-﻿namespace AcadLib.User.DB
+﻿namespace UtilsEditUsers.Model.User.DB
 {
     using System;
     using System.Collections.Generic;
@@ -6,11 +6,6 @@
     using System.Data.SqlClient;
     using System.Linq;
     using JetBrains.Annotations;
-#if Utils
-    using UtilsEditUsers.Model.User.DB;
-#else
-    using AcadLib.Model.User.DB;
-#endif
 
     [PublicAPI]
     public class DbUsers : IDisposable

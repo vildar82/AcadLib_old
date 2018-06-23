@@ -46,14 +46,13 @@
                     DocumentSelectionChangeSubscribe(doc as Document);
                 }
 
-                palette = new PaletteSet("ПИК Свойства", nameof(Commands.PIK_PaletteProperties),
+                palette = new PaletteSet("ПИК Свойства", 
+                    nameof(Commands.PIK_PaletteProperties),
                     new Guid("F1FFECA8-A9AE-47D6-8682-752D6AF1A15B"));
                 palette.StateChanged += Palette_StateChanged;
                 var propsView = new PalettePropsView(propsVM);
                 var host = new ElementHost { Child = propsView };
                 palette.Add("Свойства", host);
-
-                // palette.AddVisual("Свойства", propsView);
             }
 
             palette.Visible = true;
@@ -102,7 +101,7 @@
         {
             var doc = AcadHelper.Doc;
             var sel = doc.Editor.SelectImplied();
-            if (providers.Any() && sel.Status != PromptStatus.OK || sel.Value.Count == 0)
+            if ((providers.Any() && sel.Status != PromptStatus.OK) || sel.Value.Count == 0)
             {
                 // Очистить палитру свойств
                 propsVM.Clear();

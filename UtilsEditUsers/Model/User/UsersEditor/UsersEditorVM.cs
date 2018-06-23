@@ -1,12 +1,4 @@
-﻿#if Utils
-using UtilsEditUsers.Model.User.DB;
-#else
-using Path = AcadLib.IO.Path;
-using AutoCAD_PIK_Manager.Settings;
-using AcadLib.Model.User.DB;
-#endif
-
-namespace AcadLib.User.UsersEditor
+﻿namespace UtilsEditUsers.Model.User.UsersEditor
 {
     using System;
     using System.Collections.Concurrent;
@@ -26,38 +18,28 @@ namespace AcadLib.User.UsersEditor
     using NetLib.WPF;
     using NetLib.WPF.Data;
     using ReactiveUI;
-    using UI;
-    using General = AcadLib.General;
-    using Path = IO.Path;
 
     public class UsersEditorVM : BaseViewModel
     {
-        private static Brush colorOk = new SolidColorBrush(System.Windows.Media.Colors.MediumSeaGreen);
-        private static Brush colorErr = new SolidColorBrush(System.Windows.Media.Colors.IndianRed);
-#if Utils
         const string serverSettingsDir = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\Адаптация";
         const string serverShareDir = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\ShareSettings";
-#endif
+        private static Brush colorOk = new SolidColorBrush(Colors.MediumSeaGreen);
+        private static Brush colorErr = new SolidColorBrush(Colors.IndianRed);
+        private readonly BitmapImage imageNo;
         private ConcurrentDictionary<string, (string dep, string pos, BitmapImage img)> dictUsersEx =
             new ConcurrentDictionary<string, (string dep, string pos, BitmapImage img)>();
         private List<EditAutocadUsers> users;
         private DbUsers dbUsers;
         private FileLock fileLock;
-        private readonly BitmapImage imageNo;
         private IObservable<bool> canEdit;
 
         public UsersEditorVM()
         {
-#if Utils
             imageNo = new BitmapImage(new Uri("pack://application:,,,/Resources/no-user.png"));
             var groups = ADUtils.GetCurrentUserADGroups(out _);
             IsBimUser = groups.Any(g => g.EqualsIgnoreCase("010583_Отдел разработки и автоматизации") ||
-                                    g.EqualsIgnoreCase("010596_Отдел внедрения ВIM") ||
-                                    g.EqualsIgnoreCase("010576_УИТ"));
-#else
-            IsBimUser = General.IsBimUser;
-#endif
-
+                                        g.EqualsIgnoreCase("010596_Отдел внедрения ВIM") ||
+                                        g.EqualsIgnoreCase("010576_УИТ"));
             dbUsers = new DbUsers();
             this.WhenAnyValue(v => v.EditMode).Subscribe(ChangeMode);
             this.WhenAnyValue(v => v.SelectedUsers).Subscribe(s => OnSelected());
@@ -108,6 +90,24 @@ namespace AcadLib.User.UsersEditor
         public UserGroup GroupServerVersion { get; set; }
 
         public int UsersCount { get; set; }
+
+#if Utils
+        private static List<string> LoadUserGroups()
+        {
+            var stringList = new List<string>();
+            try
+            {
+                const string file = serverSettingsDir + @"\Общие\Dll\groups.json";
+                stringList = file.Deserialize<Dictionary<string, string>>().Keys.ToList();
+            }
+            catch
+            {
+                //
+            }
+
+            return stringList;
+        }
+#endif
 
         private async void LoadUsers()
         {
@@ -185,10 +185,10 @@ namespace AcadLib.User.UsersEditor
 
                 foreach (var dirGroup in Directory.EnumerateDirectories(dirGroups).OrderBy(o => o))
                 {
-                    var groupName = System.IO.Path.GetFileName(dirGroup);
+                    var groupName = Path.GetFileName(dirGroup);
                     if (string.IsNullOrEmpty(groupName))
                         continue;
-                    var verFile = System.IO.Path.Combine(dirGroup, $"{groupName}.ver");
+                    var verFile = Path.Combine(dirGroup, $"{groupName}.ver");
                     var ver = verFile.Try(f => File.ReadLines(f).FirstOrDefault());
                     if (ver.IsNullOrEmpty())
                         continue;
@@ -261,25 +261,6 @@ namespace AcadLib.User.UsersEditor
 
             return res;
         }
-
-#if Utils
-        private static List<string> LoadUserGroups()
-        {
-            var stringList = new List<string>();
-            try
-            {
-
-                const string file = serverSettingsDir + @"\Общие\Dll\groups.json";
-                stringList = file.Deserialize<Dictionary<string, string>>().Keys.ToList();
-            }
-            catch
-            {
-                //
-            }
-
-            return stringList;
-        }
-#endif
 
         private void ChangeMode(bool editMode)
         {

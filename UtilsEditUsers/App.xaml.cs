@@ -1,9 +1,10 @@
-﻿using System;
-using System.Windows;
-using AcadLib.User.UsersEditor;
-using NLog;
-namespace UtilsEditUsers
+﻿namespace UtilsEditUsers
 {
+    using System;
+    using System.Windows;
+    using Model.User;
+    using NLog;
+
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -15,9 +16,7 @@ namespace UtilsEditUsers
         {
             try
             {
-                var usersVM = new UsersEditorVM();
-                var usersView = new UsersEditorView(usersVM);
-                usersView.Show();
+                UserSettingsService.UsersEditor();
             }
             catch (Exception ex)
             {

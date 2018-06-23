@@ -1,12 +1,12 @@
-﻿<wpf:BaseWindow x:Class="AcadLib.User.UsersEditor.UsersEditorView"
+﻿<wpf:BaseWindow x:Class="UtilsEditUsers.Model.User.UsersEditor.UsersEditorView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AcadLib.User.UsersEditor"
-        xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
+                xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-        d:DataContext="{d:DesignInstance local:UsersEditorVM}"
+        xmlns:usersEditor="clr-namespace:UtilsEditUsers.Model.User.UsersEditor"
+        d:DataContext="{d:DesignInstance usersEditor:UsersEditorVM}"
         mc:Ignorable="d"
         WindowState="Maximized"
         ShowMaxRestoreButton="True"
@@ -52,7 +52,7 @@
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Фото">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="local:EditAutocadUsers">
+                        <DataTemplate DataType="usersEditor:EditAutocadUsers">
                             <Image Source="{Binding Image}" Height="30">
                                 <Image.ToolTip>
                                     <Image Source="{Binding Image}"/>
@@ -67,7 +67,7 @@
                 <DataGridTextColumn Header="Версия" Binding="{Binding Version}"/>
                 <DataGridTemplateColumn Header="Версия">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="local:EditAutocadUsers">
+                        <DataTemplate DataType="usersEditor:EditAutocadUsers">
                             <TextBlock Text="{Binding Version}" VerticalAlignment="Center"
                                        Background="{Binding VersionColor}"
                                        ToolTip="{Binding VersionTooltip}"/>
@@ -80,7 +80,7 @@
                 <DataGridTextColumn Header="Должность" Binding="{Binding AdPosition}" Width="250"/>
                 <DataGridTemplateColumn Header="Удалить">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="local:EditAutocadUsers">
+                        <DataTemplate DataType="usersEditor:EditAutocadUsers">
                             <Button Content="x" VerticalContentAlignment="Center" 
                                     Command="{Binding DataContext.DeleteUser, ElementName=dgUsers}" HorizontalAlignment="Center"
                                     CommandParameter="{Binding}"

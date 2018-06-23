@@ -1,4 +1,4 @@
-﻿namespace AcadLib.User.UsersEditor
+﻿namespace UtilsEditUsers.Model.User.UsersEditor
 {
     using System.Linq;
     using System.Windows.Controls;

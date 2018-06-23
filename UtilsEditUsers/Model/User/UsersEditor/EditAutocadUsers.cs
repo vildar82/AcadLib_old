@@ -1,13 +1,9 @@
-﻿namespace AcadLib.User.UsersEditor
+﻿namespace UtilsEditUsers.Model.User.UsersEditor
 {
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using DB;
     using NetLib.WPF;
-#if Utils
-    using UtilsEditUsers.Model.User.DB;
-#else
-    using AcadLib.Model.User.DB;
-#endif
 
     public class EditAutocadUsers : BaseModel
     {

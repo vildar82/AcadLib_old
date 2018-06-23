@@ -39,7 +39,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;Utils</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-	<CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -50,7 +50,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;Utils</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-	<CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -95,25 +95,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="..\AcadLib\Model\User\DB\DbUsers.cs">
-      <Link>Model\User\DB\DbUsers.cs</Link>
-    </Compile>
-    <Compile Include="..\AcadLib\Model\User\UI\UserGroup.cs">
-      <Link>source\UserGroup.cs</Link>
-    </Compile>
-    <Compile Include="..\AcadLib\Model\User\UsersEditor\EditAutocadUsers.cs">
-      <Link>source\EditAutocadUsers.cs</Link>
-    </Compile>
-    <Compile Include="..\AcadLib\Model\User\UsersEditor\UsersEditorView.xaml.cs">
-      <Link>source\UsersEditorView.xaml.cs</Link>
-      <DependentUpon>UsersEditorView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="..\AcadLib\Model\User\UsersEditor\UsersEditorVM.cs">
-      <Link>source\UsersEditorVM.cs</Link>
-    </Compile>
-    <Compile Include="..\AcadLib\Model\User\UserSettingsService.cs">
-      <Link>Model\User\UserSettingsService.cs</Link>
-    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -121,6 +102,7 @@
     <Compile Include="Model\User\DB\AutocadUsers.cs">
       <DependentUpon>Users.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\User\DB\DbUsers.cs" />
     <Compile Include="Model\User\DB\Users.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -138,6 +120,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\User\UserGroup.cs" />
+    <Compile Include="Model\User\UsersEditor\EditAutocadUsers.cs" />
+    <Compile Include="Model\User\UsersEditor\UsersEditorView.xaml.cs">
+      <DependentUpon>UsersEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\User\UsersEditor\UsersEditorVM.cs" />
+    <Compile Include="Model\User\UserSettingsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -490,13 +479,6 @@
     <Resource Include="images.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="..\AcadLib\Model\User\UsersEditor\UsersEditorView.xaml">
-      <Link>source\UsersEditorView.xaml</Link>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
@@ -517,6 +499,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Model\User\UsersEditor\UsersEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
