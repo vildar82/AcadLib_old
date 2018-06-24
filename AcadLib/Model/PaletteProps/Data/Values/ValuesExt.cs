@@ -18,10 +18,10 @@
         {
             switch (value)
             {
-                case bool b: return BoolVM.Create(b, v => update(b));
-                case int i: return IntVM.Create(i, v => update(i));
-                case double d: return DoubleVM.Create(d, v => update(d));
-                case string s: return StringVM.Create(s, v => update(s));
+                case bool b: return BoolVM.Create(b, v => update(v));
+                case int i: return IntVM.Create(i, v => update(v));
+                case double d: return DoubleVM.Create(d, v => update(v));
+                case string s: return StringVM.Create(s, v => update(v));
             }
 
             return null;

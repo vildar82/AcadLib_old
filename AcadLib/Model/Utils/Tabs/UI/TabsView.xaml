@@ -6,21 +6,33 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:AcadLib.Utils.Tabs.UI"
         xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
+        xmlns:tabs="clr-namespace:AcadLib.Utils.Tabs"
         d:DataContext="{d:DesignInstance local:TabsVM}"
+        ShowMaxRestoreButton="False"
+        ShowMinButton="False"
         mc:Ignorable="d"
         Title="Восстановление вкладок">
-    <Grid>
+    <Grid Margin="1">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ItemsControl ItemsSource="{Binding Tabs}">
-
-        </ItemsControl>
+        <DataGrid Grid.Row="0" Margin="5" ItemsSource="{Binding Tabs}" AutoGenerateColumns="False" CanUserAddRows="False"
+                  CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False">
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Header="Открыть" Binding="{Binding Restore}" IsReadOnly="False"
+                                        ElementStyle="{DynamicResource MetroDataGridCheckBox}"
+                                        EditingElementStyle="{DynamicResource MetroDataGridCheckBox}"/>
+                <DataGridTextColumn Header="Чертеж" Binding="{Binding Name}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Файл" Binding="{Binding File}" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
             <Button Content="Открыть" Margin="5" IsDefault="True" Command="{Binding Ok}"/>
             <Button Content="Отмена" Margin="5" IsCancel="True"/>
         </StackPanel>
+        <CheckBox Grid.Row="1" IsChecked="{Binding IsOn}" Content="Вкл/откл"
+                  ToolTip="Включение/отключение восстановления вкладок. Можно изменить в пользовательских настройках." Margin="2"/>
     </Grid>
 </wpf:BaseWindow>
 

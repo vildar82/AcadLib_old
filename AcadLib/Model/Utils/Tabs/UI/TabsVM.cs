@@ -1,28 +1,37 @@
 ﻿namespace AcadLib.Utils.Tabs.UI
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Reactive.Linq;
-    using Data;
+    using JetBrains.Annotations;
     using NetLib.WPF;
     using ReactiveUI;
 
     public class TabsVM : BaseViewModel
     {
-        private Tabs _tabs;
-
-        public TabsVM(Tabs tabs)
+        public TabsVM([NotNull] IEnumerable<string> drawings)
         {
-            _tabs = tabs;
-            Tabs = tabs.Drawings.Select(GetTab).ToList();
+            Tabs = drawings.Select(GetTab).ToList();
             Ok = CreateCommand(OkExec);
         }
 
         public List<TabVM> Tabs { get; set; }
 
         public ReactiveCommand Ok { get; set; }
+
+        public bool IsOn { get; set; } = true;
+
+        public override void OnPropertyChanged(string propertyName = null)
+        {
+            switch (propertyName)
+            {
+                case nameof(IsOn):
+                    RestoreTabs.RestoreTabsIsOn(IsOn);
+                    break;
+            }
+
+            base.OnPropertyChanged(propertyName);
+        }
 
         private TabVM GetTab(string tab)
         {
@@ -37,7 +46,6 @@
 
         private void OkExec()
         {
-            _tabs.Drawings = Tabs.Where(w => w.Restore).Select(s => s.File).ToList();
             DialogResult = true;
         }
     }

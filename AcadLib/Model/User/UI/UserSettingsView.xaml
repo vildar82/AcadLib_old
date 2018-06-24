@@ -39,7 +39,7 @@
                     <ItemsControl ItemsSource="{Binding Properties}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="user:UserProperty">
-                                <Grid ToolTip="{Binding Description}">
+                                <Grid ToolTip="{Binding Description}" Margin="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="{Binding UserSettingsPropsWidth, 
 													Source={x:Static properties:Settings.Default}, 

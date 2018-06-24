@@ -46,7 +46,7 @@
         {
             var vm = new TVm { Value = value, IsReadOnly = isReadOnly };
             configure?.Invoke(vm);
-            vm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(c => Update(c, update));
+            vm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(c => update(c));
             return (TView)Activator.CreateInstance(typeof(TView), vm);
         }
     }

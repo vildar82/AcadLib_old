@@ -421,6 +421,7 @@
     <Compile Include="Model\Utils\ListModules.cs" />
     <Compile Include="Model\Utils\Tabs\RestoreTabs.cs" />
     <Compile Include="Model\Utils\Tabs\Data\Tabs.cs" />
+    <Compile Include="Model\Utils\Tabs\Tab.cs" />
     <Compile Include="Model\Utils\Tabs\UI\TabsView.xaml.cs">
       <DependentUpon>TabsView.xaml</DependentUpon>
     </Compile>

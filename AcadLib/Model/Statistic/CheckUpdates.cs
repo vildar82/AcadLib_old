@@ -17,19 +17,113 @@
     using JetBrains.Annotations;
     using NetLib;
     using NetLib.Notification;
+    using User;
 
     public static class CheckUpdates
     {
-        private static readonly Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-        private static readonly Subject<bool> changes = new Subject<bool>();
+        private static readonly Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
+        private static readonly Subject<bool> Changes = new Subject<bool>();
 
         /// <summary>
         /// Отключенные уведомления групп пользователем
         /// </summary>
-        private static readonly Dictionary<string, DateTime> notNotifyGroups = new Dictionary<string, DateTime>();
+        private static readonly Dictionary<string, DateTime> NotNotifyGroups = new Dictionary<string, DateTime>();
         private static Timer timer;
         private static List<string> serverFilesVer;
         private static List<FileWatcherRx> watchers;
+        private static bool isNotify;
+
+        static CheckUpdates()
+        {
+            UserSettingsService.ChangeSettings += (o, e) =>
+            {
+                var isNotifyNew = GetNotifySettngsValue();
+                if (isNotifyNew != isNotify)
+                {
+                    isNotify = isNotifyNew;
+                    if (isNotify)
+                        Start();
+                    else
+                        Stop();
+                }
+            };
+        }
+
+        public static bool NeedNotify([CanBeNull] string updateDesc, out string descResult)
+        {
+            descResult = updateDesc;
+            if (updateDesc.IsNullOrEmpty())
+                return true;
+            if (updateDesc.StartsWith("no", StringComparison.OrdinalIgnoreCase) ||
+                updateDesc.StartsWith("нет", StringComparison.OrdinalIgnoreCase))
+                return false;
+            return IsPersonalNotify(updateDesc, out descResult);
+        }
+
+        public static void CheckUpdatesNotify(bool includeUserNotNotify)
+        {
+            if (Check(includeUserNotNotify, out var msg, out var updateVersions))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        Notify.ShowOnScreen(msg,
+                            NotifyType.Warning,
+                            new NotifyMessageOptions
+                            {
+                                FontSize = 16,
+                                NotificationClickAction = () =>
+                                {
+                                    if (updateVersions?.Any() == true)
+                                    {
+                                        foreach (var updateVersion in updateVersions)
+                                        {
+                                            NotNotifyGroups[updateVersion.GroupName] = updateVersion.VersionServerDate;
+                                        }
+                                    }
+                                }
+                            });
+                        Logger.Log.Info($"CheckUpdatesNotify '{msg}'");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log.Error(ex, "CheckUpdatesNotify");
+                    }
+                });
+            }
+            else
+            {
+                "Нет обновлений настроек на сервере.".WriteToCommandLine();
+            }
+        }
+
+        internal static void Start()
+        {
+            isNotify = GetNotifySettngsValue();
+            if (!isNotify) 
+                return;
+            timer = new Timer(o => CheckUpdatesNotify(true), null, TimeSpan.FromSeconds(15), TimeSpan.FromHours(2));
+            Changes.Throttle(TimeSpan.FromMilliseconds(1000)).Subscribe(s => CheckUpdatesNotify(true));
+        }
+
+        private static void Stop()
+        {
+            timer?.Dispose();
+            if (watchers?.Any() == true)
+            {
+                foreach (var watcher in watchers)
+                {
+                    watcher.Watcher?.Dispose();
+                }
+            }
+        }
+
+        private static bool GetNotifySettngsValue()
+        {
+            return UserSettingsService.GetPluginValue<bool>(UserSettingsService.CommonName,
+                UserSettingsService.CommonParamNotify);
+        }
 
         /// <summary>
         /// Есть ли обновление настроек
@@ -38,7 +132,7 @@
         /// <param name="msg"></param>
         /// <param name="updateVersions">Обновленные группы настроек</param>
         /// <returns>True - есть новая версия</returns>
-        public static bool Check(
+        private static bool Check(
             bool includeUserNotNotify,
             [CanBeNull] out string msg,
             [CanBeNull] out List<GroupInfo> updateVersions)
@@ -75,62 +169,9 @@
             return false;
         }
 
-        public static bool NeedNotify([CanBeNull] string updateDesc, out string descResult)
-        {
-            descResult = updateDesc;
-            if (updateDesc.IsNullOrEmpty())
-                return true;
-            if (updateDesc.StartsWith("no", StringComparison.OrdinalIgnoreCase) ||
-                updateDesc.StartsWith("нет", StringComparison.OrdinalIgnoreCase))
-                return false;
-            return IsPersonalNotify(updateDesc, out descResult);
-        }
-
-        public static void CheckUpdatesNotify(bool includeUserNotNotify)
-        {
-            if (Check(includeUserNotNotify, out var msg, out var updateVersions))
-            {
-                dispatcher.Invoke(() =>
-                {
-                    try
-                    {
-                        Notify.ShowOnScreen(msg, NotifyType.Warning, new NotifyMessageOptions
-                        {
-                            FontSize = 16,
-                            NotificationClickAction = () =>
-                            {
-                                if (updateVersions?.Any() == true)
-                                {
-                                    foreach (var updateVersion in updateVersions)
-                                    {
-                                        notNotifyGroups[updateVersion.GroupName] = updateVersion.VersionServerDate;
-                                    }
-                                }
-                            }
-                        });
-                        Logger.Log.Info($"CheckUpdatesNotify '{msg}'");
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log.Error(ex, "CheckUpdatesNotify");
-                    }
-                });
-            }
-            else
-            {
-                "Нет обновлений настроек на сервере.".WriteToCommandLine();
-            }
-        }
-
-        internal static void Start()
-        {
-            timer = new Timer(o => CheckUpdatesNotify(true), null, TimeSpan.FromSeconds(15), TimeSpan.FromHours(2));
-            changes.Throttle(TimeSpan.FromMilliseconds(1000)).Subscribe(s => CheckUpdatesNotify(true));
-        }
-
         private static bool IsNotNotify([NotNull] GroupInfo groupInfo)
         {
-            if (notNotifyGroups.TryGetValue(groupInfo.GroupName, out var updateDate))
+            if (NotNotifyGroups.TryGetValue(groupInfo.GroupName, out var updateDate))
             {
                 return updateDate <= groupInfo.VersionServerDate;
             }
@@ -149,6 +190,7 @@
                     var watcher = new FileWatcherRx(Path.GetDirectoryName(file), Path.GetFileName(file));
                     watcher.Changed.Delay(TimeSpan.FromMilliseconds(300)).Throttle(TimeSpan.FromMilliseconds(500))
                         .Subscribe(OnFileVersionChanged);
+                    watchers.Add(watcher);
                 }
             }
         }
@@ -185,7 +227,7 @@
                 Debug.WriteLine($"{e.EventArgs.FullPath}|{e.EventArgs.ChangeType}, {e.Sender}");
                 var desc = File.ReadLines(e.EventArgs.FullPath, Encoding.Default).Skip(1).FirstOrDefault();
                 if (NeedNotify(desc, out desc))
-                    changes.OnNext(true);
+                    Changes.OnNext(true);
             }
             catch (Exception ex)
             {

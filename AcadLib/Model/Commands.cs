@@ -53,7 +53,6 @@ namespace AcadLib
     [PublicAPI]
     public class Commands : IExtensionApplication
     {
-        public static event EventHandler Quite;
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
 
@@ -89,15 +88,7 @@ namespace AcadLib
             try
             {
                 Logger.Log.Info("start Initialize AcadLib");
-                try
-                {
-                    StatusBarEx.AddPaneUserGroup();
-                }
-                catch
-                {
-                    //
-                }
-
+                StatusBarEx.AddPaneUserGroup();
                 PluginStatisticsHelper.StartAutoCAD();
                 if (PikSettings.IsDisabledSettings)
                 {
@@ -107,15 +98,8 @@ namespace AcadLib
                     return;
                 }
 
-                try
-                {
-                    Notify.SetScreenSettings(new NotifyOptions(with: 400));
-                    CheckUpdates.Start();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log.Error(ex, "Notify и CheckUpdates");
-                }
+                Notify.SetScreenSettings(new NotifyOptions(with: 400));
+                CheckUpdates.Start();
 
                 if (Settings.Default.UpgradeRequired)
                 {
@@ -158,7 +142,6 @@ namespace AcadLib
 
         public void Terminate()
         {
-            Quite?.Invoke(null, EventArgs.Empty);
             Logger.Log.Info("Terminatenh AcadLib");
         }
 

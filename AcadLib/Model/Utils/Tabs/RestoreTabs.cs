@@ -1,10 +1,10 @@
 ﻿namespace AcadLib.Utils.Tabs
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using Autodesk.AutoCAD.ApplicationServices;
-    using Autodesk.AutoCAD.DatabaseServices;
     using Data;
     using IO;
     using JetBrains.Annotations;
@@ -20,42 +20,78 @@
     {
         private const string PluginName = "RestoreTabs";
         private const string ParamIsOn = "RestoreTabsOn";
-        private static bool inQuite;
+        private static string cmd;
         private static bool isOn;
-        [ItemNotNull] [NotNull] private static List<Tab> tabs = new List<Tab>();
+        private static List<string> openDrawings;
 
         /// <summary>
         /// Воссатановление вкладок
         /// </summary>
         public static void Restore()
         {
+            var tabsData = new LocalFileData<Tabs>(GetFile(), false);
+            tabsData.TryLoad(() => new Tabs());
+
             UserSettingsService.ChangeSettings += (o, e) => Init();
             Init();
 
             // Если восстановление вкладок отключено
-            if (isOn)
+            if (!isOn)
                 return;
 
-            var tabsData = new LocalFileData<Tabs>(GetFile(), false);
-            tabsData.TryLoad(() => new Tabs());
-            if (tabsData.Data.Drawings == null)
+            if (tabsData.Data.Drawings?.Any() == true)
             {
-                tabsData.Data.Drawings = new List<string>();
-            }
-
-            if (tabsData.Data.Drawings.Any())
-            {
-                var tabsView = new TabsView(new TabsVM(tabsData.Data));
+                var openedDraws = Application.DocumentManager.Cast<Document>().Where(w => w.IsNamedDrawing)
+                    .Select(s => s.Name).ToList();
+                var tabVM = new TabsVM(tabsData.Data.Drawings.Except(openedDraws, StringComparer.OrdinalIgnoreCase));
+                var tabsView = new TabsView(tabVM);
                 if (tabsView.ShowDialog() == true)
                 {
-                    foreach (var drawing in tabsData.Data.Drawings)
-                    {
-                        Application.DocumentManager.Open(drawing);
-                    }
+                    openDrawings = tabVM.Tabs.Where(w => w.Restore).Select(s => s.File).ToList();
+                    Application.Idle += Application_Idle;
                 }
             }
+        }
 
-            Init();
+        private static void Application_Idle(object sender, System.EventArgs e)
+        {
+            Application.Idle -= Application_Idle;
+            if (openDrawings?.Any() != true)
+                return;
+            try
+            {
+                isOn = false;
+                foreach (var drawing in openDrawings)
+                {
+                    Application.DocumentManager.Open(drawing, false);
+                }
+            }
+            finally
+            {
+                isOn = true;
+                SaveTabs();
+            }
+        }
+
+        private static void Init()
+        {
+            isOn = IsOn();
+            if (!isOn)
+            {
+                Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
+                Application.DocumentManager.DocumentDestroyed -= DocumentManager_DocumentDestroyed;
+                Application.DocumentManager.DocumentLockModeChanged -= DocumentManager_DocumentLockModeChanged;
+                return;
+            }
+
+            // Если автокад закрывается, то не нужно обрабатывать события закрытия чертежей
+            Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
+
+            // Подписаться на события открытия/закрытия чертежей
+            Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
+            Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
+
+            SaveTabs();
         }
 
         [NotNull]
@@ -64,121 +100,49 @@
             return Path.GetUserPluginFile(PluginName, PluginName + ".json");
         }
 
-        private static void Init()
+        private static void DocumentManager_DocumentLockModeChanged(object sender, [NotNull] DocumentLockModeChangedEventArgs e)
         {
-            isOn = IsOn();
-            if (!isOn)
-                return;
-
-            tabs = new List<Tab>();
-            foreach (Document doc in Application.DocumentManager)
+            Debug.WriteLine($"DocumentManager_DocumentLockModeChanged - {e.GlobalCommandName}.");
+            switch (e.GlobalCommandName)
             {
-                AddTab(doc);
+                case "":
+                case "#":
+                case "#CLOSE":
+                    return;
             }
 
-            // Если автокад закрывается, то не нужно обрабатывать события закрытия чертежей
-            Application.QuitWillStart += (o, e) =>
-                inQuite = true;
-            Application.BeginQuit += (o, e) =>
-            {
-                inQuite = true;
-                SaveTabs();
-            };
-            Application.QuitAborted += (o, e) =>
-                inQuite = false;
-
-            Commands.Quite += (o, e) =>
-                inQuite = false;
-
-            // Подписаться на события открытия/закрытия чертежей
-            Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
-            Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
+            cmd = e.GlobalCommandName;
         }
 
         private static void SaveTabs()
         {
-            var tabsData = new LocalFileData<Tabs>(GetFile(), false)
+            if (!isOn)
+                return;
+            Debug.WriteLine("SaveTabs");
+            var drawings = new List<string>();
+            foreach (Document doc in Application.DocumentManager)
             {
-                Data = new Tabs
-                {
-                    Drawings = tabs.Where(IsValidTab).Select(s => s.Doc.Name).ToList()
-                }
-            };
-            tabsData.TrySave();
-        }
+                if (doc.Database == null)
+                    continue;
+                    doc.Database.SaveComplete += (o, e) => SaveTabs();
+                if (doc.IsNamedDrawing)
+                    drawings.Add(doc.Name);
+            }
 
-        private static bool IsValidTab(Tab tab)
-        {
-            return tab?.Doc != null && tab.Doc.IsNamedDrawing;
+            var tabsData = new LocalFileData<Tabs>(GetFile(), false) { Data = new Tabs { Drawings = drawings } };
+            tabsData.TrySave();
         }
 
         private static void DocumentManager_DocumentDestroyed(object sender, DocumentDestroyedEventArgs e)
         {
-            Debug.WriteLine($"DocumentManager_DocumentDestroyed {e?.FileName}");
-            if (inQuite)
-                return;
+            Debug.WriteLine($"DocumentManager_DocumentDestroyed cmd={cmd}");
+            if (cmd == "CLOSE")
+                SaveTabs();
         }
 
         private static void DocumentManager_DocumentCreated(object sender, DocumentCollectionEventArgs e)
         {
-            Debug.WriteLine($"DocumentManager_DocumentCreated {e?.Document?.Name}");
-            AddTab(e?.Document);
-        }
-
-        private static void AddTab(Document doc)
-        {
-            if (doc == null || tabs.Any(d => d.Doc == doc))
-                return;
-            var tab = new Tab(doc);
-            tabs.Add(tab);
-            doc.CommandWillStart += Doc_CommandWillStart;
-            doc.Database.DatabaseToBeDestroyed += Database_DatabaseToBeDestroyed;
-            doc.CloseWillStart += Doc_CloseWillStart;
-            doc.BeginDocumentClose += Doc_BeginDocumentClose;
-            doc.CloseAborted += Doc_CloseAborted;
-            doc.Database.SaveComplete += Database_SaveComplete;
-            doc.Database.AbortSave += Database_AbortSave;
-            doc.Database.BeginSave += Database_BeginSave;
-        }
-
-        private static void Doc_CommandWillStart(object sender, CommandEventArgs e)
-        {
-            Debug.WriteLine($"Doc_CommandWillStart {e?.GlobalCommandName}.");
-        }
-
-        private static void Database_BeginSave(object sender, DatabaseIOEventArgs e)
-        {
-            Debug.WriteLine($"Database_BeginSave {(sender as Database)?.Filename} {e?.FileName}.");
-        }
-
-        private static void Database_AbortSave(object sender, System.EventArgs e)
-        {
-            Debug.WriteLine($"Database_AbortSave {(sender as Database)?.Filename}.");
-        }
-
-        private static void Database_SaveComplete(object sender, DatabaseIOEventArgs e)
-        {
-            Debug.WriteLine($"Database_SaveComplete {(sender as Database)?.Filename} {e?.FileName}.");
-        }
-
-        private static void Doc_CloseAborted(object sender, System.EventArgs e)
-        {
-            Debug.WriteLine($"Doc_BeginDocumentClose {(sender as Document)?.Name}.");
-        }
-
-        private static void Doc_BeginDocumentClose(object sender, DocumentBeginCloseEventArgs e)
-        {
-            Debug.WriteLine($"Doc_BeginDocumentClose {(sender as Document)?.Name}.");
-        }
-
-        private static void Doc_CloseWillStart(object sender, System.EventArgs e)
-        {
-            Debug.WriteLine($"Doc_CloseWillStart {(sender as Document)?.Name}.");
-        }
-
-        private static void Database_DatabaseToBeDestroyed(object sender, System.EventArgs e)
-        {
-            Debug.WriteLine($"Database_DatabaseToBeDestroyed {(sender as Database)?.Filename}.");
+            SaveTabs();
         }
 
         private static bool IsOn()
@@ -195,15 +159,11 @@
 
             return UserSettingsService.GetPluginValue<bool>(PluginName, ParamIsOn);
         }
-    }
 
-    internal class Tab
-    {
-        public Document Doc { get; }
-
-        public Tab(Document doc)
+        public static void RestoreTabsIsOn(bool isOn)
         {
-            Doc = doc;
+            UserSettingsService.SetPluginValue(PluginName, ParamIsOn, isOn);
+            Init();
         }
     }
 }

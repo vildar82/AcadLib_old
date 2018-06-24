@@ -16,8 +16,8 @@
     [PublicAPI]
     public static class UserSettingsService
     {
-        private const string CommonMame = "Общие";
-        private const string CommonParamNotify = "NotificationsOn";
+        internal const string CommonName = "Общие";
+        internal const string CommonParamNotify = "NotificationsOn";
         [NotNull] private static LocalFileData<UserSettings> _userData;
 
         static UserSettingsService()
@@ -51,6 +51,25 @@
             if (prop == null)
                 return default;
             return (T)prop.Value;
+        }
+
+        /// <summary>
+        /// Установить значение свойства
+        /// </summary>
+        /// <param name="pluginName">Плагин</param>
+        /// <param name="parameterId">Параметр</param>
+        /// <param name="value">Значение</param>
+        public static void SetPluginValue([NotNull] string pluginName, [NotNull] string parameterId, object value)
+        {
+            var plugin = GetPluginSettings(pluginName);
+            var prop = plugin?.Properties.FirstOrDefault(p => p.ID == parameterId);
+            if (prop == null)
+                return;
+            if (!Equals(value, prop.Value))
+            {
+                prop.Value = value;
+                _userData.TrySave();
+            }
         }
 
         /// <summary>
@@ -118,7 +137,8 @@
                 {
                     if (property.ValueControl == null)
                     {
-                        property.ValueControl = property.Value.CreateControl(v => property.Value = v);
+                        property.ValueControl = property.Value.CreateControl(v =>
+                            property.Value = v);
                     }
                 }
             }
@@ -156,10 +176,10 @@
 
         private static PluginSettings GetCommonSettings()
         {
-            var common = GetPluginSettings(CommonMame);
+            var common = GetPluginSettings(CommonName);
             if (common == null)
             {
-                common = AddPluginSettings(CommonMame);
+                common = AddPluginSettings(CommonName);
                 AddNotifyProp();
             }
             else
