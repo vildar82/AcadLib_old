@@ -224,7 +224,7 @@
                         dictUsersEx.TryAdd(u.Login, exUser);
                     }
                     u.AdDepartment = exUser.dep;
-                    u.AdPosition = exUser.dep;
+                    u.AdPosition = exUser.pos;
                     u.Image = exUser.img;
                 });
             });
