@@ -91,7 +91,6 @@
 
         public int UsersCount { get; set; }
 
-#if Utils
         private static List<string> LoadUserGroups()
         {
             var stringList = new List<string>();
@@ -107,7 +106,6 @@
 
             return stringList;
         }
-#endif
 
         private async void LoadUsers()
         {
@@ -115,11 +113,7 @@
             users = dbUsers.GetUsers().Select(GetUser).ToList();
             Users = new CollectionView<EditAutocadUsers>(users) { Filter = OnFilter };
             Users.CollectionChanged += (o, e) => UsersCount = Users.Count();
-#if Utils
             Groups = LoadUserGroups();
-#else
-            Groups = PikSettings.UserGroups;
-#endif
             LoadUsersEx();
             FilterGroups = users.SelectMany(s => GetGroups(s.Group)).GroupBy(g => g).Select(s => s.Key).OrderBy(o => o).ToList();
             FilterGroups.Insert(0, "Все");
@@ -177,11 +171,7 @@
             return Task.Run(() =>
             {
                 var groups = new List<UserGroup>();
-#if Utils
                 var dirGroups = serverSettingsDir;
-#else
-                var dirGroups = PikSettings.ServerSettingsFolder;
-#endif
 
                 foreach (var dirGroup in Directory.EnumerateDirectories(dirGroups).OrderBy(o => o))
                 {
@@ -267,11 +257,7 @@
             if (editMode)
             {
                 // Создать файл блокировки
-#if Utils
                 const string file = serverShareDir + @"\UsersEditor\UsersEditor.lock";
-#else
-                var file = Path.GetSharedCommonFile("UsersEditor", "UsersEditor.lock");
-#endif
                 fileLock = new FileLock(file);
                 if (!fileLock.IsLockSuccess)
                 {

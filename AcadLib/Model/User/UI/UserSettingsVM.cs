@@ -30,6 +30,7 @@
                 Group = Groups[0];
             }
 
+            PreviewUpdate = user?.PreviewUpdate ?? false;
             Disabled = user?.Disabled ?? false;
             Ok = CreateCommand(OkExec);
             DeleteExtraGroup = CreateCommand(() => ExtraGroup = null);
@@ -70,6 +71,11 @@
         /// Отключены настроек
         /// </summary>
         public bool Disabled { get; set; }
+
+        /// <summary>
+        /// Предварительные обновления
+        /// </summary>
+        public bool PreviewUpdate { get; set; }
 
         public ReactiveCommand Ok { get; set; }
 
@@ -126,6 +132,7 @@
 
             User.Group = Group.Name;
             User.Disabled = Disabled;
+            User.PreviewUpdate = PreviewUpdate;
             if (ExtraGroup != null)
             {
                 User.Group += $", {ExtraGroup.Name}";

@@ -14,10 +14,12 @@
     using System.Windows.Threading;
     using AutoCAD_PIK_Manager;
     using AutoCAD_PIK_Manager.Settings;
+    using Autodesk.AutoCAD.ApplicationServices;
     using JetBrains.Annotations;
     using NetLib;
     using NetLib.Notification;
     using User;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
     public static class CheckUpdates
     {
@@ -101,10 +103,16 @@
         internal static void Start()
         {
             isNotify = GetNotifySettngsValue();
-            if (!isNotify) 
+            if (!isNotify)
                 return;
-            timer = new Timer(o => CheckUpdatesNotify(true), null, TimeSpan.FromSeconds(15), TimeSpan.FromHours(2));
-            Changes.Throttle(TimeSpan.FromMilliseconds(1000)).Subscribe(s => CheckUpdatesNotify(true));
+            timer = new Timer(o => CheckUpdatesNotify(true), null, TimeSpan.FromSeconds(5), TimeSpan.FromHours(2));
+            Changes.Throttle(TimeSpan.FromMilliseconds(1000)).Subscribe(s => Application.Idle += Application_Idle);
+        }
+
+        private static void Application_Idle(object sender, EventArgs e)
+        {
+            Application.Idle -= Application_Idle;
+            CheckUpdatesNotify(true);
         }
 
         private static void Stop()
@@ -153,8 +161,8 @@
                 if (updateVersions.Any())
                 {
                     var updates = updateVersions.JoinToString(v =>
-                        $"{v.GroupName} от {v.VersionServerDate:dd.MM.yy HH:mm}" +
-                        $"{(v.UpdateDescription.IsNullOrEmpty() ? string.Empty : $"\n'{v.UpdateDescription}'")}", "\n");
+                        $"{v?.GroupName} от {v?.VersionServerDate:dd.MM.yy HH:mm}" +
+                        $"{(v?.UpdateDescription.IsNullOrEmpty() == true ? string.Empty : $"\n'{v?.UpdateDescription}'")}", "\n");
                     msg = $"Доступны обновления настроек:\n{updates}\nРекомендуется обновиться (перезапустить автокад).";
                     return true;
                 }

@@ -11,7 +11,7 @@
         ShowMaxRestoreButton="False"
         ShowMinButton="False"
         mc:Ignorable="d"
-        Title="Восстановление вкладок">
+        Title="Открытие чертежей">
     <Grid Margin="1">
         <Grid.RowDefinitions>
             <RowDefinition/>

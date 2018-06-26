@@ -39,6 +39,11 @@
         public static PluginSettings CommonSettings { get; set; }
 
         /// <summary>
+        /// Пользователь согласен на предварительные обновления
+        /// </summary>
+        public static bool IsPreviewUpdate => AutocadUserService.User?.PreviewUpdate ?? false;
+
+        /// <summary>
         /// Получение значения настройки плагина
         /// </summary>
         /// <typeparam name="T">Тип значения</typeparam>
@@ -46,11 +51,21 @@
         /// <param name="parameterId">Имя параметра</param>
         public static T GetPluginValue<T>([NotNull] string pluginName, [NotNull] string parameterId)
         {
-            var plugin = GetPluginSettings(pluginName);
-            var prop = plugin?.Properties.FirstOrDefault(p => p.ID == parameterId);
+            var prop = GetPluginProperty(pluginName, parameterId);
             if (prop == null)
                 return default;
             return (T)prop.Value;
+        }
+
+        /// <summary>
+        /// Получение свойтва плагина
+        /// </summary>
+        /// <param name="pluginName">Плагин</param>
+        /// <param name="parameterId">Свойство</param>
+        public static UserProperty GetPluginProperty([NotNull] string pluginName, [NotNull] string parameterId)
+        {
+            var plugin = GetPluginSettings(pluginName);
+            return plugin?.Properties.FirstOrDefault(p => p.ID == parameterId);
         }
 
         /// <summary>
@@ -99,6 +114,11 @@
             plugin = new PluginSettings { Name = pluginName };
             _userData.Data.PluginSettings.Add(plugin);
             return plugin;
+        }
+
+        public static void RemovePlugin([NotNull] string pluginName)
+        {
+            _userData.Data.PluginSettings.RemoveAll(p => p.Name == pluginName);
         }
 
         /// <summary>

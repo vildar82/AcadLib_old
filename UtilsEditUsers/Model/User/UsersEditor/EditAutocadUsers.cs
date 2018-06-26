@@ -20,6 +20,7 @@
             Description = dbUser.Description;
             Group = dbUser.Group;
             Version = dbUser.Version;
+            PreviewUpdate = dbUser.PreviewUpdate;
         }
 
         public AutocadUsers DbUser { get; set; }
@@ -46,6 +47,8 @@
 
         public string Description { get; set; }
 
+        public bool? PreviewUpdate { get; set; }
+
         public void SaveToDbUser()
         {
             DbUser.Group = Group;
@@ -53,6 +56,7 @@
             DbUser.Login = Login;
             DbUser.Description = Description;
             DbUser.Disabled = Disabled ?? false;
+            DbUser.PreviewUpdate = PreviewUpdate;
         }
 
         public override string ToString()

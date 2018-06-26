@@ -32,6 +32,7 @@
             <Button Content="{iconPacks:Material Delete, Width=12, Height=12}" Margin="2" Command="{Binding DeleteExtraGroup}"
                     VerticalAlignment="Center"/>
         </StackPanel>
+        <CheckBox IsChecked="{Binding PreviewUpdate}" Margin="5" Content="Предварительные обновления" />
         <CheckBox IsChecked="{Binding Disabled}" Margin="5" Content="Отключить настройки"/>
         <ItemsControl ItemsSource="{Binding UserSettings.PluginSettings}">
             <ItemsControl.ItemTemplate>

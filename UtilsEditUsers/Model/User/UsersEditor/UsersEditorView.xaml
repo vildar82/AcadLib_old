@@ -75,6 +75,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Отключен" Binding="{Binding Disabled}"/>
+                <DataGridTextColumn Header="PreviewUpdate" Binding="{Binding PreviewUpdate}"/>
                 <DataGridTextColumn Header="Примечание" Binding="{Binding Description}" Width="150"/>
                 <DataGridTextColumn Header="Отдел" Binding="{Binding AdDepartment}" Width="250"/>
                 <DataGridTextColumn Header="Должность" Binding="{Binding AdPosition}" Width="250"/>
