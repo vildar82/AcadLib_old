@@ -6,6 +6,7 @@
                 xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:usersEditor="clr-namespace:UtilsEditUsers.Model.User.UsersEditor"
+        xmlns:converters="clr-namespace:NetLib.WPF.Converters;assembly=NetLib"
         d:DataContext="{d:DesignInstance usersEditor:UsersEditorVM}"
         mc:Ignorable="d"
         WindowState="Maximized"
@@ -47,11 +48,11 @@
                 </ComboBox>
             </StackPanel>
         </StackPanel>
-        <DataGrid Name="dgUsers" Grid.Row="1" ItemsSource="{Binding Users}" AutoGenerateColumns="False" IsReadOnly="True" 
+        <DataGrid Name="DgUsers" Grid.Row="1" ItemsSource="{Binding Users}" AutoGenerateColumns="False" IsReadOnly="True"
                   CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" CanUserReorderColumns="False"
                   SelectionMode="Extended" SelectionChanged="Selector_OnSelectionChanged" Margin="10" BorderThickness="1">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Фото" IsReadOnly="True">
+                <DataGridTemplateColumn Header="Фото" >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="usersEditor:EditAutocadUsers">
                             <Image Source="{Binding Image}" Height="30">
@@ -65,7 +66,7 @@
                 <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}" />
                 <DataGridTextColumn Header="Логин" Binding="{Binding Login}" />
                 <DataGridTextColumn Header="Группа" Binding="{Binding Group}" />
-                <DataGridTemplateColumn Header="Версия" SortMemberPath="Version">
+                <DataGridTemplateColumn Header="Версия" SortMemberPath="Version" >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="usersEditor:EditAutocadUsers">
                             <TextBlock Text="{Binding Version}" VerticalAlignment="Center"
@@ -74,21 +75,22 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Дата запуска" Binding="{Binding DateRun, StringFormat=dd.MM.yyyy HH:mm}" />
+                <DataGridTextColumn Header="Дата запуска" Binding="{Binding DateRun, StringFormat=dd.MM.yyyy HH:mm}" 
+                                    IsReadOnly="True" />
                 <DataGridCheckBoxColumn Header="Отключен" Binding="{Binding Disabled}" 
                                         ElementStyle="{DynamicResource MetroDataGridCheckBox}"
                                         EditingElementStyle="{DynamicResource MetroDataGridCheckBox}"/>
-                <DataGridCheckBoxColumn Header="PreviewUpdate" Binding="{Binding PreviewUpdate}" 
+                <DataGridCheckBoxColumn Header="PreviewUpdate" Binding="{Binding PreviewUpdate}"
                                         ElementStyle="{DynamicResource MetroDataGridCheckBox}"
                                         EditingElementStyle="{DynamicResource MetroDataGridCheckBox}"/>
                 <DataGridTextColumn Header="Примечание" Binding="{Binding Description}" Width="150" />
                 <DataGridTextColumn Header="Отдел" Binding="{Binding AdDepartment}" Width="250" />
                 <DataGridTextColumn Header="Должность" Binding="{Binding AdPosition}" Width="250" />
-                <DataGridTemplateColumn Header="Удалить">
+                <DataGridTemplateColumn Header="Удалить" >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="usersEditor:EditAutocadUsers">
                             <Button Content="x" VerticalContentAlignment="Center" 
-                                    Command="{Binding DataContext.DeleteUser, ElementName=dgUsers}" HorizontalAlignment="Center"
+                                    Command="{Binding DataContext.DeleteUser, ElementName=DgUsers}" HorizontalAlignment="Center"
                                     CommandParameter="{Binding}"
                                     VerticalAlignment="Center"/>
                         </DataTemplate>

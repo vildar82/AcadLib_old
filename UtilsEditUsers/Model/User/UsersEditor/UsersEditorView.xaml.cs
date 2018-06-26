@@ -15,7 +15,7 @@
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var sel = dgUsers.SelectedItems.Cast<EditAutocadUsers>().ToList();
+            var sel = DgUsers.SelectedItems.Cast<EditAutocadUsers>().ToList();
             ((UsersEditorVM)Model).SelectedUsers = sel;
         }
     }

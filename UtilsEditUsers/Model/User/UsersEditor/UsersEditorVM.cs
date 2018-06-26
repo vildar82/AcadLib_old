@@ -3,11 +3,13 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.IO;
     using System.Linq;
     using System.Reactive.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using System.Windows.Data;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using DB;
@@ -59,7 +61,7 @@
 
         public bool IsBimUser { get; set; }
 
-        public CollectionView<EditAutocadUsers> Users { get; set; }
+        public ICollectionView Users { get; set; }
 
         public ReactiveCommand Save { get; set; }
 
@@ -111,8 +113,9 @@
         {
             GroupServerVersions = await LoadGroupServerVersionsAsync();
             users = dbUsers.GetUsers().Select(GetUser).ToList();
-            Users = new CollectionView<EditAutocadUsers>(users) { Filter = OnFilter };
-            Users.CollectionChanged += (o, e) => UsersCount = Users.Count();
+            Users = new ListCollectionView(users) { Filter = OnFilter };
+            Users.CollectionChanged += (o, e) => 
+                UsersCount = Users.Cast<EditAutocadUsers>().Count();
             Groups = LoadUserGroups();
             LoadUsersEx();
             FilterGroups = users.SelectMany(s => GetGroups(s.Group)).GroupBy(g => g).Select(s => s.Key).OrderBy(o => o).ToList();
@@ -303,11 +306,14 @@
         {
             foreach (var autocadUserse in selectedUsers)
             {
-                autocadUserse.Group = selectedUser.Group;
-                autocadUserse.Description = selectedUser.Description;
-                autocadUserse.Disabled = selectedUser.Disabled;
-                autocadUserse.PreviewUpdate = selectedUser.PreviewUpdate;
-                autocadUserse.SaveToDbUser();
+                using (autocadUserse.SuppressChangeNotifications())
+                {
+                    autocadUserse.Group = selectedUser.Group;
+                    autocadUserse.Description = selectedUser.Description;
+                    autocadUserse.Disabled = selectedUser.Disabled;
+                    autocadUserse.PreviewUpdate = selectedUser.PreviewUpdate;
+                    autocadUserse.SaveToDbUser();
+                }
             }
 
             if (selectedUsers.Count == 1)

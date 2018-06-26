@@ -1,10 +1,12 @@
 ﻿namespace UtilsEditUsers.Model.User.UsersEditor
 {
     using System;
+    using System.Reactive.Linq;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using DB;
     using NetLib.WPF;
+    using ReactiveUI;
 
     public class EditAutocadUsers : BaseModel
     {
