@@ -1,5 +1,6 @@
 ﻿namespace UtilsEditUsers.Model.User.UsersEditor
 {
+    using System;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using DB;
@@ -20,7 +21,8 @@
             Description = dbUser.Description;
             Group = dbUser.Group;
             Version = dbUser.Version;
-            PreviewUpdate = dbUser.PreviewUpdate;
+            PreviewUpdate = dbUser.PreviewUpdate ?? false;
+            DateRun = dbUser.DateRun;
         }
 
         public AutocadUsers DbUser { get; set; }
@@ -43,11 +45,13 @@
 
         public string VersionTooltip { get; set; }
 
-        public bool? Disabled { get; set; }
+        public bool Disabled { get; set; }
 
         public string Description { get; set; }
 
-        public bool? PreviewUpdate { get; set; }
+        public bool PreviewUpdate { get; set; }
+
+        public DateTime? DateRun { get; set; }
 
         public void SaveToDbUser()
         {
@@ -55,8 +59,9 @@
             DbUser.FIO = FIO;
             DbUser.Login = Login;
             DbUser.Description = Description;
-            DbUser.Disabled = Disabled ?? false;
+            DbUser.Disabled = Disabled;
             DbUser.PreviewUpdate = PreviewUpdate;
+            DbUser.DateRun = DateRun;
         }
 
         public override string ToString()

@@ -293,6 +293,7 @@
                 Group = GetValue(u => u.Group),
                 Disabled = GetValue(u => u.Disabled),
                 Description = GetValue(u => u.Description),
+                PreviewUpdate = GetValue(u => u.PreviewUpdate),
             };
             var canApply = canEdit.CombineLatest(SelectedUser.Changed.Select(s => true), (b1, b2) => b1 && b2);
             Apply = CreateCommand(() => ApplyExecute(SelectedUser, SelectedUsers), canApply);
@@ -305,6 +306,7 @@
                 autocadUserse.Group = selectedUser.Group;
                 autocadUserse.Description = selectedUser.Description;
                 autocadUserse.Disabled = selectedUser.Disabled;
+                autocadUserse.PreviewUpdate = selectedUser.PreviewUpdate;
                 autocadUserse.SaveToDbUser();
             }
 

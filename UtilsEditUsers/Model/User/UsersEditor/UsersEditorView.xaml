@@ -47,10 +47,11 @@
                 </ComboBox>
             </StackPanel>
         </StackPanel>
-        <DataGrid Name="dgUsers" Grid.Row="1" ItemsSource="{Binding Users}" AutoGenerateColumns="False" IsReadOnly="True"
+        <DataGrid Name="dgUsers" Grid.Row="1" ItemsSource="{Binding Users}" AutoGenerateColumns="False" IsReadOnly="True" 
+                  CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" CanUserReorderColumns="False"
                   SelectionMode="Extended" SelectionChanged="Selector_OnSelectionChanged" Margin="10" BorderThickness="1">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Фото">
+                <DataGridTemplateColumn Header="Фото" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="usersEditor:EditAutocadUsers">
                             <Image Source="{Binding Image}" Height="30">
@@ -61,11 +62,10 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}"/>
-                <DataGridTextColumn Header="Логин" Binding="{Binding Login}"/>
-                <DataGridTextColumn Header="Группа" Binding="{Binding Group}"/>
-                <DataGridTextColumn Header="Версия" Binding="{Binding Version}"/>
-                <DataGridTemplateColumn Header="Версия">
+                <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}" />
+                <DataGridTextColumn Header="Логин" Binding="{Binding Login}" />
+                <DataGridTextColumn Header="Группа" Binding="{Binding Group}" />
+                <DataGridTemplateColumn Header="Версия" SortMemberPath="Version">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="usersEditor:EditAutocadUsers">
                             <TextBlock Text="{Binding Version}" VerticalAlignment="Center"
@@ -74,11 +74,16 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Отключен" Binding="{Binding Disabled}"/>
-                <DataGridTextColumn Header="PreviewUpdate" Binding="{Binding PreviewUpdate}"/>
-                <DataGridTextColumn Header="Примечание" Binding="{Binding Description}" Width="150"/>
-                <DataGridTextColumn Header="Отдел" Binding="{Binding AdDepartment}" Width="250"/>
-                <DataGridTextColumn Header="Должность" Binding="{Binding AdPosition}" Width="250"/>
+                <DataGridTextColumn Header="Дата запуска" Binding="{Binding DateRun, StringFormat=dd.MM.yyyy HH:mm}" />
+                <DataGridCheckBoxColumn Header="Отключен" Binding="{Binding Disabled}" 
+                                        ElementStyle="{DynamicResource MetroDataGridCheckBox}"
+                                        EditingElementStyle="{DynamicResource MetroDataGridCheckBox}"/>
+                <DataGridCheckBoxColumn Header="PreviewUpdate" Binding="{Binding PreviewUpdate}" 
+                                        ElementStyle="{DynamicResource MetroDataGridCheckBox}"
+                                        EditingElementStyle="{DynamicResource MetroDataGridCheckBox}"/>
+                <DataGridTextColumn Header="Примечание" Binding="{Binding Description}" Width="150" />
+                <DataGridTextColumn Header="Отдел" Binding="{Binding AdDepartment}" Width="250" />
+                <DataGridTextColumn Header="Должность" Binding="{Binding AdPosition}" Width="250" />
                 <DataGridTemplateColumn Header="Удалить">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="usersEditor:EditAutocadUsers">
@@ -103,6 +108,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <!--ФИО-->
             <TextBlock Grid.Column="0" Grid.Row="0" Text="ФИО"/>
@@ -116,13 +122,16 @@
             <TextBlock Grid.Column="0" Grid.Row="2" Text="Группа"/>
             <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Groups}"
                       Text="{Binding SelectedUser.Group}" Margin="2" IsEditable="True"/>
+            <!--Preview Update-->
+            <TextBlock Grid.Column="0" Grid.Row="3" Text="Preview Update"/>
+            <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding SelectedUser.PreviewUpdate}" Margin="2"/>
             <!--Отключен-->
-            <TextBlock Grid.Column="0" Grid.Row="3" Text="Отключен"/>
-            <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding SelectedUser.Disabled}" IsThreeState="True" Margin="2"/>
+            <TextBlock Grid.Column="0" Grid.Row="4" Text="Отключен"/>
+            <CheckBox Grid.Column="1" Grid.Row="4" IsChecked="{Binding SelectedUser.Disabled}" Margin="2"/>
             <!--Примечание-->
-            <TextBlock Grid.Column="0" Grid.Row="4" Text="Примечание"/>
-            <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding SelectedUser.Description}" Margin="2"/>
-            <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock Grid.Column="0" Grid.Row="5" Text="Примечание"/>
+            <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding SelectedUser.Description}" Margin="2"/>
+            <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Content="Применить" Command="{Binding Apply}" Margin="0,5,0,0"
                         mah:VisibilityHelper.IsVisible="{Binding EditMode}"/>
             </StackPanel>
