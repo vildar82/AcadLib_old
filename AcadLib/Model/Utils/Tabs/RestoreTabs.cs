@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Linq;
     using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
     using Data;
     using IO;
     using JetBrains.Annotations;
@@ -43,6 +44,7 @@
 
             if (tabsData.Data.Drawings?.Any() == true)
             {
+                tabsData.TrySave();
                 var openedDraws = Application.DocumentManager.Cast<Document>().Where(w => w.IsNamedDrawing)
                     .Select(s => s.Name).ToList();
                 var tabVM = new TabsVM(tabsData.Data.Drawings.Except(openedDraws, StringComparer.OrdinalIgnoreCase));
