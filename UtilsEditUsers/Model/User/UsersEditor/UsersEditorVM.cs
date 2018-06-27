@@ -114,7 +114,7 @@
             GroupServerVersions = await LoadGroupServerVersionsAsync();
             users = dbUsers.GetUsers().Select(GetUser).ToList();
             Users = new ListCollectionView(users) { Filter = OnFilter };
-            Users.CollectionChanged += (o, e) => 
+            Users.CollectionChanged += (o, e) =>
                 UsersCount = Users.Cast<EditAutocadUsers>().Count();
             Groups = LoadUserGroups();
             LoadUsersEx();
@@ -306,14 +306,11 @@
         {
             foreach (var autocadUserse in selectedUsers)
             {
-                using (autocadUserse.SuppressChangeNotifications())
-                {
-                    autocadUserse.Group = selectedUser.Group;
-                    autocadUserse.Description = selectedUser.Description;
-                    autocadUserse.Disabled = selectedUser.Disabled;
-                    autocadUserse.PreviewUpdate = selectedUser.PreviewUpdate;
-                    autocadUserse.SaveToDbUser();
-                }
+                autocadUserse.Group = selectedUser.Group;
+                autocadUserse.Description = selectedUser.Description;
+                autocadUserse.Disabled = selectedUser.Disabled;
+                autocadUserse.PreviewUpdate = selectedUser.PreviewUpdate;
+                autocadUserse.SaveToDbUser();
             }
 
             if (selectedUsers.Count == 1)
