@@ -39,5 +39,17 @@
     <Setting Name="UserSettingsPropsWidth" Type="System.Double" Scope="User">
       <Value Profile="(Default)">150</Value>
     </Setting>
+    <Setting Name="RestoreTabsColRestoreWidth" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="RestoreTabsColNameWidth" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">200</Value>
+    </Setting>
+    <Setting Name="RestoreTabsColDateWidth" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="RestoreTabsColSizeWidth" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

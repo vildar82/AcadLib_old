@@ -131,7 +131,7 @@ namespace AcadLib
                 }
 
                 // Восстановление вкладок чертежей
-                Utils.Tabs.RestoreTabs.Restore();
+                Utils.Tabs.RestoreTabs.Init();
             }
             catch (Exception ex)
             {

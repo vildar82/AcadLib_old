@@ -4,12 +4,14 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using AcadLib.UI.StatusBar;
     using Autodesk.AutoCAD.ApplicationServices;
-    using Autodesk.AutoCAD.DatabaseServices;
     using Data;
+    using Errors;
     using IO;
     using JetBrains.Annotations;
     using NetLib;
+    using Properties;
     using UI;
     using User;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
@@ -25,18 +27,37 @@
         private static readonly List<Document> _tabs = new List<Document>();
         private static string cmd;
         private static bool isOn;
-        private static List<string> openDrawings;
+
+        public static void Init()
+        {
+            // Добавление кнопки в статус бар
+            StatusBarEx.AddPane(string.Empty, "Откытие чертежей", (p, e) => Restore(), icon: Resources.restoreFiles16);
+            Restore();
+        }
 
         /// <summary>
         /// Воссатановление вкладок
         /// </summary>
         public static void Restore()
         {
+            Application.Idle += Application_Idle;
+        }
+
+        public static void RestoreTabsIsOn(bool isOn)
+        {
+            UserSettingsService.SetPluginValue(PluginName, ParamRestoreIsOn, isOn);
+            Subscribe();
+        }
+
+        private static void Application_Idle(object sender, EventArgs e)
+        {
+            Application.Idle -= Application_Idle;
             var tabsData = new LocalFileData<Tabs>(GetFile(), false);
             tabsData.TryLoad(() => new Tabs());
 
-            UserSettingsService.ChangeSettings += (o, e) => Init();
-            Init();
+            UserSettingsService.ChangeSettings -= UserSettingsService_ChangeSettings;
+            UserSettingsService.ChangeSettings += UserSettingsService_ChangeSettings;
+            Subscribe();
 
             // Если восстановление вкладок отключено
             if (!isOn)
@@ -45,45 +66,64 @@
             if (tabsData.Data.Drawings?.Any() == true)
             {
                 tabsData.TrySave();
-                var openedDraws = Application.DocumentManager.Cast<Document>().Where(w => w.IsNamedDrawing)
-                    .Select(s => s.Name).ToList();
+                var docs = Application.DocumentManager.Cast<Document>().ToList();
+                var openedDraws = new List<string>();
+                foreach (var doc in docs)
+                {
+                    if (doc.IsNamedDrawing)
+                    {
+                        openedDraws.Add(doc.Name);
+                    }
+                }
+
                 var tabVM = new TabsVM(tabsData.Data.Drawings.Except(openedDraws, StringComparer.OrdinalIgnoreCase));
                 var tabsView = new TabsView(tabVM);
                 if (tabsView.ShowDialog() == true)
                 {
-                    openDrawings = tabVM.Tabs.Where(w => w.Restore).Select(s => s.File).ToList();
-                    Application.Idle += Application_Idle;
+                    var oldIsOn = isOn;
+                    try
+                    {
+                        var closeDocs = Application.DocumentManager.Cast<Document>().Where(w => !w.IsNamedDrawing).ToList();
+                        isOn = false;
+                        foreach (var item in tabVM.Tabs.Where(w => w.Restore))
+                        {
+                            try
+                            {
+                                Application.DocumentManager.Open(item.File, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                Inspector.AddError($"Ошибка открытия файла '{item.File}' - {ex.Message}");
+                            }
+                        }
+
+                        // Закрыть пустые чертежи
+                        foreach (var doc in closeDocs)
+                        {
+                            try
+                            {
+                                doc.CloseAndDiscard();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Log.Error("RestoreTabs. Закрыть пустые чертежи.", ex);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        isOn = oldIsOn;
+                    }
                 }
             }
         }
 
-        public static void RestoreTabsIsOn(bool isOn)
+        private static void UserSettingsService_ChangeSettings(object sender, EventArgs e)
         {
-            UserSettingsService.SetPluginValue(PluginName, ParamRestoreIsOn, isOn);
-            Init();
+            Subscribe();
         }
 
-        private static void Application_Idle(object sender, EventArgs e)
-        {
-            Application.Idle -= Application_Idle;
-            if (openDrawings?.Any() != true)
-                return;
-            try
-            {
-                isOn = false;
-                foreach (var drawing in openDrawings)
-                {
-                    Application.DocumentManager.Open(drawing, false);
-                }
-            }
-            finally
-            {
-                openDrawings = null;
-                isOn = true;
-            }
-        }
-
-        private static void Init()
+        private static void Subscribe()
         {
             isOn = IsOn();
             if (!isOn)

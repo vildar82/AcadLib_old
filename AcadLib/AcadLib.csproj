@@ -420,9 +420,29 @@
     <Compile Include="Model\User\UserSettings.cs" />
     <Compile Include="Model\User\UserSettingsService.cs" />
     <Compile Include="Model\Utils\ListModules.cs" />
+    <Compile Include="Model\Utils\Tabs\History\Db\DbEvents.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DbEvents.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Utils\Tabs\History\Db\DbEvents.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DbEvents.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Utils\Tabs\History\Db\DbEvents.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DbEvents.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Utils\Tabs\History\Db\DbHistory.cs" />
+    <Compile Include="Model\Utils\Tabs\History\Db\StatEvents.cs">
+      <DependentUpon>DbEvents.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\Utils\Tabs\RestoreTabs.cs" />
     <Compile Include="Model\Utils\Tabs\Data\Tabs.cs" />
     <Compile Include="Model\Utils\Tabs\Tab.cs" />
+    <Compile Include="Model\Utils\Tabs\UI\ErrConverter.cs" />
     <Compile Include="Model\Utils\Tabs\UI\TabsView.xaml.cs">
       <DependentUpon>TabsView.xaml</DependentUpon>
     </Compile>
@@ -571,6 +591,25 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Model\Utils\Tabs\History\Db\DbEvents.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>DbEvents.edmx</DependentUpon>
+      <LastGenOutput>DbEvents.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Model\Utils\Tabs\History\Db\DbEvents.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>DbEvents.edmx</DependentUpon>
+      <LastGenOutput>DbEvents.cs</LastGenOutput>
+    </Content>
+    <None Include="Resources\restoreFiles16.ico" />
+    <None Include="Resources\restoreFiles32.ico" />
+    <EntityDeploy Include="Model\Utils\Tabs\History\Db\DbEvents.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>DbEvents.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Model\Utils\Tabs\History\Db\DbEvents.edmx.diagram">
+      <DependentUpon>DbEvents.edmx</DependentUpon>
+    </None>
     <None Include="stylecop.json" />
     <Resource Include="Resources\no-user.png" />
     <None Include="App.Config" />

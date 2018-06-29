@@ -125,5 +125,53 @@ namespace AcadLib.Properties {
                 this["UserSettingsPropsWidth"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public double RestoreTabsColRestoreWidth {
+            get {
+                return ((double)(this["RestoreTabsColRestoreWidth"]));
+            }
+            set {
+                this["RestoreTabsColRestoreWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public double RestoreTabsColNameWidth {
+            get {
+                return ((double)(this["RestoreTabsColNameWidth"]));
+            }
+            set {
+                this["RestoreTabsColNameWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public double RestoreTabsColDateWidth {
+            get {
+                return ((double)(this["RestoreTabsColDateWidth"]));
+            }
+            set {
+                this["RestoreTabsColDateWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public double RestoreTabsColSizeWidth {
+            get {
+                return ((double)(this["RestoreTabsColSizeWidth"]));
+            }
+            set {
+                this["RestoreTabsColSizeWidth"] = value;
+            }
+        }
     }
 }
