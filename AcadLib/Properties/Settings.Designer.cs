@@ -128,7 +128,7 @@ namespace AcadLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
         public double RestoreTabsColRestoreWidth {
             get {
                 return ((double)(this["RestoreTabsColRestoreWidth"]));

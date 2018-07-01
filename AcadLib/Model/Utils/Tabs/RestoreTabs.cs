@@ -27,20 +27,20 @@
         private static readonly List<Document> _tabs = new List<Document>();
         private static string cmd;
         private static bool isOn;
+        private static List<string> restoreTabs;
 
         public static void Init()
         {
+            isOn = IsOn();
+
             // Добавление кнопки в статус бар
             StatusBarEx.AddPane(string.Empty, "Откытие чертежей", (p, e) => Restore(), icon: Resources.restoreFiles16);
-            Restore();
-        }
+            if (isOn && AcadHelper.IsOneAcadRun())
+            {
+                Restore();
+            }
 
-        /// <summary>
-        /// Воссатановление вкладок
-        /// </summary>
-        public static void Restore()
-        {
-            Application.Idle += Application_Idle;
+            Subscribe();
         }
 
         public static void RestoreTabsIsOn(bool isOn)
@@ -49,25 +49,29 @@
             Subscribe();
         }
 
+        /// <summary>
+        /// Воссатановление вкладок
+        /// </summary>
+        private static void Restore()
+        {
+            var tabsData = new LocalFileData<Tabs>(GetFile(), false);
+            tabsData.TryLoad(() => new Tabs());
+            restoreTabs = tabsData.Data?.Drawings;
+            Application.Idle += Application_Idle;
+        }
+
         private static void Application_Idle(object sender, EventArgs e)
         {
             Application.Idle -= Application_Idle;
-            var tabsData = new LocalFileData<Tabs>(GetFile(), false);
-            tabsData.TryLoad(() => new Tabs());
-
             UserSettingsService.ChangeSettings -= UserSettingsService_ChangeSettings;
             UserSettingsService.ChangeSettings += UserSettingsService_ChangeSettings;
-            Subscribe();
-
-            // Если восстановление вкладок отключено
-            if (!isOn)
-                return;
-
-            if (tabsData.Data.Drawings?.Any() == true)
+            var openedDraws = new List<string>();
+            if (restoreTabs?.Any() == true)
             {
+                // Сохранить список чертежей, на случай если это окно пропустят и закроют автокад.
+                var tabsData = new LocalFileData<Tabs>(GetFile(), false) { Data = new Tabs { Drawings = restoreTabs } };
                 tabsData.TrySave();
                 var docs = Application.DocumentManager.Cast<Document>().ToList();
-                var openedDraws = new List<string>();
                 foreach (var doc in docs)
                 {
                     if (doc.IsNamedDrawing)
@@ -75,45 +79,50 @@
                         openedDraws.Add(doc.Name);
                     }
                 }
+            }
 
-                var tabVM = new TabsVM(tabsData.Data.Drawings.Except(openedDraws, StringComparer.OrdinalIgnoreCase));
-                var tabsView = new TabsView(tabVM);
-                if (tabsView.ShowDialog() == true)
+            var tabVM = new TabsVM(restoreTabs?.Except(openedDraws, StringComparer.OrdinalIgnoreCase)
+                                   ?? new List<string>(), isOn);
+            var tabsView = new TabsView(tabVM);
+            if (tabsView.ShowDialog() == true)
+            {
+                try
                 {
-                    var oldIsOn = isOn;
-                    try
+                    var closeDocs = Application.DocumentManager.Cast<Document>().Where(w => !w.IsNamedDrawing).ToList();
+                    var tabs = tabVM.Tabs.Where(w => w.Restore).Select(s => s.File).ToList();
+                    if (tabVM.HasHistory)
                     {
-                        var closeDocs = Application.DocumentManager.Cast<Document>().Where(w => !w.IsNamedDrawing).ToList();
-                        isOn = false;
-                        foreach (var item in tabVM.Tabs.Where(w => w.Restore))
-                        {
-                            try
-                            {
-                                Application.DocumentManager.Open(item.File, false);
-                            }
-                            catch (Exception ex)
-                            {
-                                Inspector.AddError($"Ошибка открытия файла '{item.File}' - {ex.Message}");
-                            }
-                        }
+                        tabs = tabs.Union(tabVM.History.Where(w => w.Restore).Select(s => s.File)).ToList();
+                    }
 
-                        // Закрыть пустые чертежи
-                        foreach (var doc in closeDocs)
+                    foreach (var item in tabs)
+                    {
+                        try
                         {
-                            try
-                            {
-                                doc.CloseAndDiscard();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Log.Error("RestoreTabs. Закрыть пустые чертежи.", ex);
-                            }
+                            Application.DocumentManager.Open(item, false);
+                        }
+                        catch (Exception ex)
+                        {
+                            Inspector.AddError($"Ошибка открытия файла '{item}' - {ex.Message}");
                         }
                     }
-                    finally
+
+                    // Закрыть пустые чертежи
+                    foreach (var doc in closeDocs)
                     {
-                        isOn = oldIsOn;
+                        try
+                        {
+                            doc.CloseAndDiscard();
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log.Error("RestoreTabs. Закрыть пустые чертежи.", ex);
+                        }
                     }
+                }
+                finally
+                {
+                    Inspector.Show();
                 }
             }
         }
@@ -125,13 +134,13 @@
 
         private static void Subscribe()
         {
-            isOn = IsOn();
             if (!isOn)
             {
                 Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
                 Application.DocumentManager.DocumentDestroyed -= DocumentManager_DocumentDestroyed;
                 Application.DocumentManager.DocumentLockModeChanged -= DocumentManager_DocumentLockModeChanged;
                 NetLib.IO.Path.TryDeleteFile(GetFile());
+                _tabs.Clear();
                 return;
             }
 
@@ -141,10 +150,13 @@
             }
 
             // Если автокад закрывается, то не нужно обрабатывать события закрытия чертежей
+            Application.DocumentManager.DocumentLockModeChanged -= DocumentManager_DocumentLockModeChanged;
             Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
 
             // Подписаться на события открытия/закрытия чертежей
+            Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
             Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
+            Application.DocumentManager.DocumentDestroyed -= DocumentManager_DocumentDestroyed;
             Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
         }
 
@@ -171,15 +183,18 @@
 
         private static void AddTab(Document doc)
         {
-            if (doc?.Database == null)
+            if (doc?.Database == null || _tabs.Contains(doc))
                 return;
             _tabs.Add(doc);
-            doc.Database.SaveComplete += (o, e) =>
-            {
-                if (cmd != "QUIT")
-                    SaveTabs();
-            };
+            doc.Database.SaveComplete -= Database_SaveComplete;
+            doc.Database.SaveComplete += Database_SaveComplete;
             SaveTabs();
+        }
+
+        private static void Database_SaveComplete(object sender, Autodesk.AutoCAD.DatabaseServices.DatabaseIOEventArgs e)
+        {
+            if (cmd != "QUIT")
+                SaveTabs();
         }
 
         private static void RemoveTabs()

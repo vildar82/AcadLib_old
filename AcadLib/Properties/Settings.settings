@@ -40,7 +40,7 @@
       <Value Profile="(Default)">150</Value>
     </Setting>
     <Setting Name="RestoreTabsColRestoreWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">100</Value>
+      <Value Profile="(Default)">300</Value>
     </Setting>
     <Setting Name="RestoreTabsColNameWidth" Type="System.Double" Scope="User">
       <Value Profile="(Default)">200</Value>

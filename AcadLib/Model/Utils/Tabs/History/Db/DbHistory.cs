@@ -4,9 +4,14 @@
     using System.Collections.Generic;
     using System.Data.Entity.Core.EntityClient;
     using System.Data.SqlClient;
+    using System.Diagnostics;
     using System.Linq;
+    using System.Reactive.Disposables;
+    using System.Reactive.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using AutoMapper.QueryableExtensions;
+    using DynamicData;
     using Model.Utils.Tabs.History.Db;
     using NetLib;
     using Properties;
@@ -38,9 +43,10 @@
         public IQueryable<StatEvents> LoadHistoryFiles()
         {
             var login = Environment.UserName.ToLower();
-            return db.StatEvents.Where(w => w.UserName.ToLower() == login &&
-                                            (w.App == "AutoCAD" || w.App == "Civil") &&
-                                            w.EventName == "Открытие").OrderByDescending(o=>o.Start);
+            return db.StatEvents.Where(w => w.App == "AutoCAD" || w.App == "Civil")
+                .Where(w => w.EventName == "Открытие")
+                .Where(w => w.UserName.ToLower() == login)
+                .GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
         }
     }
 }

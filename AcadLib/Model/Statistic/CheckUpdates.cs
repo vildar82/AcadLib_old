@@ -163,7 +163,7 @@
                     var updates = updateVersions.JoinToString(v =>
                         $"{v?.GroupName} от {v?.VersionServerDate:dd.MM.yy HH:mm}" +
                         $"{(v?.UpdateDescription.IsNullOrEmpty() == true ? string.Empty : $"\n'{v?.UpdateDescription}'")}", "\n");
-                    msg = $"Доступны обновления настроек:\n{updates}\nРекомендуется обновиться (перезапустить автокад).";
+                    msg = $"Обновления:\n{updates}";
                     return true;
                 }
             }

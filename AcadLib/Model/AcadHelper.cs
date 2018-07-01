@@ -2,6 +2,7 @@
 namespace AcadLib
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using Autodesk.AutoCAD.ApplicationServices;
@@ -78,6 +79,32 @@ namespace AcadLib
             catch
             {
                 //
+            }
+        }
+
+        /// <summary>
+        /// Определение, что только один автокад запущен
+        /// </summary>
+        public static bool IsOneAcadRun()
+        {
+            return !Process.GetProcessesByName("acad").Where(IsValidAcadProcess).Skip(1).Any();
+        }
+
+        private static bool IsValidAcadProcess(Process process)
+        {
+            try
+            {
+                // На "липовом" процессе acad.exe - выскакивает исключение. Обнаружисоль в Новороссийске у Жуковой Юли/
+                var unused = process.VirtualMemorySize64;
+                if (process.NonpagedSystemMemorySize64 < 20000) 
+                    return false;
+                var unused1 = process.MainWindowTitle;
+                var unused2 = process.Modules.Count;
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
