@@ -1,9 +1,9 @@
-﻿using System;
-using JetBrains.Annotations;
-using UnitsNet;
-
-namespace AcadLib.Units
+﻿namespace AcadLib.Units
 {
+    using System;
+    using JetBrains.Annotations;
+    using UnitsNet;
+
     /// <summary>
     /// Конвертер единиц
     /// </summary>

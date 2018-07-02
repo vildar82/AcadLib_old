@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Описание AttributeReference для хранения
     /// Так же подходит для AttributeDefinition
@@ -13,19 +13,6 @@ namespace AcadLib.Blocks
     [Obsolete("Лучше используй AttributeInfo.")]
     public class AttributeRefInfo
     {
-        /// <summary>
-        /// AttributeReference или AttributeDefinition
-        /// </summary>
-        public ObjectId IdAtrRef { get; set; }
-        public string Tag { get; set; }
-        public string Text { get; set; }
-        //public AttributeRefInfo(AttributeReference attr)
-        //{
-        //   Tag = attr.Tag;
-        //   Text = attr.TextString;
-        //   IdAtrRef = attr.Id;
-        //}
-
         /// <summary>
         /// DBText - должен быть или AttributeDefinition или AttributeReference
         /// иначе исключение ArgumentException
@@ -48,27 +35,40 @@ namespace AcadLib.Blocks
                     throw new ArgumentException("requires an AttributeDefintion or AttributeReference");
                 }
             }
+
             Text = attr.TextString;
             IdAtrRef = attr.Id;
         }
+
+        /// <summary>
+        /// AttributeReference или AttributeDefinition
+        /// </summary>
+        public ObjectId IdAtrRef { get; set; }
+
+        public string Tag { get; set; }
+
+        public string Text { get; set; }
 
         [NotNull]
         public static List<AttributeRefInfo> GetAttrDefs(ObjectId idBtr)
         {
             var resVal = new List<AttributeRefInfo>();
-            if (idBtr.IsNull) return resVal;
+            if (idBtr.IsNull)
+                return resVal;
             using (var btr = (BlockTableRecord)idBtr.Open(OpenMode.ForRead))
             {
                 foreach (var idEnt in btr)
                 {
                     using (var attrDef = (AttributeDefinition)idEnt.Open(OpenMode.ForRead, false, true))
                     {
-                        if (attrDef == null) continue;
+                        if (attrDef == null)
+                            continue;
                         var attrDefInfo = new AttributeRefInfo(attrDef);
                         resVal.Add(attrDefInfo);
                     }
                 }
             }
+
             return resVal;
         }
 
@@ -87,6 +87,7 @@ namespace AcadLib.Blocks
                     }
                 }
             }
+
             return resVal;
         }
     }

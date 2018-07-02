@@ -1,20 +1,27 @@
-﻿using AcadLib.Scale;
-using Autodesk.AutoCAD.Colors;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using NetLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using AcadLib.Exceptions;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.Colors;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using Exceptions;
+    using JetBrains.Annotations;
+    using NetLib;
+    using Scale;
+
     /// <summary>
     /// Enumeration of offset side options
     /// </summary>
-    public enum OffsetSide { In, Out, Left, Right, Both }
+    public enum OffsetSide
+    {
+        In,
+        Out,
+        Left,
+        Right,
+        Both
+    }
 
     /// <summary>
     /// Provides extension methods for the Polyline type.
@@ -34,7 +41,7 @@ namespace AcadLib.Geometry
         {
             var closest = pl.GetClosestPointTo(pt, false);
             var parameter = pl.GetParameterAtPoint(closest);
-            var index = (int) NetLib.DoubleExt.Round(parameter,0);
+            var index = (int)NetLib.DoubleExt.Round(parameter, 0);
             return pl.GetPoint3dAt(index);
         }
 
@@ -71,6 +78,7 @@ namespace AcadLib.Geometry
                     pline.GetBulgeAt(num - 1));
                 pl1.Closed = false;
             }
+
             var pl2 = (Polyline)pl1.Clone();
 
             // le point spécifié est sur un sommet de la polyligne
@@ -80,10 +88,12 @@ namespace AcadLib.Geometry
                 {
                     pl1.RemoveVertexAt(i);
                 }
+
                 for (var i = 0; i < index; i++)
                 {
                     pl2.RemoveVertexAt(0);
                 }
+
                 return new[] { pl1, pl2 };
             }
 
@@ -93,11 +103,13 @@ namespace AcadLib.Geometry
             {
                 pl1.RemoveVertexAt(i);
             }
+
             pl1.SetPointAt(index + 1, pt);
             for (var i = 0; i < index; i++)
             {
                 pl2.RemoveVertexAt(0);
             }
+
             pl2.SetPointAt(0, pt);
             if (Math.Abs(pline.GetBulgeAt(index)) > 0.0001)
             {
@@ -105,6 +117,7 @@ namespace AcadLib.Geometry
                 pl1.SetBulgeAt(index, MultiplyBulge(bulge, param - index));
                 pl2.SetBulgeAt(0, MultiplyBulge(bulge, index + 1 - param));
             }
+
             return new[] { pl1, pl2 };
         }
 
@@ -141,6 +154,7 @@ namespace AcadLib.Geometry
                 area = arc.AlgebricArea();
                 cen = arc.Centroid() * area;
             }
+
             for (var i = 1; i < last; i++)
             {
                 var pi = pl.GetPoint2dAt(i);
@@ -158,6 +172,7 @@ namespace AcadLib.Geometry
                     cen += (arc.Centroid() * tmpArea).GetAsVector();
                 }
             }
+
             bulge = pl.GetBulgeAt(last);
             if (Math.Abs(bulge) > 0.0001 && pl.Closed)
             {
@@ -166,11 +181,13 @@ namespace AcadLib.Geometry
                 area += tmpArea;
                 cen += (arc.Centroid() * tmpArea).GetAsVector();
             }
+
             if (Math.Abs(area) < 0.0001)
             {
                 // Средняя точка из всех точек полилинии
                 return new Point2d(pts.Average(a => a.X), pts.Average(a => a.Y));
             }
+
             return cen.DivideBy(area);
         }
 
@@ -195,6 +212,7 @@ namespace AcadLib.Geometry
                 {
                     // Самопересечение
                 }
+
                 return isValidBoundary;
             }
         }
@@ -208,6 +226,7 @@ namespace AcadLib.Geometry
             {
                 pl.AddVertexAt(i, pts[i], 0, 0, 0);
             }
+
             pl.Closed = true;
             return pl;
         }
@@ -237,7 +256,8 @@ namespace AcadLib.Geometry
         {
             var n = pline.Closed ? 0 : 1;
             for (var i = n; i < pline.NumberOfVertices - n; i += 1 + pline.FilletAt(i, radius))
-            { }
+            {
+            }
         }
 
         /// <summary>
@@ -255,6 +275,7 @@ namespace AcadLib.Geometry
             {
                 return 0;
             }
+
             var seg1 = pline.GetLineSegment2dAt(prev);
             var seg2 = pline.GetLineSegment2dAt(index);
             var vec1 = seg1.StartPoint - seg1.EndPoint;
@@ -265,6 +286,7 @@ namespace AcadLib.Geometry
             {
                 return 0;
             }
+
             var pt1 = seg1.EndPoint + vec1.GetNormal() * dist;
             var pt2 = seg2.StartPoint + vec2.GetNormal() * dist;
             var bulge = Math.Tan(angle / 2.0);
@@ -272,6 +294,7 @@ namespace AcadLib.Geometry
             {
                 bulge = -bulge;
             }
+
             pline.AddVertexAt(index, pt1, bulge, 0.0, 0.0);
             pline.SetPointAt(index + 1, pt2);
             return 1;
@@ -284,17 +307,20 @@ namespace AcadLib.Geometry
             {
                 return pl.GetPoints();
             }
+
             var points = new List<Point2d>();
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 points.Add(pl.GetPoint2dAt(i));
                 var segType = pl.GetSegmentType(i);
-                if (segType != SegmentType.Arc) continue;
+                if (segType != SegmentType.Arc)
+                    continue;
                 var seg = pl.GetArcSegment2dAt(i);
                 var arcPts = seg.GetSamplePoints(arcDivisionCount).ToList();
                 arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
                 points.AddRange(arcPts);
             }
+
             return points;
         }
 
@@ -310,12 +336,14 @@ namespace AcadLib.Geometry
             {
                 return pl.GetPoints();
             }
+
             var points = new List<Point2d>();
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
                 points.Add(pl.GetPoint2dAt(i));
                 var segType = pl.GetSegmentType(i);
-                if (segType != SegmentType.Arc) continue;
+                if (segType != SegmentType.Arc)
+                    continue;
                 var seg = pl.GetArcSegment2dAt(i);
                 var chordLength = GetChordLength(seg.Radius, chordHeight);
                 var segLength = seg.GetLength(seg.GetParameterOf(seg.StartPoint), seg.GetParameterOf(seg.EndPoint));
@@ -324,6 +352,7 @@ namespace AcadLib.Geometry
                 arcPts = arcPts.Take(arcPts.Count - 1).Skip(1).ToList();
                 points.AddRange(arcPts);
             }
+
             return points;
         }
 
@@ -376,6 +405,7 @@ namespace AcadLib.Geometry
             {
                 points.Add(pl.GetPoint2dAt(i));
             }
+
             return points;
         }
 
@@ -396,8 +426,10 @@ namespace AcadLib.Geometry
             if (pline.Normal.IsPerpendicularTo(direction, tol))
             {
                 var dirPlane = new Plane(Point3d.Origin, direction);
+
                 // ReSharper disable once UpgradeOpen
-                if (!pline.IsWriteEnabled) pline.UpgradeOpen();
+                if (!pline.IsWriteEnabled)
+                    pline.UpgradeOpen();
                 pline.TransformBy(Matrix3d.WorldToPlane(dirPlane));
                 var extents = pline.GeometricExtents;
                 pline.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
@@ -442,6 +474,7 @@ namespace AcadLib.Geometry
                 pt2.Y = polygon.GetPoint2dAt((i + 1) % n).Y - pt.Y;
                 angle += Angle2D(pt1.X, pt1.Y, pt2.X, pt2.Y);
             }
+
             return !(Math.Abs(angle) < Math.PI);
         }
 
@@ -473,6 +506,7 @@ namespace AcadLib.Geometry
                         {
                             pl.IntersectWith(ray, Intersect.OnBothOperands, plane, ptsIntersects, IntPtr.Zero, IntPtr.Zero);
                         }
+
                         isContinue = ptsIntersects.Cast<Point3d>().Any(p =>
                         {
                             if (pt.IsEqualTo(p))
@@ -544,6 +578,7 @@ namespace AcadLib.Geometry
                         break;
                 }
             }
+
             return isOn;
         }
 
@@ -569,7 +604,9 @@ namespace AcadLib.Geometry
         /// <summary>
         /// Проверка самопересечения полилинии
         /// </summary>
-        public static PolygonValidateResult IsValidPolygon([NotNull] this Polyline pline, [NotNull] out List<Point3d> intersections,
+        public static PolygonValidateResult IsValidPolygon(
+            [NotNull] this Polyline pline,
+            [NotNull] out List<Point3d> intersections,
             double tolerance = 0.01)
         {
             intersections = new List<Point3d>();
@@ -578,6 +615,7 @@ namespace AcadLib.Geometry
             {
                 result += 1;
             }
+
             var t = new Tolerance(tolerance, tolerance);
             using (var curve1 = pline.GetGeCurve(t))
             using (var curve2 = pline.GetGeCurve(t))
@@ -585,13 +623,16 @@ namespace AcadLib.Geometry
             {
                 var interCount = curveInter.NumberOfIntersectionPoints;
                 var overlaps = curveInter.OverlapCount();
-                if (!pline.Closed) overlaps += 1;
-                if (overlaps < pline.NumberOfVertices) result += 2;
+                if (!pline.Closed)
+                    overlaps += 1;
+                if (overlaps < pline.NumberOfVertices)
+                    result += 2;
                 if (interCount > overlaps)
                 {
                     result += 4;
                     var plPts = pline.GetPoints().DistinctPoints().Select(s => s.Convert3d()).ToList();
-                    for (var i = 0; i < interCount; i++) intersections.Add(curveInter.GetIntersectionPoint(i));
+                    for (var i = 0; i < interCount; i++)
+                        intersections.Add(curveInter.GetIntersectionPoint(i));
                     var onlyIntersects = intersections.Except(plPts).ToList();
                     if (onlyIntersects.Any())
                     {
@@ -599,6 +640,7 @@ namespace AcadLib.Geometry
                     }
                 }
             }
+
             return result;
         }
 
@@ -636,6 +678,7 @@ namespace AcadLib.Geometry
             {
                 res = 0;
             }
+
             return res;
         }
 
@@ -667,6 +710,7 @@ namespace AcadLib.Geometry
                         offsetRight.Dispose();
                         return offsetLeft;
                     }
+
                 case OffsetSide.Out:
                     if (areaRight < areaLeft)
                     {
@@ -678,6 +722,7 @@ namespace AcadLib.Geometry
                         offsetLeft.Dispose();
                         return offsetRight;
                     }
+
                 case OffsetSide.Left:
                     offsetRight.Dispose();
                     return offsetLeft;
@@ -712,6 +757,7 @@ namespace AcadLib.Geometry
                 };
                 texts.Add(text);
             }
+
             texts.AddEntityToCurrentSpace();
         }
 
@@ -723,7 +769,7 @@ namespace AcadLib.Geometry
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void Wedding([NotNull] this Polyline pl, Tolerance tolerance, bool close = true, bool onSomeLine = false)
         {
-            //var iPrew = pl.NextVertexIndex(0, -1);
+            // var iPrew = pl.NextVertexIndex(0, -1);
             var prew = pl.GetPoint2dAt(0);
             for (var i = 1; i < pl.NumberOfVertices; i++)
             {
@@ -735,6 +781,7 @@ namespace AcadLib.Geometry
                         var bulge = pl.GetBulgeAt(i);
                         pl.SetBulgeAt(pl.NextVertexIndex(i, -1), bulge);
                     }
+
                     pl.RemoveVertexAt(i--);
                 }
                 else if (onSomeLine && pl.NumberOfVertices > 2)
@@ -756,7 +803,9 @@ namespace AcadLib.Geometry
                     prew = cur;
                 }
             }
-            if (close && !pl.Closed) pl.Closed = true;
+
+            if (close && !pl.Closed)
+                pl.Closed = true;
         }
 
         private static double Angle2D(double x1, double y1, double x2, double y2)

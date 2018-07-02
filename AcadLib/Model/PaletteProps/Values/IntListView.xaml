@@ -1,0 +1,33 @@
+﻿<wpf:BaseUserControl x:Class="AcadLib.PaletteProps.IntListView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
+        xmlns:paletteProps="clr-namespace:AcadLib.PaletteProps"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        d:DataContext="{d:DesignInstance paletteProps:IntListVM}"
+        mc:Ignorable="d">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="DetailedTemplate" TargetType="{x:Type ContentControl}">
+            <TextBlock Text="{Binding}" Margin="1"/>
+        </ControlTemplate>
+</UserControl.Resources>
+    <ComboBox x:Name="CbValue" ItemsSource="{Binding Values}" Text="{Binding Value, Delay=500}"
+              IsEditable="{Binding AllowCustomValue}" IsReadOnly="{Binding IsReadOnly}">
+        <ComboBox.ItemTemplate>
+            <DataTemplate DataType="paletteProps:IntListVM">
+                <mah:NumericUpDown Value="{Binding ., Delay=500}" Minimum="{Binding DataContext.Min, ElementName=CbValue}" 
+                               Maximum="{Binding DataContext.Max, ElementName=CbValue}" 
+                               NumericInputMode="Numbers" IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=CbValue}"
+                               HideUpDownButtons="{Binding DataContext.IsReadOnly, ElementName=CbValue}"
+                               paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="mah:NumericUpDown.Value"/>
+            </DataTemplate>
+        </ComboBox.ItemTemplate>
+        <ComboBox.ItemContainerStyle>
+            <Style TargetType="{x:Type ComboBoxItem}">
+                <Setter Property="Template" Value="{StaticResource DetailedTemplate}"/>
+            </Style>
+        </ComboBox.ItemContainerStyle>
+    </ComboBox>
+</wpf:BaseUserControl>

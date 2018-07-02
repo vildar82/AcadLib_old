@@ -1,4 +1,4 @@
-//   Rectangle.java
+// Rectangle.java
 //   Java Spatial Index Library
 //   Copyright (C) 2002 Infomatiq Limited
 //
@@ -15,20 +15,16 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-
 // Ported to C# By Dror Gluska, April 9th, 2009
 
-using JetBrains.Annotations;
-using System;
-using System.Text;
-
-// ReSharper disable once CheckNamespace
 namespace RTreeLib
 {
+    using System;
+    using System.Text;
+    using JetBrains.Annotations;
+
     [PublicAPI]
-#pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public class Rectangle
-#pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         internal const int DIMENSIONS = 3;
         internal double[] _max;
@@ -46,13 +42,61 @@ namespace RTreeLib
             if (min.Length != DIMENSIONS || max.Length != DIMENSIONS)
             {
                 throw new Exception("Error in Rectangle constructor: " +
-                          "min and max arrays must be of length " + DIMENSIONS);
+                                    "min and max arrays must be of length " + DIMENSIONS);
             }
 
             _min = new double[DIMENSIONS];
             _max = new double[DIMENSIONS];
 
             Set(min, max);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var equals = false;
+            if (obj?.GetType() == typeof(Rectangle))
+            {
+                var r = (Rectangle)obj;
+                if (CompareArrays(r._min, _min) && CompareArrays(r._max, _max))
+                {
+                    equals = true;
+                }
+            }
+
+            return equals;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            // min coordinates
+            sb.Append('(');
+            for (var i = 0; i < DIMENSIONS; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(", ");
+                }
+
+                sb.Append(_min[i]);
+            }
+
+            sb.Append("), (");
+
+            // max coordinates
+            for (var i = 0; i < DIMENSIONS; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(", ");
+                }
+
+                sb.Append(_max[i]);
+            }
+
+            sb.Append(')');
+            return sb.ToString();
         }
 
         internal void Set(double x1, double y1, double x2, double y2, double z1, double z2)
@@ -86,6 +130,7 @@ namespace RTreeLib
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -100,6 +145,7 @@ namespace RTreeLib
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -112,6 +158,7 @@ namespace RTreeLib
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -124,6 +171,7 @@ namespace RTreeLib
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -139,6 +187,7 @@ namespace RTreeLib
                     distanceSquared += (greatestMin - leastMax) * (greatestMin - leastMax);
                 }
             }
+
             return Math.Sqrt(distanceSquared);
         }
 
@@ -154,6 +203,7 @@ namespace RTreeLib
                     distanceSquared += (greatestMin - leastMax) * (greatestMin - leastMax);
                 }
             }
+
             return Math.Sqrt(distanceSquared);
         }
 
@@ -168,8 +218,10 @@ namespace RTreeLib
                     distanceSquared = tempDistance * tempDistance;
                     break;
                 }
+
                 tempDistance = _min[dimension] - point;
             }
+
             return distanceSquared;
         }
 
@@ -180,7 +232,8 @@ namespace RTreeLib
             for (var i = 0; i < DIMENSIONS; i++)
             {
                 distanceSquared += Math.Max(r._min[i], r._max[i]);
-                //distanceSquared += Math.Max(distanceSquared(i, r.min[i]), distanceSquared(i, r.max[i]));
+
+                // distanceSquared += Math.Max(distanceSquared(i, r.min[i]), distanceSquared(i, r.max[i]));
             }
 
             return Math.Sqrt(distanceSquared);
@@ -189,7 +242,7 @@ namespace RTreeLib
         internal double Enlargement([NotNull] Rectangle r)
         {
             var enlargedArea = (Math.Max(_max[0], r._max[0]) - Math.Min(_min[0], r._min[0])) *
-                                    (Math.Max(_max[1], r._max[1]) - Math.Min(_min[1], r._min[1]));
+                               (Math.Max(_max[1], r._max[1]) - Math.Min(_min[1], r._min[1]));
 
             return enlargedArea - Area();
         }
@@ -207,6 +260,7 @@ namespace RTreeLib
                 {
                     _min[i] = r._min[i];
                 }
+
                 if (r._max[i] > _max[i])
                 {
                     _max[i] = r._max[i];
@@ -235,56 +289,10 @@ namespace RTreeLib
             return true;
         }
 
-#pragma warning disable 659
-
-        public override bool Equals(object obj)
-#pragma warning restore 659
-        {
-            var equals = false;
-            if (obj?.GetType() == typeof(Rectangle))
-            {
-                var r = (Rectangle)obj;
-                if (CompareArrays(r._min, _min) && CompareArrays(r._max, _max))
-                {
-                    equals = true;
-                }
-            }
-            return equals;
-        }
-
         internal bool SameObject(object o)
         {
             // ReSharper disable once BaseObjectEqualsIsObjectEquals
             return base.Equals(o);
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-
-            // min coordinates
-            sb.Append('(');
-            for (var i = 0; i < DIMENSIONS; i++)
-            {
-                if (i > 0)
-                {
-                    sb.Append(", ");
-                }
-                sb.Append(_min[i]);
-            }
-            sb.Append("), (");
-
-            // max coordinates
-            for (var i = 0; i < DIMENSIONS; i++)
-            {
-                if (i > 0)
-                {
-                    sb.Append(", ");
-                }
-                sb.Append(_max[i]);
-            }
-            sb.Append(')');
-            return sb.ToString();
         }
     }
 }

@@ -1,13 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Усреднение вершин соседних полилиний.
     /// Только для полилиний с линейными сегментами.
@@ -30,6 +30,7 @@ namespace AcadLib.Geometry
             {
                 var pt = pl.GetPoint2dAt(i);
                 var nearestPtOther = ptsOther.Where(p => p.IsEqualTo(pt, tolerance)).ToList();
+
                 // усреднение вершин
                 if (nearestPtOther.Any())
                 {
@@ -56,9 +57,14 @@ namespace AcadLib.Geometry
         /// <param name="plOther">Вторая полилиния</param>
         /// <param name="tolerance">Допуск - поиск совпадающих вершин и ближайших сегментов</param>
         /// <param name="stickToSegment">Делать ли "прилипание" вершин к сегментам соседней полилинии (для обеих полилиний)</param>
-        public static void AverageVertexes([NotNull] this Polyline pl, [NotNull] ref Polyline plOther, Tolerance tolerance, bool stickToSegment)
+        public static void AverageVertexes(
+            [NotNull] this Polyline pl,
+            [NotNull] ref Polyline plOther,
+            Tolerance tolerance,
+            bool stickToSegment)
         {
             var ptsOther = plOther.GetPoints();
+
             // Индексы вершин второй полилинии совпадающие с первой
             var averageVertexesOther = new List<int>();
             for (var i = 0; i < pl.NumberOfVertices; i++)
@@ -66,6 +72,7 @@ namespace AcadLib.Geometry
                 var pt = pl.GetPoint3dAt(i);
                 var pt2d = pt.Convert2d();
                 var nearestPtOther = ptsOther.Where(p => p.IsEqualTo(pt2d, tolerance)).ToList();
+
                 // усреднение вершин
                 if (nearestPtOther.Any())
                 {
@@ -85,6 +92,7 @@ namespace AcadLib.Geometry
                     pl.StickVertexToPl(i, pt, plOther, tolerance);
                 }
             }
+
             // Приклеивание вершин второй полилинии к сегментам первой
             if (stickToSegment)
             {
@@ -111,7 +119,12 @@ namespace AcadLib.Geometry
             pl.AddVertexAt(indexVertex, newPlacePt, 0, 0, 0);
         }
 
-        private static void StickVertexToPl(this Polyline plModify, int indexVertex, Point3d ptVertex, [NotNull] Polyline plOther, Tolerance tolerance)
+        private static void StickVertexToPl(
+            this Polyline plModify,
+            int indexVertex,
+            Point3d ptVertex,
+            [NotNull] Polyline plOther,
+            Tolerance tolerance)
         {
             var ptStick = plOther.GetClosestPointTo(ptVertex, false);
             if ((ptVertex - ptStick).Length <= tolerance.EqualPoint)

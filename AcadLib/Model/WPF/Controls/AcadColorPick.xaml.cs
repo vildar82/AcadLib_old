@@ -1,11 +1,11 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Autodesk.AutoCAD.Windows;
-using System.Windows;
-using JetBrains.Annotations;
-
-namespace AcadLib.WPF.Controls
+﻿namespace AcadLib.WPF.Controls
 {
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
+    using System.Windows;
+    using Autodesk.AutoCAD.Windows;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Кнопка выбора цвета.
     /// <controls:AcadColorPick Color="{Binding Color}"/>
@@ -22,13 +22,21 @@ namespace AcadLib.WPF.Controls
 
         private bool canClearColor;
 
+        public AcadColorPick()
+        {
+            InitializeComponent();
+            CanClearColor = true;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public bool CanClearColor
         {
             get => canClearColor;
-            set {
-                if (value == canClearColor) return;
+            set
+            {
+                if (value == canClearColor)
+                    return;
                 canClearColor = value;
                 OnPropertyChanged();
             }
@@ -38,16 +46,11 @@ namespace AcadLib.WPF.Controls
         public Autodesk.AutoCAD.Colors.Color Color
         {
             get => (Autodesk.AutoCAD.Colors.Color)GetValue(ColorProperty);
-            set {
+            set
+            {
                 SetValue(ColorProperty, value);
                 CanClearColor = Color != null;
             }
-        }
-
-        public AcadColorPick()
-        {
-            InitializeComponent();
-            CanClearColor = true;
         }
 
         [NotifyPropertyChangedInvocator]

@@ -16,6 +16,8 @@
           <Property Name="Disabled" Type="bit" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="150" />
           <Property Name="Version" Type="nvarchar" MaxLength="50" />
+          <Property Name="PreviewUpdate" Type="bit" />
+          <Property Name="DateRun" Type="datetime" />
         </EntityType>
         <EntityContainer Name="CAD_AutoCADModelStoreContainer">
           <EntitySet Name="AutocadUsers" EntityType="Self.AutocadUsers" Schema="dbo" store:Type="Tables" />
@@ -35,6 +37,8 @@
           <Property Name="Disabled" Type="Boolean" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="Version" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PreviewUpdate" Type="Boolean" />
+          <Property Name="DateRun" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityContainer Name="CAD_AutoCADEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AutocadUsers" EntityType="Self.AutocadUsers" />
@@ -48,6 +52,8 @@
           <EntitySetMapping Name="AutocadUsers">
             <EntityTypeMapping TypeName="CAD_AutoCADModel.AutocadUsers">
               <MappingFragment StoreEntitySet="AutocadUsers">
+                <ScalarProperty Name="DateRun" ColumnName="DateRun" />
+                <ScalarProperty Name="PreviewUpdate" ColumnName="PreviewUpdate" />
                 <ScalarProperty Name="Version" ColumnName="Version" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Login" ColumnName="Login" />

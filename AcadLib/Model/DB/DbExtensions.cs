@@ -1,15 +1,15 @@
-﻿using AcadLib;
-using AutoCAD_PIK_Manager.Settings;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using AcadLib;
+    using ApplicationServices.Core;
+    using AutoCAD_PIK_Manager.Settings;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class DbExtensions
     {
@@ -24,6 +24,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             // Загрузка простого стиля ПИК
             GetDimStyle(db, PIK, UserGroup);
+
             // Загрузка углового стиля ПИК
             return GetDimStyle(db, PIK + "$2", UserGroup);
         }
@@ -42,11 +43,13 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 {
                     // ignored
                 }
+
                 if (idStyle.IsNull)
                 {
                     idStyle = db.Dimstyle;
                 }
             }
+
             return idStyle;
         }
 
@@ -77,6 +80,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
                     resVal = db.GetLineTypeIdContinuous();
                 }
             }
+
             return resVal;
         }
 
@@ -92,6 +96,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             {
                 idStyle = GetMleaderStyleId(db, styleName);
             }
+
             if (update || idStyle.IsNull)
             {
                 // Копирование стиля из шаблона
@@ -103,11 +108,13 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 {
                     // ignored
                 }
+
                 if (idStyle.IsNull)
                 {
                     idStyle = db.MLeaderstyle;
                 }
             }
+
             return idStyle;
         }
 
@@ -159,6 +166,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             {
                 idStyle = GetTableStyleId(db, styleName);
             }
+
             if (update || idStyle.IsNull)
             {
                 // Копирование стиля таблиц из шаблона
@@ -171,11 +179,13 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 {
                     //
                 }
+
                 if (idStyle.IsNull)
                 {
                     idStyle = db.Tablestyle;
                 }
             }
+
             return idStyle;
         }
 
@@ -195,9 +205,6 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return GetTextStylePIK(db, styleName, UserGroup);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public static ObjectId GetTextStylePIK(this Database db, string styleName, string templateFile)
         {
             var idStyle = GetTextStylePik(db, styleName);
@@ -212,11 +219,13 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 {
                     // ignored
                 }
+
                 if (idStyle.IsNull)
                 {
                     idStyle = db.Textstyle;
                 }
             }
+
             return idStyle;
         }
 
@@ -224,7 +233,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             for (var i = db.BlockTableId.Handle.Value; i < db.Handseed.Value; i++)
             {
-                if (!db.TryGetObjectId(new Handle(i), out var id)) continue;
+                if (!db.TryGetObjectId(new Handle(i), out var id))
+                    continue;
                 var objT = id.GetObject<T>();
                 if (objT != null)
                 {
@@ -242,10 +252,15 @@ namespace Autodesk.AutoCAD.DatabaseServices
         }
 
         // Копирование стиля таблиц ПИК из файла шаблона
-        private static ObjectId CopyObjectFromTemplate(Database db, Func<Database, string, ObjectId> getObjectId,
-            string styleName, ObjectId ownerIdTable, string templateName)
+        private static ObjectId CopyObjectFromTemplate(
+            Database db,
+            Func<Database, string, ObjectId> getObjectId,
+            string styleName,
+            ObjectId ownerIdTable,
+            string templateName)
         {
             var idStyleDest = ObjectId.Null;
+
             // файл шаблона
             var fileTemplate = Path.Combine(PikSettings.LocalSettingsFolder, "Template", UserGroup,
                 templateName + ".dwt");
@@ -253,7 +268,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             {
                 using (var dbTemplate = new Database(false, true))
                 {
-                    dbTemplate.ReadDwgFile(fileTemplate, FileOpenMode.OpenForReadAndAllShare, false, "");
+                    dbTemplate.ReadDwgFile(fileTemplate, FileOpenMode.OpenForReadAndAllShare, false, string.Empty);
                     dbTemplate.CloseInput(true);
                     var idStyleInTemplate = getObjectId(dbTemplate, styleName);
                     if (!idStyleInTemplate.IsNull)
@@ -266,12 +281,14 @@ namespace Autodesk.AutoCAD.DatabaseServices
                                 {
                                     db.WblockCloneObjects(ids, ownerIdTable, map, DuplicateRecordCloning.Replace, false);
                                 }
+
                                 idStyleDest = map[idStyleInTemplate].Value;
                             }
                         }
                     }
                 }
             }
+
             return idStyleDest;
         }
 
@@ -287,6 +304,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
                     idStyle = dictTableStyle.GetAt(styleName);
                 }
             }
+
             return idStyle;
         }
 
@@ -313,6 +331,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
                     idStyle = symbolTable[styleName];
                 }
             }
+
             return idStyle;
         }
 

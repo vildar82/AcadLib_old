@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
-using System;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.UI.Designer
 {
+    using System;
+    using System.ComponentModel;
+
     /// <summary>
     /// Provides attributes for the Keys or Values in the dictionary.
     /// </summary>

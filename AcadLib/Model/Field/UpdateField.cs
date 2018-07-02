@@ -1,12 +1,12 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using JetBrains.Annotations;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib.Field
+﻿namespace AcadLib.Field
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// PInvoke acdbEvaluateFields - обновление полей - с 2013 - 2017
     /// </summary>
@@ -56,37 +56,86 @@ namespace AcadLib.Field
                         ? AcdbEvaluateFields19x64(ref id, 16, IntPtr.Zero, IntPtr.Zero, 1, IntPtr.Zero, IntPtr.Zero)
                         : AcdbEvaluateFields19x32(ref id, 16, IntPtr.Zero, IntPtr.Zero, 1, IntPtr.Zero, IntPtr.Zero);
             }
+
             return 0;
         }
 
         // AutoCAD 2013 и 2014 x86
         [DllImport("acdb19.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, ExactSpelling = true,
-        EntryPoint = "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@HPB_WPAVAcDbDatabase@@W4EvalFields@AcFd@@PAH4@Z")]
-        private static extern int AcdbEvaluateFields19x32(ref ObjectId id, int context, IntPtr pszPropName, IntPtr db, int eval, IntPtr i1, IntPtr i2);
+            EntryPoint =
+                "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@HPB_WPAVAcDbDatabase@@W4EvalFields@AcFd@@PAH4@Z")]
+        private static extern int AcdbEvaluateFields19x32(
+            ref ObjectId id,
+            int context,
+            IntPtr pszPropName,
+            IntPtr db,
+            int eval,
+            IntPtr i1,
+            IntPtr i2);
 
         // AutoCAD 2013 и 2014 x64
         [DllImport("acdb19.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, ExactSpelling = true,
-          EntryPoint = "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@HPEB_WPEAVAcDbDatabase@@W4EvalFields@AcFd@@PEAH4@Z")]
-        private static extern int AcdbEvaluateFields19x64(ref ObjectId id, int context, IntPtr pszPropName, IntPtr db, int eval, IntPtr i1, IntPtr i2);
+            EntryPoint =
+                "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@HPEB_WPEAVAcDbDatabase@@W4EvalFields@AcFd@@PEAH4@Z")]
+        private static extern int AcdbEvaluateFields19x64(
+            ref ObjectId id,
+            int context,
+            IntPtr pszPropName,
+            IntPtr db,
+            int eval,
+            IntPtr i1,
+            IntPtr i2);
 
         // AutoCAD 2015 и 2016 x86
         [DllImport("acdb20.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, ExactSpelling = true,
-        EntryPoint = "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@HPB_WPAVAcDbDatabase@@W4EvalFields@AcFd@@PAH4@Z")]
-        private static extern int AcdbEvaluateFields20x32(ref ObjectId id, int context, IntPtr pszPropName, IntPtr db, int eval, IntPtr i1, IntPtr i2);
+            EntryPoint =
+                "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@HPB_WPAVAcDbDatabase@@W4EvalFields@AcFd@@PAH4@Z")]
+        private static extern int AcdbEvaluateFields20x32(
+            ref ObjectId id,
+            int context,
+            IntPtr pszPropName,
+            IntPtr db,
+            int eval,
+            IntPtr i1,
+            IntPtr i2);
 
         // AutoCAD 2015 и 2016 x64
         [DllImport("acdb20.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, ExactSpelling = true,
-          EntryPoint = "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@HPEB_WPEAVAcDbDatabase@@W4EvalFields@AcFd@@PEAH4@Z")]
-        private static extern int AcdbEvaluateFields20x64(ref ObjectId id, int context, IntPtr pszPropName, IntPtr db, int eval, IntPtr i1, IntPtr i2);
+            EntryPoint =
+                "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@HPEB_WPEAVAcDbDatabase@@W4EvalFields@AcFd@@PEAH4@Z")]
+        private static extern int AcdbEvaluateFields20x64(
+            ref ObjectId id,
+            int context,
+            IntPtr pszPropName,
+            IntPtr db,
+            int eval,
+            IntPtr i1,
+            IntPtr i2);
 
         // AutoCAD 2017x86
         [DllImport("acdb21.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, ExactSpelling = true,
-        EntryPoint = "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@HPB_WPAVAcDbDatabase@@W4EvalFields@AcFd@@PAH4@Z")]
-        private static extern int AcdbEvaluateFields21x32(ref ObjectId id, int context, IntPtr pszPropName, IntPtr db, int eval, IntPtr i1, IntPtr i2);
+            EntryPoint =
+                "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@HPB_WPAVAcDbDatabase@@W4EvalFields@AcFd@@PAH4@Z")]
+        private static extern int AcdbEvaluateFields21x32(
+            ref ObjectId id,
+            int context,
+            IntPtr pszPropName,
+            IntPtr db,
+            int eval,
+            IntPtr i1,
+            IntPtr i2);
 
         // AutoCAD 2017 x64
         [DllImport("acdb21.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, ExactSpelling = true,
-          EntryPoint = "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@HPEB_WPEAVAcDbDatabase@@W4EvalFields@AcFd@@PEAH4@Z")]
-        private static extern int AcdbEvaluateFields21x64(ref ObjectId id, int context, IntPtr pszPropName, IntPtr db, int eval, IntPtr i1, IntPtr i2);
+            EntryPoint =
+                "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@HPEB_WPEAVAcDbDatabase@@W4EvalFields@AcFd@@PEAH4@Z")]
+        private static extern int AcdbEvaluateFields21x64(
+            ref ObjectId id,
+            int context,
+            IntPtr pszPropName,
+            IntPtr db,
+            int eval,
+            IntPtr i1,
+            IntPtr i2);
     }
 }

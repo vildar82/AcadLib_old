@@ -1,9 +1,9 @@
-﻿using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
 {
+    using Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Provides extension methods for the Viewport type.
     /// </summary>

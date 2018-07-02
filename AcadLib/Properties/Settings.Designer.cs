@@ -105,36 +105,72 @@ namespace AcadLib.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public double PalettePropsHelpHeight {
-            get {
-                return ((double)(this["PalettePropsHelpHeight"]));
-            }
-            set {
-                this["PalettePropsHelpHeight"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool PalettePropsHelpVisible {
-            get {
-                return ((bool)(this["PalettePropsHelpVisible"]));
-            }
-            set {
-                this["PalettePropsHelpVisible"] = value;
-            }
-        }
-        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"metadata=res://*/Model.User.DB.Users.csdl|res://*/Model.User.DB.Users.ssdl|res://*/Model.User.DB.Users.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=vpp-sql04;initial catalog=CAD_AutoCAD;persist security info=True;user id=CAD_AllUsers;password=qwerty!2345;MultipleActiveResultSets=True;App=EntityFramework&quot;"" providerName=""System.Data.EntityClient")]
         public string EFAutocadUsersConStr {
             get {
                 return ((string)(this["EFAutocadUsersConStr"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("150")]
+        public double UserSettingsPropsWidth {
+            get {
+                return ((double)(this["UserSettingsPropsWidth"]));
+            }
+            set {
+                this["UserSettingsPropsWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public double RestoreTabsColRestoreWidth {
+            get {
+                return ((double)(this["RestoreTabsColRestoreWidth"]));
+            }
+            set {
+                this["RestoreTabsColRestoreWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public double RestoreTabsColNameWidth {
+            get {
+                return ((double)(this["RestoreTabsColNameWidth"]));
+            }
+            set {
+                this["RestoreTabsColNameWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public double RestoreTabsColDateWidth {
+            get {
+                return ((double)(this["RestoreTabsColDateWidth"]));
+            }
+            set {
+                this["RestoreTabsColDateWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public double RestoreTabsColSizeWidth {
+            get {
+                return ((double)(this["RestoreTabsColSizeWidth"]));
+            }
+            set {
+                this["RestoreTabsColSizeWidth"] = value;
             }
         }
     }

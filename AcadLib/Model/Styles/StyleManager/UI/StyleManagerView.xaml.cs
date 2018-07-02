@@ -1,10 +1,10 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using JetBrains.Annotations;
-
-namespace AcadLib.Styles.StyleManager.UI
+﻿namespace AcadLib.Styles.StyleManager.UI
 {
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Interaction logic for StyleManager.xaml
     /// </summary>
@@ -26,7 +26,8 @@ namespace AcadLib.Styles.StyleManager.UI
                         RoutedEvent = MouseWheelEvent,
                         Source = sender
                     };
-                if (((Control)sender).Parent is UIElement parent) parent.RaiseEvent(eventArg);
+                if (((Control)sender).Parent is UIElement parent)
+                    parent.RaiseEvent(eventArg);
             }
         }
     }

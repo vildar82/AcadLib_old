@@ -1,9 +1,9 @@
-﻿using System;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.UI.Designer
 {
+    using System;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Provides configuration options for the GenericDictionaryEditor.
     /// </summary>
@@ -11,6 +11,12 @@ namespace AcadLib.UI.Designer
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class GenericDictionaryEditorAttribute : Attribute
     {
+        public GenericDictionaryEditorAttribute()
+        {
+            KeyDisplayName = "Key";
+            ValueDisplayName = "Value";
+        }
+
         /// <summary>
         /// Specifies what type to use as an <see cref="AttributeProvider"/> for the keys in the dictionary.
         /// </summary>
@@ -65,11 +71,5 @@ namespace AcadLib.UI.Designer
         /// Specifies what type to use as an <see cref="System.Drawing.Design.UITypeEditor">editor</see> to change the value of a dictionary entry.
         /// </summary>
         public Type ValueEditorType { get; set; }
-
-        public GenericDictionaryEditorAttribute()
-        {
-            KeyDisplayName = "Key";
-            ValueDisplayName = "Value";
-        }
     }
 }

@@ -21,11 +21,11 @@ namespace TestAcadlib
         //        table.SetSize(i, i * 2);
         //        table.Cells[0, 0].TextString = i.ToString();
         //        table.GenerateLayout();
-        //        tables.Add(table);                
-        //    }           
+        //        tables.Add(table);
+        //    }
 
         //    ed.Drag(tables, 50);
-        //}       
+        //}
         public void Initialize()
         {
 #if DEBUG
@@ -36,7 +36,6 @@ namespace TestAcadlib
 
         public void Terminate()
         {
-            
         }
     }
 }

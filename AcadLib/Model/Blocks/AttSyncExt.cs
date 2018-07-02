@@ -1,11 +1,11 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Runtime;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Runtime;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class AttSyncExt
     {
@@ -24,15 +24,18 @@ namespace AcadLib.Blocks
         /// </summary>
         public static void SynchronizeAttributes([NotNull] this BlockTableRecord target)
         {
-            if (target == null) throw new ArgumentNullException(nameof(target));
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
             var tr = target.Database.TransactionManager.TopTransaction;
-            if (tr == null) throw new Autodesk.AutoCAD.Runtime.Exception(ErrorStatus.NoActiveTransactions);
+            if (tr == null)
+                throw new Autodesk.AutoCAD.Runtime.Exception(ErrorStatus.NoActiveTransactions);
             var attDefs = target.GetAttributes(tr);
             foreach (ObjectId id in target.GetBlockReferenceIds(true, false))
             {
                 var br = (BlockReference)tr.GetObject(id, OpenMode.ForWrite);
                 br.ResetAttributes(attDefs, tr);
             }
+
             if (target.IsDynamicBlock)
             {
                 target.UpdateAnonymousBlocks();
@@ -61,10 +64,13 @@ namespace AcadLib.Blocks
                     attDefs.Add(attDef);
                 }
             }
+
             return attDefs;
         }
 
-        private static void ResetAttributes([NotNull] this BlockReference br, [NotNull] List<AttributeDefinition> attDefs,
+        private static void ResetAttributes(
+            [NotNull] this BlockReference br,
+            [NotNull] List<AttributeDefinition> attDefs,
             Transaction tr)
         {
             var attValues = new Dictionary<string, string>();
@@ -73,26 +79,29 @@ namespace AcadLib.Blocks
                 if (!id.IsErased)
                 {
                     var attRef = tr.GetObject(id, OpenMode.ForWrite) as AttributeReference;
-                    if (attRef == null) continue;
+                    if (attRef == null)
+                        continue;
                     attValues.Add(attRef.Tag,
                         attRef.IsMTextAttribute ? attRef.MTextAttribute.Contents : attRef.TextString);
                     attRef.Erase();
                 }
             }
+
             foreach (var attDef in attDefs)
             {
                 var attRef = new AttributeReference();
                 attRef.SetAttributeFromBlock(attDef, br.BlockTransform);
                 if (attDef.Constant)
                 {
-                    attRef.TextString = attDef.IsMTextAttributeDefinition ?
-                        attDef.MTextAttributeDefinition.Contents :
-                        attDef.TextString;
+                    attRef.TextString = attDef.IsMTextAttributeDefinition
+                        ? attDef.MTextAttributeDefinition.Contents
+                        : attDef.TextString;
                 }
                 else if (attValues.ContainsKey(attRef.Tag))
                 {
                     attRef.TextString = attValues[attRef.Tag];
                 }
+
                 br.AttributeCollection.AppendAttribute(attRef);
                 tr.AddNewlyCreatedDBObject(attRef, true);
             }

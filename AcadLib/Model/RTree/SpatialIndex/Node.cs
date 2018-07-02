@@ -1,4 +1,4 @@
-//   Node.java
+// Node.java
 //   Java Spatial Index Library
 //   Copyright (C) 2002 Infomatiq Limited
 //
@@ -15,14 +15,13 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
 // Ported to C# By Dror Gluska, April 9th, 2009
-
-using JetBrains.Annotations;
 
 namespace AcadLib.RTree.SpatialIndex
 {
-    //import com.infomatiq.jsi.Rectangle;
+    using JetBrains.Annotations;
+
+    // import com.infomatiq.jsi.Rectangle;
 
     /**
      * <p>Used by RTree. There are no public methods in this class.</p>
@@ -30,7 +29,6 @@ namespace AcadLib.RTree.SpatialIndex
      * @author aled@sourceforge.net
      * @version 1.0b2p1
      */
-
     [PublicAPI]
     public class Node<T>
     {
@@ -55,6 +53,7 @@ namespace AcadLib.RTree.SpatialIndex
             {
                 return entries[index];
             }
+
             return null;
         }
 
@@ -69,6 +68,7 @@ namespace AcadLib.RTree.SpatialIndex
             {
                 return ids[index];
             }
+
             return -1;
         }
 
@@ -124,6 +124,7 @@ namespace AcadLib.RTree.SpatialIndex
                 ids[i] = ids[lastIndex];
                 entries[lastIndex] = null;
             }
+
             entryCount--;
 
             // if there are at least minNodeEntries, adjust the MBR.
@@ -145,6 +146,7 @@ namespace AcadLib.RTree.SpatialIndex
                     return i;
                 }
             }
+
             return -1;
         }
 
@@ -171,7 +173,6 @@ namespace AcadLib.RTree.SpatialIndex
         /**
          * eliminate null entries, move all entries to the start of the source node
          */
-
         internal void reorganize([NotNull] RTree<T> rtree)
         {
             var countdownIndex = rtree.maxNodeEntries - 1;
@@ -183,6 +184,7 @@ namespace AcadLib.RTree.SpatialIndex
                     {
                         countdownIndex--;
                     }
+
                     entries[index] = entries[countdownIndex];
                     ids[index] = ids[countdownIndex];
                     entries[countdownIndex] = null;

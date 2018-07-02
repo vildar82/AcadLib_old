@@ -1,9 +1,9 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-
-namespace AcadLib.Layers
+﻿namespace AcadLib.Layers
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Состояние слоев - для проверки видимости объектов на чертеже
     /// </summary>
@@ -38,6 +38,7 @@ namespace AcadLib.Layers
                 // Слой выключен или заморожен
                 layerVisibleDict.TryGetValue(ent.Layer, out res);
             }
+
             return res;
         }
 
@@ -51,6 +52,7 @@ namespace AcadLib.Layers
                 var layer = (LayerTableRecord)idLayer.GetObject(OpenMode.ForRead);
                 res.Add(layer.Name, !layer.IsOff && !layer.IsFrozen);
             }
+
             return res;
         }
     }

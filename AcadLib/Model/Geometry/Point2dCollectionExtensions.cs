@@ -1,9 +1,9 @@
-﻿using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Provides extension methods for the Point2dCollection type.
     /// </summary>
@@ -34,6 +34,7 @@ namespace AcadLib.Geometry
                 if (pt.IsEqualTo(pts[i], tol))
                     return true;
             }
+
             return false;
         }
 
@@ -58,6 +59,7 @@ namespace AcadLib.Geometry
             {
                 ptlst.Add(pts[i]);
             }
+
             ptlst.Sort((p1, p2) => p1.X.CompareTo(p2.X));
             for (var i = 0; i < ptlst.Count - 1; i++)
             {

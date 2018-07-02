@@ -1,14 +1,12 @@
-﻿using System.Windows.Forms;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Colors
 {
+    using System.Windows.Forms;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public partial class FormOptions : Form
     {
-        public Options Options { get; set; }
-
         public FormOptions(Options options)
         {
             InitializeComponent();
@@ -16,5 +14,7 @@ namespace AcadLib.Colors
             Options = options;
             propertyGrid1.SelectedObject = options;
         }
+
+        public Options Options { get; set; }
     }
 }

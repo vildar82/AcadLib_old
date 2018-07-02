@@ -19,7 +19,7 @@ namespace TestAcadlib.XData
             rec.Name = "Test";
 
             rec.Recs = GetRecs("RecsTest", 5);
-            rec.Inners = GetInners("InnersTest", 3);          
+            rec.Inners = GetInners("InnersTest", 3);
 
             nod.Save(rec);
         }
@@ -38,13 +38,15 @@ namespace TestAcadlib.XData
             {
                 recs.Add(new RecXD { Name = name + i, Values = GetTestValues(name + i, number) });
             }
+
             return recs;
         }
 
         private List<DicED> GetInners (string name, int number)
-        {                      
+        {
             var res = new List<DicED>();
-            if (deep > 3) return res;
+            if (deep > 3)
+                return res;
                 deep++;
 
             for (var i = 0; i < number; i++)
@@ -55,7 +57,8 @@ namespace TestAcadlib.XData
                 recEd.Inners = GetInners("Inners_" + recEd.Name, 2);
 
                 res.Add(recEd);
-            }            
+            }
+
             return res;
         }
 
@@ -66,6 +69,7 @@ namespace TestAcadlib.XData
             {
                 res.Add(new TypedValue((int)DxfCode.ExtendedDataAsciiString, name + i));
             }
+
             return res;
         }
     }

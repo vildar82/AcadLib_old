@@ -1,11 +1,11 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-
-namespace AcadLib.Jigs
+﻿namespace AcadLib.Jigs
 {
+    using System;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Запрос точки вставки с висящим на курсоре прямоугольником.
     /// Точка вставки - нижний левый угол
@@ -13,8 +13,6 @@ namespace AcadLib.Jigs
     [PublicAPI]
     public class RectangleJig : EntityJig
     {
-        public Point3d Position { get; set; }
-
         public RectangleJig(double length, double height) : base(new Polyline())
         {
             var pl = (Polyline)Entity;
@@ -26,16 +24,20 @@ namespace AcadLib.Jigs
             pl.Closed = true;
         }
 
+        public Point3d Position { get; set; }
+
         protected override SamplerStatus Sampler([NotNull] JigPrompts prompts)
         {
             var res = prompts.AcquirePoint("\nТочка вставки:");
-            if (res.Status != PromptStatus.OK) throw new OperationCanceledException();
+            if (res.Status != PromptStatus.OK)
+                throw new OperationCanceledException();
             var status = SamplerStatus.NoChange;
             if (!Position.IsEqualTo(res.Value, Tolerance.Global))
             {
                 status = SamplerStatus.OK;
             }
-            Position = res.Value; //TransformBy(ed.CurrentUserCoordinateSystem);
+
+            Position = res.Value; // TransformBy(ed.CurrentUserCoordinateSystem);
             return status;
         }
 

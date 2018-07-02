@@ -1,7 +1,7 @@
-﻿using Autodesk.AutoCAD.Geometry;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using Autodesk.AutoCAD.Geometry;
+
     /// <summary>
     /// Provides extension methods for the Vector3d type.
     /// </summary>
@@ -17,17 +17,17 @@ namespace AcadLib.Geometry
             return new Vector3d(vec.X, vec.Y, 0.0);
         }
 
-	    public static Vector2d Convert2d(this Vector3d vec)
-	    {
-		    using (var plane = new Plane())
-		    {
-			    return vec.Convert2d(plane);
-		    }
-	    }
+        public static Vector2d Convert2d(this Vector3d vec)
+        {
+            using (var plane = new Plane())
+            {
+                return vec.Convert2d(plane);
+            }
+        }
 
-	    public static Vector3d Convert3d(this Vector2d vec)
-	    {
-		    return new Vector3d(vec.X, vec.Y, 0);
-	    }
-	}
+        public static Vector3d Convert3d(this Vector2d vec)
+        {
+            return new Vector3d(vec.X, vec.Y, 0);
+        }
+    }
 }

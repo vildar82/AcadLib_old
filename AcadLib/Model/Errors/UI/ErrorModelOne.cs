@@ -1,21 +1,19 @@
-﻿using AcadLib.Layers;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Windows;
-using NetLib;
-using Visibility = System.Windows.Visibility;
-
-namespace AcadLib.Errors.UI
+﻿namespace AcadLib.Errors.UI
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reactive.Linq;
+    using System.Windows;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using Layers;
+    using NetLib;
+    using ReactiveUI;
+    using Visibility = System.Windows.Visibility;
+
     public class ErrorModelOne : ErrorModelBase
     {
-        public ErrorModelList Parent { get; set; }
-
         public ErrorModelOne([NotNull] IError err, [CanBeNull] ErrorModelList parent) : base(err)
         {
             VisibilityCount = Visibility.Collapsed;
@@ -30,6 +28,7 @@ namespace AcadLib.Errors.UI
                 {
                     Message = $"{err.Group} {err.Message}";
                 }
+
                 MarginHeader = new Thickness(32, 2, 2, 2);
             }
             else
@@ -40,6 +39,7 @@ namespace AcadLib.Errors.UI
             }
 
             AddButtons = err.AddButtons;
+
             // Добавить кнопку, для отрисовки визуализации на чертежа
             if (HasVisuals)
             {
@@ -54,6 +54,8 @@ namespace AcadLib.Errors.UI
                 }
             }
         }
+
+        public ErrorModelList Parent { get; set; }
 
         private bool HasVisualButton()
         {
@@ -82,7 +84,7 @@ namespace AcadLib.Errors.UI
                 using (var t = db.TransactionManager.StartTransaction())
                 {
                     var layerVisual = LayerExt.CheckLayerState("visuals");
-                    var ms =(BlockTableRecord) SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForWrite);
+                    var ms = (BlockTableRecord)SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForWrite);
                     var fEnt = Error.Visuals.First();
                     var fEntExt = new Extents3d();
                     var fEntId = ObjectId.Null;
@@ -104,8 +106,10 @@ namespace AcadLib.Errors.UI
                                 //
                             }
                         }
+
                         entity.Dispose();
                     }
+
                     if (!Error.HasEntity && !fEntId.IsNull)
                     {
                         Error.HasEntity = true;
@@ -113,6 +117,7 @@ namespace AcadLib.Errors.UI
                         Error.Extents = fEntExt;
                         HasShow = true;
                     }
+
                     Error.Visuals = new List<Entity>();
                     t.Commit();
                 }

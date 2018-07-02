@@ -1,22 +1,23 @@
-﻿using Autodesk.AutoCAD.Colors;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Colors
 {
+    using Autodesk.AutoCAD.Colors;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public class ColorItem
     {
-        public Color Color { get; set; }
-        public string Name { get; set; }
-
         public ColorItem(string name, byte r, byte g, byte b)
         {
             Name = name;
             Color = Color.FromRgb(r, g, b);
         }
+
+        public Color Color { get; set; }
+
+        public string Name { get; set; }
 
         public void Create(Point2d ptCell, [NotNull] BlockTableRecord cs, [NotNull] Transaction t)
         {

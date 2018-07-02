@@ -1,22 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.DB
 {
+    using System;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public class EntityInfo : IEquatable<EntityInfo>
     {
-        public string Layer { get; set; }
-        public string Linetype { get; set; }
-        public LineWeight Lineweight { get; set; }
-        public Guid ClassId { get; set; }
-        public string ClassName { get; set; }
-        public System.Drawing.Color Color { get; set; }
-        public Extents3d Extents { get; set; }
-        public ObjectId Id { get; set; }
-
         public EntityInfo([NotNull] Entity ent)
         {
             ClassName = ent.GetRXClass().Name;
@@ -25,6 +16,7 @@ namespace AcadLib.DB
             {
                 Extents = ent.Bounds.Value;
             }
+
             ClassId = ent.ClassID;
             Color = ent.Color.ColorValue;
             Layer = ent.Layer;
@@ -32,16 +24,34 @@ namespace AcadLib.DB
             Lineweight = ent.LineWeight;
         }
 
+        public string Layer { get; set; }
+
+        public string Linetype { get; set; }
+
+        public LineWeight Lineweight { get; set; }
+
+        public Guid ClassId { get; set; }
+
+        public string ClassName { get; set; }
+
+        public System.Drawing.Color Color { get; set; }
+
+        public Extents3d Extents { get; set; }
+
+        public ObjectId Id { get; set; }
+
         public bool Equals(EntityInfo other)
         {
-            if (ReferenceEquals(this, other)) return true;
-            if (other is null) return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            if (other is null)
+                return false;
             var res = Extents.Equals(other.Extents) &&
-               ClassId.Equals(other.ClassId) &&
-               Color.Equals(other.Color) &&
-               Layer.Equals(other.Layer) &&
-               Linetype.Equals(other.Linetype) &&
-               Lineweight.Equals(other.Lineweight);
+                      ClassId.Equals(other.ClassId) &&
+                      Color.Equals(other.Color) &&
+                      Layer.Equals(other.Layer) &&
+                      Linetype.Equals(other.Linetype) &&
+                      Lineweight.Equals(other.Lineweight);
 #if DEBUG
             if (!res)
             {

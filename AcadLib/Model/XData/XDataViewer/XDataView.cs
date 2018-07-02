@@ -1,20 +1,21 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using JetBrains.Annotations;
-using System;
-using System.Text;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.XData.Viewer
 {
+    using System;
+    using System.Text;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class XDataView
     {
         public static void View()
         {
             var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) return;
+            if (doc == null)
+                return;
             var ed = doc.Editor;
             var db = doc.Database;
 
@@ -36,6 +37,7 @@ namespace AcadLib.XData.Viewer
                             sbInfo.AppendLine($"    {GetTypeCodeName(item.TypeCode)} = {item.Value}");
                         }
                     }
+
                     if (!ent.ExtensionDictionary.IsNull)
                     {
                         sbInfo.AppendLine("\nExtensionDictionary:");
@@ -47,8 +49,10 @@ namespace AcadLib.XData.Viewer
                         ed.WriteMessage("\nНет расширенных данных у {0}", ent);
                         return;
                     }
+
                     t.Commit();
                 }
+
                 var formXdataView = new FormXDataView(sbInfo.ToString(), entName);
                 Application.ShowModalDialog(formXdataView);
             }
@@ -66,6 +70,7 @@ namespace AcadLib.XData.Viewer
                         sbInfo.AppendLine($"{tab}{item.Key}");
                         ExploreDictionary(item.Value, ref sbInfo, tab + "    ");
                     }
+
                     break;
 
                 case Xrecord _:
@@ -74,6 +79,7 @@ namespace AcadLib.XData.Viewer
                     {
                         sbInfo.AppendLine($"{tab}    {GetTypeCodeName(item.TypeCode)} = {item.Value}");
                     }
+
                     break;
             }
         }

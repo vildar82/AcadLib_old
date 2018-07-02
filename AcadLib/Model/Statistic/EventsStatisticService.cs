@@ -1,37 +1,29 @@
-﻿using System;
-using System.IO;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using EventStatistic;
-using JetBrains.Annotations;
-using NetLib;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib.Statistic
+﻿namespace AcadLib.Statistic
 {
+    using System;
+    using System.IO;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using EventStatistic;
+    using JetBrains.Annotations;
+    using NetLib;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+
     public static class EventsStatisticService
     {
-        [NotNull]
-        private static Eventer Eventer =>
-            eventer ?? (eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion));
-
-        [NotNull]
-        private static string GetApp()
-        {
-            // ReSharper disable once EmptyGeneralCatchClause
-            try {if (CivilTest.IsCivil()) return "Civil"; } catch {  }
-            return "AutoCAD";
-        }
-
         private static Database db;
         private static string sn;
         private static Eventer eventer;
+        [NotNull]
+        private static Eventer Eventer =>
+            eventer ?? (eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion));
 
         public static void Start()
         {
             Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
             Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
-            //Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
+
+            // Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
             Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
             try
             {
@@ -39,8 +31,25 @@ namespace AcadLib.Statistic
             }
             catch
             {
-                //
+                // Может не быть открытого чертежа.
             }
+        }
+
+        [NotNull]
+        private static string GetApp()
+        {
+            // ReSharper disable once EmptyGeneralCatchClause
+            try
+            {
+                if (CivilTest.IsCivil())
+                    return "Civil";
+            }
+            catch
+            {
+                // Это не Civil
+            }
+
+            return "AutoCAD";
         }
 
         private static void DocumentManager_DocumentDestroyed(object sender, [NotNull] DocumentDestroyedEventArgs e)
@@ -75,19 +84,16 @@ namespace AcadLib.Statistic
             }
         }
 
-        //private static void DocumentManager_DocumentActivated(object sender, [NotNull] DocumentCollectionEventArgs e)
-        //{
-        //    SubscribeDoc(e.Document);
-        //}
-
         private static void SubscribeDoc([CanBeNull] Document doc)
         {
-            if (doc == null) return;
+            if (doc == null)
+                return;
             if (db != null)
             {
                 db.SaveComplete -= Db_SaveComplete;
                 db.BeginSave -= Db_BeginSave;
             }
+
             if (sn == null || sn.StartsWith("000"))
             {
                 try
@@ -100,6 +106,7 @@ namespace AcadLib.Statistic
                     Logger.Log.Error(ex, "EventsStatisticService - GetSystemVariable(\"_pkser\")");
                 }
             }
+
             db = doc.Database;
             db.SaveComplete += Db_SaveComplete;
             db.BeginSave += Db_BeginSave;
@@ -113,7 +120,8 @@ namespace AcadLib.Statistic
         {
             try
             {
-                if (!IsDwg(e.FileName)) return;
+                if (!IsDwg(e.FileName))
+                    return;
                 Eventer.Start();
             }
             catch (Exception ex)
@@ -131,7 +139,8 @@ namespace AcadLib.Statistic
         {
             try
             {
-                if (!IsDwg(e.FileName)) return;
+                if (!IsDwg(e.FileName))
+                    return;
                 var res = Eventer.Finish("Сохранить", e.FileName, sn);
                 if (!res.IsNullOrEmpty())
                 {
@@ -140,7 +149,7 @@ namespace AcadLib.Statistic
             }
             catch (Exception ex)
             {
-                Logger.Log.Error(ex ,$"Ошибка EventsStatistic Finish '{e.FileName}'");
+                Logger.Log.Error(ex, $"Ошибка EventsStatistic Finish '{e.FileName}'");
             }
         }
     }

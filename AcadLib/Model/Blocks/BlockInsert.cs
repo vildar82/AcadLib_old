@@ -1,21 +1,22 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using AcadLib.Layers;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+    using Layers;
+
     [PublicAPI]
     public static class BlockInsert
     {
         // Файл шаблонов блоков
-        internal static readonly string fileCommonBlocks = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+        internal static readonly string fileCommonBlocks = Path.Combine(
+            AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
             @"Blocks\Блоки-оформления.dwg");
 
         /// <summary>
@@ -48,7 +49,8 @@ namespace AcadLib.Blocks
         {
             ObjectId idBlRefInsert;
             var doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null) return ObjectId.Null;
+            if (doc == null)
+                return ObjectId.Null;
             var db = doc.Database;
             var ed = doc.Editor;
             using (doc.LockDocument())
@@ -59,6 +61,7 @@ namespace AcadLib.Blocks
                 {
                     throw new Exception("Блок не определен в чертеже " + blName);
                 }
+
                 var idBlBtr = bt[blName];
                 var pt = Point3d.Origin;
                 var br = new BlockReference(pt, idBlBtr);
@@ -78,7 +81,8 @@ namespace AcadLib.Blocks
                 {
                     foreach (DynamicBlockReferenceProperty item in br.DynamicBlockReferencePropertyCollection)
                     {
-                        var prop = props.FirstOrDefault(p => p.Name.Equals(item.PropertyName, StringComparison.OrdinalIgnoreCase));
+                        var prop = props.FirstOrDefault(p =>
+                            p.Name.Equals(item.PropertyName, StringComparison.OrdinalIgnoreCase));
                         if (prop != null)
                         {
                             try
@@ -87,13 +91,15 @@ namespace AcadLib.Blocks
                             }
                             catch (Exception ex)
                             {
-                                Logger.Log.Error(ex, $"Ошибка типа значения для дин параметра '{item.PropertyName}' " +
-                                $"при вставке блока '{blName}': тип устанавливаемого значение '{prop.Value.GetType()}', " +
-                                $"а должен быть тип '{item.UnitsType}'");
+                                Logger.Log.Error(ex,
+                                    msg: $"Ошибка типа значения для дин параметра '{item.PropertyName}' " +
+                                         $"при вставке блока '{blName}': тип устанавливаемого значение '{prop.Value.GetType()}', " +
+                                         $"а должен быть тип '{item.UnitsType}'");
                             }
                         }
                     }
                 }
+
                 // jig
                 var entJig = new Jigs.BlockInsertJig(br);
                 var pr = ed.Drag(entJig);
@@ -112,8 +118,10 @@ namespace AcadLib.Blocks
                     br.Erase();
                     idBlRefInsert = ObjectId.Null;
                 }
+
                 t.Commit();
             }
+
             return idBlRefInsert;
         }
 
@@ -143,7 +151,12 @@ namespace AcadLib.Blocks
         /// <param name="scale"></param>
         /// <returns></returns>
         [NotNull]
-        public static BlockReference InsertBlockRef(string blName, Point3d pt, [NotNull] BlockTableRecord owner, [NotNull] Transaction t, double scale = 1)
+        public static BlockReference InsertBlockRef(
+            string blName,
+            Point3d pt,
+            [NotNull] BlockTableRecord owner,
+            [NotNull] Transaction t,
+            double scale = 1)
         {
             var db = owner.Database;
             var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
@@ -161,6 +174,7 @@ namespace AcadLib.Blocks
             {
                 blRef.TransformBy(Matrix3d.Scaling(scale, pt));
             }
+
             blRef.SetDatabaseDefaults();
             owner.AppendEntity(blRef);
             t.AddNewlyCreatedDBObject(blRef, true);

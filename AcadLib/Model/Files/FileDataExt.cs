@@ -1,9 +1,9 @@
-﻿using AcadLib.IO;
-using JetBrains.Annotations;
-using NetLib;
-
-namespace AcadLib.Files
+﻿namespace AcadLib.Files
 {
+    using IO;
+    using JetBrains.Annotations;
+    using NetLib;
+
     [PublicAPI]
     public static class FileDataExt
     {

@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
-
-namespace AcadLib.Files
+﻿namespace AcadLib.Files
 {
+    using System;
+    using System.IO;
+    using System.Xml;
+    using System.Xml.Serialization;
+    using JetBrains.Annotations;
+
     [Obsolete]
     [PublicAPI]
     public class SerializerXml
@@ -35,8 +35,10 @@ namespace AcadLib.Files
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, $"Ошибка десирилизации объекта {typeof(T)} из файла {file}");
-                //res = new T();
+
+                // res = new T();
             }
+
             return res;
         }
 
@@ -52,8 +54,10 @@ namespace AcadLib.Files
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, $"Ошибка десирилизации объекта {typeof(T)} из файла {file}");
-                //res = new T();
+
+                // res = new T();
             }
+
             return res;
         }
 

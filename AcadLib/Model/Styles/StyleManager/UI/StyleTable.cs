@@ -1,32 +1,33 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using AcadLib.Errors;
-using AcadLib.Filer;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using NetLib.WPF;
-using NLog;
-using ReactiveUI;
-using ReactiveCommand = ReactiveUI.ReactiveCommand;
-
-namespace AcadLib.Styles.StyleManager.UI
+﻿namespace AcadLib.Styles.StyleManager.UI
 {
+    using System;
+    using System.Collections;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Errors;
+    using Filer;
+    using JetBrains.Annotations;
+    using NetLib.WPF;
+    using NLog;
+    using ReactiveUI;
+
     public class StyleTable : BaseModel
     {
-        private static ILogger Log { get; } = LogManager.GetCurrentClassLogger();
-
         public StyleTable(StyleManagerVM baseVM) : base(baseVM)
         {
             Delete = CreateCommand<Style>(DeleteExec);
         }
 
         public string Name { get; set; }
-        public ReactiveCommand Delete{ get; set; }
+
+        public ReactiveCommand Delete { get; set; }
+
         public ObjectId StyleTableId { get; set; }
 
         [CanBeNull]
         public ReactiveList<Style> Styles { get; set; }
+
+        private static ILogger Log { get; } = LogManager.GetCurrentClassLogger();
 
         private void DeleteExec([NotNull] Style style)
         {
@@ -36,6 +37,7 @@ namespace AcadLib.Styles.StyleManager.UI
             {
                 throw new Exception($"Переключись на чертеж '{db.Filename}'");
             }
+
             bool needTwice = false;
             using (doc.LockDocument())
             using (var t = doc.TransactionManager.StartTransaction())
@@ -49,11 +51,13 @@ namespace AcadLib.Styles.StyleManager.UI
                         Inspector.AddError("Удалено", $"Удалено вхождение блока из {ownerName}");
                         dbObject.Erase();
                     }
+
                     if (btr.IsDynamicBlock)
                     {
                         foreach (var anonymBtr in btr.GetAnonymousBlockIds().GetObjects<BlockTableRecord>())
                         {
-                            foreach (var dbObject in anonymBtr.GetBlockReferenceIds(true, false).GetObjects<DBObject>(OpenMode.ForWrite))
+                            foreach (var dbObject in anonymBtr.GetBlockReferenceIds(true, false)
+                                .GetObjects<DBObject>(OpenMode.ForWrite))
                             {
                                 var ownerName = dbObject.OwnerId.GetObject<BlockTableRecord>()?.Name;
                                 Inspector.AddError("Удалено", $"Удалено вхождение анонимного блока из {ownerName}");
@@ -61,6 +65,7 @@ namespace AcadLib.Styles.StyleManager.UI
                             }
                         }
                     }
+
                     btr.Erase();
                 }
                 else
@@ -68,14 +73,15 @@ namespace AcadLib.Styles.StyleManager.UI
                     try
                     {
                         var replaceId = ObjectId.Null;
-                        var replaceName = "";
+                        var replaceName = string.Empty;
                         var table = StyleTableId.GetObjectT<DBObject>();
                         switch (table)
                         {
                             case SymbolTable st:
                                 if (st is LayerTable lt)
                                 {
-                                    if (style.Name == "0") throw new Exception("Нельзя удалить 0 слой");
+                                    if (style.Name == "0")
+                                        throw new Exception("Нельзя удалить 0 слой");
                                     replaceId = lt["0"];
                                     replaceName = "0";
                                 }
@@ -94,13 +100,14 @@ namespace AcadLib.Styles.StyleManager.UI
                                     replaceId = st.Cast<ObjectId>().FirstOrDefault(s => s != style.Id);
                                     replaceName = replaceId.GetObject<SymbolTableRecord>()?.Name;
                                 }
+
                                 break;
                             case DBDictionary dict:
                                 if (dict.Contains("ПИК"))
                                 {
                                     if (dict["ПИК"] is DictionaryEntry entry)
                                     {
-                                        replaceId = (ObjectId) entry.Value;
+                                        replaceId = (ObjectId)entry.Value;
                                         replaceName = "ПИК";
                                     }
                                 }
@@ -108,23 +115,26 @@ namespace AcadLib.Styles.StyleManager.UI
                                 {
                                     if (dict["Standart"] is DictionaryEntry entry)
                                     {
-                                        replaceId = (ObjectId) entry.Value;
+                                        replaceId = (ObjectId)entry.Value;
                                         replaceName = "Standart";
                                     }
                                 }
                                 else
                                 {
                                     var entry = dict.Cast<DictionaryEntry>()
-                                        .FirstOrDefault(e => (string) e.Key != style.Name);
-                                    replaceId = (ObjectId) entry.Value;
+                                        .FirstOrDefault(e => (string)e.Key != style.Name);
+                                    replaceId = (ObjectId)entry.Value;
                                     replaceName = entry.Key.ToString();
                                 }
+
                                 break;
                         }
+
                         if (dbo is LayerTableRecord)
                         {
                             ReplaceLayer(db, style.Id, replaceId, replaceName);
                         }
+
                         // Найти все ссылки и зменить
                         var refs = dbo.GetReferences();
                         refs.HardPointerIds.ForEach(p => ReplacePointer(p, style.Id, replaceId, replaceName));
@@ -135,8 +145,10 @@ namespace AcadLib.Styles.StyleManager.UI
                         Log.Error(ex, $"Ошибка замены референсов в стиле '{style.Name}' в таблице стилей '{Name}'");
                     }
                 }
+
                 t.Commit();
             }
+
             if (needTwice)
             {
                 using (doc.LockDocument())
@@ -147,6 +159,7 @@ namespace AcadLib.Styles.StyleManager.UI
                     t.Commit();
                 }
             }
+
             Styles?.Remove(style);
             Inspector.Show();
         }
@@ -156,7 +169,7 @@ namespace AcadLib.Styles.StyleManager.UI
             var bt = db.BlockTableId.GetObjectT<BlockTable>();
             foreach (var btr in bt.GetObjects<BlockTableRecord>())
             {
-                foreach (var entity in btr.GetObjects<Entity>(OpenMode.ForRead).Where(w=>w.LayerId == layerId))
+                foreach (var entity in btr.GetObjects<Entity>(OpenMode.ForRead).Where(w => w.LayerId == layerId))
                 {
                     var entW = entity.Id.GetObjectT<Entity>(OpenMode.ForWrite);
                     entW.LayerId = replaceId;
@@ -175,6 +188,7 @@ namespace AcadLib.Styles.StyleManager.UI
                     ReplacePointer(objectId, styleId, replaceId, replaceName);
                 }
             }
+
             var props = dbo.GetType().GetProperties();
             var prop = props.FirstOrDefault(p =>
             {
@@ -210,6 +224,7 @@ namespace AcadLib.Styles.StyleManager.UI
                     {
                         Inspector.AddError(msg);
                     }
+
                     Log.Info($"prop.SetValue prop={prop.Name} - {dbo.Id.ObjectClass.Name}");
                 }
                 catch (Exception ex)

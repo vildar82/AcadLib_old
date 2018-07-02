@@ -1,10 +1,10 @@
-﻿using System;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.GraphicsInterface;
-using JetBrains.Annotations;
-
-namespace AcadLib.VisualStyle
+﻿namespace AcadLib.VisualStyle
 {
+    using System;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.GraphicsInterface;
+    using JetBrains.Annotations;
+
     public class VisualStyleUsing : IDisposable
     {
         private readonly Document doc;

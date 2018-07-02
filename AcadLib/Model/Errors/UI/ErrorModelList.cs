@@ -1,12 +1,12 @@
-﻿using JetBrains.Annotations;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows;
-using NetLib;
-
-namespace AcadLib.Errors.UI
+﻿namespace AcadLib.Errors.UI
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Windows;
+    using JetBrains.Annotations;
+    using NetLib;
+
     public class ErrorModelList : ErrorModelBase
     {
         public ErrorModelList([NotNull] List<IError> sameErrors) : base(sameErrors.First())
@@ -25,9 +25,14 @@ namespace AcadLib.Errors.UI
             SameErrors = new ObservableCollection<ErrorModelBase>(
                 sameErrors.Select(s => new ErrorModelOne(s, this)));
         }
-        [Reactive] public ObservableCollection<ErrorModelBase> SameErrors { get; set; }
+
+        [Reactive]
+        public ObservableCollection<ErrorModelBase> SameErrors { get; set; }
+
         public ErrorModelOne Header { get; set; }
-        [Reactive] public bool IsExpanded { get; set; }
+
+        [Reactive]
+        public bool IsExpanded { get; set; }
 
         protected override void OnShowExecute()
         {

@@ -1,11 +1,11 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AcadLib.XData
+﻿namespace AcadLib.XData
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Расширенные данные примитива.
     /// </summary>
@@ -36,11 +36,12 @@ namespace AcadLib.XData
                 {
                     if (dicDbo.Inners.Count != 1 || dicDbo.Recs.Any())
                     {
-                        //Удаление только словаря с этим именем
+                        // Удаление только словаря с этим именем
                         dicId = ExtDicHelper.GetDic(dicId, dicName, false, false);
                     }
                 }
             }
+
             // Удаление словаря
             ExtDicHelper.DeleteDic(dicId, dbo);
         }
@@ -92,6 +93,7 @@ namespace AcadLib.XData
                     }
                 }
             }
+
             return res;
         }
 
@@ -115,12 +117,14 @@ namespace AcadLib.XData
                         foreach (var item in dicPlugin)
                         {
                             var rec = item.Value.GetObject(OpenMode.ForRead) as Xrecord;
-                            if (rec == null) continue;
+                            if (rec == null)
+                                continue;
                             res.Add(item.Key, rec.Data.AsArray().ToList());
                         }
                     }
                 }
             }
+
             return res;
         }
 
@@ -150,11 +154,14 @@ namespace AcadLib.XData
         public void Save(List<TypedValue> values, [NotNull] string rec)
         {
             var idRec = GetXRecord(rec, true);
-            if (idRec.IsNull) return;
+            if (idRec.IsNull)
+                return;
+
             // ReSharper disable once IdOpenMode
             using (var xRec = (Xrecord)idRec.Open(OpenMode.ForWrite))
             {
-                if (xRec == null) return;
+                if (xRec == null)
+                    return;
                 using (var rb = new ResultBuffer(values.ToArray()))
                 {
                     xRec.Data = rb;
@@ -166,8 +173,10 @@ namespace AcadLib.XData
         {
             // Словарь объекта
             var idDboDic = ExtDicHelper.GetDboExtDic(dbo, create);
+
             // Словарь ПИК
             var idDicPik = ExtDicHelper.GetDic(idDboDic, ExtDicHelper.PikApp, create, false);
+
             // Словарь плагина
             var idDicPlugin = ExtDicHelper.GetDic(idDicPik, pluginName, create, false);
             var res = idDicPlugin;
@@ -181,14 +190,17 @@ namespace AcadLib.XData
             {
                 return (int)DxfCode.ExtendedDataAsciiString;
             }
+
             if (value == typeof(int))
             {
                 return (int)DxfCode.ExtendedDataInteger32;
             }
+
             if (value == typeof(double))
             {
                 return (int)DxfCode.ExtendedDataReal;
             }
+
             throw new ArgumentException($"В расшир.данные можно сохранять только string, int, double, а тип '{value}' нет.");
         }
 
@@ -196,6 +208,7 @@ namespace AcadLib.XData
         {
             // Словарь плагина
             var idDicPlugin = GetDicPlugin(create);
+
             // Запись key
             var idRecKey = ExtDicHelper.GetRec(idDicPlugin, key, create, create);
             var res = idRecKey;

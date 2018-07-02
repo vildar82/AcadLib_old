@@ -1,18 +1,16 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Drawing;
-
-namespace AcadLib.Exceptions
+﻿namespace AcadLib.Exceptions
 {
+    using System;
+    using System.Drawing;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Ошибка с Error (можно показать объект на чертеже)
     /// </summary>
     [PublicAPI]
     public class ErrorException : Exception
     {
-        public Errors.Error Error { get; private set; }
-
         public ErrorException([NotNull] Errors.Error err) : base(err.Message)
         {
             Error = err;
@@ -27,5 +25,7 @@ namespace AcadLib.Exceptions
         {
             Error = new Errors.Error(msg, icon);
         }
+
+        public Errors.Error Error { get; private set; }
     }
 }

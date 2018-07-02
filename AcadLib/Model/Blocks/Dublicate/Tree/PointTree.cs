@@ -1,10 +1,8 @@
-﻿using System;
-using JetBrains.Annotations;
-
-// ReSharper disable NonReadonlyMemberInGetHashCode
-
-namespace AcadLib.Blocks.Dublicate.Tree
+﻿namespace AcadLib.Blocks.Dublicate.Tree
 {
+    using System;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public struct PointTree : IEquatable<PointTree>
     {

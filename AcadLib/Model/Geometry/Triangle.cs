@@ -1,12 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-// ReSharper disable NonReadonlyMemberInGetHashCode
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Provides methods for the derived classes.
     /// </summary>
@@ -78,12 +76,14 @@ namespace AcadLib.Geometry
         /// IndexOutOfRangeException is throw if index is less than 0 or more than 2.</exception>
         public T this[int i]
         {
-            get {
+            get
+            {
                 if (i > 2 || i < 0)
                     throw new IndexOutOfRangeException("Index out of range");
                 return _pts[i];
             }
-            set {
+            set
+            {
                 if (i > 2 || i < 0)
                     throw new IndexOutOfRangeException("Index out of range");
                 _pts[i] = value;
@@ -112,16 +112,8 @@ namespace AcadLib.Geometry
         /// <returns>An IEnumerable&lt;T&gt; enumerator for the Triangle&lt;T&gt;.</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var item in _pts) yield return item;
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            foreach (var item in _pts)
+                yield return item;
         }
 
         /// <summary>
@@ -149,7 +141,8 @@ namespace AcadLib.Geometry
         /// ArgumentOutOfRangeException is thrown if the array do not contains three items.</exception>
         public void Set([NotNull] T[] pts)
         {
-            if (pts.Length != 3) throw new IndexOutOfRangeException("The array must contain 3 items");
+            if (pts.Length != 3)
+                throw new IndexOutOfRangeException("The array must contain 3 items");
             _pts[0] = _pt0 = pts[0];
             _pts[1] = _pt1 = pts[1];
             _pts[2] = _pt2 = pts[2];
@@ -184,6 +177,15 @@ namespace AcadLib.Geometry
         public override string ToString()
         {
             return $"{_pt0},{_pt1},{_pt2}";
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

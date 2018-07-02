@@ -1,40 +1,46 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using NetLib;
-using System.Collections.Generic;
-using System.Linq;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+    using NetLib;
+
     [PublicAPI]
     public static class EntityHelper
     {
-        public static void AddEntityToCurrentSpace([CanBeNull] this IEnumerable<Entity> ents,
+        public static void AddEntityToCurrentSpace(
+            [CanBeNull] this IEnumerable<Entity> ents,
             [CanBeNull] EntityOptions entityOptions = null)
         {
             // ReSharper disable once PossibleMultipleEnumeration
-            if (ents?.Any() != true) return;
+            if (ents?.Any() != true)
+                return;
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
             using (doc.LockDocument())
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var cs = (BlockTableRecord)db.CurrentSpaceId.GetObject(OpenMode.ForWrite);
+
                 // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var ent in ents)
                 {
-                    if (ent.Id != ObjectId.Null || ent.IsDisposed) continue;
+                    if (ent.Id != ObjectId.Null || ent.IsDisposed)
+                        continue;
                     if (!ent.IsWriteEnabled)
                     {
                         ent.Id.GetObject<Entity>(OpenMode.ForWrite);
                     }
+
                     ent.SetOptions(entityOptions);
                     cs.AppendEntity(ent);
                     t.AddNewlyCreatedDBObject(ent, true);
                 }
+
                 t.Commit();
             }
         }

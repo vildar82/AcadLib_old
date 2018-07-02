@@ -1,24 +1,14 @@
-﻿using JetBrains.Annotations;
-using NetLib.WPF;
-using ReactiveUI;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-
-namespace AcadLib.Blocks.Visual.UI
+﻿namespace AcadLib.Blocks.Visual.UI
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows;
+    using JetBrains.Annotations;
+    using NetLib.WPF;
+    using ReactiveUI;
+
     public class VisualBlocksViewModel : BaseViewModel
     {
-        public bool Explode { get; set; }
-
-        public List<VisualGroup> Groups { get; set; }
-
-        public ReactiveCommand Insert { get; set; }
-
-        public bool IsHideWindow { get; set; } = true;
-
-        public Visibility VisibleSeparator { get; set; }
-
         public VisualBlocksViewModel()
         {
         }
@@ -29,6 +19,16 @@ namespace AcadLib.Blocks.Visual.UI
             Insert = CreateCommand<IVisualBlock>(OnInsertExecute);
             VisibleSeparator = Groups.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
         }
+
+        public bool Explode { get; set; }
+
+        public List<VisualGroup> Groups { get; set; }
+
+        public ReactiveCommand Insert { get; set; }
+
+        public bool IsHideWindow { get; set; } = true;
+
+        public Visibility VisibleSeparator { get; set; }
 
         private void OnInsertExecute(IVisualBlock block)
         {

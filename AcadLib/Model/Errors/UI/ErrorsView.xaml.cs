@@ -1,16 +1,16 @@
-﻿using AcadLib.Visual;
-using Autodesk.AutoCAD.ApplicationServices;
-using JetBrains.Annotations;
-using NetLib;
-using System.Diagnostics;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.Errors
 {
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using JetBrains.Annotations;
+    using NetLib;
+    using Visual;
+
     /// <summary>
     /// Логика взаимодействия для WindowErrors.xaml
     /// </summary>
@@ -52,7 +52,8 @@ namespace AcadLib.Errors
 
         private void Dispose()
         {
-            if (AcadHelper.Doc != doc) return;
+            if (AcadHelper.Doc != doc)
+                return;
             using (doc.LockDocument())
             {
                 errorsVisual?.Dispose();

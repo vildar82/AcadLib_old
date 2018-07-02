@@ -14,7 +14,6 @@ namespace TestAcadlib.Errors
             HasEntity = true;
         }
 
-        
         public void Show()
         {
             MessageBox.Show($"Show - {Message}");

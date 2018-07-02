@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-
-namespace AcadLib.Comparers
+﻿namespace AcadLib.Comparers
 {
+    using System;
+    using System.Collections.Generic;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Сравнение строк как чисел
     /// </summary>
@@ -21,11 +21,14 @@ namespace AcadLib.Comparers
                     // y - число numberY
                     return numberX.CompareTo(numberY);
                 }
+
                 // y - строка.
                 return -1; // число numberX меньше строки y
             }
+
             // x - строка
             return int.TryParse(y, out var _) ? 1 : string.CompareOrdinal(x, y);
+
             // y - строка.
         }
     }

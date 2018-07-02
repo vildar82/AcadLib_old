@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Controls;
-using JetBrains.Annotations;
-
-namespace AcadLib.UI.StatusBar.View
+﻿namespace AcadLib.UI.StatusBar.View
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows.Controls;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
     public partial class StatusBarMenu
     {
-        public List<MenuItem> MenuItems { get; set; }
-
         public StatusBarMenu(string value, [NotNull] List<string> values, Action<string> selectValue)
         {
             Left = System.Windows.Forms.Cursor.Position.X;
@@ -42,5 +40,7 @@ namespace AcadLib.UI.StatusBar.View
             };
             Deactivated += (o, e) => Close();
         }
+
+        public List<MenuItem> MenuItems { get; set; }
     }
 }

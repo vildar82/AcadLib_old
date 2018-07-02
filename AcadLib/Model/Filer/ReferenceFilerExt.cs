@@ -1,8 +1,8 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-namespace AcadLib.Filer
+﻿namespace AcadLib.Filer
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public static class ReferenceFilerExt
     {
         /// <summary>

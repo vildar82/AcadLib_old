@@ -1,44 +1,52 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AcadLib.XData
+﻿namespace AcadLib.XData
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
-    /// Значение для сохранения в словарь Extension Dictionary. 
+    /// Значение для сохранения в словарь Extension Dictionary.
     /// Имена Recs и Inners должны быть уникальными
     /// </summary>
     public class DicED
     {
-        /// <summary>
-        /// Имя словаря
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
-        /// Вложенные словари
-        /// </summary>
-        public List<DicED> Inners { get; set; }
-        /// <summary>
-        /// Записи этого словаря
-        /// </summary>
-        public List<RecXD> Recs { get; set; }
-
-        public DicED() { }
+        public DicED()
+        {
+        }
 
         public DicED(string name)
         {
             Name = name;
         }
 
+        /// <summary>
+        /// Имя словаря
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Вложенные словари
+        /// </summary>
+        public List<DicED> Inners { get; set; }
+
+        /// <summary>
+        /// Записи этого словаря
+        /// </summary>
+        public List<RecXD> Recs { get; set; }
+
         public void AddRec([CanBeNull] RecXD recXd)
         {
-            if (recXd == null || recXd.IsEmpty()) return;
-            if (!IsCorrectName(recXd.Name)) throw new Exception("Invalid Name - " + recXd.Name);
-            if (Recs == null) Recs = new List<RecXD>();
+            if (recXd == null || recXd.IsEmpty())
+                return;
+            if (!IsCorrectName(recXd.Name))
+                throw new Exception("Invalid Name - " + recXd.Name);
+            if (Recs == null)
+                Recs = new List<RecXD>();
             Recs.Add(recXd);
         }
+
         public void AddRec(string name, List<TypedValue> values)
         {
             AddRec(new RecXD(name, values));
@@ -46,15 +54,18 @@ namespace AcadLib.XData
 
         public void AddInner([CanBeNull] DicED dic)
         {
-            if (dic == null || dic.IsEmpty()) return;
-            if (!IsCorrectName(dic.Name)) throw new Exception("Invalid Name - " + dic.Name);
-            if (Inners == null) Inners = new List<DicED>();
+            if (dic == null || dic.IsEmpty())
+                return;
+            if (!IsCorrectName(dic.Name))
+                throw new Exception("Invalid Name - " + dic.Name);
+            if (Inners == null)
+                Inners = new List<DicED>();
             Inners.Add(dic);
         }
 
         /// <summary>
         /// Проверка, пустой ли словарь - нет записей и нет вложенных словарей или они пустые
-        /// </summary>        
+        /// </summary>
         public bool IsEmpty()
         {
             // Если нет записей или они все пустые, и если нет вложенных словарей или они все пустые

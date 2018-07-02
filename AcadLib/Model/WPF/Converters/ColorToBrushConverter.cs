@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media;
-
-namespace AcadLib.WPF.Converters
+﻿namespace AcadLib.WPF.Converters
 {
+    using System;
+    using System.Globalization;
+    using System.Windows.Data;
+    using System.Windows.Media;
+    using JetBrains.Annotations;
+
     [ValueConversion(typeof(Color), typeof(SolidColorBrush))]
     [ValueConversion(typeof(System.Drawing.Color), typeof(SolidColorBrush))]
     [ValueConversion(typeof(Autodesk.AutoCAD.Colors.Color), typeof(SolidColorBrush))]
@@ -26,6 +26,7 @@ namespace AcadLib.WPF.Converters
                     var cv = ac.ColorValue;
                     return new SolidColorBrush(Color.FromRgb(cv.R, cv.G, cv.B));
             }
+
             return null;
         }
     }

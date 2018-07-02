@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Globalization;
-using System.Windows.Data;
-
-namespace AcadLib.WPF.Converters
+﻿namespace AcadLib.WPF.Converters
 {
+    using System;
+    using System.Globalization;
+    using System.Windows.Data;
+    using JetBrains.Annotations;
+
     [ValueConversion(typeof(byte), typeof(double))]
     public class TransparenceToOpacityConverter : ConvertorBase
     {
@@ -17,6 +17,7 @@ namespace AcadLib.WPF.Converters
             {
                 opacity = 0.1;
             }
+
             return opacity;
         }
     }

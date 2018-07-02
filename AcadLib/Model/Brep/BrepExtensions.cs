@@ -1,21 +1,20 @@
-﻿using AcadLib.Blocks;
-using AcadLib.Errors;
-using AcadLib.Geometry;
-using AcadLib.Hatches;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.BoundaryRepresentation;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Region = Autodesk.AutoCAD.DatabaseServices.Region;
-using Surface = Autodesk.AutoCAD.DatabaseServices.Surface;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.BoundaryRepresentation;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using Blocks;
+    using Errors;
+    using Geometry;
+    using Hatches;
+    using JetBrains.Annotations;
+    using Surface = Autodesk.AutoCAD.DatabaseServices.Surface;
+
     [PublicAPI]
     public static class BrepExtensions
     {
@@ -31,7 +30,9 @@ namespace AcadLib
             var colReg = new List<Region>();
             foreach (var pl in idsPl)
             {
-                if (pl == null || Math.Abs(pl.Area) < 0.0001) continue;
+                if (pl == null || Math.Abs(pl.Area) < 0.0001)
+                    continue;
+
                 // Создание региона из полилинии
                 var dbs = new DBObjectCollection { pl };
                 var dbsRegions = Region.CreateFromCurves(dbs);
@@ -45,16 +46,19 @@ namespace AcadLib
                     }
                 }
             }
+
             // Объединение регионов
             var r1 = colReg.First();
             foreach (var iReg in colReg.Skip(1))
             {
                 r1.BooleanOperation(BooleanOperationType.BoolUnite, iReg);
             }
+
             foreach (var item in colReg.Skip(1))
             {
                 item.Dispose();
             }
+
             return GetRegionContour(r1);
         }
 
@@ -79,6 +83,7 @@ namespace AcadLib
                                     ptsVertex.Add(vert.Point);
                                 }
                             }
+
                             var pts = new Point3dCollection(ptsVertex.ToArray());
                             var pl = new Polyline3d(Poly3dType.SimplePoly, pts, true);
                             var plArea = pl.Area;
@@ -91,6 +96,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return resVal;
         }
 
@@ -116,6 +122,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return resVal;
         }
 
@@ -136,6 +143,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return resVal;
         }
 
@@ -156,6 +164,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return ptsVertex;
         }
 
@@ -230,7 +239,9 @@ namespace AcadLib
         public static Region Union([CanBeNull] this IEnumerable<Polyline> pls, Region over)
         {
             // ReSharper disable once PossibleMultipleEnumeration
-            if (pls?.Any() != true) return null;
+            if (pls?.Any() != true)
+                return null;
+
             // ReSharper disable once PossibleMultipleEnumeration
             var regions = CreateRegion(pls);
             Region union = null;
@@ -252,6 +263,7 @@ namespace AcadLib
             {
                 union.BooleanOperation(BooleanOperationType.BoolSubtract, over);
             }
+
             return union;
         }
 
@@ -262,16 +274,20 @@ namespace AcadLib
 
         public static Region CreateRegion([CanBeNull] this Curve curve)
         {
-            if (curve == null) return null;
+            if (curve == null)
+                return null;
             var dbs = new DBObjectCollection { curve };
             var dbsRegs = Region.CreateFromCurves(dbs);
-            if (dbsRegs == null || dbsRegs.Count == 0) return null;
-            if (dbsRegs.Count == 1) return (Region)dbsRegs[0];
+            if (dbsRegs == null || dbsRegs.Count == 0)
+                return null;
+            if (dbsRegs.Count == 1)
+                return (Region)dbsRegs[0];
             var reg = (Region)dbsRegs[0];
             foreach (var obj in dbsRegs.Cast<Region>().Skip(1))
             {
                 obj.Dispose();
             }
+
             return reg;
         }
 
@@ -283,7 +299,7 @@ namespace AcadLib
             {
                 var validLoops = loops.Where(w => w.Loop.Area > 0).ToList();
 #if DRAW
-                validLoops.Select(s=>(Curve)s.Loop.Clone()).AddEntityToCurrentSpace(new EntityOptions{Color =  Color.DarkRed});
+                validLoops.Select(s=>(Curve)s.Loop.Clone()).AddEntityToCurrentSpace(new EntityOptions{Color = Color.DarkRed});
 #endif
                 var externalLoops = new List<Curve>();
                 var internalLoops = new List<Curve>();
@@ -298,14 +314,12 @@ namespace AcadLib
                         internalLoops.Add(loop.Loop);
                     }
                 }
+
                 if (!externalLoops.Any())
                 {
                     Inspector.AddError("Штриховка без внешних контуров - пропущена", hatch);
                 }
-                //#if DRAW
-                //                    externalLoops.AddEntityToCurrentSpace(new EntityOptions{ Color = Color.Blue});
-                //                    internalLoops.AddEntityToCurrentSpace(new EntityOptions { Color = Color.DarkOliveGreen });
-                //#endif
+
                 var externalRegion = GetRegion(externalLoops);
                 if (internalLoops.Any())
                 {
@@ -320,6 +334,7 @@ namespace AcadLib
                     externalRegion.BooleanOperation(BooleanOperationType.BoolSubtract, internalRegion);
                     internalRegion.Dispose();
                 }
+
                 var region = externalRegion;
                 return region;
             }
@@ -341,6 +356,7 @@ namespace AcadLib
             {
                 throw new System.Exception("Не удалось создать область из штриховки. Возможно, из-за самоперемечений.");
             }
+
             var r = rId.GetObject(OpenMode.ForWrite);
             var res = (Region)r.Clone();
             r.Erase();
@@ -348,31 +364,6 @@ namespace AcadLib
             hatchEditAppendIds.ForEach(i => i.GetObject(OpenMode.ForWrite).Erase());
             hatchEditAppendIds.Clear();
             return res;
-        }
-
-        private static void CommandWillStartHatchEdit(object sender, [NotNull] CommandEventArgs e)
-        {
-            if (e.GlobalCommandName == "-HATCHEDIT")
-            {
-                var doc = (Document)sender;
-                var db = doc.Database;
-                db.ObjectAppended += ObjectAppendedHatchEdit;
-            }
-        }
-
-        private static void ObjectAppendedHatchEdit(object sender, [NotNull] ObjectEventArgs e)
-        {
-            hatchEditAppendIds.Add(e.DBObject.Id);
-        }
-
-        private static Region GetRegion([NotNull] IEnumerable<Curve> pls)
-        {
-            using (var regions = new DisposableSet<Region>(pls.CreateRegion()))
-            {
-                var reg = regions.Skip(1).Any() ? regions.ToList().UnionRegions() : regions.First();
-                regions.Remove(reg);
-                return reg;
-            }
         }
 
         [NotNull]
@@ -403,22 +394,50 @@ namespace AcadLib
                 }
             }
 #if DRAW
-            //EntityHelper.AddEntityToCurrentSpace(res);
+//EntityHelper.AddEntityToCurrentSpace(res);
 #endif
             return res;
         }
 
         public static Region UnionRegions([CanBeNull] this List<Region> regions)
         {
-            if (regions?.Any() != true) return null;
-            if (regions.Count == 1) return regions[0];
+            if (regions?.Any() != true)
+                return null;
+            if (regions.Count == 1)
+                return regions[0];
             var union = regions.First();
             for (var i = 1; i < regions.Count; i++)
             {
                 var cr = regions[i];
                 union.BooleanOperation(BooleanOperationType.BoolUnite, cr);
             }
+
             return union;
+        }
+
+        private static void CommandWillStartHatchEdit(object sender, [NotNull] CommandEventArgs e)
+        {
+            if (e.GlobalCommandName == "-HATCHEDIT")
+            {
+                var doc = (Document)sender;
+                var db = doc.Database;
+                db.ObjectAppended += ObjectAppendedHatchEdit;
+            }
+        }
+
+        private static void ObjectAppendedHatchEdit(object sender, [NotNull] ObjectEventArgs e)
+        {
+            hatchEditAppendIds.Add(e.DBObject.Id);
+        }
+
+        private static Region GetRegion([NotNull] IEnumerable<Curve> pls)
+        {
+            using (var regions = new DisposableSet<Region>(pls.CreateRegion()))
+            {
+                var reg = regions.Skip(1).Any() ? regions.ToList().UnionRegions() : regions.First();
+                regions.Remove(reg);
+                return reg;
+            }
         }
     }
 }

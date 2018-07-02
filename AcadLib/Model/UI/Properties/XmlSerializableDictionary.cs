@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-
-namespace AcadLib.UI.Properties
+﻿namespace AcadLib.UI.Properties
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Xml.Serialization;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Класс словаря сериализуемый в xml
     /// </summary>
@@ -50,6 +50,7 @@ namespace AcadLib.UI.Properties
                 reader.ReadEndElement();
                 reader.MoveToContent();
             }
+
             reader.ReadEndElement();
         }
 

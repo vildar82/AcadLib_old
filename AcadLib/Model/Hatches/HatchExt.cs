@@ -1,17 +1,17 @@
-﻿using AcadLib.Errors;
-using AcadLib.Geometry;
-using Autodesk.AutoCAD.Colors;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using NetLib;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-
-namespace AcadLib.Hatches
+﻿namespace AcadLib.Hatches
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using Autodesk.AutoCAD.Colors;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using Errors;
+    using Geometry;
+    using JetBrains.Annotations;
+    using NetLib;
+
     [PublicAPI]
     public static class HatchExt
     {
@@ -20,8 +20,13 @@ namespace AcadLib.Hatches
         /// Полилиния должна быть в базе чертежа
         /// </summary>
         [CanBeNull]
-        public static Hatch CreateAssociativeHatch([NotNull] Curve loop, [NotNull] BlockTableRecord cs, [NotNull] Transaction t,
-            string pattern = "SOLID", [CanBeNull] string layer = null, LineWeight lw = LineWeight.LineWeight015)
+        public static Hatch CreateAssociativeHatch(
+            [NotNull] Curve loop,
+            [NotNull] BlockTableRecord cs,
+            [NotNull] Transaction t,
+            string pattern = "SOLID",
+            [CanBeNull] string layer = null,
+            LineWeight lw = LineWeight.LineWeight015)
         {
             var h = new Hatch();
             h.SetDatabaseDefaults();
@@ -30,6 +35,7 @@ namespace AcadLib.Hatches
                 Layers.LayerExt.CheckLayerState(layer);
                 h.Layer = layer;
             }
+
             h.LineWeight = lw;
             h.Linetype = SymbolUtilityServices.LinetypeContinuousName;
             h.SetHatchPattern(HatchPatternType.PreDefined, pattern);
@@ -50,6 +56,7 @@ namespace AcadLib.Hatches
                 h.Erase();
                 return null;
             }
+
             h.EvaluateHatch(true);
             var orders = (DrawOrderTable)cs.DrawOrderTableId.GetObject(OpenMode.ForWrite);
             orders.MoveToBottom(new ObjectIdCollection(new[] { h.Id }));
@@ -72,11 +79,13 @@ namespace AcadLib.Hatches
         [CanBeNull]
         public static Hatch CreateHatch([CanBeNull] this List<PolylineVertex> pts)
         {
-            if (pts?.Any() != true) return null;
+            if (pts?.Any() != true)
+                return null;
             if (!pts[0].Pt.IsEqualTo(pts[pts.Count - 1].Pt))
             {
                 pts.Add(pts[0]);
             }
+
             var ptCol = new Point2dCollection(pts.Select(s => s.Pt).ToArray());
             var dCol = new DoubleCollection(pts.Select(s => s.Bulge).ToArray());
             var h = new Hatch();
@@ -98,7 +107,8 @@ namespace AcadLib.Hatches
         [CanBeNull]
         public static Hatch CreateHatch([CanBeNull] this Polyline pl)
         {
-            if (pl == null) return null;
+            if (pl == null)
+                return null;
             var vertexes = pl.GetVertexes();
             return CreateHatch(vertexes);
         }
@@ -127,6 +137,7 @@ namespace AcadLib.Hatches
                             {
                                 pPoly.AddVertexAt(j, bulgeVertex[j].Vertex, bulgeVertex[j].Bulge, 0, 0);
                             }
+
                             pPoly.Closed = (loopType & (int)HatchLoopTypes.NotClosed) == 0;
                             looparea = pPoly.Area;
                             if ((loopType & (int)HatchLoopTypes.External) > 0)
@@ -164,6 +175,7 @@ namespace AcadLib.Hatches
                                     {
                                         looparea += 0.5 * pts[j].X * (pts[(j + 1) % np].Y - pts[(j + np - 1) % np].Y);
                                     }
+
                                     if ((loopType & (int)HatchLoopTypes.External) > 0)
                                         area += Math.Abs(looparea);
                                     else
@@ -174,6 +186,7 @@ namespace AcadLib.Hatches
                     }
                 }
             }
+
             return Math.Abs(area);
         }
 
@@ -189,7 +202,9 @@ namespace AcadLib.Hatches
         /// <param name="ht">Штриховка</param>
         /// <param name="loopType">Из каких типов островков</param>
         [NotNull]
-        public static DisposableSet<Polyline> GetPolylines([NotNull] this Hatch ht, HatchLoopTypes loopType = HatchLoopTypes.External)
+        public static DisposableSet<Polyline> GetPolylines(
+            [NotNull] this Hatch ht,
+            HatchLoopTypes loopType = HatchLoopTypes.External)
         {
             var loops = GetPolylines2(ht, Tolerance.Global, loopType);
             var res = new DisposableSet<Polyline>(loops.Select(s => s.GetPolyline()));
@@ -198,8 +213,11 @@ namespace AcadLib.Hatches
         }
 
         [NotNull]
-        public static DisposableSet<HatchLoopPl> GetPolylines2([NotNull] this Hatch ht, Tolerance weddingTolerance,
-            HatchLoopTypes loopType = (HatchLoopTypes)119, bool wedding = false)
+        public static DisposableSet<HatchLoopPl> GetPolylines2(
+            [NotNull] this Hatch ht,
+            Tolerance weddingTolerance,
+            HatchLoopTypes loopType = (HatchLoopTypes)119,
+            bool wedding = false)
         {
             var loops = new DisposableSet<HatchLoopPl>();
             var nloops = ht.NumberOfLoops;
@@ -228,6 +246,7 @@ namespace AcadLib.Hatches
                                 {
                                     poly.AddVertexAt(vertex++, l.StartPoint, 0, 0, 0);
                                 }
+
                                 poly.AddVertexAt(vertex++, l.EndPoint, 0, 0, 0);
                             }
                             else if (curve is CircularArc2d arc)
@@ -237,6 +256,7 @@ namespace AcadLib.Hatches
                                     loops.Add(new HatchLoopPl { Loop = arc.CreateCircle(), Types = loop.LoopType });
                                     continue;
                                 }
+
                                 var bulge = arc.GetBulge(arc.IsClockWise);
                                 if (NeedAddVertexToPl(poly, vertex - 1, arc.StartPoint, weddingTolerance))
                                 {
@@ -246,6 +266,7 @@ namespace AcadLib.Hatches
                                 {
                                     poly.SetBulgeAt(vertex - 1, bulge);
                                 }
+
                                 poly.AddVertexAt(vertex++, arc.EndPoint, 0, 0, 0);
                             }
                             else
@@ -254,35 +275,43 @@ namespace AcadLib.Hatches
                             }
                         }
                     }
+
                     if (poly.NumberOfVertices != 0)
                     {
                         if (wedding)
                         {
                             poly.Wedding(weddingTolerance);
                         }
-                        if (!poly.Closed) poly.Closed = true;
+
+                        if (!poly.Closed)
+                            poly.Closed = true;
                         loops.Add(new HatchLoopPl { Loop = poly, Types = loop.LoopType });
                     }
                 }
             }
+
             return loops;
         }
 
         public static void SetHatchOptions([CanBeNull] this Hatch h, [CanBeNull] HatchOptions opt)
         {
-            if (h == null || opt == null) return;
+            if (h == null || opt == null)
+                return;
             if (!opt.PatternName.IsNullOrEmpty())
             {
                 h.SetHatchPattern(opt.PatternType, opt.PatternName);
             }
+
             if (opt.PatternAngle != null && opt.PatternAngle.Value > 0)
             {
                 h.PatternAngle = opt.PatternAngle.Value;
             }
+
             if (opt.PatternScale != null && opt.PatternScale.Value > 0)
             {
                 h.PatternScale = opt.PatternScale.Value;
             }
+
             h.BackgroundColor = opt.BackgroundColor ?? Color.FromColorIndex(ColorMethod.None, 257);
         }
 

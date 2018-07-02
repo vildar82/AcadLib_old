@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
-using NetLib;
-using NLog;
-using System;
-using System.IO;
-
-namespace AcadLib.IO
+﻿namespace AcadLib.IO
 {
+    using System;
+    using System.IO;
+    using JetBrains.Annotations;
+    using NetLib;
+    using NLog;
+
     /// <summary>
     /// Данные хранимые в файле json на сервере, с локальным кэшем
     /// </summary>
@@ -19,9 +19,6 @@ namespace AcadLib.IO
         // ReSharper disable once MemberCanBePrivate.Global
         public readonly string ServerFile;
 
-        // ReSharper disable once StaticMemberInGenericType
-        private static ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// Данные хранимые в файле json на сервере, с локальным кэшем
         /// </summary>
@@ -33,19 +30,16 @@ namespace AcadLib.IO
             LocalFile = Path.GetUserPluginFile(plugin, name + ".json");
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <exception cref="IOException"/>
+        // ReSharper disable once StaticMemberInGenericType
+        private static ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         [CanBeNull]
-        // ReSharper disable once MemberCanBePrivate.Global
         public T Load()
         {
             Copy();
             return !File.Exists(LocalFile) ? default : LocalFile.Deserialize<T>();
         }
 
-        // ReSharper disable once MemberCanBePrivate.Global
         public void Save(T data)
         {
             data.Serialize(ServerFile);
@@ -71,15 +65,16 @@ namespace AcadLib.IO
             {
                 Save(data);
             }
-            catch
+            catch (Exception ex)
             {
-                //
+                Logger.Error(ex);
             }
         }
 
         private void Copy()
         {
-            if (!File.Exists(ServerFile)) return;
+            if (!File.Exists(ServerFile))
+                return;
             try
             {
                 File.Copy(ServerFile, LocalFile, true);

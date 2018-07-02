@@ -1,26 +1,28 @@
-﻿using AcadLib.XData;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using XData;
+
     /// <summary>
     /// Расширенные данные объекта
     /// </summary>
+    [PublicAPI]
     public static class XDataExt
     {
-        private static readonly Dictionary<Type, int> dictXDataTypedValues = new Dictionary<Type, int> {
+        private static readonly Dictionary<Type, int> dictXDataTypedValues = new Dictionary<Type, int>
+        {
             { typeof(int), (int)DxfCode.ExtendedDataInteger32 },
             { typeof(double), (int)DxfCode.ExtendedDataReal },
-            { typeof(string),(int)DxfCode.ExtendedDataAsciiString }
+            { typeof(string), (int)DxfCode.ExtendedDataAsciiString }
         };
 
         /// <summary>
         /// Регистрация приложения в RegAppTable
-        /// </summary>        
+        /// </summary>
         public static void RegApp([NotNull] this Database db, string regAppName)
         {
             RegAppHelper.RegApp(db, regAppName);
@@ -46,11 +48,18 @@ namespace AcadLib
             if (dbo.GetXDataForApplication(regAppName) != null)
             {
                 var rb = new ResultBuffer(new TypedValue(1001, regAppName));
-                // ReSharper disable once UpgradeOpen
-                dbo.UpgradeOpen();
+                var isWriteEnabled = dbo.IsWriteEnabled;
+                if (!isWriteEnabled)
+                    dbo.UpgradeOpen();
                 dbo.XData = rb;
-                dbo.DowngradeOpen();
+                if (!isWriteEnabled)
+                    dbo.DowngradeOpen();
             }
+        }
+
+        public static bool HasXData([NotNull] this DBObject dbo, [NotNull] string regApp)
+        {
+            return dbo.GetXDataForApplication(regApp) != null;
         }
 
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
@@ -61,12 +70,25 @@ namespace AcadLib
 
         /// <summary>
         /// Приложение не регистрируется !!!
-        /// </summary>        
+        /// </summary>
+        public static void SetXData([NotNull] this DBObject dbo, string regAppName, string value)
+        {
+            using (var rb = new ResultBuffer(
+                new TypedValue((int)DxfCode.ExtendedDataRegAppName, regAppName),
+                new TypedValue((int)DxfCode.ExtendedDataAsciiString, value)))
+            {
+                dbo.XData = rb;
+            }
+        }
+
+        /// <summary>
+        /// Приложение не регистрируется !!!
+        /// </summary>
         public static void SetXData([NotNull] this DBObject dbo, string regAppName, int value)
         {
             using (var rb = new ResultBuffer(
-                        new TypedValue((int)DxfCode.ExtendedDataRegAppName, regAppName),
-                        new TypedValue((int)DxfCode.ExtendedDataInteger32, value)))
+                new TypedValue((int)DxfCode.ExtendedDataRegAppName, regAppName),
+                new TypedValue((int)DxfCode.ExtendedDataInteger32, value)))
             {
                 dbo.XData = rb;
             }
@@ -83,9 +105,7 @@ namespace AcadLib
         {
             RegApp(dbo.Database, regAppName);
             var tvValu = GetTypedValue(value);
-            using (var rb = new ResultBuffer(
-                        new TypedValue((int)DxfCode.ExtendedDataRegAppName, ExtDicHelper.PikApp),
-                        tvValu))
+            using (var rb = new ResultBuffer(new TypedValue((int)DxfCode.ExtendedDataRegAppName, regAppName), tvValu))
             {
                 dbo.XData = rb;
             }
@@ -105,7 +125,7 @@ namespace AcadLib
 
         /// <summary>
         /// Запись int
-        /// ПРиложение не регистрируется   
+        /// ПРиложение не регистрируется
         /// </summary>
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static void SetXDataPIK([NotNull] this DBObject dbo, int value)
@@ -126,8 +146,10 @@ namespace AcadLib
                     }
                 }
             }
+
             return 0;
         }
+
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static int GetXDatPIK([NotNull] this DBObject dbo)
         {
@@ -148,8 +170,10 @@ namespace AcadLib
                     }
                 }
             }
+
             return string.Empty;
         }
+
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
         public static string GetXDatPIKString([NotNull] this DBObject dbo)
         {
@@ -159,15 +183,16 @@ namespace AcadLib
         /// <summary>
         /// Считывание значение с объекта
         /// </summary>
-        /// <typeparam name="T">Тип значения - int, double, string</typeparam>        
+        /// <typeparam name="T">Тип значения - int, double, string</typeparam>
         /// <returns>Значение или дефолтное значение для этого типа (0,0,null) если не найдено</returns>
         // ReSharper disable once MemberCanBePrivate.Global
+        [CanBeNull]
         public static T GetXData<T>([NotNull] this DBObject dbo, string regAppName)
         {
-            var dxfT = dictXDataTypedValues[typeof(T)];
             var rb = dbo.GetXDataForApplication(regAppName);
             if (rb != null)
             {
+                var dxfT = dictXDataTypedValues[typeof(T)];
                 foreach (var item in rb)
                 {
                     if (item.TypeCode == dxfT)
@@ -176,6 +201,7 @@ namespace AcadLib
                     }
                 }
             }
+
             return default;
         }
 

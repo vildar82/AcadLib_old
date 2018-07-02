@@ -1,9 +1,9 @@
-﻿using System;
-using JetBrains.Annotations;
-using System.Text.RegularExpressions;
-
-namespace AcadLib.Strings
+﻿namespace AcadLib.Strings
 {
+    using System;
+    using System.Text.RegularExpressions;
+    using JetBrains.Annotations;
+
     [Obsolete]
     public static class StringHelper
     {
@@ -27,6 +27,7 @@ namespace AcadLib.Strings
                     }
                 }
             }
+
             return Result.Fail<int>($"Не определено целое число из строки - {input}");
         }
     }

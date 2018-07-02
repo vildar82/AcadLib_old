@@ -1,30 +1,16 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Свойства динамического блока
     /// </summary>
     [PublicAPI]
     public class Property : IEquatable<Property>, ICloneable
     {
-        public short DynPropTypeCode { get; set; }
-        /// <summary>
-        /// Только, если тип параматера - атрибут!
-        /// </summary>
-        public ObjectId IdAtrRef { get; set; }
-        public bool IsReadOnly { get; set; }
-        /// <summary>
-        /// Видит ли пользователь это свойство
-        /// </summary>
-        public bool IsShow { get; set; }
-        public string Name { get; set; }
-        public PropertyType Type { get; set; }
-        public object Value { get; set; }
-
         public Property(string name, object value)
         {
             Name = name;
@@ -56,6 +42,26 @@ namespace AcadLib.Blocks
             IsReadOnly = dynProp.ReadOnly;
         }
 
+        public short DynPropTypeCode { get; set; }
+
+        /// <summary>
+        /// Только, если тип параматера - атрибут!
+        /// </summary>
+        public ObjectId IdAtrRef { get; set; }
+
+        public bool IsReadOnly { get; set; }
+
+        /// <summary>
+        /// Видит ли пользователь это свойство
+        /// </summary>
+        public bool IsShow { get; set; }
+
+        public string Name { get; set; }
+
+        public PropertyType Type { get; set; }
+
+        public object Value { get; set; }
+
         /// <summary>
         /// Все видимые атрибуты и динамические свойства блока
         /// </summary>
@@ -69,6 +75,7 @@ namespace AcadLib.Blocks
                 var prop = new Property(atr.Tag, atr.Text.Trim(), atr.IdAtr);
                 props.Add(prop);
             }
+
             props.AddRange(GetDynamicProperties(blRef));
             return props;
         }
@@ -86,12 +93,14 @@ namespace AcadLib.Blocks
                 {
                     if (dyn.VisibleInCurrentVisibilityState)
                     {
-                        if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase)) continue;
+                        if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase))
+                            continue;
                         var prop = new Property(dyn) { DynPropTypeCode = dyn.PropertyTypeCode };
                         props.Add(prop);
                     }
                 }
             }
+
             return props;
         }
 
@@ -102,8 +111,10 @@ namespace AcadLib.Blocks
 
         public bool Equals(Property other)
         {
-            if (other == null) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (other == null)
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
             var res = Name == other.Name && EqualValue(other.Value);
 
             return res;
@@ -121,6 +132,7 @@ namespace AcadLib.Blocks
             {
                 return Math.Abs(d - (double)value) < 0.0001;
             }
+
             return Value.Equals(value);
         }
     }

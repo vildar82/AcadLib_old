@@ -1,9 +1,9 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.XData
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public interface IDboDataSave : IExtDataSave, ITypedDataValues
     {

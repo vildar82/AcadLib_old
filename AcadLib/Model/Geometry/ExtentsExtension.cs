@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
 {
+    using System.Collections.Generic;
+    using Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class ExtentsExtension
     {
@@ -15,6 +15,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
             {
                 ext.AddExtents(extents3D);
             }
+
             return ext;
         }
 
@@ -26,7 +27,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         public static Point3d Center(this Extents3d ext)
         {
             return new Point3d((ext.MaxPoint.X + ext.MinPoint.X) * 0.5,
-                                (ext.MaxPoint.Y + ext.MinPoint.Y) * 0.5, 0);
+                (ext.MaxPoint.Y + ext.MinPoint.Y) * 0.5, 0);
         }
 
         public static Extents2d Convert2d(this Extents3d ext)
@@ -114,6 +115,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
                     ptsGrid.Add(new Point3d(ext.MinPoint.X + len * 0.5 + x * dX, ext.MinPoint.Y + len * 0.5 + y * dY, 0));
                 }
             }
+
             return ptsGrid;
         }
 
@@ -124,7 +126,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         public static bool IsPointInBounds(this Extents3d ext, Point3d pt)
         {
             return pt.X > ext.MinPoint.X && pt.Y > ext.MinPoint.Y &&
-               pt.X < ext.MaxPoint.X && pt.Y < ext.MaxPoint.Y;
+                   pt.X < ext.MaxPoint.X && pt.Y < ext.MaxPoint.Y;
         }
 
         /// <summary>
@@ -134,7 +136,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         public static bool IsPointInBounds(this Extents3d ext, Point3d pt, double tolerance)
         {
             return pt.X > ext.MinPoint.X - tolerance && pt.Y > ext.MinPoint.Y - tolerance &&
-               pt.X < ext.MaxPoint.X + tolerance && pt.Y < ext.MaxPoint.Y + tolerance;
+                   pt.X < ext.MaxPoint.X + tolerance && pt.Y < ext.MaxPoint.Y + tolerance;
         }
 
         public static Extents3d Offset(this Extents3d ext, double percent = 50)

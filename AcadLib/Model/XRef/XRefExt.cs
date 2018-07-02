@@ -1,10 +1,10 @@
-﻿using System.IO;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-namespace AcadLib.XRef
+﻿namespace AcadLib.XRef
 {
+    using System.IO;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class XRefExt
     {
@@ -18,8 +18,13 @@ namespace AcadLib.XRef
         /// <param name="name">Optional name for the Xref.</param>
         /// <param name="idBtrXref">Блок внешней ссылки - BlockTableRecord</param>
         /// <returns>Whether the attach operation succeeded.</returns>
-        public static bool XrefAttachAndInsert(this Database db, string path, Point3d pos,
-            out ObjectId idBtrXref, out ObjectId idBlRefXref, string name = null)
+        public static bool XrefAttachAndInsert(
+            this Database db,
+            string path,
+            Point3d pos,
+            out ObjectId idBtrXref,
+            out ObjectId idBlRefXref,
+            string name = null)
         {
             idBtrXref = ObjectId.Null;
             idBlRefXref = ObjectId.Null;
@@ -40,8 +45,10 @@ namespace AcadLib.XRef
                     t.AddNewlyCreatedDBObject(br, true);
                     ret = true;
                 }
+
                 t.Commit();
             }
+
             return ret;
         }
     }

@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using Microsoft.Win32;
-using System;
-
-namespace AcadLib.Registry
+﻿namespace AcadLib.Registry
 {
+    using System;
+    using JetBrains.Annotations;
+    using Microsoft.Win32;
+
     [PublicAPI]
     public class RegExt : IDisposable
     {

@@ -1,11 +1,11 @@
-﻿using System;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.GraphicsInterface;
-using JetBrains.Annotations;
-
-namespace AcadLib.VisualStyle
+﻿namespace AcadLib.VisualStyle
 {
+    using System;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.GraphicsInterface;
+    using JetBrains.Annotations;
+
     public static class VisualStyleExt
     {
         /// <summary>
@@ -22,7 +22,7 @@ namespace AcadLib.VisualStyle
             using (var vtr = (ViewportTableRecord)vt["*Active"].Open(OpenMode.ForWrite))
 #pragma warning restore 618
 #pragma warning disable 618
-            using (var vs =(DBVisualStyle) vtr.VisualStyleId.Open(OpenMode.ForRead))
+            using (var vs = (DBVisualStyle)vtr.VisualStyleId.Open(OpenMode.ForRead))
 #pragma warning restore 618
             {
                 return vs.Type;
@@ -40,7 +40,7 @@ namespace AcadLib.VisualStyle
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var vt = (ViewportTable)db.ViewportTableId.GetObject(OpenMode.ForRead);
-                var vtr =(ViewportTableRecord)vt["*Active"].GetObject(OpenMode.ForWrite);
+                var vtr = (ViewportTableRecord)vt["*Active"].GetObject(OpenMode.ForWrite);
                 var dict = (DBDictionary)db.VisualStyleDictionaryId.GetObject(OpenMode.ForRead);
                 vtr.VisualStyleId = dict.GetAt(GetStyleName(style));
                 t.Commit();

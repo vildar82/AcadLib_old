@@ -1,9 +1,9 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     public static class CleanExt
     {
         public static int CleanZombieBlock([NotNull] this Database db)
@@ -18,7 +18,8 @@ namespace AcadLib
                     if (!btr.IsLayout && btr.IsAnonymous && !btr.IsDynamicBlock && btr.Name.StartsWith("*U"))
                     {
                         var idBlRefs = btr.GetBlockReferenceIds(true, false);
-                        if (idBlRefs.Count == 0) continue;
+                        if (idBlRefs.Count == 0)
+                            continue;
                         var isZombie = true;
                         foreach (ObjectId idBlRef in idBlRefs)
                         {
@@ -28,18 +29,23 @@ namespace AcadLib
                                 isZombie = false;
                                 break;
                             }
+
                             blRef.Erase();
                             countZombie++;
                         }
+
                         if (isZombie)
                         {
                             btr = btr.Id.GetObject<BlockTableRecord>(OpenMode.ForWrite);
-                            if (btr != null) btr.Erase();
+                            if (btr != null)
+                                btr.Erase();
                         }
                     }
                 }
+
                 t.Commit();
             }
+
             return countZombie;
         }
     }

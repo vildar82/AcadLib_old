@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using NetLib;
-using System;
-using System.IO;
-
-namespace AcadLib.IO
+﻿namespace AcadLib.IO
 {
+    using System;
+    using System.IO;
+    using JetBrains.Annotations;
+    using NetLib;
+
     /// <summary>
     /// Данные хранимые в файле json на сервере, с локальным кэшем
     /// </summary>
@@ -24,18 +24,12 @@ namespace AcadLib.IO
             LocalFile = Path.GetUserPluginFile(plugin, name + ".json");
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <exception cref="IOException"/>
         [CanBeNull]
-        // ReSharper disable once MemberCanBePrivate.Global
         public T Load()
         {
             return !File.Exists(LocalFile) ? default : LocalFile.Deserialize<T>();
         }
 
-        // ReSharper disable once MemberCanBePrivate.Global
         public void Save(T data)
         {
             data.Serialize(LocalFile);

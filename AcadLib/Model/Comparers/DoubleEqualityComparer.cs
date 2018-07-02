@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-
-namespace AcadLib.Comparers
+﻿namespace AcadLib.Comparers
 {
+    using System;
+    using System.Collections.Generic;
+    using JetBrains.Annotations;
+
     // Сравнение чисел
     [PublicAPI]
     [Obsolete]

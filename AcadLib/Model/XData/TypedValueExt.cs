@@ -1,18 +1,19 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using NetLib;
-using System;
-using System.Collections.Generic;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using NetLib;
+
     [PublicAPI]
     public static class TypedValueExt
     {
         public static T GetValue<T>([CanBeNull] this Dictionary<string, object> dictValues, string name, T defaultValue)
         {
-            if (dictValues == null) return defaultValue;
+            if (dictValues == null)
+                return defaultValue;
             if (dictValues.TryGetValue(name, out var value))
             {
                 try
@@ -21,10 +22,12 @@ namespace AcadLib
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log.Error(ex, $"TypedValueExt, GetValue из словаря значений - по имени параметра '{name}'. object = {value} тип {value.GetType()}");
+                    Logger.Log.Error(ex,
+                        $"TypedValueExt, GetValue из словаря значений - по имени параметра '{name}'. object = {value} тип {value.GetType()}");
                     return defaultValue;
                 }
             }
+
             return defaultValue;
         }
 
@@ -35,7 +38,10 @@ namespace AcadLib
                 string key = null;
                 foreach (var value in values)
                 {
-                    if (key == null) key = value.Value.ToString();
+                    if (key == null)
+                    {
+                        key = value.Value.ToString();
+                    }
                     else
                     {
                         yield return new KeyValuePair<string, object>(key, value.Value);
@@ -49,7 +55,8 @@ namespace AcadLib
         public static Dictionary<string, object> ToDictionary([CanBeNull] this IEnumerable<TypedValue> values)
         {
             var dictValues = new Dictionary<string, object>();
-            if (values == null) return dictValues;
+            if (values == null)
+                return dictValues;
             var name = string.Empty;
             foreach (var item in values)
             {
@@ -70,6 +77,7 @@ namespace AcadLib
                     name = item.GetTvValue<string>();
                 }
             }
+
             return dictValues;
         }
 
@@ -93,16 +101,18 @@ namespace AcadLib
             {
                 // ignored
             }
+
             return default;
         }
 
         /// <summary>
         /// Создание TypedValue для сохранение в расширенные данные DxfCode.ExtendedData
         /// bool, byte, int, double, string
-        /// </summary>        
+        /// </summary>
         public static TypedValue GetTvExtData([CanBeNull] object value)
         {
-            if (value == null) return new TypedValue();
+            if (value == null)
+                return new TypedValue();
             var code = 0;
             var tvValue = value;
             switch (value)

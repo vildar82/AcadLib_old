@@ -1,11 +1,11 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-namespace AcadLib.Geometry
+﻿namespace AcadLib.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Represents a PolylineSegment collection.
     /// </summary>
@@ -15,29 +15,11 @@ namespace AcadLib.Geometry
         private List<PolylineSegment> _contents = new List<PolylineSegment>();
 
         /// <summary>
-        /// Gets the number of elements actually contained in the collection.
-        /// </summary>
-        public int Count => _contents.Count;
-
-        /// <summary>
-        /// Gets the last PolylineSegment EndPoint
-        /// </summary>
-        public Point2d EndPoint => _contents[Count - 1].EndPoint;
-
-        /// <summary>
-        /// Gets a value indicating whether the collection is read-only.
-        /// </summary>
-        public bool IsReadOnly => false;
-
-        /// <summary>
-        /// Gets the first PolylineSegment StartPoint
-        /// </summary>
-        public Point2d StartPoint => _contents[0].StartPoint;
-
-        /// <summary>
         /// Creates a new instance of PolylineSegmentCollection.
         /// </summary>
-        public PolylineSegmentCollection() { }
+        public PolylineSegmentCollection()
+        {
+        }
 
         /// <summary>
         /// Creates a new instance of PolylineSegmentCollection from a PolylineSegment collection (IEnumerable).
@@ -73,6 +55,7 @@ namespace AcadLib.Geometry
                     pline.GetStartWidthAt(i),
                     pline.GetEndWidthAt(i)));
             }
+
             if (pline.Closed)
             {
                 _contents.Add(new PolylineSegment(
@@ -102,6 +85,7 @@ namespace AcadLib.Geometry
                     vertex.StartWidth,
                     vertex.EndWidth));
             }
+
             if (pline.Closed)
             {
                 var vertex = vertices[n];
@@ -193,8 +177,10 @@ namespace AcadLib.Geometry
 
                 // index of the PolylineSegment closest to the ellipse start point
                 var startIndex = GetClosestSegmentIndexTo(startPoint);
+
                 // start point on the PolylineSegment
                 var pt = _contents[startIndex].ToCurve2d().GetClosestPointTo(startPoint).Point;
+
                 // if the point is equal to the PolylineSegment end point, jump the next segment in collection
                 if (pt.IsEqualTo(_contents[startIndex].EndPoint))
                 {
@@ -204,6 +190,7 @@ namespace AcadLib.Geometry
                         startIndex++;
                     startParam = 0.0;
                 }
+
                 // else get the 'parameter' at point on the PolylineSegment
                 else
                 {
@@ -212,8 +199,10 @@ namespace AcadLib.Geometry
 
                 // index of the PolylineSegment closest to the ellipse end point
                 var endIndex = GetClosestSegmentIndexTo(endPoint);
+
                 // end point on the PolylineSegment
                 pt = _contents[endIndex].ToCurve2d().GetClosestPointTo(endPoint).Point;
+
                 // if the point is equals to the PolylineSegment startPoint, jump to the previous segment
                 if (pt.IsEqualTo(_contents[endIndex].StartPoint))
                 {
@@ -223,6 +212,7 @@ namespace AcadLib.Geometry
                         endIndex--;
                     endParam = 1.0;
                 }
+
                 // else get the 'parameter' at point on the PolylineSegment
                 else
                 {
@@ -237,7 +227,7 @@ namespace AcadLib.Geometry
                 }
 
                 // if the parameter at end point is not equal to 1.0, calculate the bulge
-                if (Math.Abs(endParam - 1.0) > 0.0001) //(endParam != 0.0)
+                if (Math.Abs(endParam - 1.0) > 0.0001) // (endParam != 0.0)
                 {
                     _contents[endIndex].EndPoint = endPoint;
                     _contents[endIndex].Bulge = _contents[endIndex].Bulge * endParam;
@@ -262,6 +252,26 @@ namespace AcadLib.Geometry
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the number of elements actually contained in the collection.
+        /// </summary>
+        public int Count => _contents.Count;
+
+        /// <summary>
+        /// Gets the last PolylineSegment EndPoint
+        /// </summary>
+        public Point2d EndPoint => _contents[Count - 1].EndPoint;
+
+        /// <summary>
+        /// Gets a value indicating whether the collection is read-only.
+        /// </summary>
+        public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Gets the first PolylineSegment StartPoint
+        /// </summary>
+        public Point2d StartPoint => _contents[0].StartPoint;
 
         /// <summary>
         /// Gets or sets the element at the specified index.
@@ -349,6 +359,7 @@ namespace AcadLib.Geometry
                     dist = tmpDist;
                 }
             }
+
             return result;
         }
 
@@ -358,16 +369,8 @@ namespace AcadLib.Geometry
         /// <returns>An IEnumerable&lt;PolylineSegment&gt; enumerator for the PolylineSegmentCollection.</returns>
         public IEnumerator<PolylineSegment> GetEnumerator()
         {
-            foreach (var seg in _contents) yield return seg;
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            foreach (var seg in _contents)
+                yield return seg;
         }
 
         /// <summary>
@@ -442,6 +445,7 @@ namespace AcadLib.Geometry
                         clone.RemoveAt(i);
                         continue;
                     }
+
                     // ReSharper disable once AccessToModifiedClosure
                     i = clone.FindIndex(s => s.EndPoint.IsEqualTo(end, tol));
                     if (i >= 0)
@@ -453,6 +457,7 @@ namespace AcadLib.Geometry
                         clone.RemoveAt(i);
                         continue;
                     }
+
                     // ReSharper disable once AccessToModifiedClosure
                     i = clone.FindIndex(s => s.EndPoint.IsEqualTo(start, tol));
                     if (i >= 0)
@@ -463,6 +468,7 @@ namespace AcadLib.Geometry
                         clone.RemoveAt(i);
                         continue;
                     }
+
                     // ReSharper disable once AccessToModifiedClosure
                     i = clone.FindIndex(s => s.StartPoint.IsEqualTo(start, tol));
                     if (i >= 0)
@@ -474,10 +480,13 @@ namespace AcadLib.Geometry
                         clone.RemoveAt(i);
                         continue;
                     }
+
                     break;
                 }
+
                 result.Add(newCol);
             }
+
             return result;
         }
 
@@ -519,6 +528,7 @@ namespace AcadLib.Geometry
             {
                 _contents[i].Inverse();
             }
+
             _contents.Reverse();
         }
 
@@ -535,6 +545,7 @@ namespace AcadLib.Geometry
                 var seg = _contents[i];
                 pline.AddVertexAt(i, seg.StartPoint, seg.Bulge, seg.StartWidth, seg.EndWidth);
             }
+
             var j = _contents.Count;
             pline.AddVertexAt(j, this[j - 1].EndPoint, 0.0, _contents[j - 1].EndWidth, _contents[0].StartWidth);
             if (pline.GetPoint2dAt(0).IsEqualTo(pline.GetPoint2dAt(j)))
@@ -542,7 +553,17 @@ namespace AcadLib.Geometry
                 pline.RemoveVertexAt(j);
                 pline.Closed = true;
             }
+
             return pline;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

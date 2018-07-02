@@ -7,8 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Data.Common;
-
 namespace UtilsEditUsers.Model.User.DB
 {
     using System;
@@ -19,10 +17,6 @@ namespace UtilsEditUsers.Model.User.DB
     {
         public CAD_AutoCADEntities()
             : base("name=CAD_AutoCADEntities")
-        {
-        }
-
-        public CAD_AutoCADEntities(DbConnection con): base(con, true)
         {
         }
     

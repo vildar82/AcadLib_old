@@ -23,10 +23,12 @@
     <OutputPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Script\NET\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <LangVersion>latest</LangVersion>
     <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,6 +37,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+	<CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -68,12 +71,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="ReactiveUI">
-      <HintPath>..\..\..\Users\khisyametdinovvt\.nuget\packages\reactiveui-core\7.4.0\lib\Net45\ReactiveUI.dll</HintPath>
-    </Reference>
-    <Reference Include="Splat">
-      <HintPath>..\..\..\Users\khisyametdinovvt\.nuget\packages\splat\1.6.2\lib\Net45\Splat.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -103,7 +100,9 @@
     <Compile Include="Geometry\Polylines\TestWeddingPolyline.cs" />
     <Compile Include="Geometry\Polylines\TestMergePolyline.cs" />
     <Compile Include="PaletteProps\TestPaletteProps.cs" />
-    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="PaletteProps\TestPaletteView.xaml.cs">
+      <DependentUpon>TestPaletteView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WPF\Class1.cs" />
     <Compile Include="WPF\FieldUserControl.xaml.cs">
@@ -122,13 +121,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="AutoCADNetLoad.scr" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="PaletteProps\TestPaletteView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="WPF\FieldUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -147,6 +149,9 @@
     </PackageReference>
     <PackageReference Include="MahApps.Metro">
       <Version>1.6.4</Version>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers">
+      <Version>1.0.2</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

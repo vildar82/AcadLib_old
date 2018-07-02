@@ -25,7 +25,7 @@ namespace TestAcadlib.Geometry.Polylines
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var ms = SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject<BlockTableRecord>();
-                foreach (var polylines in ms.GetObjects<Polyline>(OpenMode.ForWrite).GroupBy(g=>g.Color))
+                foreach (var polylines in ms.GetObjects<Polyline>(OpenMode.ForWrite).GroupBy(g => g.Color))
                 {
                     var pls = polylines.ToList();
                     var joinedPls = new List<Polyline>();
@@ -36,6 +36,7 @@ namespace TestAcadlib.Geometry.Polylines
                         polyline.Erase();
                     }
                 }
+
                 t.Commit();
             }
         }

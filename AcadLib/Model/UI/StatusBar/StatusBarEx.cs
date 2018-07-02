@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using AcadLib.Statistic;
-using AutoCAD_PIK_Manager;
-using AutoCAD_PIK_Manager.Settings;
-using Autodesk.AutoCAD.Windows;
-using JetBrains.Annotations;
-using NetLib;
-using Application = Autodesk.AutoCAD.ApplicationServices.Application;
-using StatusBarMenu = AcadLib.UI.StatusBar.View.StatusBarMenu;
-
-namespace AcadLib.UI.StatusBar
+﻿namespace AcadLib.UI.StatusBar
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using AutoCAD_PIK_Manager;
+    using AutoCAD_PIK_Manager.Settings;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.Windows;
+    using JetBrains.Annotations;
+    using NetLib;
+    using Statistic;
+    using View;
+    using Commands = AcadLib.Commands;
+
     /// <summary>
     /// Статусная строка
     /// </summary>
@@ -29,26 +30,36 @@ namespace AcadLib.UI.StatusBar
         /// <param name="minWidth"></param>
         /// <param name="maxWidth"></param>
         [NotNull]
-        public static Pane AddMenuPane(string value, List<string> values, string toolTip, Action<string> selectValue,
-            Func<string> showMenu, int minWidth =0, int maxWidth =0)
+        public static Pane AddMenuPane(
+            string value,
+            List<string> values,
+            string toolTip,
+            Action<string> selectValue,
+            Func<string> showMenu,
+            int minWidth = 0,
+            int maxWidth = 0)
         {
-            var pane = new Pane {Text = value, Style = PaneStyles.PopUp | PaneStyles.Normal, ToolTipText = toolTip};
-            pane.MouseDown += (o, e) =>
-            {
-                new StatusBarMenu(showMenu(), values, selectValue).Show();
-            };
+            var pane = new Pane { Text = value, Style = PaneStyles.PopUp | PaneStyles.Normal, ToolTipText = toolTip };
+            pane.MouseDown += (o, e) => { new StatusBarMenu(showMenu(), values, selectValue).Show(); };
             pane.Visible = false;
             Application.StatusBar.Panes.Insert(0, pane);
-            if (minWidth != 0) pane.MinimumWidth = minWidth;
-            if (maxWidth != 0) pane.MinimumWidth = maxWidth;
+            if (minWidth != 0)
+                pane.MinimumWidth = minWidth;
+            if (maxWidth != 0)
+                pane.MinimumWidth = maxWidth;
             pane.Visible = true;
             Application.StatusBar.Update();
             return pane;
         }
 
-        public static void AddPane(string name, string toolTip,
-            [CanBeNull] Action<Pane,StatusBarMouseDownEventArgs> onClick = null,
-            int minWith = 20, int maxWith = 200, [CanBeNull] Icon icon = null, PaneStyles style = PaneStyles.Normal)
+        public static void AddPane(
+            string name,
+            string toolTip,
+            [CanBeNull] Action<Pane, StatusBarMouseDownEventArgs> onClick = null,
+            int minWith = 20,
+            int maxWith = 200,
+            [CanBeNull] Icon icon = null,
+            PaneStyles style = PaneStyles.Normal)
         {
             var pane = new Pane
             {
@@ -59,7 +70,8 @@ namespace AcadLib.UI.StatusBar
                 MaximumWidth = maxWith,
                 Style = style
             };
-            if (icon != null) pane.Icon = icon;
+            if (icon != null)
+                pane.Icon = icon;
             pane.MouseDown += (s, e) => onClick?.Invoke(pane, e);
             Application.StatusBar.Panes.Insert(0, pane);
             pane.Visible = true;
@@ -70,7 +82,7 @@ namespace AcadLib.UI.StatusBar
         {
             AddPane(PikSettings.UserGroup,
                 $"{GetGroupVersionInfo(PikSettings.Versions)}",
-                (p,e)=>
+                (p, e) =>
                 {
                     p.ToolTipText = GetGroupVersionInfo(Update.GetVersions());
                     AcadHelper.Doc.SendStringToExecute($"{nameof(Commands.PIK_CheckUpdates)} ", true, false, true);
@@ -82,17 +94,20 @@ namespace AcadLib.UI.StatusBar
         private static string GetGroupVersionInfo([NotNull] List<GroupInfo> groupInfos)
         {
             return $"{groupInfos.JoinToString(GetGroupInfo, "\n")}";
-            string GetGroupInfo (GroupInfo groupInfo)
+
+            string GetGroupInfo(GroupInfo groupInfo)
             {
                 var info = $"{groupInfo.GroupName}: вер. {groupInfo.VersionLocal}";
                 if (groupInfo.UpdateRequired)
                 {
                     info += $", на сервере {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
                 }
+
                 if (CheckUpdates.NeedNotify(groupInfo.UpdateDescription, out var descResult))
                 {
                     info += $" '{descResult}'";
                 }
+
                 return info;
             }
         }

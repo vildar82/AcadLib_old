@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.IO;
-using AutoCAD_PIK_Manager.Settings;
-
-namespace AcadLib.IO
+﻿namespace AcadLib.IO
 {
+    using System;
+    using System.IO;
+    using AutoCAD_PIK_Manager.Settings;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class Path
     {
@@ -22,6 +22,7 @@ namespace AcadLib.IO
                 Console.WriteLine($@"Copying {target.FullName}\{fi.Name}");
                 fi.CopyTo(System.IO.Path.Combine(target.FullName, fi.Name), true);
             }
+
             foreach (var diSourceSubDir in source.GetDirectories())
             {
                 var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
@@ -80,6 +81,7 @@ namespace AcadLib.IO
                     Logger.Log.Error(ex, $"GetSharedpluginFolder - pluginName={pluginName}");
                 }
             }
+
             return pluginFolder;
         }
 
@@ -98,6 +100,7 @@ namespace AcadLib.IO
                     Logger.Log.Error(ex, $"GetSharedCommonFolder - pluginName={pluginName}");
                 }
             }
+
             return pluginFolder;
         }
 
@@ -120,13 +123,15 @@ namespace AcadLib.IO
         [NotNull]
         public static string GetUserPikFolder()
         {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create);
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData,
+                Environment.SpecialFolderOption.Create);
             var pikFolder = AutoCAD_PIK_Manager.CompanyInfo.NameEngShort;
             var pikAppDataFolder = System.IO.Path.Combine(appData, pikFolder, "AutoCAD");
             if (!Directory.Exists(pikAppDataFolder))
             {
                 Directory.CreateDirectory(pikAppDataFolder);
             }
+
             return pikAppDataFolder;
         }
 

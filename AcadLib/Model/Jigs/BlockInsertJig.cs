@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using JetBrains.Annotations;
-
-namespace AcadLib.Jigs
+﻿namespace AcadLib.Jigs
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     public class BlockInsertJig : EntityJig
     {
         private Point3d mCenterPt, mActualPoint;
@@ -34,6 +34,7 @@ namespace AcadLib.Jigs
             {
                 return SamplerStatus.NoChange;
             }
+
             mActualPoint = dres.Value;
             return SamplerStatus.OK;
         }
@@ -49,6 +50,7 @@ namespace AcadLib.Jigs
             {
                 return false;
             }
+
             return true;
         }
     }

@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Automates saving/changing/restoring system variables
     /// </summary>
@@ -14,7 +14,7 @@ namespace AcadLib
         private object oldval;
 
         public ManagedSystemVariable([NotNull] string name, object value)
-           : this(name)
+            : this(name)
         {
             Application.SetSystemVariable(name, value);
         }

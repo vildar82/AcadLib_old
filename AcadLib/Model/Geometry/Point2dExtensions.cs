@@ -1,13 +1,13 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Provides extension methods for the Point2d type.
     /// </summary>
@@ -17,8 +17,8 @@ namespace Autodesk.AutoCAD.Geometry
         public static Point2d Center(this Point2d pt, Point2d other)
         {
             return new Point2d(
-                    pt.X + (other.X - pt.X) * 0.5,
-                    pt.Y + (other.Y - pt.Y) * 0.5);
+                pt.X + (other.X - pt.X) * 0.5,
+                pt.Y + (other.Y - pt.Y) * 0.5);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Autodesk.AutoCAD.Geometry
         [NotNull]
         public static List<Point2d> DistinctPoints([NotNull] this List<Point2d> points)
         {
-            //  Отсеивание одинаковых точек
+            // Отсеивание одинаковых точек
             return points.Distinct(new AcadLib.Comparers.Point2dEqualityComparer()).ToList();
         }
 

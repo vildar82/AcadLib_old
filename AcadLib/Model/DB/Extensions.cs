@@ -1,13 +1,13 @@
-﻿using System;
-using AcadLib;
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Autodesk.AutoCAD.DatabaseServices
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AcadLib;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class DatabaseExtensions
     {
@@ -17,6 +17,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             return id.GetObject<T>(OpenMode.ForRead);
         }
+
         [CanBeNull]
         public static T GetObject<T>(this ObjectId id, [NotNull] Transaction t) where T : DBObject
         {
@@ -28,6 +29,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             return id.GetObjectT<T>(OpenMode.ForRead);
         }
+
         [NotNull]
         public static T GetObjectT<T>(this ObjectId id, [NotNull] Transaction t) where T : DBObject
         {
@@ -38,27 +40,33 @@ namespace Autodesk.AutoCAD.DatabaseServices
         [CanBeNull]
         public static T GetObject<T>(this ObjectId id, OpenMode mode) where T : DBObject
         {
-            if (!id.IsValidEx()) return null;
+            if (!id.IsValidEx())
+                return null;
             return id.GetObject(mode, false, true) as T;
         }
+
         [CanBeNull]
         public static T GetObject<T>(this ObjectId id, OpenMode mode, [NotNull] Transaction t) where T : DBObject
         {
-            if (!id.IsValidEx()) return null;
+            if (!id.IsValidEx())
+                return null;
             return t.GetObject(id, mode, false, true) as T;
         }
 
         [NotNull]
         public static T GetObjectT<T>(this ObjectId id, OpenMode mode) where T : DBObject
         {
-            if (!id.IsValidEx()) throw new InvalidOperationException();
+            if (!id.IsValidEx())
+                throw new InvalidOperationException();
             return (T)id.GetObject(mode, false, true);
         }
+
         [NotNull]
         public static T GetObjectT<T>(this ObjectId id, OpenMode mode, [NotNull] Transaction t) where T : DBObject
         {
-            if (!id.IsValidEx()) throw new InvalidOperationException();
-            return (T) t.GetObject(id, mode, false, true);
+            if (!id.IsValidEx())
+                throw new InvalidOperationException();
+            return (T)t.GetObject(id, mode, false, true);
         }
 
         // Opens a collection of DBObject in ForRead mode (kaefer @ TheSwamp)
@@ -67,6 +75,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         {
             return ids.GetObjects<T>(OpenMode.ForRead);
         }
+
         [NotNull]
         public static IEnumerable<T> GetObjects<T>([NotNull] this IEnumerable ids, Transaction t) where T : DBObject
         {
@@ -82,8 +91,10 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 .Select(id => id.GetObject<T>(mode))
                 .Where(res => res != null);
         }
+
         [NotNull]
-        public static IEnumerable<T> GetObjects<T>([NotNull] this IEnumerable ids, OpenMode mode, Transaction t) where T : DBObject
+        public static IEnumerable<T> GetObjects<T>([NotNull] this IEnumerable ids, OpenMode mode, Transaction t)
+            where T : DBObject
         {
             return ids
                 .Cast<ObjectId>()

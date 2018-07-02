@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System.Text.RegularExpressions;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace System
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using Text.RegularExpressions;
+
     [PublicAPI]
     [Obsolete]
     public static class StringExt
@@ -17,7 +17,7 @@ namespace System
         [Obsolete("Используй NetLib")]
         public static string ClearString([NotNull] this string input)
         {
-            //return Regex.Replace(input, @"\r\n?|\n", "");
+            // return Regex.Replace(input, @"\r\n?|\n", "");
             return NetLib.StringExt.ClearString(input);
         }
 
@@ -47,7 +47,7 @@ namespace System
         [NotNull]
         public static string GetValidDbSymbolName([NotNull] this string name)
         {
-            //string testString = "<>/?\";:*|,='";
+            // string testString = "<>/?\";:*|,='";
             var pattern = new Regex("[<>/?\";:*|,=']");
             var res = pattern.Replace(name, ".");
             res = res.Replace('\\', '.');

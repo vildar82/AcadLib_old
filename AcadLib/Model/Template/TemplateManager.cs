@@ -1,17 +1,17 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2018 02 13 15:03
 
-using System;
-using System.IO;
-using System.Linq;
-using AcadLib.Layers;
-using AutoCAD_PIK_Manager.Settings;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using NetLib;
-
 namespace AcadLib.Template
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using AutoCAD_PIK_Manager.Settings;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using Layers;
+    using NetLib;
+
     /// <summary>
     ///     Управление шаблонами
     /// </summary>
@@ -26,7 +26,7 @@ namespace AcadLib.Template
         [NotNull]
         public static TemplateData LoadFromDb([NotNull] Database db)
         {
-            return new TemplateData {Layers = db.Layers().ToDictionary(k => k.Name)};
+            return new TemplateData { Layers = db.Layers().ToDictionary(k => k.Name) };
         }
 
         [NotNull]
@@ -37,6 +37,7 @@ namespace AcadLib.Template
                 Logger.Log.Warn($"Не найден файл шаблона json - {file}");
                 return new TemplateData();
             }
+
             try
             {
                 var templData = file.Deserialize<TemplateData>();

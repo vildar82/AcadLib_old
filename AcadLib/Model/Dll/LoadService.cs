@@ -1,14 +1,14 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using NetLib;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+    using NetLib;
+
     /// <summary>
     /// Загрузка вспомогательных сборок
     /// </summary>
@@ -59,7 +59,8 @@ namespace AcadLib
                     {
                         var dllWin = groupDllVer.FirstOrDefault(f => f.Ver == ver) ??
                                      groupDllVer.OrderByDescending(o => o.Ver).FirstOrDefault(d => d.Ver <= ver);
-                        if (dllWin == null) continue; // Могут быть только специфичные версии, не для текущей - типа Acad_SheetSet_v2018 (нет для 2015)
+                        if (dllWin == null)
+                            continue; // Могут быть только специфичные версии, не для текущей - типа Acad_SheetSet_v2018 (нет для 2015)
                         dllsToLoad.Add(dllWin);
                     }
                     else
@@ -68,7 +69,9 @@ namespace AcadLib
                     }
                 }
             }
-            Logger.Log.Info($"GetDllsForCurVerAcad dllsToLoad={dllsToLoad.JoinToString(s=> Path.GetFileNameWithoutExtension(s.Dll))}");
+
+            Logger.Log.Info(
+                $"GetDllsForCurVerAcad dllsToLoad={dllsToLoad.JoinToString(s => Path.GetFileNameWithoutExtension(s.Dll))}");
             return dllsToLoad;
         }
 
@@ -78,7 +81,8 @@ namespace AcadLib
         public static void LoadEntityFramework()
         {
             LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.dll"));
-            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Dll\EntityFramework.SqlServer.dll"));
+            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+                @"Dll\EntityFramework.SqlServer.dll"));
         }
 
         public static void LoadFrom([NotNull] string dll)
@@ -97,15 +101,25 @@ namespace AcadLib
         /// <summary>
         /// Загрузка сборок из папки.
         /// </summary>
-        public static void LoadFromFolder(string dir, SearchOption mode)
+        public static void LoadFromFolder(string dir, int deepLevel = 0)
         {
             try
             {
-                if (!Directory.Exists(dir)) return;
-                var dlls = GetDllsForCurVerAcad(Directory.GetFiles(dir, "*.dll", mode).ToList());
+                if (!Directory.Exists(dir))
+                    return;
+                var dlls = GetDllsForCurVerAcad(Directory.GetFiles(dir, "*.dll", SearchOption.TopDirectoryOnly).ToList());
                 foreach (var dll in dlls)
                 {
                     LoadFromTry(dll.Dll);
+                }
+
+                // Углубление в подпапки
+                var subDeepLevel = deepLevel - 1;
+                if (subDeepLevel < 0)
+                    return;
+                foreach (var subDir in Directory.EnumerateDirectories(dir))
+                {
+                    LoadFromFolder(subDir, subDeepLevel);
                 }
             }
             catch (Exception ex)
@@ -128,7 +142,8 @@ namespace AcadLib
 
         public static void LoadMDM()
         {
-            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder, @"Script\NET\PIK_DB_Projects.dll"));
+            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
+                @"Script\NET\PIK_DB_Projects.dll"));
         }
 
         /// <summary>

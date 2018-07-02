@@ -1,14 +1,14 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Autodesk.AutoCAD.Geometry;
-
-namespace AcadLib.Editors
+﻿namespace AcadLib.Editors
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using JetBrains.Annotations;
+
     public static class EditorExt
     {
         public static void AcadLoadInfo([NotNull] this Assembly assm)
@@ -24,8 +24,10 @@ namespace AcadLib.Editors
             }
         }
 
-        public static void AcadLoadError([NotNull] this Assembly assm, 
-            [CanBeNull] Exception ex = null, [CanBeNull] string err = null)
+        public static void AcadLoadError(
+            [NotNull] this Assembly assm,
+            [CanBeNull] Exception ex = null,
+            [CanBeNull] string err = null)
         {
             try
             {
@@ -57,10 +59,12 @@ namespace AcadLib.Editors
                         "Нет объектов для выделения.".WriteToCommandLine();
                         return;
                     }
+
                     var ext = new Extents3d();
                     ids.Select(s => s.GetObject(OpenMode.ForRead)).Iterate(o =>
                     {
-                        if (o.Bounds.HasValue) ext.AddExtents(o.Bounds.Value);
+                        if (o.Bounds.HasValue)
+                            ext.AddExtents(o.Bounds.Value);
                     });
                     ed.Zoom(ext);
                     ed.SetImpliedSelection(ids.ToArray());
@@ -83,6 +87,7 @@ namespace AcadLib.Editors
                 {
                     idsToSel.AddRange(selRes.Value.GetObjectIds());
                 }
+
                 ed.SetImpliedSelection(idsToSel.ToArray());
             }
             catch
@@ -107,6 +112,7 @@ namespace AcadLib.Editors
                 {
                     return selRes.Value.GetObjectIds().ToList();
                 }
+
                 throw new OperationCanceledException();
             }
         }
@@ -121,6 +127,7 @@ namespace AcadLib.Editors
                 {
                     return selRes.Value.GetObjectIds().ToList();
                 }
+
                 throw new OperationCanceledException();
             }
         }

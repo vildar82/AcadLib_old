@@ -1,16 +1,16 @@
-﻿using System;
-using AcadLib.Blocks;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using MicroMvvm;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows;
-using AcadLib.Layers;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Windows;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Blocks;
+    using JetBrains.Annotations;
+    using Layers;
+    using MicroMvvm;
+
     /// <summary>
     /// Кнопка для вставки одного блока
     /// </summary>
@@ -20,12 +20,18 @@ namespace AcadLib.PaletteCommands
         private readonly bool explode;
         private readonly string file;
         private readonly List<Property> props;
-        public LayerInfo Layer { get; set; }
 
-        public PaletteInsertBlock(string blName, string file, string name, Bitmap image,
-            string description, string group = "", [CanBeNull] List<Property> props = null, bool isTest = false,
+        public PaletteInsertBlock(
+            string blName,
+            string file,
+            string name,
+            Bitmap image,
+            string description,
+            string group = "",
+            [CanBeNull] List<Property> props = null,
+            bool isTest = false,
             bool explode = false)
-            : base(name, image, "", description, group, isTest)
+            : base(name, image, string.Empty, description, group, isTest)
         {
             this.blName = blName;
             this.file = file;
@@ -34,6 +40,8 @@ namespace AcadLib.PaletteCommands
             CreateContexMenu();
             commandStart.CommandName = $"Вставка блока {blName}";
         }
+
+        public LayerInfo Layer { get; set; }
 
         public override void Execute()
         {
@@ -46,13 +54,15 @@ namespace AcadLib.PaletteCommands
                     using (AcadHelper.Doc.LockDocument())
                     {
 #pragma warning disable 618
-                        using (var blRef = (BlockReference) blRefId.Open(OpenMode.ForWrite, false, true))
+                        using (var blRef = (BlockReference)blRefId.Open(OpenMode.ForWrite, false, true))
 #pragma warning restore 618
                         {
-                            if (blRef != null) blRef.ExplodeToOwnerSpace();
+                            if (blRef != null)
+                                blRef.ExplodeToOwnerSpace();
                         }
                     }
                 }
+
                 Statistic.PluginStatisticsHelper.PluginStart(commandStart);
             }
             catch (Exception e)
@@ -101,6 +111,7 @@ namespace AcadLib.PaletteCommands
                 MessageBox.Show($"В текущем чертеже нет блока {blName}.");
                 return;
             }
+
             CopyBlock(DuplicateRecordCloning.Replace);
         }
     }

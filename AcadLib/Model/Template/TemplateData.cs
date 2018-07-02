@@ -1,18 +1,20 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2018 02 12 14:01
 
-using AcadLib.Layers;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-
 namespace AcadLib.Template
 {
+    using System.Collections.Generic;
+    using JetBrains.Annotations;
+    using Layers;
+
     [PublicAPI]
     public class TemplateData
     {
-        public Dictionary<string, LayerInfo> Layers { get; set; } = new Dictionary<string, LayerInfo>();
-        public string Name { get; set; }
         private LayerInfo zero = new LayerInfo("0");
+
+        public Dictionary<string, LayerInfo> Layers { get; set; } = new Dictionary<string, LayerInfo>();
+
+        public string Name { get; set; }
 
         [CanBeNull]
         public LayerInfo GetLayer([NotNull] string layer)
@@ -22,8 +24,9 @@ namespace AcadLib.Template
                 // Нет слоя в шалоне - лог и создать слой
                 Logger.Log.Error($"Нет слоя '{layer}' в шаблоне '{Name}'");
                 li = new LayerInfo(layer);
-                Layers.Add(layer,li);
+                Layers.Add(layer, li);
             }
+
             return li;
         }
     }

@@ -1,10 +1,10 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-using System;
-using System.IO;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using System.IO;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public static class LineTypeExt
     {
@@ -34,14 +34,17 @@ namespace AcadLib
         /// <param name="db"></param>
         /// <param name="lineTypeName">тип линии</param>
         /// <param name="fileName">Имя файла</param>
-        public static ObjectId LoadLineTypePIK([NotNull] this Database db,
-            string lineTypeName, string fileName = "GOST 2.303-68.lin")
+        public static ObjectId LoadLineTypePIK(
+            [NotNull] this Database db,
+            string lineTypeName,
+            string fileName = "GOST 2.303-68.lin")
         {
             var id = db.GetLineTypeId(lineTypeName);
-            if (!id.IsNull) return id;
+            if (!id.IsNull)
+                return id;
 
             var file = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-                        "Support\\" + fileName);
+                "Support\\" + fileName);
             if (File.Exists(file))
             {
                 try
@@ -58,6 +61,7 @@ namespace AcadLib
             {
                 Logger.Log.Error($"Не найден файл типов линий '{file}'");
             }
+
             return db.Celtype;
         }
     }

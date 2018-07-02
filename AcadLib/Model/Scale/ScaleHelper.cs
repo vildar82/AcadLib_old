@@ -1,23 +1,24 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
-
-namespace AcadLib.Scale
+﻿namespace AcadLib.Scale
 {
+    using System;
+    using Autodesk.AutoCAD.DatabaseServices;
+
     public static class ScaleHelper
     {
         /// <summary>
         /// Текущий масштаб аннотаций.
-        /// </summary>        
+        /// </summary>
         public static double GetCurrentAnnoScale(Database db)
         {
             try
             {
                 return 1 / db.Cannoscale.Scale;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log.Error(ex, "GetCurrentAnnoScale");
             }
+
             return 1;
         }
     }

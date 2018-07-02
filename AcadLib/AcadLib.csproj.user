@@ -9,6 +9,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ReferencePath>C:\dev\ObjectARX\ObjectARX2015\</ReferencePath>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
 </Project>

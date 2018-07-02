@@ -18,9 +18,11 @@ namespace TestAcadlib.Geometry.Polylines
             var ed = doc.Editor;
 
             var selPl1 = ed.GetEntity("Pl1");
-            if (selPl1.Status != PromptStatus.OK) return;
+            if (selPl1.Status != PromptStatus.OK)
+                return;
             var selPl2 = ed.GetEntity("Pl2");
-            if (selPl2.Status != PromptStatus.OK) return;
+            if (selPl2.Status != PromptStatus.OK)
+                return;
 
             using (var t = db.TransactionManager.StartTransaction())
             {

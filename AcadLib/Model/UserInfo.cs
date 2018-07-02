@@ -1,21 +1,15 @@
-﻿using MongoDblib.UsersData.Data;
-using System;
-using System.Collections.Generic;
-using AcadLib.IO;
-using JetBrains.Annotations;
-using NetLib;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using IO;
+    using JetBrains.Annotations;
+    using MongoDblib.UsersData.Data;
+    using NetLib;
+
     [PublicAPI]
     public static class UserInfo
     {
-        public static string FioAD { get; set; }
-
-        public static UserData UserData { get; set; }
-
-        public static List<string> UserGroupsAd { get; set; }
-
         static UserInfo()
         {
             try
@@ -25,6 +19,7 @@ namespace AcadLib
                     UserGroupsAd = adUtils.GetCurrentUserGroups(out var fioAd);
                     FioAD = fioAd;
                 }
+
                 UserData = new MongoDblib.UsersData.DbUserData().GetCurrentUser();
                 SaveBackup();
             }
@@ -38,8 +33,20 @@ namespace AcadLib
                 {
                     //
                 }
+
                 Logger.Log.Error(ex, "adUtils");
             }
+        }
+
+        public static string FioAD { get; set; }
+
+        public static UserData UserData { get; set; }
+
+        public static List<string> UserGroupsAd { get; set; }
+
+        public static void ShowUserProfileRegister()
+        {
+            MongoDblib.UsersData.UserDataRegUI.ShowUserProfileRegister(FioAD, string.Empty, "AutoCAD");
         }
 
         private static void SaveBackup()
@@ -82,17 +89,14 @@ namespace AcadLib
         {
             return Path.GetUserPluginFile("UserInfo", "UserInfo");
         }
-
-        public static void ShowUserProfileRegister()
-        {
-            MongoDblib.UsersData.UserDataRegUI.ShowUserProfileRegister(FioAD, "", "AutoCAD");
-        }
     }
 
     public class UserInfoData
     {
         public string FioAD { get; set; }
+
         public UserData UserData { get; set; }
+
         public List<string> UserGroupsAd { get; set; }
     }
 }

@@ -1,15 +1,15 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.PlottingServices;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Gile.Publish
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.PlottingServices;
+    using JetBrains.Annotations;
+
     // Class to plot a multi-sheet DWF file
     [PublicAPI]
     public class MultiSheetsDwf : PlotToFileConfig
@@ -35,6 +35,7 @@ namespace Gile.Publish
     {
         private const string LOG = "publish.log";
         private readonly IEnumerable<Layout> _layouts;
+
         // Private fields
         private readonly string dsdFile;
 
@@ -55,7 +56,8 @@ namespace Gile.Publish
             _layouts = layouts;
             this.plotType = plotType;
             var ext = plotType == "0" || plotType == "1" ? "dwf" : "pdf";
-            this.outputFile = Path.Combine(outputDir ?? throw new InvalidOperationException(), Path.ChangeExtension(Path.GetFileName(outputFile), ext));
+            this.outputFile = Path.Combine(outputDir ?? throw new InvalidOperationException(),
+                Path.ChangeExtension(Path.GetFileName(outputFile), ext));
         }
 
         // Plot the layouts
@@ -105,6 +107,7 @@ namespace Gile.Publish
                 };
                 entries.Add(dsdEntry);
             }
+
             return entries;
         }
 
@@ -121,7 +124,8 @@ namespace Gile.Publish
                     while (!reader.EndOfStream)
                     {
                         var str = reader.ReadLine();
-                        if (str == null) continue;
+                        if (str == null)
+                            continue;
                         string newStr;
                         if (str.Contains("Has3DDWF"))
                         {
@@ -155,6 +159,7 @@ namespace Gile.Publish
                         {
                             newStr = str;
                         }
+
                         writer.WriteLine(newStr);
                     }
                 }
@@ -163,6 +168,7 @@ namespace Gile.Publish
             {
                 // ignored
             }
+
             File.Delete(tmpFile);
         }
 
@@ -172,12 +178,14 @@ namespace Gile.Publish
             using (var dsd = new DsdData())
             using (var dsdEntries = CreateDsdEntryCollection(_layouts))
             {
-                if (dsdEntries.Count <= 0) return false;
+                if (dsdEntries.Count <= 0)
+                    return false;
 
                 if (!Directory.Exists(outputDir))
                 {
                     Directory.CreateDirectory(outputDir);
                 }
+
                 sheetNum = dsdEntries.Count;
                 dsd.SetDsdEntryCollection(dsdEntries);
                 dsd.SetUnrecognizedData("PwdProtectPublishedDWF", "FALSE");

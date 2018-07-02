@@ -1,13 +1,13 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2018 02 14 9:24
 
-using System;
-using System.Linq;
-using AcadLib.Errors;
-using Autodesk.AutoCAD.DatabaseServices;
-
 namespace AcadLib.Layers.LayerState
 {
+    using System;
+    using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Errors;
+
     public static class ImportLayerState
     {
         /// <summary>
@@ -23,23 +23,28 @@ namespace AcadLib.Layers.LayerState
                 {
                     dbSrc.ReadDwgFile(sourceFile, FileOpenMode.OpenForReadAndAllShare, false, string.Empty);
                     dbSrc.CloseInput(true);
-                    var names = dbSrc.LayerStateManager.GetLayerStateNames(false, false).Cast<string>().ToList();
-                    foreach (var name in names)
-                    {
-                        try
-                        {
-                            dbDest.LayerStateManager.ImportLayerStateFromDb(name, dbSrc);
-                        }
-                        catch
-                        {
-                            // Если конфигурация уже есть
-                        }
-                    }
+                    ImportLayerStates(dbSrc, dbDest);
                 }
             }
             catch (Exception ex)
             {
                 Inspector.AddError($"Ошибка импорта концигурации слоев из файла '{sourceFile}' - {ex.Message}");
+            }
+        }
+
+        internal static void ImportLayerStates(Database dbSrc, Database dbDest)
+        {
+            var names = dbSrc.LayerStateManager.GetLayerStateNames(false, false).Cast<string>().ToList();
+            foreach (var name in names)
+            {
+                try
+                {
+                    dbDest.LayerStateManager.ImportLayerStateFromDb(name, dbSrc);
+                }
+                catch
+                {
+                    // Если конфигурация уже есть
+                }
             }
         }
     }

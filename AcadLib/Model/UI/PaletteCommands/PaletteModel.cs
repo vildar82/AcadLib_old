@@ -1,20 +1,20 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2016 04 03 16:09
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Windows.Controls;
-using System.Windows.Media;
-using AcadLib.Properties;
-using AcadLib.UI.PaletteCommands.UI;
-using JetBrains.Annotations;
-using NetLib;
-using NetLib.WPF;
-using ReactiveUI;
-
 // ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Windows.Controls;
+    using System.Windows.Media;
+    using AcadLib.UI.PaletteCommands.UI;
+    using JetBrains.Annotations;
+    using NetLib;
+    using NetLib.WPF;
+    using Properties;
+    using ReactiveUI;
+
     public class PaletteModel : BaseModel
     {
         public PaletteModel([NotNull] IEnumerable<IPaletteCommand> commands, string version)
@@ -26,6 +26,7 @@ namespace AcadLib.PaletteCommands
                 if (PaletteSetCommands.IsAccess(item.Access))
                     PaletteCommands.Add(item);
             }
+
             ChangeContent(Settings.Default.PaletteStyle);
         }
 
@@ -61,19 +62,21 @@ namespace AcadLib.PaletteCommands
             switch (listStyle)
             {
                 case 1 when !(Content is ImagesAndText):
+
                     // Значки и текст
                     this.RaisePropertyChanged(nameof(ButtonWidth));
                     this.RaisePropertyChanged(nameof(FontMaxHeight));
-                    Content = new ImagesAndText {DataContext = this};
+                    Content = new ImagesAndText { DataContext = this };
                     return;
                 case 2 when !(Content is ListCommands):
+
                     // Список
-                    Content = new ListCommands {DataContext = this};
+                    Content = new ListCommands { DataContext = this };
                     return;
                 default:
                     // Только значки
                     if (!(Content is OnlyImages))
-                        Content = new OnlyImages {DataContext = this};
+                        Content = new OnlyImages { DataContext = this };
                     break;
             }
         }

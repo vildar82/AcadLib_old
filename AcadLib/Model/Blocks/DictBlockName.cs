@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
+    using System;
+    using System.Collections.Generic;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     [PublicAPI]
     public class DictBlockName : IDisposable
     {
@@ -20,6 +20,7 @@ namespace AcadLib.Blocks
 #pragma warning restore 618
                 dict[blRef.DynamicBlockTableRecord] = blName;
             }
+
             return blName;
         }
 

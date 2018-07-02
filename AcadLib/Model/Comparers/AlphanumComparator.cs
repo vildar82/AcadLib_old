@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-
-namespace AcadLib.Comparers
+﻿namespace AcadLib.Comparers
 {
+    using System;
+    using System.Collections.Generic;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Сортировка строк с числами.
     /// http://www.dotnetperls.com/alphanumeric-sorting
@@ -21,6 +21,7 @@ namespace AcadLib.Comparers
             {
                 return null2 ? 0 : -1;
             }
+
             if (null2)
             {
                 return 1;
@@ -107,6 +108,7 @@ namespace AcadLib.Comparers
                         return result;
                     }
                 }
+
                 return len1 - len2;
             }
             catch (Exception ex)

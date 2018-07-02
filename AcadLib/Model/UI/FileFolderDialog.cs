@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.IO;
-using System.Windows.Forms;
-
-namespace AcadLib.UI
+﻿namespace AcadLib.UI
 {
+    using System;
+    using System.IO;
+    using System.Windows.Forms;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Диалог выбора файлов с возможностью включания выбора папки IsFolderDialog=true.
     /// Если включить IsFolderDialog, то отключается проверка CheckFileExists и CheckPathExists и dialog.FileName = " ";
@@ -44,6 +44,7 @@ namespace AcadLib.UI
                 Dialog.CheckPathExists = false;
                 Dialog.ValidateNames = false;
             }
+
             return owner == null ? Dialog.ShowDialog() : Dialog.ShowDialog(owner);
         }
 

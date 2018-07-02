@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Windows.Forms;
-
-namespace AcadLib.UI.Properties
+﻿namespace AcadLib.UI.Properties
 {
+    using System;
+    using System.Windows.Forms;
+    using JetBrains.Annotations;
+
     public static class PropertiesService
     {
         public static bool? Show(object value, [CanBeNull] Func<object, object> reset = null)

@@ -1,8 +1,8 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using JetBrains.Annotations;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using Autodesk.AutoCAD.DatabaseServices;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Настройки для объекта на чертеже
     /// </summary>
@@ -31,24 +31,41 @@ namespace AcadLib
         }
 
         public ObjectId LayerId { get; set; }
+
         public string Layer { get; set; }
+
         public ObjectId LineTypeId { get; set; }
+
         public string LineType { get; set; }
+
         public double? LinetypeScale { get; set; }
+
         public LineWeight LineWeight
         {
             get => lineWeight;
-            set { lineWeight = value; isLineWeight = true; }
+            set
+            {
+                lineWeight = value;
+                isLineWeight = true;
+            }
         }
+
         public int ColorIndex
         {
             get => colorIndex;
-            set { colorIndex = value; isColorIndex = true; }
+            set
+            {
+                colorIndex = value;
+                isColorIndex = true;
+            }
         }
+
         public System.Drawing.Color Color { get; set; }
+
         public Autodesk.AutoCAD.Colors.Color AcadColor { get; set; }
+
         /// <summary>
-        /// Создавать или копировать из шаблона отсутствующие значения в чертеже. 
+        /// Создавать или копировать из шаблона отсутствующие значения в чертеже.
         /// </summary>
         public bool CheckCreateValues { get; set; }
 
@@ -59,19 +76,12 @@ namespace AcadLib
                 // ReSharper disable once UpgradeOpen
                 ent.UpgradeOpen();
             }
+
             SetLayer(ent);
             SetColor(ent);
             SetLineWeight(ent);
             SetLineType(ent);
             SetLinetypeScale(ent);
-        }
-
-        private void SetLinetypeScale(Entity ent)
-        {
-            if (LinetypeScale != null && LinetypeScale.Value > 0)
-            {
-                ent.LinetypeScale = LinetypeScale.Value;
-            }
         }
 
         public void SetLineType(Entity ent)
@@ -86,6 +96,7 @@ namespace AcadLib
                 {
                     ent.Database.LoadLineTypePIK(LineType);
                 }
+
                 ent.Linetype = LineType;
             }
         }
@@ -126,7 +137,16 @@ namespace AcadLib
                 {
                     Layers.LayerExt.CheckLayerState(Layer);
                 }
+
                 ent.Layer = Layer;
+            }
+        }
+
+        private void SetLinetypeScale(Entity ent)
+        {
+            if (LinetypeScale != null && LinetypeScale.Value > 0)
+            {
+                ent.LinetypeScale = LinetypeScale.Value;
             }
         }
     }
@@ -139,6 +159,7 @@ namespace AcadLib
         }
 
         [NotNull]
+
         // ReSharper disable once UnusedMember.Global
         public static EntityOptions GetEntityOptions([NotNull] this Entity ent)
         {

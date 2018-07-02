@@ -1,23 +1,18 @@
-﻿using AcadLib.PaletteCommands;
-using AcadLib.Properties;
-using NetLib.WPF;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Reactive.Linq;
-using System.Threading;
-using NetLib;
-
-namespace AcadLib.UI.PaletteCommands.UI
+﻿namespace AcadLib.UI.PaletteCommands.UI
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reactive.Linq;
+    using System.Threading;
+    using AcadLib.PaletteCommands;
+    using AcadLib.Properties;
+    using NetLib;
+    using NetLib.WPF;
+    using ReactiveUI;
+
     public class PaletteOptionsViewModel : BaseViewModel
     {
         private readonly List<PaletteModel> models;
-        [Reactive] public double FontSize { get; set; }
-        [Reactive] public double ImageSize { get; set; }
-        [Reactive] public bool IsImageAndText { get; set; }
-        [Reactive] public bool IsList { get; set; }
-        [Reactive] public bool IsOnlyImage { get; set; }
 
         public PaletteOptionsViewModel(List<PaletteModel> models)
         {
@@ -36,6 +31,21 @@ namespace AcadLib.UI.PaletteCommands.UI
             this.WhenAnyValue(v => v.IsList).Skip(1).Throttle(TimeSpan.FromMilliseconds(500))
                 .Where(w => w).ObserveOn(SynchronizationContext.Current).Subscribe(s => SetListStyle(2));
         }
+
+        [Reactive]
+        public double FontSize { get; set; }
+
+        [Reactive]
+        public double ImageSize { get; set; }
+
+        [Reactive]
+        public bool IsImageAndText { get; set; }
+
+        [Reactive]
+        public bool IsList { get; set; }
+
+        [Reactive]
+        public bool IsOnlyImage { get; set; }
 
         public override void OnClosing()
         {

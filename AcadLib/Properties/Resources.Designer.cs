@@ -203,6 +203,16 @@ namespace AcadLib.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        public static System.Drawing.Icon restoreFiles16 {
+            get {
+                object obj = ResourceManager.GetObject("restoreFiles16", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         public static System.Drawing.Icon select {
             get {
                 object obj = ResourceManager.GetObject("select", resourceCulture);

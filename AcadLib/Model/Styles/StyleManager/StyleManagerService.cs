@@ -1,7 +1,7 @@
-﻿using AcadLib.Styles.StyleManager.UI;
-
-namespace AcadLib.Styles.StyleManager
+﻿namespace AcadLib.Styles.StyleManager
 {
+    using UI;
+
     public static class StyleManagerService
     {
         public static void ManageStyles()

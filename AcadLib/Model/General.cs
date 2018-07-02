@@ -1,19 +1,18 @@
 ﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
 // 2016 05 12 8:56
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoCAD_PIK_Manager;
-using AutoCAD_PIK_Manager.Settings;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Runtime;
-using JetBrains.Annotations;
-using NetLib;
-using Exception = Autodesk.AutoCAD.Runtime.Exception;
-
 namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AutoCAD_PIK_Manager;
+    using AutoCAD_PIK_Manager.Settings;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Runtime;
+    using JetBrains.Annotations;
+    using NetLib;
+
     [PublicAPI]
     public static class General
     {
@@ -57,11 +56,6 @@ namespace AcadLib
             "karadzhayanra"
         };
 
-        /// <summary>
-        ///     BIM-manager - отдел поддержки пользователей
-        /// </summary>
-        public static bool IsBimUser { get; set; }
-
         static General()
         {
             try
@@ -86,19 +80,10 @@ namespace AcadLib
             }
         }
 
-        private static bool IsBimUserByUserData()
-        {
-            try
-            {
-                var isDeveloper = UserInfo.UserData.SubDivision?.EqualsIgnoreCase("ИРА") == true;
-                var isBIM = UserInfo.UserData.SubDivision?.EqualsIgnoreCase("BIM") == true;
-                return isBIM || isDeveloper;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        /// <summary>
+        ///     BIM-manager - отдел поддержки пользователей
+        /// </summary>
+        public static bool IsBimUser { get; set; }
 
         /// <summary>
         ///     Файл из папки пользовательских данных (AppData\PIK\Autocad\...)
@@ -116,6 +101,20 @@ namespace AcadLib
         {
             return Environment.UserName.Equals(PikSettings.PikFileSettings.LoginCADManager,
                 StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsBimUserByUserData()
+        {
+            try
+            {
+                var isDeveloper = UserInfo.UserData.SubDivision?.EqualsIgnoreCase("ИРА") == true;
+                var isBIM = UserInfo.UserData.SubDivision?.EqualsIgnoreCase("BIM") == true;
+                return isBIM || isDeveloper;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>

@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using NetLib.Comparers;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using JetBrains.Annotations;
+    using NetLib.Comparers;
+
     [PublicAPI]
     public static class MathExt
     {
@@ -15,6 +15,7 @@ namespace AcadLib
         public const double RatioDegreeToRadian = Math.PI / 180;
         public const double RatioRadianToDegree = 180 / Math.PI;
         public static DoubleEqualityComparer AngleComparer = new DoubleEqualityComparer();
+
         public static Random Rnd { get; } = new Random();
 
         /// <summary>
@@ -33,6 +34,7 @@ namespace AcadLib
             {
                 angle %= PI2;
             }
+
             return angle;
         }
 
@@ -44,6 +46,7 @@ namespace AcadLib
             {
                 return res.Value;
             }
+
             throw new Exception(res.Error);
         }
 
@@ -82,10 +85,12 @@ namespace AcadLib
                     seq = new IntSequence(n);
                 }
             }
+
             if (!seq.IsNull())
             {
                 SetSeq(ref res, ref seq);
             }
+
             return res;
         }
 
@@ -114,33 +119,42 @@ namespace AcadLib
                         mark += ints[i];
                         break;
                     }
-                    if (mark[mark.Length - 1] != '-') mark += ",";
+
+                    if (mark[mark.Length - 1] != '-')
+                        mark += ",";
                     mark += ints[i];
                     break;
                 }
+
                 if (i == 0 || isFirstEnter)
                 {
                     mark += ints[i].ToString();
                     isFirstEnter = false;
                     continue;
                 }
+
                 if (ints[i + 1] - ints[i] == 1)
                 {
-                    if (mark[mark.Length - 1] != '-') mark += "-";// "," + ints[i] + "-";
+                    if (mark[mark.Length - 1] != '-')
+                        mark += "-"; // "," + ints[i] + "-";
+
                     isWas = true;
                 }
                 else
                 {
-                    if (mark[mark.Length - 1] != '-') mark += ",";
+                    if (mark[mark.Length - 1] != '-')
+                        mark += ",";
                     if (!isWas) mark += ints[i] + ",";
                     else
                     {
                         isWas = false;
                         mark += ints[i] + ",";
                     }
+
                     isFirstEnter = true;
                 }
             }
+
             mark = mark.Replace(",,", ",");
             return mark;
         }
@@ -232,6 +246,7 @@ namespace AcadLib
             {
                 i = (i + 5) / 10 * 10;
             }
+
             return i;
         }
 
@@ -245,6 +260,7 @@ namespace AcadLib
             {
                 i = (i + 50) / 100 * 100;
             }
+
             return i;
         }
 
@@ -258,6 +274,7 @@ namespace AcadLib
             {
                 i = (i + 5) / 5 * 5;
             }
+
             return i;
         }
 
@@ -269,7 +286,7 @@ namespace AcadLib
         [Obsolete]
         public static double ToDegrees(this double radian)
         {
-            return radian % PI2 * RatioRadianToDegree;// 180.0 / Math.PI;
+            return radian % PI2 * RatioRadianToDegree; // 180.0 / Math.PI;
         }
 
         /// <summary>
@@ -285,7 +302,7 @@ namespace AcadLib
         [Obsolete]
         public static string ToHours(this int min)
         {
-            //return Math.Round(min * 0.01667, 1);
+            // return Math.Round(min * 0.01667, 1);
             return ToHours((double)min);
         }
 
@@ -293,7 +310,7 @@ namespace AcadLib
         [Obsolete]
         public static string ToHours(this double min)
         {
-            //return Math.Round(min *0.01667, 1);
+            // return Math.Round(min *0.01667, 1);
             var span = TimeSpan.FromMinutes(min);
             var label = $"{span.Hours}ч.{span.Minutes}м.";
             return label;
@@ -313,7 +330,7 @@ namespace AcadLib
         [Obsolete]
         public static double ToRadians(this double degrees)
         {
-            return degrees * RatioDegreeToRadian;// (Math.PI / 180.0);
+            return degrees * RatioDegreeToRadian; // (Math.PI / 180.0);
         }
 
         [Obsolete]
@@ -350,6 +367,7 @@ namespace AcadLib
                     end = next;
                     return true;
                 }
+
                 return false;
             }
 
@@ -370,6 +388,7 @@ namespace AcadLib
                 {
                     res = start + "-" + end;
                 }
+
                 return res;
             }
 

@@ -1,8 +1,8 @@
-﻿using JetBrains.Annotations;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-
-namespace AcadLib.XData
+﻿namespace AcadLib.XData
 {
+    using Autodesk.AutoCAD.ApplicationServices.Core;
+    using JetBrains.Annotations;
+
     public static class DboDataSaveExt
     {
         public static void SaveDboDict([NotNull] this IDboDataSave dboSave)

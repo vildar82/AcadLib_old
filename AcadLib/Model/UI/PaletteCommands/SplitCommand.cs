@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reactive.Linq;
-using System.Threading;
-using JetBrains.Annotations;
-using NetLib;
-using ReactiveUI;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace AcadLib.PaletteCommands
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reactive.Linq;
+    using System.Threading;
+    using JetBrains.Annotations;
+    using NetLib;
+    using ReactiveUI;
+
     public class SplitCommand : PaletteCommand
     {
-        public List<PaletteCommand> Commands { get; set; }
-
-        [Reactive] public PaletteCommand SelectedCommand { get; set; }
-
-        public double ImageSize { get; set; }
-
         public SplitCommand([NotNull] List<PaletteCommand> commands)
         {
             Commands = commands;
@@ -34,6 +28,13 @@ namespace AcadLib.PaletteCommands
             ImageSize = Properties.Settings.Default.PaletteImageSize * 2;
             Properties.Settings.Default.PropertyChanged += Default_PropertyChanged;
         }
+
+        public List<PaletteCommand> Commands { get; set; }
+
+        [Reactive]
+        public PaletteCommand SelectedCommand { get; set; }
+
+        public double ImageSize { get; set; }
 
         private void Default_PropertyChanged(object sender, [NotNull] System.ComponentModel.PropertyChangedEventArgs e)
         {

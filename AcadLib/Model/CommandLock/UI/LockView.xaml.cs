@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Diagnostics;
-using System.Windows.Documents;
-
-namespace AcadLib.CommandLock.UI
+﻿namespace AcadLib.CommandLock.UI
 {
+    using System;
+    using System.Diagnostics;
+    using System.Windows.Documents;
+    using JetBrains.Annotations;
+
     /// <summary>
     /// Interaction logic for LockView.xaml
     /// </summary>
@@ -52,6 +52,7 @@ namespace AcadLib.CommandLock.UI
                     tb.Inlines.Add(message);
                     return;
                 }
+
                 var msgBeforeDot = message.Substring(0, indexDot);
                 tb.Inlines.Add(msgBeforeDot);
                 var msgAfterDot = message.Substring(indexDot + 1);
@@ -61,6 +62,7 @@ namespace AcadLib.CommandLock.UI
                     Addlink(msgAfterDot);
                     return;
                 }
+
                 var linkText = msgAfterDot.Substring(0, indexSpace);
                 Addlink(linkText);
                 message = msgAfterDot.Substring(indexSpace + 1);
