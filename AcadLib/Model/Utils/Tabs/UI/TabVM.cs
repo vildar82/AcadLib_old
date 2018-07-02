@@ -15,6 +15,13 @@
             Restore = restore;
             try
             {
+                if (!NetLib.IO.Path.FileExists(drawing))
+                {
+                    Name += " (файл не найден)";
+                    Err = "Файл не найден";
+                    return;
+                }
+
                 var fi = new FileInfo(drawing);
                 DateLastWrite = System.IO.File.GetLastWriteTime(drawing);
                 Size = fi.Length;
@@ -22,7 +29,6 @@
             }
             catch (Exception ex)
             {
-                Name += " (файл не найден)";
                 Err = ex.Message;
             }
         }

@@ -19,60 +19,60 @@
     <Window.Resources>
         <!--<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                --><!--MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive!--><!--
+                -->
+        <!--MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive!-->
+        <!--
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
-                --><!--Accent and AppTheme setting--><!--
+                -->
+        <!--Accent and AppTheme setting-->
+        <!--
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>-->
-            <DataTemplate x:Key="Restore" DataType="{x:Type local:TabVM}">
-                <CheckBox IsChecked="{Binding Restore, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" />
-            </DataTemplate>
-            <DataTemplate x:Key="Name" DataType="{x:Type local:TabVM}">
-                <TextBlock Text="{Binding Name}">
-                    <TextBlock.InputBindings>
-                        <MouseBinding Gesture="LeftDoubleClick"
-                                  Command="{Binding DataContext.OpenFile, ElementName=Win}"
-                                  CommandParameter="{Binding}" />
-                    </TextBlock.InputBindings>
-                </TextBlock>
-            </DataTemplate>
-            <DataTemplate x:Key="Date" DataType="{x:Type local:TabVM}">
-                <TextBlock Text="{Binding DateLastWrite, StringFormat=dd.MM.yy HH:mm}" />
-            </DataTemplate>
-            <DataTemplate x:Key="Size" DataType="{x:Type local:TabVM}">
-                <TextBlock Text="{Binding Size, Converter={converters:Bytes}}" />
-            </DataTemplate>
-            <Style x:Key="DgHeader" TargetType="{x:Type DataGridColumnHeader}"
+        <DataTemplate x:Key="Restore" DataType="{x:Type local:TabVM}">
+            <CheckBox IsChecked="{Binding Restore, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" />
+        </DataTemplate>
+        <DataTemplate x:Key="Name" DataType="{x:Type local:TabVM}">
+            <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+        </DataTemplate>
+        <DataTemplate x:Key="Date" DataType="{x:Type local:TabVM}">
+            <TextBlock Text="{Binding DateLastWrite, StringFormat=dd.MM.yy HH:mm}" />
+        </DataTemplate>
+        <DataTemplate x:Key="Size" DataType="{x:Type local:TabVM}">
+            <TextBlock Text="{Binding Size, Converter={converters:Bytes}}" />
+        </DataTemplate>
+        <Style x:Key="DgHeader" TargetType="{x:Type DataGridColumnHeader}"
                BasedOn="{StaticResource MetroDataGridColumnHeader}">
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="HorizontalContentAlignment" Value="Center" />
-                <Setter Property="Margin" Value="-1,0,-1,0" />
-            </Style>
-            <Style x:Key="DgRow" TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
-                <Setter Property="Background" Value="{Binding Err, Converter={local:ErrConverter}}" />
-                <Setter Property="ToolTipService.ShowDuration" Value="10000" />
-                <Setter Property="ToolTipService.InitialShowDelay" Value="800" />
-                <Setter Property="ToolTipService.BetweenShowDelay" Value="800" />
-                <Setter Property="ToolTip">
-                    <Setter.Value>
-                        <StackPanel>
-                            <TextBlock Text="{Binding File}" />
-                            <TextBlock Text="{Binding Err}"
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Margin" Value="-1,0,-1,0" />
+        </Style>
+        <Style x:Key="DgRow" TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+            <Setter Property="Background" Value="{Binding Err, Converter={local:ErrConverter}}" />
+            <Setter Property="ToolTipService.ShowDuration" Value="10000" />
+            <Setter Property="ToolTipService.InitialShowDelay" Value="800" />
+            <Setter Property="ToolTipService.BetweenShowDelay" Value="800" />
+            <Setter Property="ToolTip">
+                <Setter.Value>
+                    <StackPanel>
+                        <TextBlock Text="{Binding File}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Err}"
                                    Visibility="{Binding Err, Converter={converters:NullCollapseVisibilityConverter}}"
                                    Background="{Binding Err, Converter={local:ErrConverter}}" />
-                            <TextBlock Text="{Binding DateLastWrite, StringFormat=dd.MM.yyy HH:mm}" 
+                        <TextBlock Text="{Binding DateLastWrite, StringFormat=dd.MM.yyy HH:mm}" 
                                    Visibility="{Binding Image, Converter={converters:NullCollapseVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding Size}" Visibility="{Binding Image, Converter={converters:NullCollapseVisibilityConverter}}"/>
-                            <Image Source="{Binding Image}" Height="300"
+                        <TextBlock Text="{Binding Size, Converter={converters:Bytes}}" Visibility="{Binding Image, Converter={converters:NullCollapseVisibilityConverter}}"/>
+                        <Image Source="{Binding Image}" Height="300"
                                Visibility="{Binding Image, Converter={converters:NullCollapseVisibilityConverter}}" />
-                        </StackPanel>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        <wpf:BindingProxy x:Key="Data" Data="{Binding DataContext, ElementName=Win}"/>
+                    </StackPanel>
+                </Setter.Value>
+            </Setter>
+            <EventSetter Event="MouseDown" Handler="Row_Click" />
+            <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick"/>
+        </Style>
         <!--</ResourceDictionary>-->
     </Window.Resources>
     <Grid Margin="1">
@@ -86,7 +86,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Последние открытые чертежы:" Margin="10,5,5,5" />
+            <TextBlock Grid.Row="0" Text="Последние открытые чертежы:" Margin="3,3,50,3"  HorizontalAlignment="Center"/>
             <DataGrid Grid.Row="1" Margin="5" ItemsSource="{Binding Tabs}" AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False"

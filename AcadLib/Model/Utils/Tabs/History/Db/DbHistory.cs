@@ -46,6 +46,7 @@
             return db.StatEvents.Where(w => w.App == "AutoCAD" || w.App == "Civil")
                 .Where(w => w.EventName == "Открытие")
                 .Where(w => w.UserName.ToLower() == login)
+                .OrderByDescending(o => o.Start)
                 .GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
         }
     }

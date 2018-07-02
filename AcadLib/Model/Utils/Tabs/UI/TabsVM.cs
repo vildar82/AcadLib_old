@@ -25,7 +25,6 @@
             IsOn = isOn;
             Tabs = drawings.Select(s => GetTab(s, true)).ToList();
             Ok = CreateCommand(OkExec);
-            OpenFile = CreateCommand<TabVM>(OpenFileExec);
             this.WhenAnyValue(v => v.CheckAllTabs).Skip(1).Subscribe(s => Tabs.ForEach(t => t.Restore = s));
             HasRestoreTabs = Tabs.Count > 0;
             if (!HasRestoreTabs)
@@ -34,7 +33,7 @@
             }
 
             this.WhenAnyValue(v => v.HistorySearch).Skip(1).Subscribe(s => History.Reset());
-            History = history.CreateDerivedCollection(t => t, HistoryFilter, HistoryOrder);
+            History = history.CreateDerivedCollection(t => t, HistoryFilter);
             Task.Run(() =>
             {
                 new DbHistory().LoadHistoryFiles().ToObservable()
@@ -49,8 +48,6 @@
         public ReactiveCommand Ok { get; set; }
 
         public bool IsOn { get; set; }
-
-        public ReactiveCommand OpenFile { get; set; }
 
         public bool CheckAllTabs { get; set; } = true;
 
@@ -87,7 +84,7 @@
             DialogResult = true;
         }
 
-        private void OpenFileExec(TabVM tab)
+        public void OpenFileExec(TabVM tab)
         {
             if (File.Exists(tab.File))
             {
@@ -112,11 +109,6 @@
         private bool HistoryFilter(TabVM tab)
         {
             return HistorySearch.IsNullOrEmpty() || Regex.IsMatch(tab.File, Regex.Escape(HistorySearch), RegexOptions.IgnoreCase);
-        }
-
-        private int HistoryOrder(TabVM t1, TabVM t2)
-        {
-            return t2.DateLastWrite?.CompareTo(t1.DateLastWrite ?? DateTime.MinValue) ?? -1;
         }
     }
 }
