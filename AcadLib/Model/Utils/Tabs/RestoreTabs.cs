@@ -21,7 +21,7 @@
     /// </summary>
     public static class RestoreTabs
     {
-        private const string PluginName = "RestoreTabs";
+        internal const string PluginName = "RestoreTabs";
         private const string ParamRestoreIsOn = "RestoreTabsOn";
         [NotNull]
         private static readonly List<Document> _tabs = new List<Document>();

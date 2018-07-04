@@ -9,12 +9,14 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Windows;
-    using History.Db;
+    using History;
     using JetBrains.Annotations;
+    using Model.Utils.Tabs.History.Db;
     using NetLib;
     using NetLib.Notification;
     using NetLib.WPF;
     using ReactiveUI;
+    using Tabs.History.Db;
 
     public class TabsVM : BaseViewModel
     {
@@ -34,13 +36,7 @@
 
             this.WhenAnyValue(v => v.HistorySearch).Skip(1).Subscribe(s => History.Reset());
             History = history.CreateDerivedCollection(t => t, HistoryFilter, HistoryOrder);
-            Task.Run(() =>
-            {
-                new DbHistory().LoadHistoryFiles().ToObservable()
-                    .ObserveOn(dispatcher)
-                    .Select(s => GetTab(s.DocPath, false, s.Start))
-                    .Subscribe(t => history.Add(t));
-            });
+            LoadHistory();
         }
 
         public List<TabVM> Tabs { get; set; }
@@ -117,6 +113,46 @@
         private int HistoryOrder(TabVM t1, TabVM t2)
         {
             return t2.Start.CompareTo(t1.Start);
+        }
+
+        private void LoadHistory()
+        {
+            var cacheHistory = HistoryModel.LoadHistoryCache();
+            foreach (var tabVm in cacheHistory.Select(s => GetTab(s.File, false, s.Start)))
+            {
+                history.Add(tabVm);
+            }
+
+            Task.Run(() =>
+            {
+                if (cacheHistory?.Any() == true)
+                {
+                    // Загрузить из базы последнюю историю
+                    var dbItems = new DbHistory().LoadHistoryFiles(cacheHistory.Last().Start);
+                    dbItems.ToObservable()
+                        .ObserveOn(dispatcher)
+                        .Select(s => GetTab(s.DocPath, false, s.Start))
+                        .Subscribe(t => { history.Add(t); });
+
+                    // Дозаписать историю
+                    cacheHistory.AddRange(dbItems.Select(GetHistoryTab));
+                }
+                else
+                {
+                    var dbItems = new DbHistory().LoadHistoryFiles();
+                    dbItems.ToObservable()
+                        .ObserveOn(dispatcher)
+                        .Select(s => GetTab(s.DocPath, false, s.Start))
+                        .Subscribe(t => { history.Add(t); });
+                    cacheHistory = dbItems.Select(GetHistoryTab).ToList();
+                }
+                HistoryModel.SaveHistoryCache(cacheHistory);
+            });
+        }
+
+        private HistoryTab GetHistoryTab(StatEvents item)
+        {
+            return new HistoryTab { File = item.DocPath, Start = item.Start };
         }
     }
 }

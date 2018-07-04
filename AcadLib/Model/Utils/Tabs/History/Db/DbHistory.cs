@@ -12,13 +12,14 @@
     using System.Threading.Tasks;
     using AutoMapper.QueryableExtensions;
     using DynamicData;
+    using JetBrains.Annotations;
     using Model.Utils.Tabs.History.Db;
     using NetLib;
     using Properties;
 
     public class DbHistory
     {
-        private Entities db;
+        [NotNull] private Entities db;
 
         public DbHistory()
         {
@@ -42,12 +43,24 @@
             db.Configuration.LazyLoadingEnabled = true;
         }
 
+        [NotNull]
         public ParallelQuery<StatEvents> LoadHistoryFiles()
         {
             var login = Environment.UserName.ToLower();
             return db.StatEvents.AsNoTracking().AsParallel().Where(w => (w.App == "AutoCAD" || w.App == "Civil") &&
                                                            w.EventName == "Открытие" &&
                                                            w.UserName.ToLower() == login)
+                .GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
+        }
+
+        [NotNull]
+        public ParallelQuery<StatEvents> LoadHistoryFiles(DateTime start)
+        {
+            var login = Environment.UserName.ToLower();
+            return db.StatEvents.AsNoTracking().AsParallel().Where(w => w.Start > start &&
+                                                                        (w.App == "AutoCAD" || w.App == "Civil") &&
+                                                                        w.EventName == "Открытие" &&
+                                                                        w.UserName.ToLower() == login)
                 .GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
         }
     }
