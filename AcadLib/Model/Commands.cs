@@ -470,6 +470,12 @@ namespace AcadLib
             CommandStart.Start(d => d.Database.CleanRegApps());
         }
 
+        [CommandMethod(Group, nameof(PIK_ClearObjectsExtData), CommandFlags.Transparent)]
+        public void PIK_ClearObjectsExtData()
+        {
+            CommandStart.Start(ClearObjectsExtData.Clear);
+        }
+
         /// <summary>
         ///     Список общих команд
         /// </summary>
