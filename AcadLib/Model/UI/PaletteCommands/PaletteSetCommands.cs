@@ -154,7 +154,7 @@ namespace AcadLib.PaletteCommands
             {
                 var p = new Pane
                 {
-                    ToolTipText = "Палитра инструментов ПИК",
+                    ToolTipText = $"Палитра инструментов {paletteName}",
                     Icon = Icon.FromHandle(Resources.logo.GetHicon())
                 };
                 p.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);

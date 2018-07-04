@@ -419,6 +419,7 @@
     <Compile Include="Model\User\UserProperty.cs" />
     <Compile Include="Model\User\UserSettings.cs" />
     <Compile Include="Model\User\UserSettingsService.cs" />
+    <Compile Include="Model\Utils\ClearObjectsExtData.cs" />
     <Compile Include="Model\Utils\ListModules.cs" />
     <Compile Include="Model\Utils\Tabs\History\Db\DbEvents.Context.cs">
       <AutoGen>True</AutoGen>
