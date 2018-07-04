@@ -38,15 +38,16 @@
             };
             var con = conBuilder.ToString();
             db = new Entities(con);
+            db.Configuration.AutoDetectChangesEnabled = false;
+            db.Configuration.LazyLoadingEnabled = true;
         }
 
-        public IQueryable<StatEvents> LoadHistoryFiles()
+        public ParallelQuery<StatEvents> LoadHistoryFiles()
         {
             var login = Environment.UserName.ToLower();
-            return db.StatEvents.Where(w => w.App == "AutoCAD" || w.App == "Civil")
-                .Where(w => w.EventName == "Открытие")
-                .Where(w => w.UserName.ToLower() == login)
-                .OrderByDescending(o => o.Start)
+            return db.StatEvents.AsNoTracking().AsParallel().Where(w => (w.App == "AutoCAD" || w.App == "Civil") &&
+                                                           w.EventName == "Открытие" &&
+                                                           w.UserName.ToLower() == login)
                 .GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
         }
     }

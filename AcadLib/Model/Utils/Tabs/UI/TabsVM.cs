@@ -23,7 +23,7 @@
         public TabsVM([NotNull] IEnumerable<string> drawings, bool isOn)
         {
             IsOn = isOn;
-            Tabs = drawings.Select(s => GetTab(s, true)).ToList();
+            Tabs = drawings.Select(s => GetTab(s, true, DateTime.MinValue)).ToList();
             Ok = CreateCommand(OkExec);
             this.WhenAnyValue(v => v.CheckAllTabs).Skip(1).Subscribe(s => Tabs.ForEach(t => t.Restore = s));
             HasRestoreTabs = Tabs.Count > 0;
@@ -33,12 +33,12 @@
             }
 
             this.WhenAnyValue(v => v.HistorySearch).Skip(1).Subscribe(s => History.Reset());
-            History = history.CreateDerivedCollection(t => t, HistoryFilter);
+            History = history.CreateDerivedCollection(t => t, HistoryFilter, HistoryOrder);
             Task.Run(() =>
             {
                 new DbHistory().LoadHistoryFiles().ToObservable()
                     .ObserveOn(dispatcher)
-                    .Select(s => GetTab(s.DocPath, false))
+                    .Select(s => GetTab(s.DocPath, false, s.Start))
                     .Subscribe(t => history.Add(t));
             });
         }
@@ -74,9 +74,12 @@
             base.OnPropertyChanged(propertyName);
         }
 
-        private TabVM GetTab(string tab, bool restore)
+        private TabVM GetTab(string tab, bool restore, DateTime start)
         {
-            return new TabVM(tab, restore);
+            return new TabVM(tab, restore)
+            {
+                Start = start
+            };
         }
 
         private void OkExec()
@@ -109,6 +112,11 @@
         private bool HistoryFilter(TabVM tab)
         {
             return HistorySearch.IsNullOrEmpty() || Regex.IsMatch(tab.File, Regex.Escape(HistorySearch), RegexOptions.IgnoreCase);
+        }
+
+        private int HistoryOrder(TabVM t1, TabVM t2)
+        {
+            return t2.Start.CompareTo(t1.Start);
         }
     }
 }

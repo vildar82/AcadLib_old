@@ -46,5 +46,7 @@
         public long Size { get; set; }
 
         public string Err { get; set; }
+
+        public DateTime Start { get; set; }
     }
 }
