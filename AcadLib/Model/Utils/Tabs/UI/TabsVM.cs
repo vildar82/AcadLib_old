@@ -117,25 +117,28 @@
 
         private void LoadHistory()
         {
-            var cacheHistory = HistoryModel.LoadHistoryCache();
-            foreach (var tabVm in cacheHistory.Select(s => GetTab(s.File, false, s.Start)))
-            {
-                history.Add(tabVm);
-            }
-
             Task.Run(() =>
             {
+                var cacheHistory = HistoryModel.LoadHistoryCache().Distinct().ToList();
+                dispatcher.Invoke(() =>
+                {
+                    foreach (var tabVm in cacheHistory.Select(s => GetTab(s.File, false, s.Start)))
+                    {
+                        history.Add(tabVm);
+                    }
+                });
+
                 if (cacheHistory?.Any() == true)
                 {
                     // Загрузить из базы последнюю историю
-                    var dbItems = new DbHistory().LoadHistoryFiles(cacheHistory.Last().Start);
+                    var dbItems = new DbHistory().LoadHistoryFiles(cacheHistory.Max(m => m.Start));
                     dbItems.ToObservable()
                         .ObserveOn(dispatcher)
                         .Select(s => GetTab(s.DocPath, false, s.Start))
                         .Subscribe(t => { history.Add(t); });
 
                     // Дозаписать историю
-                    cacheHistory.AddRange(dbItems.Select(GetHistoryTab));
+                    cacheHistory = cacheHistory.Union(dbItems.Select(GetHistoryTab)).ToList();
                 }
                 else
                 {
@@ -144,7 +147,7 @@
                         .ObserveOn(dispatcher)
                         .Select(s => GetTab(s.DocPath, false, s.Start))
                         .Subscribe(t => { history.Add(t); });
-                    cacheHistory = dbItems.Select(GetHistoryTab).ToList();
+                    cacheHistory = dbItems.Select(GetHistoryTab).Distinct().ToList();
                 }
                 HistoryModel.SaveHistoryCache(cacheHistory);
             });
