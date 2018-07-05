@@ -178,6 +178,7 @@
     <Compile Include="Model\Dim\DimensionExt.cs" />
     <Compile Include="Model\Dll\DllVer.cs" />
     <Compile Include="Model\Docs\DocExt.cs" />
+    <Compile Include="Model\Doc\DocAutoLoader.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
     <Compile Include="Model\Editors\EditorExtension.cs" />

@@ -11,6 +11,7 @@ namespace AcadLib
     using JetBrains.Annotations;
     using static Autodesk.AutoCAD.ApplicationServices.Core.Application;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
     /// <summary>
     /// Вспомогательные функции для работы с автокадом
@@ -87,7 +88,15 @@ namespace AcadLib
         /// </summary>
         public static bool IsOneAcadRun()
         {
-            return !Process.GetProcessesByName("acad").Where(IsValidAcadProcess).Skip(1).Any();
+            try
+            {
+                return !Process.GetProcessesByName("acad").Where(IsValidAcadProcess).Skip(1).Any();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "IsOneAcadRun");
+                return true;
+            }
         }
 
         private static bool IsValidAcadProcess(Process process)

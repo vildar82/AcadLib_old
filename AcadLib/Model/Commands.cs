@@ -119,6 +119,10 @@ namespace AcadLib
 
                 // автозагрузка стартового общего лиспа
                 LispAutoloader.Start();
+
+                // Установки системных переменных для чертежа
+                Doc.DocSysVarAuto.Start();
+
                 if (PaletteSetCommands._paletteSets.Any())
                     RibbonBuilder.InitRibbon();
                 Logger.Log.Info("end Initialize AcadLib");

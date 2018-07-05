@@ -18,7 +18,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Log.Error($"SetSystemVariableTry name={name}, value={value}", ex);
+                Logger.Log.Error(ex, $"SetSystemVariableTry name={name}, value={value}");
             }
         }
 

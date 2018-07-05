@@ -24,19 +24,26 @@
 
         public TabsVM([NotNull] IEnumerable<string> drawings, bool isOn)
         {
-            IsOn = isOn;
-            Tabs = drawings.Select(s => GetTab(s, true, DateTime.MinValue)).ToList();
-            Ok = CreateCommand(OkExec);
-            this.WhenAnyValue(v => v.CheckAllTabs).Skip(1).Subscribe(s => Tabs.ForEach(t => t.Restore = s));
-            HasRestoreTabs = Tabs.Count > 0;
-            if (!HasRestoreTabs)
+            try
             {
-                HasHistory = true;
-            }
+                IsOn = isOn;
+                Tabs = drawings.Select(s => GetTab(s, true, DateTime.MinValue)).ToList();
+                Ok = CreateCommand(OkExec);
+                this.WhenAnyValue(v => v.CheckAllTabs).Skip(1).Subscribe(s => Tabs.ForEach(t => t.Restore = s));
+                HasRestoreTabs = Tabs.Count > 0;
+                if (!HasRestoreTabs)
+                {
+                    HasHistory = true;
+                }
 
-            this.WhenAnyValue(v => v.HistorySearch).Skip(1).Subscribe(s => History.Reset());
-            History = history.CreateDerivedCollection(t => t, HistoryFilter, HistoryOrder);
-            LoadHistory();
+                this.WhenAnyValue(v => v.HistorySearch).Skip(1).Subscribe(s => History.Reset());
+                History = history.CreateDerivedCollection(t => t, HistoryFilter, HistoryOrder);
+                LoadHistory();
+            }
+            catch (Exception ex)
+            {
+                AcadLib.Logger.Log.Error(ex, "RestoreTabs.TabsVM");
+            }
         }
 
         public List<TabVM> Tabs { get; set; }

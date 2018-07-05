@@ -31,16 +31,23 @@
 
         public static void Init()
         {
-            isOn = IsOn();
-
-            // Добавление кнопки в статус бар
-            StatusBarEx.AddPane(string.Empty, "Откытие чертежей", (p, e) => Restore(), icon: Resources.restoreFiles16);
-            if (isOn && AcadHelper.IsOneAcadRun())
+            try
             {
-                Restore();
-            }
+                isOn = IsOn();
 
-            Subscribe();
+                // Добавление кнопки в статус бар
+                StatusBarEx.AddPane(string.Empty, "Откытие чертежей", (p, e) => Restore(), icon: Resources.restoreFiles16);
+                if (isOn && AcadHelper.IsOneAcadRun())
+                {
+                    Restore();
+                }
+
+                Subscribe();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "RestoreTabs.Init");
+            }
         }
 
         public static void RestoreTabsIsOn(bool isOn)
@@ -62,68 +69,76 @@
 
         private static void Application_Idle(object sender, EventArgs e)
         {
-            Application.Idle -= Application_Idle;
-            UserSettingsService.ChangeSettings -= UserSettingsService_ChangeSettings;
-            UserSettingsService.ChangeSettings += UserSettingsService_ChangeSettings;
-            var openedDraws = new List<string>();
-            if (restoreTabs?.Any() == true)
+            try
             {
-                // Сохранить список чертежей, на случай если это окно пропустят и закроют автокад.
-                var tabsData = new LocalFileData<Tabs>(GetFile(), false) { Data = new Tabs { Drawings = restoreTabs } };
-                tabsData.TrySave();
-                var docs = Application.DocumentManager.Cast<Document>().ToList();
-                foreach (var doc in docs)
+                Application.Idle -= Application_Idle;
+                UserSettingsService.ChangeSettings -= UserSettingsService_ChangeSettings;
+                UserSettingsService.ChangeSettings += UserSettingsService_ChangeSettings;
+                var openedDraws = new List<string>();
+                if (restoreTabs?.Any() == true)
                 {
-                    if (doc.IsNamedDrawing)
+                    // Сохранить список чертежей, на случай если это окно пропустят и закроют автокад.
+                    var tabsData = new LocalFileData<Tabs>(GetFile(), false) { Data = new Tabs { Drawings = restoreTabs } };
+                    tabsData.TrySave();
+                    var docs = Application.DocumentManager.Cast<Document>().ToList();
+                    foreach (var doc in docs)
                     {
-                        openedDraws.Add(doc.Name);
+                        if (doc.IsNamedDrawing)
+                        {
+                            openedDraws.Add(doc.Name);
+                        }
+                    }
+                }
+
+                var tabVM = new TabsVM(restoreTabs?.Except(openedDraws, StringComparer.OrdinalIgnoreCase)
+                                       ?? new List<string>(), isOn);
+                var tabsView = new TabsView(tabVM);
+                if (tabsView.ShowDialog() == true)
+                {
+                    try
+                    {
+                        Statistic.PluginStatisticsHelper.PluginStart("OpenRestoreTabs");
+                        var closeDocs = Application.DocumentManager.Cast<Document>().Where(w => !w.IsNamedDrawing).ToList();
+                        var tabs = tabVM.Tabs.Where(w => w.Restore).Select(s => s.File).ToList();
+                        if (tabVM.HasHistory)
+                        {
+                            tabs = tabs.Union(tabVM.History.Where(w => w.Restore).Select(s => s.File)).ToList();
+                        }
+
+                        foreach (var item in tabs)
+                        {
+                            try
+                            {
+                                Application.DocumentManager.Open(item, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                Inspector.AddError($"Ошибка открытия файла '{item}' - {ex.Message}");
+                            }
+                        }
+
+                        // Закрыть пустые чертежи
+                        foreach (var doc in closeDocs)
+                        {
+                            try
+                            {
+                                doc.CloseAndDiscard();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Log.Error("RestoreTabs. Закрыть пустые чертежи.", ex);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        Inspector.Show();
                     }
                 }
             }
-
-            var tabVM = new TabsVM(restoreTabs?.Except(openedDraws, StringComparer.OrdinalIgnoreCase)
-                                   ?? new List<string>(), isOn);
-            var tabsView = new TabsView(tabVM);
-            if (tabsView.ShowDialog() == true)
+            catch (Exception ex)
             {
-                try
-                {
-                    var closeDocs = Application.DocumentManager.Cast<Document>().Where(w => !w.IsNamedDrawing).ToList();
-                    var tabs = tabVM.Tabs.Where(w => w.Restore).Select(s => s.File).ToList();
-                    if (tabVM.HasHistory)
-                    {
-                        tabs = tabs.Union(tabVM.History.Where(w => w.Restore).Select(s => s.File)).ToList();
-                    }
-
-                    foreach (var item in tabs)
-                    {
-                        try
-                        {
-                            Application.DocumentManager.Open(item, false);
-                        }
-                        catch (Exception ex)
-                        {
-                            Inspector.AddError($"Ошибка открытия файла '{item}' - {ex.Message}");
-                        }
-                    }
-
-                    // Закрыть пустые чертежи
-                    foreach (var doc in closeDocs)
-                    {
-                        try
-                        {
-                            doc.CloseAndDiscard();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Log.Error("RestoreTabs. Закрыть пустые чертежи.", ex);
-                        }
-                    }
-                }
-                finally
-                {
-                    Inspector.Show();
-                }
+                Logger.Log.Error(ex, "RestoreTabs.Application_Idle");
             }
         }
 

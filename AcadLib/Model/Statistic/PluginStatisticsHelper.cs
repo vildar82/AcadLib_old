@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Reflection;
     using System.Threading.Tasks;
     using AutoCAD_PIK_Manager.Settings;
     using Autodesk.AutoCAD.ApplicationServices.Core;
@@ -38,6 +39,12 @@
             {
                 Logger.Log.Error(ex, "PluginStatisticsHelper.AddStatistic");
             }
+        }
+
+        public static void PluginStart(string command)
+        {
+            var com = new CommandStart(command, Assembly.GetCallingAssembly());
+            PluginStart(com);
         }
 
         public static void PluginStart(CommandStart command)
