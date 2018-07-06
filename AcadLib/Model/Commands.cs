@@ -468,16 +468,22 @@ namespace AcadLib
             });
         }
 
-        [CommandMethod(Group, nameof(PIK_CleanRegApps), CommandFlags.Transparent)]
+        [CommandMethod(Group, nameof(PIK_CleanRegApps), CommandFlags.Modal)]
         public void PIK_CleanRegApps()
         {
             CommandStart.Start(d => d.Database.CleanRegApps());
         }
 
-        [CommandMethod(Group, nameof(PIK_ClearObjectsExtData), CommandFlags.Transparent)]
+        [CommandMethod(Group, nameof(PIK_ClearObjectsExtData), CommandFlags.Modal)]
         public void PIK_ClearObjectsExtData()
         {
             CommandStart.Start(ClearObjectsExtData.Clear);
+        }
+
+        [CommandMethod(Group, nameof(PIK_BatchRemoveLayoutsTest), CommandFlags.Modal)]
+        public void PIK_BatchRemoveLayoutsTest()
+        {
+            CommandStart.Start(d => Test.BatchRemoveLayouts.Batch());
         }
 
         /// <summary>
