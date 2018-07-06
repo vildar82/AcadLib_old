@@ -106,11 +106,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Settings.dll</HintPath>
     </Reference>
-    <Reference Include="EventStatistic, Version=1.0.155.40, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\Адаптация\Общие\Dll\EventStatistic.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="MicroMvvm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Autodesk\AutoCAD\Pik\Settings\Dll\MicroMvvm.dll</HintPath>
@@ -232,6 +227,7 @@
     <Compile Include="Model\SettingsGroupInfo.cs" />
     <Compile Include="Model\Statistic\CheckUpdates.cs" />
     <Compile Include="Model\Statistic\CivilTest.cs" />
+    <Compile Include="Model\Statistic\Eventer.cs" />
     <Compile Include="Model\Statistic\EventsStatisticService.cs" />
     <Compile Include="Model\Files\FileDataExt.cs" />
     <Compile Include="Model\Geometry\CurveExt.cs" />
@@ -825,6 +821,9 @@
     </PackageReference>
     <PackageReference Include="NLog">
       <Version>4.5.6</Version>
+    </PackageReference>
+    <PackageReference Include="PathChecker">
+      <Version>1.0.3</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
       <Version>2.5.8</Version>

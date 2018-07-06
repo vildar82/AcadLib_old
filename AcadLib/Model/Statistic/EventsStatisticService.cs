@@ -1,37 +1,43 @@
 ﻿namespace AcadLib.Statistic
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
-    using EventStatistic;
     using JetBrains.Annotations;
+    using Naming.Dto;
     using NetLib;
+    using RevitNameValidator;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
     public static class EventsStatisticService
     {
-        private static Database db;
+        private static bool veto;
         private static string sn;
         private static Eventer eventer;
-        [NotNull]
-        private static Eventer Eventer =>
-            eventer ?? (eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion));
 
         public static void Start()
         {
-            Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
-            Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
-
-            // Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
-            Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
             try
             {
-                SubscribeDoc(AcadHelper.Doc);
+                Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
+
+                eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion);
+                Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
+                Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
+
+                Application.DocumentManager.DocumentToBeDestroyed += DocumentManager_DocumentToBeDestroyed;
+                Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
+
+                foreach (Document doc in Application.DocumentManager)
+                {
+                    SubscribeDoc(doc);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                // Может не быть открытого чертежа.
+                Logger.Log.Error(ex, "EventsStatisticService.Start");
             }
         }
 
@@ -52,47 +58,40 @@
             return "AutoCAD";
         }
 
+        private static void DocumentManager_DocumentToBeDestroyed(object sender, DocumentCollectionEventArgs e)
+        {
+            eventer.Start("close", null);
+        }
+
+        private static void DocumentManager_DocumentLockModeChanged(object sender, DocumentLockModeChangedEventArgs e)
+        {
+            Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
+            if (veto)
+            {
+                veto = false;
+                e.Veto();
+            }
+        }
+
         private static void DocumentManager_DocumentDestroyed(object sender, [NotNull] DocumentDestroyedEventArgs e)
         {
-            Eventer.Start();
-            Eventer.Finish("Закрытие", e.FileName, sn);
+            eventer.Finish("Закрытие", e.FileName, sn);
         }
 
         private static void DocumentManager_DocumentCreateStarted(object sender, DocumentCollectionEventArgs e)
         {
-            Eventer.Start();
+            eventer.Start("open", null);
         }
 
         private static void DocumentManager_DocumentCreated(object sender, [NotNull] DocumentCollectionEventArgs e)
         {
-            DocumentCreated(e.Document);
-        }
-
-        private static void DocumentCreated(Document doc)
-        {
-            try
-            {
-                var res = Eventer.Finish("Открытие", doc.Name, sn);
-                if (!string.IsNullOrEmpty(res))
-                {
-                    Logger.Log.Error($"Ошибка EventsStatistic Открытие Finish Result - {res}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "EventsStatisticService - DocumentManager_DocumentCreated");
-            }
+            SubscribeDoc(e.Document);
         }
 
         private static void SubscribeDoc([CanBeNull] Document doc)
         {
             if (doc == null)
                 return;
-            if (db != null)
-            {
-                db.SaveComplete -= Db_SaveComplete;
-                db.BeginSave -= Db_BeginSave;
-            }
 
             if (sn == null || sn.StartsWith("000"))
             {
@@ -107,50 +106,48 @@
                 }
             }
 
-            db = doc.Database;
+            var db = doc.Database;
+            db.SaveComplete -= Db_SaveComplete;
             db.SaveComplete += Db_SaveComplete;
+            db.BeginSave -= Db_BeginSave;
             db.BeginSave += Db_BeginSave;
 
             // Если запустили автокад открытием файла dwg из проводника.
-            Eventer.Start();
-            DocumentCreated(doc);
+            eventer.Start("open", null);
+            eventer.Finish("Открытие", doc.Name, sn);
         }
 
         private static void Db_BeginSave(object sender, [NotNull] DatabaseIOEventArgs e)
         {
-            try
+            Debug.WriteLine($"Db_BeginSave {e.FileName}");
+            if (!IsDwg(e.FileName))
+                return;
+            if (IsCheckError(eventer.Start("save", e.FileName)))
             {
-                if (!IsDwg(e.FileName))
-                    return;
-                Eventer.Start();
+                // Отменить сохранение файла
+                veto = true;
+                Debug.WriteLine($"Отменить сохранение {e.FileName}");
             }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, $"Ошибка EventsStatistic Start '{e.FileName}'");
-            }
+        }
+
+        private static void Db_SaveComplete(object sender, [NotNull] DatabaseIOEventArgs e)
+        {
+            if (!IsDwg(e.FileName))
+                return;
+            eventer.Finish("Сохранить", e.FileName, sn);
+        }
+
+        private static bool IsCheckError(CheckResultDto checkRes)
+        {
+#if DEBUG
+            return checkRes?.Status == "Warning";
+#endif
+            return checkRes?.Status == "Error";
         }
 
         private static bool IsDwg(string fileName)
         {
             return Path.GetExtension(fileName).EqualsIgnoreCase(".dwg");
-        }
-
-        private static void Db_SaveComplete(object sender, [NotNull] DatabaseIOEventArgs e)
-        {
-            try
-            {
-                if (!IsDwg(e.FileName))
-                    return;
-                var res = Eventer.Finish("Сохранить", e.FileName, sn);
-                if (!res.IsNullOrEmpty())
-                {
-                    Logger.Log.Error($"Ошибка EventsStatistic Сохранить Finish Result - {res}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, $"Ошибка EventsStatistic Finish '{e.FileName}'");
-            }
         }
     }
 }
