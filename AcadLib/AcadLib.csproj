@@ -173,7 +173,7 @@
     <Compile Include="Model\Dim\DimensionExt.cs" />
     <Compile Include="Model\Dll\DllVer.cs" />
     <Compile Include="Model\Docs\DocExt.cs" />
-    <Compile Include="Model\Doc\DocAutoLoader.cs" />
+    <Compile Include="Model\Doc\DocSysVarAuto.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
     <Compile Include="Model\Editors\EditorExtension.cs" />
@@ -286,6 +286,7 @@
     </Compile>
     <Compile Include="Model\Layers\LayersSelected\LayersSelectedVM.cs" />
     <Compile Include="Model\Layers\LayerState\ImportLayerState.cs" />
+    <Compile Include="Model\Strings\StringExt.cs" />
     <Compile Include="Model\Styles\StyleManager\UI\Style.cs" />
     <Compile Include="Model\Styles\StyleManager\StyleManagerService.cs" />
     <Compile Include="Model\Styles\StyleManager\UI\StyleManagerView.xaml.cs">
@@ -355,6 +356,7 @@
     <Compile Include="Model\Tables\ICreateTable.cs" />
     <Compile Include="Model\Entitys\EntityHelper.cs" />
     <Compile Include="Model\Template\TemplateData.cs" />
+    <Compile Include="Model\Test\BatchRemoveLayouts.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteInsertBlock.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteVisualInsertBlocks.cs" />
     <Compile Include="Model\UI\PaletteCommands\CommandInfo.cs" />
@@ -565,7 +567,6 @@
     <Compile Include="Model\RTree\Point.cs" />
     <Compile Include="Model\RTree\Rectangle.cs" />
     <Compile Include="Model\RTree\RTree.cs" />
-    <Compile Include="Model\Strings\StringExt.cs" />
     <Compile Include="Model\DB\DbExtensions.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
