@@ -67,7 +67,7 @@
             Application.Idle += Application_Idle;
         }
 
-        private static void Application_Idle(object sender, EventArgs e)
+        private static async void Application_Idle(object sender, EventArgs e)
         {
             try
             {

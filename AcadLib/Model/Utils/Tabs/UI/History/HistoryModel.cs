@@ -1,6 +1,8 @@
 ﻿namespace AcadLib.Utils.Tabs.UI.History
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using IO;
     using JetBrains.Annotations;
     using NetLib;
@@ -18,8 +20,11 @@
 
         public static void SaveHistoryCache(List<HistoryTab> historyTabs)
         {
-            var data = new LocalFileData<List<HistoryTab>>(GetHistoryFile(), false) { Data = historyTabs };
-            data.TrySave();
+            if (historyTabs?.Any() == true)
+            {
+                var data = new LocalFileData<List<HistoryTab>>(GetHistoryFile(), false) { Data = historyTabs };
+                data.TrySave();
+            }
         }
 
         [NotNull]

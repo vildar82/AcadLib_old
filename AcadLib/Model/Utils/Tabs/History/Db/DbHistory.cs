@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Entity;
     using System.Data.Entity.Core.EntityClient;
     using System.Data.SqlClient;
     using System.Diagnostics;
@@ -44,20 +45,22 @@
         }
 
         [NotNull]
-        public ParallelQuery<StatEvents> LoadHistoryFiles()
+        public IQueryable<StatEvents> LoadHistoryFiles()
         {
+            var now = DateTime.Now;
             var login = Environment.UserName.ToLower();
-            return db.StatEvents.AsNoTracking().AsParallel().Where(w => (w.App == "AutoCAD" || w.App == "Civil") &&
+            return db.StatEvents.AsNoTracking().Where(w => (w.App == "AutoCAD" || w.App == "Civil") &&
                                                            w.EventName == "Открытие" &&
+                                                           DbFunctions.DiffDays(w.Start, now) < 100 &&
                                                            w.UserName.ToLower() == login)
                 .GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
         }
 
         [NotNull]
-        public ParallelQuery<StatEvents> LoadHistoryFiles(DateTime start)
+        public IQueryable<StatEvents> LoadHistoryFiles(DateTime start)
         {
             var login = Environment.UserName.ToLower();
-            return db.StatEvents.AsNoTracking().AsParallel().Where(w => w.Start > start &&
+            return db.StatEvents.AsNoTracking().Where(w => w.Start > start  &&
                                                                         (w.App == "AutoCAD" || w.App == "Civil") &&
                                                                         w.EventName == "Открытие" &&
                                                                         w.UserName.ToLower() == login)
