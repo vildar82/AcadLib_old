@@ -144,7 +144,7 @@
             Task.Run(() =>
             {
                 var dbItems = cache.Any()
-                    ? new DbHistory().LoadHistoryFiles(history.Max(m => m.Start))
+                    ? new DbHistory().LoadHistoryFiles(cache.Max(m => m.Start))
                     : new DbHistory().LoadHistoryFiles();
                 var tabs = dbItems.ToList().Select(s => GetTab(s.DocPath, false, s.Start)).ToList();
                 dispatcher.Invoke(() => tabs.ForEach(t => history.Add(t)));

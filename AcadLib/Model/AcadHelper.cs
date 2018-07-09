@@ -105,10 +105,9 @@ namespace AcadLib
             {
                 // На "липовом" процессе acad.exe - выскакивает исключение. Обнаружисоль в Новороссийске у Жуковой Юли/
                 var unused = process.VirtualMemorySize64;
-                if (process.NonpagedSystemMemorySize64 < 20000) 
+                if (process.NonpagedSystemMemorySize64 < 20000)
                     return false;
                 var unused1 = process.MainWindowTitle;
-                var unused2 = process.Modules.Count;
                 return true;
             }
             catch
