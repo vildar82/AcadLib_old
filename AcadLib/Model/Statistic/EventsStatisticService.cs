@@ -10,6 +10,7 @@
     using NetLib;
     using RevitNameValidator;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using General = AcadLib.General;
 
     public static class EventsStatisticService
     {
@@ -21,6 +22,8 @@
         {
             try
             {
+                if (General.IsBimUser)
+                    return;
                 Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
 
                 eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion);
@@ -44,7 +47,6 @@
         [NotNull]
         private static string GetApp()
         {
-            // ReSharper disable once EmptyGeneralCatchClause
             try
             {
                 if (CivilTest.IsCivil())
