@@ -7,6 +7,7 @@ namespace AcadLib
     using Geometry;
     using Hatches;
     using JetBrains.Annotations;
+    using NetLib;
 
     [PublicAPI]
     public static class TableExt
@@ -129,6 +130,43 @@ namespace AcadLib
             SetCell(row.Borders.Right, LineWeight.LineWeight000, false);
             SetCell(row.Borders.Top, LineWeight.LineWeight000, false);
             SetCell(row.Borders.Vertical, LineWeight.LineWeight000, false);
+        }
+
+        /// <summary>
+        /// Объединение одинаковых строк в колонке
+        /// </summary>
+        /// <param name="t">Таблица</param>
+        /// <param name="col">Колонка</param>
+        /// <param name="startRow">Стартовая строка сравнения</param>
+        public static void MergeCol(this Table t, int col, int startRow)
+        {
+            Cell prevCell = null;
+            var prewRow = startRow;
+            for (var r = startRow; r < t.Rows.Count; r++)
+            {
+                var cel = t.Cells[r, col];
+                if (!cel.TextString.EqualsIgnoreCase(prevCell?.TextString))
+                {
+                    Merge(t, col, prewRow, col, r - 1);
+                    prevCell = cel;
+                    prewRow = r;
+                }
+            }
+
+            var lastRow = t.Rows.Count - 1;
+            var lastCel = t.Cells[lastRow, col];
+            if (lastCel.TextString.EqualsIgnoreCase(prevCell?.TextString))
+            {
+                Merge(t, col, prewRow, col, lastRow);
+            }
+        }
+
+        private static void Merge(Table table, int colStart, int rowStart, int colEnd, int rowEnd)
+        {
+            if (colEnd - colStart <= 0 && rowEnd - rowStart <= 0)
+                return;
+            var rangew = CellRange.Create(table, rowStart, colStart, rowEnd, colEnd);
+            table.MergeCells(rangew);
         }
     }
 }
