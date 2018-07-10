@@ -35,8 +35,8 @@
 
         private static void LoadSysVars()
         {
-            SysVars = PikSettings.PikFileSettings.DocSystemVariables ?? new Dictionary<string, object>();
-            if (PikSettings.GroupFileSettings.DocSystemVariables != null)
+            SysVars = PikSettings.PikFileSettings?.DocSystemVariables ?? new Dictionary<string, object>();
+            if (PikSettings.GroupFileSettings?.DocSystemVariables != null)
             {
                 foreach (var sv in PikSettings.GroupFileSettings.DocSystemVariables)
                 {

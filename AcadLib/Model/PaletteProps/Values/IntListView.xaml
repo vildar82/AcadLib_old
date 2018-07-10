@@ -12,7 +12,7 @@
         <ControlTemplate x:Key="DetailedTemplate" TargetType="{x:Type ContentControl}">
             <TextBlock Text="{Binding}" Margin="1"/>
         </ControlTemplate>
-</UserControl.Resources>
+    </UserControl.Resources>
     <ComboBox x:Name="CbValue" ItemsSource="{Binding Values}" Text="{Binding Value, Delay=500}"
               IsEditable="{Binding AllowCustomValue}" IsReadOnly="{Binding IsReadOnly}">
         <ComboBox.ItemTemplate>

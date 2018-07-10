@@ -1,5 +1,4 @@
-﻿
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
     using System.Diagnostics;

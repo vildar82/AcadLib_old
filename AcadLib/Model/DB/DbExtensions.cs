@@ -17,6 +17,11 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         private static string UserGroup { get; } = PikSettings.UserGroupsCombined.First();
 
+        public static ObjectId GetMS(this Database db)
+        {
+            return SymbolUtilityServices.GetBlockModelSpaceId(db);
+        }
+
         /// <summary>
         /// Получение углового размерного стиля ПИК
         /// </summary>
