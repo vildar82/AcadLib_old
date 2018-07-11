@@ -10,6 +10,7 @@
                 xmlns:converters="clr-namespace:NetLib.WPF.Converters;assembly=NetLib"
                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                 xmlns:properties="clr-namespace:AcadLib.Properties"
+                xmlns:acb="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
                 d:DataContext="{d:DesignInstance local:TabsVM}"
                 ShowMaxRestoreButton="False"
                 ShowMinButton="False"
@@ -72,6 +73,7 @@
             </Setter>
             <EventSetter Event="MouseDown" Handler="Row_Click" />
             <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick"/>
+            <EventSetter Event="ToolTipOpening" Handler="EventSetter_OnHandler"/>
         </Style>
         <!--</ResourceDictionary>-->
     </Window.Resources>

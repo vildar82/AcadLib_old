@@ -8,7 +8,6 @@
     using JetBrains.Annotations;
     using Naming.Dto;
     using NetLib;
-    using RevitNameValidator;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
     using General = AcadLib.General;
 
@@ -22,14 +21,10 @@
         {
             try
             {
-                if (General.IsBimUser)
-                    return;
                 Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
-
                 eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion);
                 Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
                 Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
-
                 Application.DocumentManager.DocumentToBeDestroyed += DocumentManager_DocumentToBeDestroyed;
                 Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
 

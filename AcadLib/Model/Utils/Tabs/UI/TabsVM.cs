@@ -91,7 +91,7 @@
             Task.Run(() =>
             {
                 HistoryModel.SaveHistoryCache(history.Select(s => new HistoryTab { File = s.File, Start = s.Start })
-                    .Distinct().ToList());
+                    .OrderByDescending(o => o.Start).Distinct().ToList());
             });
         }
 
@@ -135,11 +135,14 @@
         private void LoadHistory()
         {
             var cache = HistoryModel.LoadHistoryCache();
-            Task.Run(() =>
+            if (cache.Any())
             {
-                var tabs = cache.Select(s => GetTab(s.File, false, s.Start)).ToList();
-                dispatcher.Invoke(() => tabs.ForEach(t => history.Add(t)));
-            });
+                Task.Run(() =>
+                {
+                    var tabs = cache.Select(s => GetTab(s.File, false, s.Start)).ToList();
+                    dispatcher.Invoke(() => tabs.ForEach(t => history.Add(t)));
+                });
+            }
 
             Task.Run(() =>
             {

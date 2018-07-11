@@ -1,6 +1,8 @@
 ﻿namespace AcadLib.Utils.Tabs.UI
 {
+    using System;
     using System.Windows.Controls;
+    using NetLib.WPF.Data;
 
     /// <summary>
     /// Interaction logic for TabsView.xaml
@@ -28,6 +30,21 @@
             {
                 var tab = (TabVM)r.DataContext;
                 ((TabsVM)DataContext).OpenFileExec(tab);
+            }
+        }
+
+        private void EventSetter_OnHandler(object sender, ToolTipEventArgs e)
+        {
+            if ((sender as DataGridRow)?.DataContext is TabVM tabVM && tabVM.Err == null && tabVM.Image == null)
+            {
+                try
+                {
+                    tabVM.Image = NetLib.IO.Path.GetThumbnail(tabVM.File).ConvertToBitmapImage();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
             }
         }
     }

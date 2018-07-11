@@ -20,7 +20,6 @@
                 var fi = new FileInfo(drawing);
                 DateLastWrite = System.IO.File.GetLastWriteTime(drawing);
                 Size = fi.Length;
-                Image = NetLib.IO.Path.GetThumbnail(drawing).ConvertToBitmapImage();
             }
             catch (Exception ex)
             {

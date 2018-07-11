@@ -1,8 +1,7 @@
-﻿namespace RevitNameValidator
+﻿namespace AcadLib.Statistic
 {
     using System;
     using System.IO;
-    using System.Net;
     using System.Threading.Tasks;
     using AcadLib;
     using FileLog.Client;
@@ -10,8 +9,6 @@
     using JetBrains.Annotations;
     using Naming.Dto;
     using NetLib.AD;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using PathChecker;
 
     /// <summary>
@@ -41,11 +38,7 @@
             App = app;
             AppType = GetAppType(app);
             Version = version;
-#if DEBUG
-            _client = new FlClient(@"http://vpp-sql04/stageapi");
-#else
             _client = new FlClient();
-#endif
             _pathChecker = new PathChecker(_client);
         }
 
@@ -109,7 +102,7 @@
         public CheckResultDto Start([CanBeNull] string @case, [CanBeNull] string docPath)
         {
             CheckResultDto checkResultDto = null;
-            if (docPath != null)
+            if (docPath != null && !General.IsBimUser)
             {
                 try
                 {
