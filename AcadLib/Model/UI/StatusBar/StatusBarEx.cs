@@ -105,7 +105,12 @@
 
                 if (CheckUpdates.NeedNotify(groupInfo.UpdateDescription, out var descResult))
                 {
-                    info += $" '{descResult}'";
+                    info += $" '{descResult.Truncate(75)}'";
+                }
+
+                if (groupInfo.GroupName == "Общие")
+                {
+                    info += ". Нажмите, чтобы открыть настройки и уведомление об обновлении на сервере.";
                 }
 
                 return info;

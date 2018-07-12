@@ -150,7 +150,14 @@
                     ? new DbHistory().LoadHistoryFiles(cache.Max(m => m.Start))
                     : new DbHistory().LoadHistoryFiles();
                 var tabs = dbItems.ToList().Select(s => GetTab(s.DocPath, false, s.Start)).ToList();
+                Task.Delay(TimeSpan.FromMilliseconds(300)).Wait();
                 dispatcher.Invoke(() => tabs.ForEach(t => history.Add(t)));
+                var removeTabs = history.GroupBy(g => g.File).SelectMany(s => s.OrderByDescending(o => o.Start).Skip(1));
+                Task.Delay(TimeSpan.FromMilliseconds(300)).Wait();
+                foreach (var tab in removeTabs)
+                {
+                    dispatcher.Invoke(() => history.Remove(tab));
+                }
             });
         }
 

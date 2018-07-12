@@ -33,7 +33,6 @@
         /// <summary>
         /// Это русская версия AutoCAD ru-RU
         /// </summary>
-        /// <returns></returns>
         public static bool IsRussianAcad()
         {
             return SystemObjects.DynamicLinker.ProductLcid == 1049;
@@ -49,7 +48,6 @@
         /// <summary>
         /// Если пользователь нажал Esc для прерывания процесса
         /// </summary>
-        /// <returns></returns>
         public static bool UserBreak()
         {
             return HostApplicationServices.Current.UserBreak();
@@ -66,7 +64,7 @@
             }
             catch
             {
-                //
+                // Может не быть открытого чертежа и командной строки.
             }
         }
 
@@ -78,7 +76,7 @@
             }
             catch
             {
-                //
+                // Может не быть открытого чертежа и командной строки.
             }
         }
 
@@ -105,8 +103,12 @@
                 // На "липовом" процессе acad.exe - выскакивает исключение. Обнаружисоль в Новороссийске у Жуковой Юли/
                 var unused = process.VirtualMemorySize64;
                 if (process.NonpagedSystemMemorySize64 < 20000)
+                {
                     return false;
+                }
+
                 var unused1 = process.MainWindowTitle;
+                var modules = process.Modules.Count;
                 return true;
             }
             catch

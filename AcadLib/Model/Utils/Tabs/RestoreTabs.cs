@@ -15,6 +15,7 @@
     using UI;
     using User;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using General = AcadLib.General;
 
     /// <summary>
     /// Восстановление ранее отурытых вкладок
@@ -23,8 +24,7 @@
     {
         internal const string PluginName = "RestoreTabs";
         private const string ParamRestoreIsOn = "RestoreTabsOn";
-        [NotNull]
-        private static readonly List<Document> _tabs = new List<Document>();
+        [NotNull] private static readonly List<Document> _tabs = new List<Document>();
         private static string cmd;
         private static bool isOn;
         private static List<string> restoreTabs;
@@ -37,7 +37,7 @@
 
                 // Добавление кнопки в статус бар
                 StatusBarEx.AddPane(string.Empty, "Откытие чертежей", (p, e) => Restore(), icon: Resources.restoreFiles16);
-                if (isOn && AcadHelper.IsOneAcadRun())
+                if (isOn)
                 {
                     Restore();
                 }
@@ -90,8 +90,14 @@
                     }
                 }
 
-                var tabVM = new TabsVM(restoreTabs?.Except(openedDraws, StringComparer.OrdinalIgnoreCase)
-                                       ?? new List<string>(), isOn);
+                if (!AcadHelper.IsOneAcadRun())
+                {
+                    Debug.WriteLine("RestoreTabs. Запущено несколько автокадов.");
+                    restoreTabs = new List<string>();
+                }
+
+                restoreTabs = restoreTabs?.Except(openedDraws, StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
+                var tabVM = new TabsVM(restoreTabs, isOn);
                 var tabsView = new TabsView(tabVM);
                 if (tabsView.ShowDialog() == true)
                 {
@@ -102,7 +108,7 @@
                         var tabs = tabVM.Tabs.Where(w => w.Restore).Select(s => s.File).ToList();
                         if (tabVM.HasHistory)
                         {
-                            tabs = tabs.Union(tabVM.History.Where(w => w.Restore).Select(s => s.File)).ToList();
+                            tabs = tabs.Union(tabVM.History.Where(w => w.Restore).Select(s => s.File)).Distinct().ToList();
                         }
 
                         foreach (var item in tabs)

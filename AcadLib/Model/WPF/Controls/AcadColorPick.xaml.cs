@@ -3,6 +3,7 @@
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
     using System.Windows;
+    using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.Windows;
     using JetBrains.Annotations;
 

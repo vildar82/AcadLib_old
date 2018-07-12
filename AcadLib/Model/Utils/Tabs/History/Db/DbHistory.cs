@@ -60,7 +60,7 @@
         public IQueryable<StatEvents> LoadHistoryFiles(DateTime start)
         {
             var login = Environment.UserName.ToLower();
-            return db.StatEvents.AsNoTracking().Where(w => w.Start > start  &&
+            return db.StatEvents.AsNoTracking().Where(w => w.Start > start &&
                                                                         (w.App == "AutoCAD" || w.App == "Civil") &&
                                                                         w.EventName == "Открытие" &&
                                                                         w.UserName.ToLower() == login)

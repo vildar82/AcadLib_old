@@ -70,22 +70,21 @@
                 {
                     try
                     {
-                        Notify.ShowOnScreen(msg,
-                            NotifyType.Warning,
-                            new NotifyMessageOptions
+                        var opt = new NotifyMessageOptions
+                        {
+                            FontSize = 16,
+                            NotificationClickAction = () =>
                             {
-                                FontSize = 16,
-                                NotificationClickAction = () =>
+                                if (updateVersions?.Any() == true)
                                 {
-                                    if (updateVersions?.Any() == true)
+                                    foreach (var updateVersion in updateVersions)
                                     {
-                                        foreach (var updateVersion in updateVersions)
-                                        {
-                                            NotNotifyGroups[updateVersion.GroupName] = updateVersion.VersionServerDate;
-                                        }
+                                        NotNotifyGroups[updateVersion.GroupName] = updateVersion.VersionServerDate;
                                     }
                                 }
-                            });
+                            }
+                        };
+                        Notify.ShowOnScreen(msg, NotifyType.Warning, opt);
                         Logger.Log.Info($"CheckUpdatesNotify '{msg}'");
                     }
                     catch (Exception ex)
