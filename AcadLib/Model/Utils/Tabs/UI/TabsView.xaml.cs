@@ -1,6 +1,7 @@
 ﻿namespace AcadLib.Utils.Tabs.UI
 {
     using System;
+    using System.Windows;
     using System.Windows.Controls;
     using NetLib.WPF.Data;
 
@@ -21,6 +22,17 @@
             {
                 var tab = (TabVM)r.DataContext;
                 tab.Restore = !tab.Restore;
+                e.Handled = true;
+            }
+        }
+
+        private void Row_Select(object sender, RoutedEventArgs e)
+        {
+            if (sender is DataGridRow r)
+            {
+                var tab = (TabVM)r.DataContext;
+                tab.Restore = !tab.Restore;
+                e.Handled = true;
             }
         }
 

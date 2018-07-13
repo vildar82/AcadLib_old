@@ -6,15 +6,27 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:WpfApplication1"
 	xmlns:wpf1="clr-namespace:NetLib.WPF;assembly=NetLib"
-    xmlns:controls="clr-namespace:AcadLib.WPF.Controls;assembly=AcadLib"
 	d:DataContext="{d:DesignInstance local:Model, d:IsDesignTimeCreatable=True}"
     mc:Ignorable="d"
-    Title="MainWindow" Height="68.173" Width="170.783">
-    <StackPanel>
-		 <controls:TransparenceSlider Transparence="{Binding Transparence, UpdateSourceTrigger=PropertyChanged}"/>
-		<TextBlock Text="{Binding Transparence}"/>
-		<BulletDecorator></BulletDecorator>
-		<Button Command="{Binding ShowDialog}" Content="Dialog"/>
-		<Button Command="{Binding TestErrors}"/>
-	</StackPanel>
+    Title="MainWindow">
+    <Window.Resources>
+        <Style x:Key="DgRow" TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+            <EventSetter Event="Selected" Handler="RowSelected" />
+            <EventSetter Event="MouseDown" Handler="RowClick" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True"
+                  RowStyle="{StaticResource DgRow}" MouseLeftButtonDown="DgClick" >
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Restore">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="local:Item">
+                            <CheckBox IsChecked="{Binding Restore, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
 </wpf1:BaseWindow>

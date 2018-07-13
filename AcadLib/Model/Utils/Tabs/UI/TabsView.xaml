@@ -14,6 +14,7 @@
                 d:DataContext="{d:DesignInstance local:TabsVM}"
                 ShowMaxRestoreButton="False"
                 ShowMinButton="False"
+                Topmost="True"
                 mc:Ignorable="d"
                 x:Name="Win"
                 Title="Открытие чертежей">
@@ -72,6 +73,7 @@
                 </Setter.Value>
             </Setter>
             <EventSetter Event="MouseDown" Handler="Row_Click" />
+            <EventSetter Event="Selected" Handler="Row_Select" />
             <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick"/>
             <EventSetter Event="ToolTipOpening" Handler="EventSetter_OnHandler"/>
         </Style>
@@ -99,7 +101,7 @@
                                         SortMemberPath="Restore" Width="{Binding RestoreTabsColRestoreWidth, Source={x:Static properties:Settings.Default}, 
                     Converter={converters:DataGridLengthConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                         <DataGridTemplateColumn.Header>
-                            <CheckBox IsChecked="{Binding DataContext.CheckAllTabs, ElementName=Win}"
+                            <CheckBox IsChecked="{Binding DataContext.CheckAllTabs, ElementName=Win, UpdateSourceTrigger=PropertyChanged}"
                                   FlowDirection="RightToLeft">
                                 <TextBlock Text="ОТКРЫТЬ" FlowDirection="LeftToRight" />
                             </CheckBox>

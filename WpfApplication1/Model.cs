@@ -1,69 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using AcadLib.Errors;
-using AcadLib.Errors.UI;
-using AcadLib.WPF;
-using NetLib;
-using NetLib.WPF;
-using PIK_GP_Civil.Parkings.Area;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using WpfApplication1.Dialog;
-
-namespace WpfApplication1
+﻿namespace WpfApplication1
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows;
+    using NetLib.WPF;
+
     public class Model : BaseViewModel
     {
-        private Random r = new Random();
         public Model()
         {
-            ShowDialog = CreateCommand(ShowDialogExecute);
-            TestErrors = CreateCommand(TestErrorsExec);
+            //var events = EventManager.GetRoutedEvents();
+            //foreach (var routedEvent in events)
+            //{
+            //    EventManager.RegisterClassHandler(typeof(Window), 
+            //        routedEvent, 
+            //        new RoutedEventHandler(handler));
+            //}
+
+            Items = Enumerable.Range(1, 5).Select(s => new Item {  }).ToList();
         }
 
-        [Reactive] public byte Transparence { get; set; } = 50;
-        public ReactiveCommand ShowDialog { get; set; }
-        public ICommand TestErrors { get; set; }
-
-        private void ShowDialogExecute()
+        private void handler(object sender, RoutedEventArgs e)
         {
-            var dialogVM = new DialogViewModel();
-            var dialogView = new DialogView(dialogVM);
-            if (dialogView.ShowDialog() == true)
-            {
-                MessageBox.Show(dialogVM.Value);
-            }
+            Console.WriteLine("RoutedEvent: " + e.OriginalSource + "=>" + e.RoutedEvent + "; " + e.Source);
         }
 
-        private void TestErrorsExec()
-        {
-            var errors = new List<IError>();
-            for (var i = 0; i < 100; i++)
-            {
-                for (var j = 0; j < i; j++)
-                {
-                    var err = new Error(Enumerable.Range(0, i).JoinToString());
-                    //if (i.IsOdd())
-                    {
-                        err.Background = Color.FromArgb(r.Next(0, 255), r.Next(0, 255), r.Next(0, 255));
-                        err.AddButtons = new List<ErrorAddButton>
-                        {
-                            new ErrorAddButton {Name = "Test", Tooltip = "Tttt"},
-                            new ErrorAddButton {Name = "Test2"},
-                        };
-                    }
-                    errors.Add(err);
-                }
-            }
-            var errVM = new ErrorsViewModel(errors) { IsDialog = true };
-            var errView = new ErrorsView(errVM);
-            errView.Show();
-        }
+        public List<Item> Items { get; set; }
+    }
+
+    public class Item : BaseModel
+    {
+        public bool Restore { get; set; }
     }
 }
