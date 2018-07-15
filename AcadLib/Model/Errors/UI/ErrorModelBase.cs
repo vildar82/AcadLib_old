@@ -22,7 +22,7 @@ namespace AcadLib.Errors
         {
             MarginHeader = new Thickness(2);
             firstErr = err;
-            Show = ReactiveCommand.Create(OnShowExecute);
+            Show = CreateCommand(OnShowExecute);
             if (firstErr.Icon != null)
             {
                 Image = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(

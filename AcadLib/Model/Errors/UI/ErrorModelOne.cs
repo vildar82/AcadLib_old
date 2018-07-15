@@ -64,7 +64,7 @@
 
         private void AddVisualButton()
         {
-            var visCommand = ReactiveCommand.Create(AddVisualsToDrawing, Observable.Start(() => Error?.Visuals?.Any() == true));
+            var visCommand = CreateCommand(AddVisualsToDrawing, Observable.Start(() => Error?.Visuals?.Any() == true));
             var visButton = new ErrorAddButton
             {
                 Name = "Отрисовка",

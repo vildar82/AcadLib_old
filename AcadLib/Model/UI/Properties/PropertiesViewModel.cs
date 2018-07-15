@@ -11,7 +11,7 @@
         public PropertiesViewModel(object value, [CanBeNull] Func<object, object> reset = null)
         {
             Value = value;
-            OK = ReactiveCommand.Create(() => DialogResult = true);
+            OK = CreateCommand(() => DialogResult = true);
             Reset = CreateCommand(() =>
             {
                 if (reset != null)
