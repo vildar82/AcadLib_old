@@ -81,6 +81,14 @@
         }
 
         /// <summary>
+        /// Id текущего процесса
+        /// </summary>
+        public static int GetCurrentAcadProcessId()
+        {
+            return Process.GetCurrentProcess().Id;
+        }
+
+        /// <summary>
         /// Определение, что только один автокад запущен
         /// </summary>
         public static bool IsOneAcadRun()

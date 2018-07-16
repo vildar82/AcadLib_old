@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2008AE5D-550A-4478-A9B5-297832058377}</ProjectGuid>
     <OutputType>Library</OutputType>
-	<CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AcadLib</RootNamespace>
     <AssemblyName>AcadLib</AssemblyName>
@@ -825,7 +825,7 @@
       <Version>4.5.6</Version>
     </PackageReference>
     <PackageReference Include="PathChecker">
-      <Version>1.0.4</Version>
+      <Version>1.1.4</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
       <Version>2.5.8</Version>

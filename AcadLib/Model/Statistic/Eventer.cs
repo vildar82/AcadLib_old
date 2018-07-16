@@ -1,13 +1,16 @@
 ﻿namespace AcadLib.Statistic
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using AcadLib;
     using FileLog.Client;
     using FileLog.Entities;
     using JetBrains.Annotations;
     using Naming.Dto;
+    using NetLib;
     using NetLib.AD;
     using PathChecker;
 
@@ -27,6 +30,15 @@
         private DateTime StartEvent { get; set; }
 
         private string Version { get; }
+
+        [NotNull]
+        private readonly List<string> _exceptedUsers = new List<string>
+        {
+            "PrudnikovVS",
+            "vrublevskiyba",
+            "arslanovti",
+            "karadzhayanra"
+        };
 
         /// <summary>
         /// Конструктор
@@ -102,12 +114,11 @@
         public CheckResultDto Start([CanBeNull] string @case, [CanBeNull] string docPath)
         {
             CheckResultDto checkResultDto = null;
-            if (docPath != null && !General.IsBimUser)
+            if (NeedCheck(docPath))
             {
                 try
                 {
-                    checkResultDto = _pathChecker.Check(AppType, @case, docPath,
-                        @"https://pikipedia.pik.ru/wiki/Правила_именования_папок_и_файлов_на_WIP");
+                    checkResultDto = _pathChecker.Check(AppType, @case, docPath);
                 }
                 catch (Exception ex)
                 {
@@ -118,6 +129,18 @@
             StartEvent = DateTime.Now;
 
             return checkResultDto;
+        }
+
+        private bool NeedCheck(string docPath)
+        {
+            // Если путь пустой - то не нужно проверять нейминг (новый чертеж)
+            // Если пользователь из списка исключений (бимам типа не нужно проверять)
+            return docPath != null && !IsExceptedUser();
+        }
+
+        private bool IsExceptedUser()
+        {
+            return _exceptedUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
         }
 
         private static UserData GetUserDataAd()
