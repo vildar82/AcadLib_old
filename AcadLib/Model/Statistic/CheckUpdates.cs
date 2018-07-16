@@ -30,7 +30,6 @@
         /// Отключенные уведомления групп пользователем
         /// </summary>
         private static readonly Dictionary<string, DateTime> NotNotifyGroups = new Dictionary<string, DateTime>();
-        private static Timer timer;
         private static List<string> serverFilesVer;
         private static List<FileWatcherRx> watchers;
         private static bool isNotify;
@@ -104,8 +103,8 @@
             isNotify = GetNotifySettngsValue();
             if (!isNotify)
                 return;
-            timer = new Timer(o => CheckUpdatesNotify(true), null, TimeSpan.FromSeconds(5), TimeSpan.FromHours(2));
             Changes.Throttle(TimeSpan.FromMilliseconds(1000)).Subscribe(s => Application.Idle += Application_Idle);
+            Application.Idle += Application_Idle;
         }
 
         private static void Application_Idle(object sender, EventArgs e)
@@ -116,7 +115,6 @@
 
         private static void Stop()
         {
-            timer?.Dispose();
             if (watchers?.Any() == true)
             {
                 foreach (var watcher in watchers)
@@ -136,13 +134,10 @@
         /// Есть ли обновление настроек
         /// </summary>
         /// <param name="includeUserNotNotify">включая отключенные пользователем обновления групп</param>
-        /// <param name="msg"></param>
+        /// <param name="msg">Сообщение</param>
         /// <param name="updateVersions">Обновленные группы настроек</param>
         /// <returns>True - есть новая версия</returns>
-        private static bool Check(
-            bool includeUserNotNotify,
-            [CanBeNull] out string msg,
-            [CanBeNull] out List<GroupInfo> updateVersions)
+        private static bool Check(bool includeUserNotNotify,[CanBeNull] out string msg,[CanBeNull] out List<GroupInfo> updateVersions)
         {
             try
             {
@@ -160,9 +155,9 @@
                 if (updateVersions.Any())
                 {
                     var updates = updateVersions.JoinToString(v =>
-                        $"{v?.GroupName} от {v?.VersionServerDate:dd.MM.yy HH:mm}" +
+                        $"{v?.GroupName} {v?.VersionServer} от {v?.VersionServerDate:dd.MM.yy HH:mm}" +
                         $"{(v?.UpdateDescription.IsNullOrEmpty() == true ? string.Empty : $"\n'{v?.UpdateDescription}'")}", "\n");
-                    msg = $"Обновления:\n{updates}";
+                    msg = $"Доступны обновления:\n{updates}";
                     return true;
                 }
             }

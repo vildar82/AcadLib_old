@@ -98,7 +98,7 @@ namespace AcadLib
                     return;
                 }
 
-                Notify.SetScreenSettings(new NotifyOptions(with: 400, lifeTime: TimeSpan.FromSeconds(10)));
+                Notify.SetScreenSettings(new NotifyOptions(with: 400));
                 CheckUpdates.Start();
 
                 if (Settings.Default.UpgradeRequired)
