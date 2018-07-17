@@ -146,6 +146,7 @@ namespace AcadLib
 
         public void Terminate()
         {
+            RibbonBuilder.SaveActiveTab();
             Logger.Log.Info("Terminate AcadLib");
         }
 

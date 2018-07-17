@@ -208,12 +208,24 @@
                     tab.PropertyChanged += Tab_PropertyChanged;
                 }
 
+                var activeTab = (RibbonTab)ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == ribbonOptions.Data.ActiveTab)?.Item;
+                if (activeTab != null)
+                {
+                    ribbon.ActiveTab = activeTab;
+                }
+
                 ribbon.Tabs.CollectionChanged += Tabs_CollectionChanged;
             }
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, "CreateRibbon");
             }
+        }
+
+        public static void SaveActiveTab()
+        {
+            ribbonOptions.Data.ActiveTab = ribbon.ActiveTab.UID;
+            SaveOptions();
         }
 
         [NotNull]

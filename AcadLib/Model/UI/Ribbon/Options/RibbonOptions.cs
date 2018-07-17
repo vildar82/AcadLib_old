@@ -8,5 +8,7 @@
     public class RibbonOptions
     {
         public List<ItemOptions> Tabs { get; set; } = new List<ItemOptions>();
+
+        public string ActiveTab { get; set; }
     }
 }
