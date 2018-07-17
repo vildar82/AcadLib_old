@@ -10,14 +10,10 @@
     /// Данные хранимые в файле json на сервере, с локальным кэшем
     /// </summary>
     [PublicAPI]
-    [Obsolete]
     public class JsonData<T>
+        where T : class, new()
     {
-        // ReSharper disable once MemberCanBePrivate.Global
-        public readonly string LocalFile;
-
-        // ReSharper disable once MemberCanBePrivate.Global
-        public readonly string ServerFile;
+        private FileData<T> fileData;
 
         /// <summary>
         /// Данные хранимые в файле json на сервере, с локальным кэшем
@@ -26,8 +22,9 @@
         /// <param name="name">Имя файла - без расширения (всегда .json)</param>
         public JsonData([NotNull] string plugin, [NotNull] string name)
         {
-            ServerFile = Path.GetSharedFile(plugin, name + ".json");
-            LocalFile = Path.GetUserPluginFile(plugin, name + ".json");
+            var serverFile = Path.GetSharedFile(plugin, name + ".json");
+            var localFile = Path.GetUserPluginFile(plugin, name + ".json");
+            fileData = new FileData<T>(serverFile, localFile, false);
         }
 
         // ReSharper disable once StaticMemberInGenericType
@@ -36,14 +33,14 @@
         [CanBeNull]
         public T Load()
         {
-            Copy();
-            return !File.Exists(LocalFile) ? default : LocalFile.Deserialize<T>();
+            fileData.Load();
+            return fileData.Data;
         }
 
         public void Save(T data)
         {
-            data.Serialize(ServerFile);
-            Copy();
+            fileData.Data = data;
+            fileData.Save();
         }
 
         [CanBeNull]
@@ -68,20 +65,6 @@
             catch (Exception ex)
             {
                 Logger.Error(ex);
-            }
-        }
-
-        private void Copy()
-        {
-            if (!File.Exists(ServerFile))
-                return;
-            try
-            {
-                File.Copy(ServerFile, LocalFile, true);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "JsonData копирование файла с сервера локально.");
             }
         }
     }

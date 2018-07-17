@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
     using System.Collections.Generic;
@@ -26,7 +25,6 @@ namespace AcadLib
             Db = HostApplicationServices.WorkingDatabase;
         }
 
-        // ReSharper disable once UnusedParameter.Local
         public DictNOD(string innerDict, bool hasInnerDict)
         {
             dictName = ExtDicHelper.PikApp;
@@ -42,6 +40,22 @@ namespace AcadLib
         }
 
         public Database Db { get; set; }
+
+        public void SaveJson(string json)
+        {
+            var dic = new DicED("json");
+            var tvk = new TypedValueExtKit();
+            tvk.Add("json", json);
+            dic.AddRec("json", tvk.Values);
+            Save(dic);
+        }
+
+        public string LoadJson()
+        {
+            var dic = LoadED("json");
+            var dv = dic?.GetRec("json")?.Values.ToDictionary();
+            return dv.GetTypedValue<string>("json");
+        }
 
         /// <summary>
         /// Чтение списка записей для заданной XRecord по имени

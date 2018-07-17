@@ -110,9 +110,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         [Obsolete("Use DictBlockNames")]
         public static string GetEffectiveName([NotNull] this BlockReference br)
         {
-#pragma warning disable 618
             using (var btrDyn = (BlockTableRecord)br.DynamicBlockTableRecord.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 return btrDyn.Name;
             }

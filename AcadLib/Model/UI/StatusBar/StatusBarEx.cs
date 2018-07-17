@@ -52,7 +52,7 @@
             return pane;
         }
 
-        public static void AddPane(
+        public static Pane AddPane(
             string name,
             string toolTip,
             [CanBeNull] Action<Pane, StatusBarMouseDownEventArgs> onClick = null,
@@ -76,6 +76,7 @@
             Application.StatusBar.Panes.Insert(0, pane);
             pane.Visible = true;
             Application.StatusBar.Update();
+            return pane;
         }
 
         public static void AddPaneUserGroup()

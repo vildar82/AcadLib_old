@@ -10,7 +10,7 @@ namespace AcadLib
     [PublicAPI]
     public static class TypedValueExt
     {
-        public static T GetValue<T>([CanBeNull] this Dictionary<string, object> dictValues, string name, T defaultValue)
+        public static T GetTypedValue<T>([CanBeNull] this Dictionary<string, object> dictValues, string name, T defaultValue = default)
         {
             if (dictValues == null)
                 return defaultValue;
@@ -29,6 +29,12 @@ namespace AcadLib
             }
 
             return defaultValue;
+        }
+
+        [Obsolete("Use GetTypedValue")]
+        public static T GetValue<T>([CanBeNull] this Dictionary<string, object> dictValues, string name, T defaultValue)
+        {
+            return GetTypedValue(dictValues, name, defaultValue);
         }
 
         public static IEnumerable<KeyValuePair<string, object>> ToListPairs([CanBeNull] this IEnumerable<TypedValue> values)

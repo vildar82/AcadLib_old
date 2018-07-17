@@ -15,9 +15,7 @@
         {
             if (!dict.TryGetValue(blRef.DynamicBlockTableRecord, out var blName))
             {
-#pragma warning disable 618
                 blName = blRef.GetEffectiveName();
-#pragma warning restore 618
                 dict[blRef.DynamicBlockTableRecord] = blName;
             }
 
