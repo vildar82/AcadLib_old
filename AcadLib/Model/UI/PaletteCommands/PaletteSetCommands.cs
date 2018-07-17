@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib.PaletteCommands
+﻿namespace AcadLib.PaletteCommands
 {
     using System;
     using System.Collections.Generic;

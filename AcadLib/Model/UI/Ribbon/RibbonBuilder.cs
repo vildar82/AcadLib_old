@@ -1,7 +1,4 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2017 08 15 21:34
-
-namespace AcadLib.UI.Ribbon
+﻿namespace AcadLib.UI.Ribbon
 {
     using System;
     using System.Collections.Generic;
@@ -38,7 +35,9 @@ namespace AcadLib.UI.Ribbon
             ribbonOptions = FileDataExt.GetLocalFileData<RibbonOptions>("Ribbon", "RibbonOptions", false);
             ribbonOptions.TryLoad();
             if (ribbonOptions.Data == null)
+            {
                 ribbonOptions.Data = new RibbonOptions();
+            }
         }
 
         public static void InitRibbon()
@@ -66,9 +65,13 @@ namespace AcadLib.UI.Ribbon
             }
         }
 
-        private static void AddItem<T>(int index, [NotNull] T item, [NotNull] IList<T> items) where T : IRibbonContentUid
+        private static void AddItem<T>(int index, [NotNull] T item, [NotNull] IList<T> items)
+            where T : IRibbonContentUid
         {
-            if (index > items.Count) index = ribbon.Tabs.Count;
+            if (index > items.Count)
+            {
+                index = ribbon.Tabs.Count;
+            }
             else if (index < 0)
             {
                 items.Add(item);
@@ -198,6 +201,8 @@ namespace AcadLib.UI.Ribbon
                 foreach (var tabOpt in tabsOpt)
                 {
                     var tab = (RibbonTab)tabOpt.Item;
+                    if (tab == null)
+                        continue;
                     AddItem(tabOpt.Index, tab, ribbon.Tabs);
                     tab.Panels.CollectionChanged += Panels_CollectionChanged;
                     tab.PropertyChanged += Tab_PropertyChanged;
@@ -235,11 +240,18 @@ namespace AcadLib.UI.Ribbon
                 UID = tabName
             };
             var tabOptions = GetItemOptions(tab, ribbonOptions.Data.Tabs);
+            ribbonOptions.Data.Tabs = ribbonOptions.Data.Tabs.Where(w => w.Item != null).ToList();
             tab.IsVisible = tabOptions.IsVisible;
             tabOptions.Items = elements.GroupBy(g => g.Panel).Select(p => CreatePanel(p.Key, p.ToList(), tabOptions))
                 .OrderBy(o => o.Index).ToList();
             foreach (var panelOpt in tabOptions.Items)
-                tab.Panels.Add((RibbonPanel)panelOpt.Item);
+            {
+                var panel = (RibbonPanel)panelOpt.Item;
+                if (panel == null)
+                    continue;
+                tab.Panels.Add(panel);
+            }
+
             return tabOptions;
         }
 
@@ -259,7 +271,10 @@ namespace AcadLib.UI.Ribbon
                 itemOptions.Add(tabOption);
             }
             else
+            {
                 tabOption.Item = item;
+            }
+
             return tabOption;
         }
 
@@ -327,10 +342,14 @@ namespace AcadLib.UI.Ribbon
             foreach (var tabOpt in ribbonOptions.Data.Tabs)
             {
                 var tab = (RibbonTab)tabOpt.Item;
+                if (tab == null)
+                    continue;
                 tabOpt.IsVisible = tab.IsVisible;
                 foreach (var panelOpt in tabOpt.Items)
                 {
                     var panel = (RibbonPanel)panelOpt.Item;
+                    if (panel == null)
+                        continue;
                     panelOpt.IsVisible = panel.IsVisible;
                 }
             }
@@ -360,7 +379,7 @@ namespace AcadLib.UI.Ribbon
                 {
                     var index = ribbon.Tabs.IndexOf((RibbonTab)tab.Item);
                     if (index == -1)
-                        return;
+                        continue;
                     tab.Index = index;
                 }
 
