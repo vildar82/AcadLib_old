@@ -1,26 +1,17 @@
 ﻿namespace AcadLib.Utils.Tabs.History.Db
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Core.EntityClient;
     using System.Data.SqlClient;
-    using System.Diagnostics;
     using System.Linq;
-    using System.Reactive.Disposables;
-    using System.Reactive.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using AutoMapper.QueryableExtensions;
-    using DynamicData;
     using JetBrains.Annotations;
     using Model.Utils.Tabs.History.Db;
-    using NetLib;
-    using Properties;
 
     public class DbHistory
     {
-        [NotNull] private Entities db;
+        [NotNull]
+        private readonly Entities _db;
 
         public DbHistory()
         {
@@ -39,9 +30,9 @@
                 Metadata = @"res://*/Model.Utils.Tabs.History.Db.DbEvents.csdl|res://*/Model.Utils.Tabs.History.Db.DbEvents.ssdl|res://*/Model.Utils.Tabs.History.Db.DbEvents.msl"
             };
             var con = conBuilder.ToString();
-            db = new Entities(con);
-            db.Configuration.AutoDetectChangesEnabled = false;
-            db.Configuration.LazyLoadingEnabled = true;
+            _db = new Entities(con);
+            _db.Configuration.AutoDetectChangesEnabled = false;
+            _db.Configuration.LazyLoadingEnabled = true;
         }
 
         [NotNull]
@@ -49,7 +40,7 @@
         {
             var now = DateTime.Now;
             var login = Environment.UserName.ToLower();
-            return db.StatEvents.AsNoTracking().Where(w => (w.App == "AutoCAD" || w.App == "Civil") &&
+            return _db.StatEvents.AsNoTracking().Where(w => (w.App == "AutoCAD" || w.App == "Civil") &&
                                                            w.EventName == "Открытие" &&
                                                            DbFunctions.DiffDays(w.Start, now) < 100 &&
                                                            w.UserName.ToLower() == login)
@@ -60,7 +51,7 @@
         public IQueryable<StatEvents> LoadHistoryFiles(DateTime start)
         {
             var login = Environment.UserName.ToLower();
-            return db.StatEvents.AsNoTracking().Where(w => w.Start > start &&
+            return _db.StatEvents.AsNoTracking().Where(w => w.Start > start &&
                                                                         (w.App == "AutoCAD" || w.App == "Civil") &&
                                                                         w.EventName == "Открытие" &&
                                                                         w.UserName.ToLower() == login)

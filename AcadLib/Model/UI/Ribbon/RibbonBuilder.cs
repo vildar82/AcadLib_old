@@ -222,10 +222,28 @@
             }
         }
 
+        private static void Tab_PropertyChanged(object sender, [NotNull] PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(RibbonTab.IsVisible):
+                    var tab = (RibbonTab)sender;
+                    var tabOpt = ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == tab.UID);
+                    if (tabOpt == null)
+                        return;
+                    tabOpt.IsVisible = tab.IsVisible;
+                    SaveOptions();
+                    break;
+                case nameof(RibbonTab.IsActive):
+                    SaveActiveTab();
+                    break;
+            }
+        }
+
         public static void SaveActiveTab()
         {
             ribbonOptions.Data.ActiveTab = ribbon.ActiveTab.UID;
-            SaveOptions();
+            ribbonOptions.TrySave();
         }
 
         [NotNull]
@@ -368,19 +386,6 @@
 
             Debug.WriteLine("RibbonBuilder SaveOptions");
             ribbonOptions.TrySave();
-        }
-
-        private static void Tab_PropertyChanged(object sender, [NotNull] PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "IsVisible")
-            {
-                var tab = (RibbonTab)sender;
-                var tabOpt = ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == tab.UID);
-                if (tabOpt == null)
-                    return;
-                tabOpt.IsVisible = tab.IsVisible;
-                SaveOptions();
-            }
         }
 
         private static void Tabs_CollectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)

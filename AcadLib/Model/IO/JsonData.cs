@@ -27,7 +27,6 @@
             fileData = new FileData<T>(serverFile, localFile, false);
         }
 
-        // ReSharper disable once StaticMemberInGenericType
         private static ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         [CanBeNull]

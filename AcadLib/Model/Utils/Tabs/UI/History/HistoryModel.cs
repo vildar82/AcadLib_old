@@ -1,11 +1,13 @@
 ﻿namespace AcadLib.Utils.Tabs.UI.History
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using IO;
     using JetBrains.Annotations;
     using NetLib;
+    using Path = IO.Path;
 
     public static class HistoryModel
     {
@@ -25,6 +27,12 @@
                 var data = new LocalFileData<List<HistoryTab>>(GetHistoryFile(), false) { Data = historyTabs };
                 data.TrySave();
             }
+        }
+
+        public static bool NeedUpdateCashe()
+        {
+            var casheData = File.GetLastWriteTime(GetHistoryFile());
+            return (DateTime.Now - casheData).TotalDays > 10;
         }
 
         [NotNull]

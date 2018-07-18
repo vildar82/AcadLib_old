@@ -86,15 +86,6 @@
             };
         }
 
-        public override void OnClosed()
-        {
-            Task.Run(() =>
-            {
-                HistoryModel.SaveHistoryCache(history.Select(s => new HistoryTab { File = s.File, Start = s.Start })
-                    .OrderByDescending(o => o.Start).Distinct().ToList());
-            });
-        }
-
         private void OkExec()
         {
             DialogResult = true;
@@ -157,6 +148,18 @@
                 foreach (var tab in removeTabs)
                 {
                     dispatcher.Invoke(() => history.Remove(tab));
+                }
+            });
+
+            // Загрузка из базы и сохранение в кеш
+            Task.Run(() =>
+            {
+                if (!cache.Any() || HistoryModel.NeedUpdateCashe())
+                {
+                    var dbItems = new DbHistory().LoadHistoryFiles().ToList();
+                    var tabs = dbItems.Select(s => new HistoryTab { File = s.DocPath, Start = s.Start })
+                        .GroupBy(g => g.File).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault()).ToList();
+                    HistoryModel.SaveHistoryCache(tabs);
                 }
             });
         }
