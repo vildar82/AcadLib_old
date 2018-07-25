@@ -30,6 +30,8 @@
 
         public LineWeight LwBold { get; set; } = LineWeight.LineWeight050;
 
+        public int RowHeight { get; set; } = 8;
+
         public int NumColumns { get; set; }
 
         public int NumRows { get; set; }
@@ -82,7 +84,7 @@
 
             table.SetSize(NumRows, NumColumns);
             table.SetBorders(LwBold);
-            table.SetRowHeight(8);
+            table.SetRowHeight(RowHeight);
 
             // Название таблицы
             var rowTitle = table.Cells[0, 0];

@@ -349,9 +349,7 @@
             if (blRef.IsDynamicBlock)
             {
                 IdBtrDyn = blRef.DynamicBlockTableRecord;
-#pragma warning disable 618
                 IdBtrAnonym = blRef.AnonymousBlockTableRecord;
-#pragma warning restore 618
             }
 
             BlLayer = blRef.Layer;
