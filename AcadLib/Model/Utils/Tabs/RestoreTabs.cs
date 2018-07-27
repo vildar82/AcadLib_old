@@ -189,7 +189,6 @@
 
         private static void DocumentManager_DocumentLockModeChanged(object sender, [NotNull] DocumentLockModeChangedEventArgs e)
         {
-            Debug.WriteLine($"DocumentManager_DocumentLockModeChanged - {e.GlobalCommandName}.");
             switch (e.GlobalCommandName)
             {
                 case "":

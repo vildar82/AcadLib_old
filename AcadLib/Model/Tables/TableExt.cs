@@ -89,10 +89,9 @@ namespace AcadLib
         private static Extents3d OffsetExtToMarginCell(Extents3d ext, [NotNull] Cell cell)
         {
             return new Extents3d(
-                new Point3d(ext.MinPoint.X - cell.Borders.Horizontal.Margin ?? 0, ext.MinPoint.Y - cell.Borders.Top.Margin ?? 0,
-                    0),
-                new Point3d(ext.MaxPoint.X + cell.Borders.Horizontal.Margin ?? 0, ext.MaxPoint.Y + cell.Borders.Top.Margin ?? 0,
-                    0));
+                new Point3d(ext.MinPoint.X - cell.Borders.Horizontal.Margin ?? 0, ext.MinPoint.Y - cell.Borders.Top.Margin ?? 0, 0),
+                new Point3d(ext.MaxPoint.X + cell.Borders.Horizontal.Margin ?? 0, ext.MaxPoint.Y + cell.Borders.Top.Margin ?? 0, 0)
+                );
         }
 
         private static void SetCell([NotNull] CellBorder cell, LineWeight lw, bool visible)

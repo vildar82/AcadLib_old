@@ -62,11 +62,22 @@
 
         private static void DocumentManager_DocumentLockModeChanged(object sender, DocumentLockModeChangedEventArgs e)
         {
-            Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
-            if (veto)
+            if (e.GlobalCommandName == "QSAVE")
             {
-                veto = false;
-                e.Veto();
+                BeginSave(e.Document.Name);
+                if (veto)
+                {
+                    e.Veto();
+                    Debug.WriteLine($"DocumentManager_DocumentLockModeChanged Veto {e.GlobalCommandName}");
+                }
+                else
+                {
+                    Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
             }
         }
 
@@ -106,29 +117,29 @@
             var db = doc.Database;
             db.SaveComplete -= Db_SaveComplete;
             db.SaveComplete += Db_SaveComplete;
-            db.BeginSave -= Db_BeginSave;
-            db.BeginSave += Db_BeginSave;
 
             // Если запустили автокад открытием файла dwg из проводника.
             eventer.Start("open", null);
             eventer.Finish("Открытие", doc.Name, sn);
         }
 
-        private static void Db_BeginSave(object sender, [NotNull] DatabaseIOEventArgs e)
+        private static void BeginSave(string file)
         {
-            Debug.WriteLine($"Db_BeginSave {e.FileName}");
-            if (!IsDwg(e.FileName))
+            veto = false;
+            Debug.WriteLine($"Db_BeginSave {file}");
+            if (!IsDwg(file))
                 return;
-            if (IsCheckError(eventer.Start("save", e.FileName)))
+            if (IsCheckError(eventer.Start("save", file)))
             {
                 // Отменить сохранение файла
                 veto = true;
-                Debug.WriteLine($"Отменить сохранение {e.FileName}");
+                Debug.WriteLine($"Отменить сохранение {file}");
             }
         }
 
         private static void Db_SaveComplete(object sender, [NotNull] DatabaseIOEventArgs e)
         {
+            Debug.WriteLine($"Db_SaveComplete {e.FileName}");
             if (!IsDwg(e.FileName))
                 return;
             eventer.Finish("Сохранить", e.FileName, sn);
