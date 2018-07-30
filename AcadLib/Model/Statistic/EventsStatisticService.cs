@@ -9,7 +9,6 @@
     using Naming.Dto;
     using NetLib;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-    using General = AcadLib.General;
 
     public static class EventsStatisticService
     {
@@ -21,6 +20,7 @@
         {
             try
             {
+                CheckProductUser();
                 Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
                 eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion);
                 Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
@@ -36,6 +36,21 @@
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, "EventsStatisticService.Start");
+            }
+        }
+
+        private static void CheckProductUser()
+        {
+            try
+            {
+                if (UserInfo.IsProductUser)
+                {
+                    throw new Exception("Пользователь из Деп.Продукта - Статистика и нейминг пропущен.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "UserInfo.IsProductUser");
             }
         }
 

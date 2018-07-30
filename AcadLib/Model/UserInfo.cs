@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using IO;
     using JetBrains.Annotations;
     using MongoDblib.UsersData.Data;
@@ -17,6 +18,7 @@
                 using (var adUtils = new NetLib.AD.ADUtils())
                 {
                     UserGroupsAd = adUtils.GetCurrentUserGroups(out var fioAd);
+                    IsProductUser = UserGroupsAd.Any(g => g == "000883_Департамент продукта");
                     FioAD = fioAd;
                 }
 
@@ -43,6 +45,8 @@
         public static UserData UserData { get; set; }
 
         public static List<string> UserGroupsAd { get; set; }
+
+        public static bool IsProductUser { get; }
 
         public static void ShowUserProfileRegister()
         {
