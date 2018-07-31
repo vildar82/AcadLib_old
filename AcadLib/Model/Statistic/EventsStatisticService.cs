@@ -41,17 +41,18 @@
 
         private static void CheckProductUser()
         {
+            var isProductUser = false;
             try
             {
-                if (UserInfo.IsProductUser)
-                {
-                    throw new Exception("Пользователь из Деп.Продукта - Статистика и нейминг пропущен.");
-                }
+                isProductUser = UserInfo.IsProductUser;
             }
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, "UserInfo.IsProductUser");
             }
+
+            if (isProductUser)
+                throw new Exception("Пользователь из Деп.Продукта - Статистика и нейминг пропущен.");
         }
 
         [NotNull]
