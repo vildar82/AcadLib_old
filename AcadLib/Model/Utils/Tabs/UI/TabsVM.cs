@@ -22,11 +22,10 @@
     {
         private ReactiveList<TabVM> history = new ReactiveList<TabVM>();
 
-        public TabsVM([NotNull] IEnumerable<string> drawings, bool isOn)
+        public TabsVM([NotNull] IEnumerable<string> drawings)
         {
             try
             {
-                IsOn = isOn;
                 Tabs = drawings.Select(s => GetTab(s, true, DateTime.MinValue)).ToList();
                 Ok = CreateCommand(OkExec);
                 this.WhenAnyValue(v => v.CheckAllTabs).Skip(1).Subscribe(s => Tabs.ForEach(t => t.Restore = s));
@@ -50,8 +49,6 @@
 
         public ReactiveCommand Ok { get; set; }
 
-        public bool IsOn { get; set; }
-
         public bool CheckAllTabs { get; set; } = true;
 
         public bool HasHistory { get; set; }
@@ -65,18 +62,6 @@
         public string HistorySearch { get; set; }
 
         public IReactiveDerivedList<TabVM> History { get; set; }
-
-        public override void OnPropertyChanged(string propertyName = null)
-        {
-            switch (propertyName)
-            {
-                case nameof(IsOn):
-                    RestoreTabs.RestoreTabsIsOn(IsOn);
-                    break;
-            }
-
-            base.OnPropertyChanged(propertyName);
-        }
 
         private TabVM GetTab(string tab, bool restore, DateTime start)
         {

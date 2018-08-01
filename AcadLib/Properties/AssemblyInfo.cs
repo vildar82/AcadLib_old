@@ -1,5 +1,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
+using AcadLib;
+using Autodesk.AutoCAD.Runtime;
 
 // Управление общими сведениями о сборке осуществляется с помощью
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
@@ -14,5 +16,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("2008ae5d-550a-4478-a9b5-297832058377")] // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: AssemblyVersion("1.0.212.989")]
-[assembly: AssemblyFileVersion("1.0.212.989")]
+[assembly: CommandClass(typeof(Commands))]
+[assembly: ExtensionApplication(typeof(Commands))]
+[assembly: AssemblyVersion("1.0.213.991")]
+[assembly: AssemblyFileVersion("1.0.213.991")]

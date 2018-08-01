@@ -18,7 +18,9 @@
     {
         internal const string CommonName = "Общие";
         internal const string CommonParamNotify = "NotificationsOn";
-        [NotNull] private static LocalFileData<UserSettings> _userData;
+        [NotNull]
+        private static LocalFileData<UserSettings> _userData;
+        private static HashSet<string> _activePlugins = new HashSet<string>();
 
         static UserSettingsService()
         {
@@ -113,12 +115,14 @@
 
             plugin = new PluginSettings { Name = pluginName };
             _userData.Data.PluginSettings.Add(plugin);
+            _activePlugins.Add(pluginName);
             return plugin;
         }
 
         public static void RemovePlugin([NotNull] string pluginName)
         {
             _userData.Data.PluginSettings.RemoveAll(p => p.Name == pluginName);
+            _activePlugins.Remove(pluginName);
         }
 
         /// <summary>
@@ -167,6 +171,8 @@
         private static void CheckSettings()
         {
             var incorrectPlugins = new List<PluginSettings>();
+            _userData.Data.PluginSettings.Where(p => !_activePlugins.Contains(p.Name)).ToList()
+                .ForEach(p => _userData.Data.PluginSettings.Remove(p));
             foreach (var pluginSetting in _userData.Data.PluginSettings)
             {
                 if (pluginSetting.Name.IsNullOrEmpty() || !pluginSetting.Properties.Any())

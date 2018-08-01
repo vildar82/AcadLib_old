@@ -15,7 +15,6 @@
     using UI;
     using User;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-    using General = AcadLib.General;
 
     /// <summary>
     /// Восстановление ранее отурытых вкладок
@@ -26,22 +25,14 @@
         private const string ParamRestoreIsOn = "RestoreTabsOn";
         [NotNull] private static readonly List<Document> _tabs = new List<Document>();
         private static string cmd;
-        private static bool isOn;
         private static List<string> restoreTabs;
 
         public static void Init()
         {
             try
             {
-                isOn = IsOn();
-
                 // Добавление кнопки в статус бар
                 StatusBarEx.AddPane(string.Empty, "Откытие чертежей", (p, e) => Restore(), icon: Resources.restoreFiles16);
-                if (isOn)
-                {
-                    Restore();
-                }
-
                 Subscribe();
             }
             catch (Exception ex)
@@ -97,7 +88,7 @@
                 }
 
                 restoreTabs = restoreTabs?.Except(openedDraws, StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
-                var tabVM = new TabsVM(restoreTabs, isOn);
+                var tabVM = new TabsVM(restoreTabs);
                 var tabsView = new TabsView(tabVM);
                 if (tabsView.ShowDialog() == true)
                 {
@@ -155,16 +146,6 @@
 
         private static void Subscribe()
         {
-            if (!isOn)
-            {
-                Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
-                Application.DocumentManager.DocumentDestroyed -= DocumentManager_DocumentDestroyed;
-                Application.DocumentManager.DocumentLockModeChanged -= DocumentManager_DocumentLockModeChanged;
-                NetLib.IO.Path.TryDeleteFile(GetFile());
-                _tabs.Clear();
-                return;
-            }
-
             foreach (Document doc in Application.DocumentManager)
             {
                 AddTab(doc);
@@ -208,7 +189,8 @@
             _tabs.Add(doc);
             doc.Database.SaveComplete -= Database_SaveComplete;
             doc.Database.SaveComplete += Database_SaveComplete;
-            SaveTabs();
+            if (doc.IsNamedDrawing)
+                SaveTabs();
         }
 
         private static void Database_SaveComplete(object sender, Autodesk.AutoCAD.DatabaseServices.DatabaseIOEventArgs e)
@@ -225,8 +207,6 @@
 
         private static void SaveTabs()
         {
-            if (!isOn)
-                return;
             Debug.WriteLine("SaveTabs");
             var drawings = _tabs.Where(w => w?.Database != null && w.IsNamedDrawing).Select(s => s.Name).ToList();
             var tabsData = new LocalFileData<Tabs>(GetFile(), false) { Data = new Tabs { Drawings = drawings } };
@@ -243,40 +223,6 @@
         private static void DocumentManager_DocumentCreated(object sender, DocumentCollectionEventArgs e)
         {
             AddTab(e?.Document);
-        }
-
-        private static bool IsOn()
-        {
-            if (!UserSettingsService.IsPreviewUpdate)
-            {
-                UserSettingsService.RemovePlugin(PluginName);
-                return false;
-            }
-
-            var pluginSettings = UserSettingsService.GetPluginSettings(PluginName);
-            if (pluginSettings == null)
-            {
-                AddRestoreProperty(UserSettingsService.AddPluginSettings(PluginName));
-            }
-            else
-            {
-                var propRestore = UserSettingsService.GetPluginProperty(PluginName, ParamRestoreIsOn);
-                if (propRestore == null)
-                {
-                    AddRestoreProperty(pluginSettings);
-                }
-            }
-
-            void AddRestoreProperty(PluginSettings plugin)
-            {
-                plugin.Add(
-                    ParamRestoreIsOn,
-                    "Восстановление вкладок",
-                    "При старте автокада открывать ранее открытые вкладки чертежей.",
-                    true);
-            }
-
-            return UserSettingsService.GetPluginValue<bool>(PluginName, ParamRestoreIsOn);
         }
     }
 }

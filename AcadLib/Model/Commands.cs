@@ -1,13 +1,4 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2017 06 27 10:07
-
-using AcadLib;
-using Autodesk.AutoCAD.Runtime;
-
-[assembly: CommandClass(typeof(Commands))]
-[assembly: ExtensionApplication(typeof(Commands))]
-
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
     using System.Collections.Generic;

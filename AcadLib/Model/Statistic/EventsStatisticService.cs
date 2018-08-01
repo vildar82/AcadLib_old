@@ -164,7 +164,7 @@
         private static bool IsCheckError(CheckResultDto checkRes)
         {
 #if DEBUG
-            return checkRes?.Status == "Warning";
+            return checkRes?.Status == "Error";
 #endif
             return checkRes?.Status == "Error";
         }
