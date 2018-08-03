@@ -3,11 +3,14 @@
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Windows;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.Windows.Themes;
     using JetBrains.Annotations;
     using Naming.Dto;
     using NetLib;
+    using PathChecker;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
     public static class EventsStatisticService
@@ -15,6 +18,7 @@
         private static bool veto;
         private static string sn;
         private static Eventer eventer;
+        private static string overrideName;
 
         public static void Start()
         {
@@ -161,12 +165,72 @@
             eventer.Finish("Сохранить", e.FileName, sn);
         }
 
-        private static bool IsCheckError(CheckResultDto checkRes)
+        private static bool IsCheckError(PathCheckerResult checkRes)
         {
-#if DEBUG
-            return checkRes?.Status == "Error";
-#endif
-            return checkRes?.Status == "Error";
+            switch (checkRes.NexAction)
+            {
+                case NexAction.Proceed:
+                    return false;
+                case NexAction.SaveOverride:
+                    SaveOverride(checkRes.FilePathOverride);
+                    return true;
+                case NexAction.Cancel:
+                    return true;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static void SaveOverride(string overrideName)
+        {
+            EventsStatisticService.overrideName = overrideName;
+            Application.Idle += Application_Idle;
+        }
+
+        private static void Application_Idle(object sender, EventArgs e)
+        {
+            Application.Idle -= Application_Idle;
+            if (overrideName == null)
+                return;
+            var doc = AcadHelper.Doc;
+            var oldFile = doc.Name;
+            try
+            {
+                doc.Database.SaveAs(overrideName, DwgVersion.Current);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении файла как '{overrideName}' - {ex.Message}");
+                Logger.Log.Error(ex, $"SaveOverride.SaveAs - overrideName={overrideName}.");
+                return;
+            }
+
+            try
+            {
+                Application.DocumentManager.Open(overrideName, false);
+                overrideName = null;
+                doc.CloseAndDiscard();
+                BackupOldFile(oldFile);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"SaveOverride - oldFile={oldFile}, overrideName={overrideName}.");
+            }
+        }
+
+        private static void BackupOldFile(string oldFile)
+        {
+            if (!File.Exists(oldFile))
+                return;
+            var newName = $"{oldFile}.renamed";
+            try
+            {
+                File.Move(oldFile, newName);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"BackupOldFile - oldFile={oldFile}, newName={newName}.");
+            }
         }
 
         private static bool IsDwg(string fileName)

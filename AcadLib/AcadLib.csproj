@@ -779,6 +779,9 @@
     <PackageReference Include="AutoMapper">
       <Version>7.0.1</Version>
     </PackageReference>
+    <PackageReference Include="BimLab.PathChecker">
+      <Version>1.2.4.30916</Version>
+    </PackageReference>
     <PackageReference Include="CsvHelper">
       <Version>7.1.1</Version>
     </PackageReference>
@@ -823,9 +826,6 @@
     </PackageReference>
     <PackageReference Include="NLog">
       <Version>4.5.6</Version>
-    </PackageReference>
-    <PackageReference Include="PathChecker">
-      <Version>1.1.4</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
       <Version>2.5.8</Version>

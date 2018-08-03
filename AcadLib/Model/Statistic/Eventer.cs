@@ -13,6 +13,7 @@
     using NetLib;
     using NetLib.AD;
     using PathChecker;
+    using UserData = Naming.Dto.UserData;
 
     /// <summary>
     /// Класс для отправки событий
@@ -20,6 +21,7 @@
     public class Eventer
     {
         private readonly FlClient _client;
+        [NotNull]
         private readonly PathChecker _pathChecker;
         private UserData _userData;
 
@@ -111,14 +113,14 @@
         /// </summary>
         /// <param name="case">Кейс</param>
         /// <param name="docPath">Документ</param>
-        public CheckResultDto Start([CanBeNull] string @case, [CanBeNull] string docPath)
+        public PathCheckerResult Start([CanBeNull] string @case, [CanBeNull] string docPath)
         {
-            CheckResultDto checkResultDto = null;
+            PathCheckerResult pathCheckerResult = null;
             if (NeedCheck(docPath))
             {
                 try
                 {
-                    checkResultDto = _pathChecker.Check(AppType, @case, docPath);
+                    pathCheckerResult = _pathChecker.Check(AppType, @case, docPath, _userData);
                 }
                 catch (Exception ex)
                 {
@@ -128,7 +130,7 @@
 
             StartEvent = DateTime.Now;
 
-            return checkResultDto;
+            return pathCheckerResult;
         }
 
         private bool NeedCheck(string docPath)
@@ -143,11 +145,17 @@
             return _exceptedUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
         }
 
-        private static UserData GetUserDataAd()
+        private static Naming.Dto.UserData GetUserDataAd()
         {
             try
             {
-                return ADUtils.GetUserData(Environment.UserName, Environment.UserDomainName);
+                var userDataNL = ADUtils.GetUserData(Environment.UserName, Environment.UserDomainName);
+                return new Naming.Dto.UserData
+                {
+                    Position = userDataNL.Position,
+                    Department = userDataNL.Department,
+                    Fio = userDataNL.Fio
+                };
             }
             catch (Exception ex)
             {
