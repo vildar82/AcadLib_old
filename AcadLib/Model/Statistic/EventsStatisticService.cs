@@ -167,18 +167,23 @@
 
         private static bool IsCheckError(PathCheckerResult checkRes)
         {
-            switch (checkRes.NexAction)
+            if (checkRes != null)
             {
-                case NexAction.Proceed:
-                    return false;
-                case NexAction.SaveOverride:
-                    SaveOverride(checkRes.FilePathOverride);
-                    return true;
-                case NexAction.Cancel:
-                    return true;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                switch (checkRes.NexAction)
+                {
+                    case NexAction.Proceed:
+                        return false;
+                    case NexAction.SaveOverride:
+                        SaveOverride(checkRes.FilePathOverride);
+                        return true;
+                    case NexAction.Cancel:
+                        return true;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
+
+            return false;
         }
 
         private static void SaveOverride(string overrideName)
