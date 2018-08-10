@@ -6,9 +6,7 @@
     using System.Windows;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
-    using Autodesk.Windows.Themes;
     using JetBrains.Annotations;
-    using Naming.Dto;
     using NetLib;
     using PathChecker;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
@@ -19,6 +17,7 @@
         private static string sn;
         private static Eventer eventer;
         private static string overrideName;
+        private static Document _currentDoc;
 
         public static void Start()
         {
@@ -77,23 +76,66 @@
 
         private static void DocumentManager_DocumentToBeDestroyed(object sender, DocumentCollectionEventArgs e)
         {
-            eventer.Start("close", null);
+            eventer.Start(Case.Default, null);
         }
 
         private static void DocumentManager_DocumentLockModeChanged(object sender, DocumentLockModeChangedEventArgs e)
         {
-            if (e.GlobalCommandName == "QSAVE")
+            short dbmod = (short)Application.GetSystemVariable("DBMOD");
+
+            switch (e.GlobalCommandName)
             {
-                BeginSave(e.Document.Name);
-                if (veto)
-                {
-                    e.Veto();
-                    Debug.WriteLine($"DocumentManager_DocumentLockModeChanged Veto {e.GlobalCommandName}");
-                }
-                else
-                {
+                case "QSAVE":
+                    StopSave(e, Case.Default);
+                    break;
+                case "SAVEAS":
+                    StopSave(e, Case.Default);
+                    break;
+                case "#SAVEAS":
+                    StopSave(e, Case.SaveAs);
+                    break;
+                case "CLOSE":
+                case "#CLOSE":
+                    if (dbmod != 0)
+                    {
+                        if (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                        {
+                            StopSave(e, Case.Default);
+                        }
+                        else
+                        {
+                            e.Veto();
+                            CloseDiscard(e.Document);
+                        }
+                    }
+
+                    break;
+                default:
                     Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
-                }
+                    break;
+            }
+        }
+
+        private static void CloseDiscard(Document doc)
+        {
+            _currentDoc = doc;
+            Application.Idle += CloseDiscardOnIdle;
+        }
+
+        private static void CloseDiscardOnIdle(object sender, EventArgs e)
+        {
+            Application.Idle -= CloseDiscardOnIdle;
+            _currentDoc.CloseAndDiscard();
+        }
+
+        private static void StopSave(DocumentLockModeChangedEventArgs e, Case @case)
+        {
+            BeginSave(e.Document.Name, @case);
+            if (veto)
+            {
+                e.Veto();
+                Debug.WriteLine($"DocumentManager_DocumentLockModeChanged Veto {e.GlobalCommandName}");
             }
             else
             {
@@ -108,7 +150,7 @@
 
         private static void DocumentManager_DocumentCreateStarted(object sender, DocumentCollectionEventArgs e)
         {
-            eventer.Start("open", null);
+            eventer.Start(Case.Default, null);
         }
 
         private static void DocumentManager_DocumentCreated(object sender, [NotNull] DocumentCollectionEventArgs e)
@@ -139,17 +181,17 @@
             db.SaveComplete += Db_SaveComplete;
 
             // Если запустили автокад открытием файла dwg из проводника.
-            eventer.Start("open", null);
+            eventer.Start(Case.Default, null);
             eventer.Finish("Открытие", doc.Name, sn);
         }
 
-        private static void BeginSave(string file)
+        private static void BeginSave(string file, Case @case)
         {
             veto = false;
             Debug.WriteLine($"Db_BeginSave {file}");
             if (!IsDwg(file))
                 return;
-            if (IsCheckError(eventer.Start("save", file)))
+            if (IsCheckError(eventer.Start(@case, file)))
             {
                 // Отменить сохранение файла
                 veto = true;
@@ -201,7 +243,10 @@
             var oldFile = doc.Name;
             try
             {
-                doc.Database.SaveAs(overrideName, DwgVersion.Current);
+                using (doc.LockDocument())
+                {
+                    doc.Database.SaveAs(overrideName, DwgVersion.Current);
+                }
             }
             catch (Exception ex)
             {

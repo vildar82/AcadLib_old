@@ -21,8 +21,7 @@
     public class Eventer
     {
         private readonly FlClient _client;
-        [NotNull]
-        private readonly PathChecker _pathChecker;
+        [NotNull] private readonly PathChecker _pathChecker;
         private UserData _userData;
 
         private string App { get; }
@@ -33,8 +32,7 @@
 
         private string Version { get; }
 
-        [NotNull]
-        private readonly List<string> _exceptedUsers = new List<string>
+        [NotNull] private readonly List<string> _exceptedUsers = new List<string>
         {
             "PrudnikovVS",
             "vrublevskiyba",
@@ -54,6 +52,7 @@
             Version = version;
             _client = new FlClient();
             _pathChecker = new PathChecker(_client);
+            _userData = GetUserDataAd();
         }
 
         /// <summary>
@@ -76,8 +75,6 @@
                         var fileName = Path.GetFileNameWithoutExtension(docPath);
                         var userName = Environment.UserName;
                         var compName = Environment.MachineName;
-                        if (_userData == null)
-                            _userData = GetUserDataAd();
                         var fi = new FileInfo(docPath);
                         var fileSize = fi.Length / 1024000;
 
@@ -113,7 +110,7 @@
         /// </summary>
         /// <param name="case">Кейс</param>
         /// <param name="docPath">Документ</param>
-        public PathCheckerResult Start([CanBeNull] string @case, [CanBeNull] string docPath)
+        public PathCheckerResult Start([CanBeNull] Case @case, [CanBeNull] string docPath)
         {
             PathCheckerResult pathCheckerResult = null;
             if (NeedCheck(docPath))
