@@ -98,15 +98,19 @@
                 case "#CLOSE":
                     if (dbmod != 0)
                     {
-                        if (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                        switch (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
+                            MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
                         {
-                            StopSave(e, Case.Default);
-                        }
-                        else
-                        {
-                            e.Veto();
-                            CloseDiscard(e.Document);
+                            case MessageBoxResult.Yes:
+                                StopSave(e, Case.Default);
+                                break;
+                            case MessageBoxResult.No:
+                                e.Veto();
+                                CloseDiscard(e.Document);
+                                break;
+                            case MessageBoxResult.Cancel:
+                                e.Veto();
+                                break;
                         }
                     }
 
