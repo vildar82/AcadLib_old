@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib.PaletteCommands
+﻿namespace AcadLib.PaletteCommands
 {
     using System;
     using System.Collections.Generic;
@@ -58,7 +57,10 @@ namespace AcadLib.PaletteCommands
 #pragma warning restore 618
                         {
                             if (blRef != null)
+                            {
                                 blRef.ExplodeToOwnerSpace();
+                                blRef.Erase();
+                            }
                         }
                     }
                 }
