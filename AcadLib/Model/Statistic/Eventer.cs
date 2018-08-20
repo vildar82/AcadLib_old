@@ -5,11 +5,11 @@
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using AcadLib;
-    using FileLog.Client;
     using FileLog.Entities;
     using JetBrains.Annotations;
+    using Microsoft.Win32;
     using Naming.Dto;
+    using Naming.Sdk;
     using NetLib;
     using NetLib.AD;
     using PathChecker;
@@ -20,17 +20,8 @@
     /// </summary>
     public class Eventer
     {
-        private readonly FlClient _client;
+        private readonly ApiClient _client;
         [NotNull] private readonly PathChecker _pathChecker;
-        private UserData _userData;
-
-        private string App { get; }
-
-        private AppType AppType { get; }
-
-        private DateTime StartEvent { get; set; }
-
-        private string Version { get; }
 
         [NotNull] private readonly List<string> _exceptedUsers = new List<string>
         {
@@ -39,6 +30,7 @@
             "arslanovti",
             "karadzhayanra"
         };
+        private UserData _userData;
 
         /// <summary>
         /// Конструктор
@@ -50,16 +42,24 @@
             App = app;
             AppType = GetAppType(app);
             Version = version;
-            _client = new FlClient();
+            _client = new ApiClient(GetUrl("baseUrl"));
             _pathChecker = new PathChecker(_client);
             _userData = GetUserDataAd();
         }
+
+        private string App { get; }
+
+        private AppType AppType { get; }
+
+        private DateTime StartEvent { get; set; }
+
+        private string Version { get; }
 
         /// <summary>
         /// Конец события
         /// </summary>
         /// <param name="eventName">Имя события</param>
-        public void Finish(string eventName, string docPath, string serialNumber)
+        public void Finish(EventType eventType, string docPath, string serialNumber)
         {
             if (string.IsNullOrEmpty(docPath) || !File.Exists(docPath))
             {
@@ -80,14 +80,14 @@
 
                         var eventTimeSec = (int)(eventEnd - StartEvent).TotalSeconds;
 
-                        _client.AddEvent(
+                        _client.Log.AddEvent(
                             new StatEvent(
                                 App,
                                 userName,
                                 compName,
                                 fileName,
                                 docPath,
-                                eventName,
+                                eventType,
                                 StartEvent,
                                 eventEnd,
                                 Version,
@@ -130,24 +130,33 @@
             return pathCheckerResult;
         }
 
-        private bool NeedCheck(string docPath)
+        /// <summary>
+        /// Получает значение ключа по имени.
+        /// </summary>
+        /// <param name="name">Имя ключа.</param>
+        /// <returns>Значение ключа.</returns>
+        /// <exception cref="Exception">Если ключ не найдей бросает исключение.</exception>
+        private static string GetUrl(string name)
         {
-            // Если путь пустой - то не нужно проверять нейминг (новый чертеж)
-            // Если пользователь из списка исключений (бимам типа не нужно проверять)
-            return docPath != null && !IsExceptedUser();
+            var registryPath = @"Software\PIK\BIM\Api";
+            using (var key = Registry.CurrentUser.OpenSubKey(registryPath))
+            {
+                var url = key?.GetValue(name);
+                if (key == null || url == null)
+                {
+                    throw new Exception("Неудалось загрузить настройки");
+                }
+
+                return url as string;
+            }
         }
 
-        private bool IsExceptedUser()
-        {
-            return _exceptedUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
-        }
-
-        private static Naming.Dto.UserData GetUserDataAd()
+        private static UserData GetUserDataAd()
         {
             try
             {
                 var userDataNL = ADUtils.GetUserData(Environment.UserName, Environment.UserDomainName);
-                return new Naming.Dto.UserData
+                return new UserData
                 {
                     Position = userDataNL.Position,
                     Department = userDataNL.Department,
@@ -170,6 +179,18 @@
             }
 
             return AppType.Autocad;
+        }
+
+        private bool NeedCheck(string docPath)
+        {
+            // Если путь пустой - то не нужно проверять нейминг (новый чертеж)
+            // Если пользователь из списка исключений (бимам типа не нужно проверять)
+            return docPath != null && !IsExceptedUser();
+        }
+
+        private bool IsExceptedUser()
+        {
+            return _exceptedUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
         }
     }
 }

@@ -6,6 +6,7 @@
     using System.Windows;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
+    using FileLog.Entities;
     using JetBrains.Annotations;
     using NetLib;
     using PathChecker;
@@ -149,7 +150,7 @@
 
         private static void DocumentManager_DocumentDestroyed(object sender, [NotNull] DocumentDestroyedEventArgs e)
         {
-            eventer.Finish("Закрытие", e.FileName, sn);
+            eventer.Finish(EventType.Close, e.FileName, sn);
         }
 
         private static void DocumentManager_DocumentCreateStarted(object sender, DocumentCollectionEventArgs e)
@@ -186,7 +187,7 @@
 
             // Если запустили автокад открытием файла dwg из проводника.
             eventer.Start(Case.Default, null);
-            eventer.Finish("Открытие", doc.Name, sn);
+            eventer.Finish(EventType.Open, doc.Name, sn);
         }
 
         private static void BeginSave(string file, Case @case)
@@ -208,7 +209,7 @@
             Debug.WriteLine($"Db_SaveComplete {e.FileName}");
             if (!IsDwg(e.FileName))
                 return;
-            eventer.Finish("Сохранить", e.FileName, sn);
+            eventer.Finish(EventType.Save, e.FileName, sn);
         }
 
         private static bool IsCheckError(PathCheckerResult checkRes)
@@ -241,7 +242,7 @@
         private static void Application_Idle(object sender, EventArgs e)
         {
             Application.Idle -= Application_Idle;
-            if (overrideName == null)
+            if (string.IsNullOrEmpty(overrideName))
                 return;
             var doc = AcadHelper.Doc;
             var oldFile = doc.Name;
