@@ -22,6 +22,12 @@ namespace Autodesk.AutoCAD.DatabaseServices
             return SymbolUtilityServices.GetBlockModelSpaceId(db);
         }
 
+        [NotNull]
+        public static BlockTableRecord MS(this Database db, OpenMode mode = OpenMode.ForRead)
+        {
+            return SymbolUtilityServices.GetBlockModelSpaceId(db).GetObjectT<BlockTableRecord>(mode);
+        }
+
         /// <summary>
         /// Получение углового размерного стиля ПИК
         /// </summary>
