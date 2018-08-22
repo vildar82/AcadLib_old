@@ -242,8 +242,11 @@
 
         public static void SaveActiveTab()
         {
-            ribbonOptions.Data.ActiveTab = ribbon.ActiveTab.UID;
-            ribbonOptions.TrySave();
+            if (ribbon?.ActiveTab != null)
+            {
+                ribbonOptions.Data.ActiveTab = ribbon.ActiveTab.UID;
+                ribbonOptions.TrySave();
+            }
         }
 
         [NotNull]
