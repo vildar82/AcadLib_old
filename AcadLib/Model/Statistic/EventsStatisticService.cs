@@ -24,7 +24,7 @@
         {
             try
             {
-                CheckProductUser();
+                CheckExcludeUser();
                 Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
                 eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion);
                 Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
@@ -43,20 +43,16 @@
             }
         }
 
-        private static void CheckProductUser()
+        private static void CheckExcludeUser()
         {
-            var isProductUser = false;
-            try
-            {
-                isProductUser = UserInfo.IsProductUser;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "UserInfo.IsProductUser");
-            }
-
+            // Департамент продукта
+            var isProductUser = UserInfo.IsProductUser;
             if (isProductUser)
                 throw new Exception("Пользователь из Деп.Продукта - Статистика и нейминг пропущен.");
+
+            // Индустрия
+            if (Environment.UserDomainName.EqualsIgnoreCase("DSK2"))
+                throw new Exception("Пользователь из Индустрии - Статистика и нейминг пропущен.");
         }
 
         [NotNull]

@@ -18,5 +18,5 @@ using Autodesk.AutoCAD.Runtime;
 [assembly: Guid("2008ae5d-550a-4478-a9b5-297832058377")] // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
 [assembly: CommandClass(typeof(Commands))]
 [assembly: ExtensionApplication(typeof(Commands))]
-[assembly: AssemblyVersion("1.0.234.1004")]
-[assembly: AssemblyFileVersion("1.0.234.1004")]
+[assembly: AssemblyVersion("1.0.235.1005")]
+[assembly: AssemblyFileVersion("1.0.235.1005")]
