@@ -137,6 +137,7 @@
 
                         // Найти все ссылки и зменить
                         var refs = dbo.GetReferences();
+                        refs.SoftPointerIds.ForEach(p => ReplacePointer(p, style.Id, replaceId, replaceName));
                         refs.HardPointerIds.ForEach(p => ReplacePointer(p, style.Id, replaceId, replaceName));
                         needTwice = true;
                     }

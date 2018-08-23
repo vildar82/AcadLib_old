@@ -249,7 +249,7 @@
         public override void WriteSoftPointerId(ObjectId value)
         {
             if (!value.IsNull)
-                HardPointerIds.Add(value);
+                SoftPointerIds.Add(value);
         }
 
         public void Reset()
