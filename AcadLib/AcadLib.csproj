@@ -183,6 +183,7 @@
     <Compile Include="Model\Files\FilePropsExt.cs" />
     <Compile Include="Model\Geometry\LineExt.cs" />
     <Compile Include="Model\Geometry\Polylines\MergePolylineEx.cs" />
+    <Compile Include="Model\Link\DbObjectLink.cs" />
     <Compile Include="Model\PaletteProps\Values\BoolView.xaml.cs">
       <DependentUpon>BoolView.xaml</DependentUpon>
     </Compile>

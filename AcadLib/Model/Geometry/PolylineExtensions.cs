@@ -220,14 +220,21 @@
         [NotNull]
         public static Polyline CreatePolyline(this List<Point2d> pts)
         {
-            var pl = new Polyline();
             pts = pts.DistinctPoints();
+            return CreatePolyline(pts, true);
+        }
+
+        [NotNull]
+        public static Polyline CreatePolyline(this List<Point2d> pts, bool closed)
+        {
+            var pl = new Polyline();
             for (var i = 0; i < pts.Count; i++)
             {
                 pl.AddVertexAt(i, pts[i], 0, 0, 0);
             }
 
-            pl.Closed = true;
+            if (closed)
+                pl.Closed = true;
             return pl;
         }
 
