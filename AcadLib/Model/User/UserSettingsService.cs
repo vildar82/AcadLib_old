@@ -26,8 +26,8 @@
         {
             _userData = new LocalFileData<UserSettings>(Path.GetUserPluginFile(string.Empty, "UserSettings.json"), false);
             _userData.TryLoad(() => new UserSettings());
-            CheckSettings();
-            CommonSettings = GetCommonSettings();
+            RegCommonSettings();
+            CommonSettings = GetPluginSettings(CommonName);
         }
 
         /// <summary>
@@ -103,26 +103,26 @@
         /// Добавление пользовательских настроек плагина
         /// </summary>
         /// <param name="pluginName">Плагин</param>
-        [NotNull]
-        public static PluginSettings AddPluginSettings([NotNull] string pluginName)
+        public static void RegPlugin([NotNull] string pluginName, Func<PluginSettings> init, Action<PluginSettings> onLoaded)
         {
-            var plugin = GetPluginSettings(pluginName);
-            if (plugin != null)
-            {
-                Logger.Log.Error($"Настройки такого плагина уже есть - '{pluginName}'.");
-                return plugin;
-            }
-
-            plugin = new PluginSettings { Name = pluginName };
-            _userData.Data.PluginSettings.Add(plugin);
             _activePlugins.Add(pluginName);
-            return plugin;
+            var plugin = GetPluginSettings(pluginName);
+            if (plugin == null)
+            {
+                plugin = init();
+                _userData.Data.PluginSettings.Add(plugin);
+            }
+            else
+            {
+                onLoaded(plugin);
+            }
         }
 
         public static void RemovePlugin([NotNull] string pluginName)
         {
             _userData.Data.PluginSettings.RemoveAll(p => p.Name == pluginName);
             _activePlugins.Remove(pluginName);
+            _userData.TrySave();
         }
 
         /// <summary>
@@ -130,6 +130,7 @@
         /// </summary>
         public static void Show()
         {
+            CheckSettings();
             var user = AutocadUserService.LoadUser();
             if (user == null)
             {
@@ -200,30 +201,27 @@
             incorrectPlugins.ForEach(p => _userData.Data.PluginSettings.Remove(p));
         }
 
-        private static PluginSettings GetCommonSettings()
+        private static void RegCommonSettings()
         {
-            var common = GetPluginSettings(CommonName);
-            if (common == null)
-            {
-                common = AddPluginSettings(CommonName);
-                AddNotifyProp();
-            }
-            else
-            {
-                // Есть ли свойство - Уведомления
-                common.GetPluginValue(CommonParamNotify, AddNotifyProp);
-            }
+            RegPlugin(CommonName, CreateCommonPlugin, CheckCommonPlugin);
+        }
 
-            bool AddNotifyProp()
-            {
-                common.Add(CommonParamNotify,
-                    "Уведомления",
-                    "Включение/отключение всплывающих уведомлений об изменении настроек",
-                    true);
-                return true;
-            }
+        private static PluginSettings CreateCommonPlugin()
+        {
+            var p = new PluginSettings { Name = CommonName };
+            AddCommonParamNotify(p);
+            return p;
+        }
 
-            return common;
+        private static bool AddCommonParamNotify(PluginSettings plugin)
+        {
+            plugin.Add(CommonParamNotify, "Уведомления", "Включение/отключение всплывающих уведомлений об изменении настроек", true);
+            return true;
+        }
+
+        private static void CheckCommonPlugin(PluginSettings plugin)
+        {
+            plugin.GetPluginValue(CommonParamNotify, () => AddCommonParamNotify(plugin));
         }
     }
 }

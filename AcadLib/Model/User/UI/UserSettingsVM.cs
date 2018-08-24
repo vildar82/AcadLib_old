@@ -130,14 +130,17 @@
                 };
             }
 
-            User.Group = Group.Name;
-            User.Disabled = Disabled;
-            User.PreviewUpdate = PreviewUpdate;
-            if (ExtraGroup != null)
+            if (Group != null)
             {
-                User.Group += $", {ExtraGroup.Name}";
+                User.Group = Group.Name;
+                if (ExtraGroup != null)
+                {
+                    User.Group += $", {ExtraGroup.Name}";
+                }
             }
 
+            User.Disabled = Disabled;
+            User.PreviewUpdate = PreviewUpdate;
             DialogResult = true;
         }
     }

@@ -19,6 +19,7 @@
         private static Eventer eventer;
         private static string overrideName;
         private static Document _currentDoc;
+        private static bool lastModeIsClose;
 
         public static void Start()
         {
@@ -53,6 +54,9 @@
             // Индустрия
             if (Environment.UserDomainName.EqualsIgnoreCase("DSK2"))
                 throw new Exception("Пользователь из Индустрии - Статистика и нейминг пропущен.");
+
+            if (Environment.UserName.EqualsIgnoreCase("egorov_ps"))
+                throw new Exception("Пользователь из исключений - Фаталит автокад при сохранении.");
         }
 
         [NotNull]
@@ -78,6 +82,7 @@
 
         private static void DocumentManager_DocumentLockModeChanged(object sender, DocumentLockModeChangedEventArgs e)
         {
+            Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
             short dbmod = (short)Application.GetSystemVariable("DBMOD");
 
             switch (e.GlobalCommandName)
@@ -93,8 +98,9 @@
                     break;
                 case "CLOSE":
                 case "#CLOSE":
-                    if (dbmod != 0)
+                    if (dbmod != 0 && !lastModeIsClose)
                     {
+                        lastModeIsClose = true;
                         switch (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
                             MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
                         {
@@ -113,7 +119,7 @@
 
                     break;
                 default:
-                    Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
+                    lastModeIsClose = false;
                     break;
             }
         }
