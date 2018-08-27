@@ -28,7 +28,8 @@
         /// <param name="objId">Объект</param>
         /// <param name="linkIds">Связываемые объекты</param>
         /// <param name="code">Тип связи</param>
-        public static void WriteLinks(this ObjectId objId, List<ObjectId> linkIds, LinkCode code)
+        /// /// <param name="replace">Перезаписать существующий словарь LinkCode - true, или добавить если уже существует - false</param>
+        public static void WriteLinks(this ObjectId objId, List<ObjectId> linkIds, LinkCode code, bool replace = true)
         {
             var dictId = GetExtDict(objId);
             var existLinks = ReadLinks(objId, code);
@@ -39,14 +40,21 @@
                 var entryName = GetLinkRecordName(code);
                 if (dict.Contains(entryName))
                 {
-                    using (var xrec = dict.GetAt(entryName).Open(OpenMode.ForWrite) as Xrecord)
+                    if (replace)
                     {
-                        foreach (var addLinkId in addLinkIds)
+                        dict.Remove(entryName);
+                    }
+                    else
+                    {
+                        using (var xrec = dict.GetAt(entryName).Open(OpenMode.ForWrite) as Xrecord)
                         {
-                            xrec.Data.Add(new TypedValue((int)dxfCode, addLinkId));
-                        }
+                            foreach (var addLinkId in addLinkIds)
+                            {
+                                xrec.Data.Add(new TypedValue((int)dxfCode, addLinkId));
+                            }
 
-                        return;
+                            return;
+                        }
                     }
                 }
 
