@@ -110,7 +110,19 @@
                         AddAttributes(br, btrBl, t);
                     if (explode)
                     {
-                        br.ExplodeToOwnerSpace();
+                        var owner = br.BlockId.GetObject<BlockTableRecord>(OpenMode.ForWrite);
+                        using (var explodes = new DBObjectCollection())
+                        {
+                            br.Explode(explodes);
+                            foreach (Entity ent in explodes)
+                            {
+                                owner.AppendEntity(ent);
+                                t.AddNewlyCreatedDBObject(ent, true);
+                                ent.Layer = br.Layer;
+                            }
+
+                            br.Erase();
+                        }
                     }
                 }
                 else

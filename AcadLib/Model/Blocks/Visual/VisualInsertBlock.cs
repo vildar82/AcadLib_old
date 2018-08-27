@@ -130,9 +130,7 @@
         private static void GetInsertBtr(string name, string fileBlocks, [NotNull] Database dbdest)
         {
             // Есть ли уже блок в текущем файле
-#pragma warning disable 618
             using (var bt = (BlockTable)dbdest.BlockTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 if (bt.Has(name))
                 {

@@ -50,18 +50,26 @@
                 var blRefId = BlockInsert.Insert(blName, Layer, props);
                 if (explode)
                 {
-                    using (AcadHelper.Doc.LockDocument())
+                    var doc = AcadHelper.Doc;
+                    using (doc.LockDocument())
+                    using (var t = doc.TransactionManager.StartTransaction())
                     {
-#pragma warning disable 618
-                        using (var blRef = (BlockReference)blRefId.Open(OpenMode.ForWrite, false, true))
-#pragma warning restore 618
+                        var blRef = blRefId.GetObjectT<BlockReference>(OpenMode.ForWrite);
+                        var owner = blRef.BlockId.GetObjectT<BlockTableRecord>(OpenMode.ForWrite);
+                        using (var explodes = new DBObjectCollection())
                         {
-                            if (blRef != null)
+                            blRef.Explode(explodes);
+                            foreach (Entity explode in explodes)
                             {
-                                blRef.ExplodeToOwnerSpace();
-                                blRef.Erase();
+                                explode.Layer = blRef.Layer;
+                                owner.AppendEntity(explode);
+                                t.AddNewlyCreatedDBObject(explode, true);
                             }
+
+                            blRef.Erase();
                         }
+
+                        t.Commit();
                     }
                 }
 
