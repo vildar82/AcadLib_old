@@ -85,42 +85,60 @@
             Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
             short dbmod = (short)Application.GetSystemVariable("DBMOD");
 
-            switch (e.GlobalCommandName)
+            try
             {
-                case "QSAVE":
-                    StopSave(e, Case.Default);
-                    break;
-                case "SAVEAS":
-                    StopSave(e, Case.Default);
-                    break;
-                case "#SAVEAS":
-                    StopSave(e, Case.SaveAs);
-                    break;
-                case "CLOSE":
-                case "#CLOSE":
-                    if (dbmod != 0 && !lastModeIsClose)
-                    {
-                        lastModeIsClose = true;
-                        switch (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
-                            MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
+                switch (e.GlobalCommandName)
+                {
+                    case "QSAVE":
+                        StopSave(e, Case.Default);
+                        break;
+                    case "SAVEAS":
+                        StopSave(e, Case.Default);
+                        break;
+                    case "#SAVEAS":
+                        StopSave(e, Case.SaveAs);
+                        break;
+                    case "CLOSE":
+                    case "#CLOSE":
+                        if (dbmod != 0 && !lastModeIsClose)
                         {
-                            case MessageBoxResult.Yes:
-                                StopSave(e, Case.Default);
-                                break;
-                            case MessageBoxResult.No:
-                                e.Veto();
-                                CloseDiscard(e.Document);
-                                break;
-                            case MessageBoxResult.Cancel:
-                                e.Veto();
-                                break;
-                        }
-                    }
+                            switch (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
+                                MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
+                            {
+                                case MessageBoxResult.Yes:
+                                    if (!StopSave(e, Case.Default))
+                                    {
+                                        e.Veto();
+                                        CloseSave(e.Document);
+                                    }
+                                    else
+                                    {
+                                        e.Veto();
+                                        CloseDiscard(e.Document);
+                                    }
 
-                    break;
-                default:
-                    lastModeIsClose = false;
-                    break;
+                                    lastModeIsClose = true;
+                                    break;
+                                case MessageBoxResult.No:
+                                    e.Veto();
+                                    CloseDiscard(e.Document);
+                                    break;
+                                case MessageBoxResult.Cancel:
+                                    e.Veto();
+                                    break;
+                            }
+                        }
+
+                        break;
+                    default:
+                        lastModeIsClose = false;
+                        break;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Отмена
+                e.Veto();
             }
         }
 
@@ -136,17 +154,31 @@
             _currentDoc.CloseAndDiscard();
         }
 
-        private static void StopSave(DocumentLockModeChangedEventArgs e, Case @case)
+        private static void CloseSave(Document doc)
+        {
+            _currentDoc = doc;
+            Application.Idle += CloseSaveOnIdle;
+        }
+
+        private static void CloseSaveOnIdle(object sender, EventArgs e)
+        {
+            Application.Idle -= CloseSaveOnIdle;
+            _currentDoc.CloseAndSave(_currentDoc.Name);
+        }
+
+        private static bool StopSave(DocumentLockModeChangedEventArgs e, Case @case)
         {
             BeginSave(e.Document.Name, @case);
             if (veto)
             {
                 e.Veto();
-                Debug.WriteLine($"DocumentManager_DocumentLockModeChanged Veto {e.GlobalCommandName}");
+                Debug.WriteLine($"StopSave Veto {e.GlobalCommandName}");
+                return true;
             }
             else
             {
-                Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
+                Debug.WriteLine($"StopSave {e.GlobalCommandName}");
+                return false;
             }
         }
 
@@ -226,7 +258,7 @@
                         SaveOverride(checkRes.FilePathOverride);
                         return true;
                     case NexAction.Cancel:
-                        return true;
+                        throw new OperationCanceledException();
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
