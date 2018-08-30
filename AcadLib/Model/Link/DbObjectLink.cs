@@ -76,7 +76,7 @@
         public static List<ObjectId> ReadLinks(this ObjectId objId, LinkCode code)
         {
             var dictId = ObjectId.Null;
-            using (var obj = objId.Open(OpenMode.ForRead))
+            using (var obj = objId.Open(OpenMode.ForRead, true, true))
             {
                 dictId = obj.ExtensionDictionary;
             }
