@@ -23,7 +23,7 @@
     public static class RestoreTabs
     {
         internal const string PluginName = "RestoreTabs";
-        private const string ParamRestoreIsOn = "RestoreTabsOn";
+        private const string ParamRestoreIsOn = "RestoreTabsIsOn";
         [NotNull]
         private static readonly List<Document> _tabs = new List<Document>();
         private static string cmd;
@@ -34,15 +34,21 @@
             try
             {
                 UserSettingsService.RegPlugin(PluginName, CreateUserSettings, CheckUserSettings);
+                UserSettingsService.ChangeSettings += UserSettingsService_ChangeSettings;
 
                 // Добавление кнопки в статус бар
                 StatusBarEx.AddPane(string.Empty, "Откытие чертежей", (p, e) => Restore(), icon: Resources.restoreFiles16);
-                Subscribe();
-                var tabsData = new LocalFileData<Tabs>(GetFile(), false);
-                tabsData.TryLoad(() => new Tabs());
-                if (tabsData.Data?.Drawings?.Count > 0)
+
+                var isOn = UserSettingsService.GetPluginValue<bool>(PluginName, ParamRestoreIsOn);
+                if (isOn)
                 {
-                    Restore();
+                    Subscribe();
+                    var tabsData = new LocalFileData<Tabs>(GetFile(), false);
+                    tabsData.TryLoad(() => new Tabs());
+                    if (tabsData.Data?.Drawings?.Count > 0)
+                    {
+                        Restore();
+                    }
                 }
             }
             catch (Exception ex)
@@ -61,6 +67,7 @@
                 {
                     new UserProperty
                     {
+                        ID = ParamRestoreIsOn,
                         Name = "Запускать при старте",
                         Value = true,
                         Description = "Открывать окно открытия чертежей последнего сеанса при старте автокада."
@@ -71,25 +78,15 @@
 
         private static void CheckUserSettings(PluginSettings pluginSettings)
         {
-            if (pluginSettings.Title != "Восстановление вкладок")
+            pluginSettings.Title = "Восстановление вкладок";
+            var propIsOn = pluginSettings.Properties.FirstOrDefault(p => p.ID == ParamRestoreIsOn) ?? new UserProperty
             {
-                pluginSettings.Title = "Восстановление вкладок";
-            }
-
-            var propIsOn = pluginSettings.Properties.FirstOrDefault(p => p.Name == "Запускать при старте") ?? new UserProperty
-            {
-                Name = "Запускать при старте",
+                ID = ParamRestoreIsOn,
                 Value = true,
-                Description = "Открывать окно открытия чертежей последнего сеанса при старте автокада."
             };
-
+            propIsOn.Name = "Запускать при старте";
+            propIsOn.Description = "Открывать окно открытия чертежей последнего сеанса при старте автокада.";
             pluginSettings.Properties = new List<UserProperty> { propIsOn };
-        }
-
-        public static void RestoreTabsIsOn(bool isOn)
-        {
-            UserSettingsService.SetPluginValue(PluginName, ParamRestoreIsOn, isOn);
-            Subscribe();
         }
 
         /// <summary>
@@ -108,8 +105,6 @@
             try
             {
                 Application.Idle -= Application_Idle;
-                UserSettingsService.ChangeSettings -= UserSettingsService_ChangeSettings;
-                UserSettingsService.ChangeSettings += UserSettingsService_ChangeSettings;
                 var openedDraws = new List<string>();
                 if (restoreTabs?.Any() == true)
                 {
@@ -186,7 +181,15 @@
 
         private static void UserSettingsService_ChangeSettings(object sender, EventArgs e)
         {
-            Subscribe();
+            var isOn = UserSettingsService.GetPluginValue<bool>(PluginName, ParamRestoreIsOn);
+            if (isOn)
+            {
+                Subscribe();
+            }
+            else
+            {
+                Unsubscribe();
+            }
         }
 
         private static void Subscribe()
@@ -205,6 +208,28 @@
             Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
             Application.DocumentManager.DocumentDestroyed -= DocumentManager_DocumentDestroyed;
             Application.DocumentManager.DocumentDestroyed += DocumentManager_DocumentDestroyed;
+        }
+
+        private static void Unsubscribe()
+        {
+            try
+            {
+                Application.DocumentManager.DocumentLockModeChanged -= DocumentManager_DocumentLockModeChanged;
+                Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
+                Application.DocumentManager.DocumentDestroyed -= DocumentManager_DocumentDestroyed;
+
+                foreach (var tab in _tabs)
+                {
+                    if (tab?.Database != null)
+                        tab.Database.SaveComplete -= Database_SaveComplete;
+                }
+
+                _tabs.Clear();
+            }
+            catch
+            {
+                // Если подписок не было
+            }
         }
 
         [NotNull]
@@ -270,6 +295,16 @@
         private static void DocumentManager_DocumentCreated(object sender, DocumentCollectionEventArgs e)
         {
             AddTab(e?.Document);
+        }
+
+        public static void SetIsOn(bool isOn)
+        {
+            UserSettingsService.SetPluginValue(PluginName, ParamRestoreIsOn, isOn);
+        }
+
+        public static bool GetIsOn()
+        {
+            return UserSettingsService.GetPluginValue<bool>(PluginName, ParamRestoreIsOn);
         }
     }
 }

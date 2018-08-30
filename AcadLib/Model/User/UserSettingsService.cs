@@ -165,6 +165,10 @@
                         property.ValueControl = property.Value.CreateControl(v =>
                             property.Value = v);
                     }
+                    else if (property.ValueControl.DataContext is IValue valueVM)
+                    {
+                        valueVM.UpdateValue(property.Value);
+                    }
                 }
             }
         }

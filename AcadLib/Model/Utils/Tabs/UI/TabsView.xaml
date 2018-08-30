@@ -144,5 +144,9 @@
             <Button Content="Открыть" Margin="5" IsDefault="True" Command="{Binding Ok}" />
             <Button Content="Отмена" Margin="5" IsCancel="True" />
         </StackPanel>
+        <CheckBox Grid.Row="2" IsChecked="{Binding IsOn}" Content="Показывать при запуске"
+                  ToolTip="Включение/отключение восстановления вкладок. Можно изменить в пользовательских настройках."
+                  Margin="2" />
+
     </Grid>
 </wpf:BaseWindow>

@@ -17,6 +17,7 @@
     using NetLib.WPF;
     using ReactiveUI;
     using Tabs.History.Db;
+    using User;
 
     public class TabsVM : BaseViewModel
     {
@@ -28,6 +29,12 @@
             {
                 Tabs = drawings.Select(s => GetTab(s, true, DateTime.MinValue)).ToList();
                 Ok = CreateCommand(OkExec);
+                IsOn = RestoreTabs.GetIsOn();
+                this.WhenAnyValue(v => v.IsOn).Skip(1)
+                    .Delay(TimeSpan.FromMilliseconds(100))
+                    .Throttle(TimeSpan.FromMilliseconds(100))
+                    .ObserveOn(dispatcher)
+                    .Subscribe(RestoreTabs.SetIsOn);
                 this.WhenAnyValue(v => v.CheckAllTabs).Skip(1).Subscribe(s => Tabs.ForEach(t => t.Restore = s));
                 HasRestoreTabs = Tabs.Count > 0;
                 if (!HasRestoreTabs)
@@ -62,6 +69,8 @@
         public string HistorySearch { get; set; }
 
         public IReactiveDerivedList<TabVM> History { get; set; }
+
+        public bool IsOn { get; set; }
 
         private TabVM GetTab(string tab, bool restore, DateTime start)
         {

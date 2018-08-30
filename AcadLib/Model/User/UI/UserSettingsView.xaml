@@ -45,8 +45,9 @@
 		<ItemsControl ItemsSource="{Binding UserSettings.PluginSettings}" Margin="5">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate DataType="user:PluginSettings">
-					<StackPanel>
-						<TextBlock Text="{Binding Title}" FontWeight="Bold" Margin="20,5,1,1" />
+					<StackPanel Margin="2">
+						<TextBlock Text="{Binding Title}" FontWeight="Bold" Margin="10,5,1,2" 
+						           Visibility="{Binding Title, Converter={converters:NullVisibilityConverter}}"/>
 						<ItemsControl ItemsSource="{Binding Properties}">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate DataType="user:UserProperty">

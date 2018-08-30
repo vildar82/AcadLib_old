@@ -49,5 +49,18 @@
             vm.WhenAnyValue(v => v.Value).Skip(1).Subscribe(c => update(c));
             return (TView)Activator.CreateInstance(typeof(TView), vm);
         }
+
+        /// <inheritdoc />
+        public void UpdateValue(object obj)
+        {
+            if (obj is T valT)
+            {
+                Value = valT;
+            }
+            else
+            {
+                AcadLib.Logger.Log.Warn($"IValue BaseValueVM UpdateValue - не тот тип объекта T={typeof(T).Name}, value={obj?.GetType().Name}/");
+            }
+        }
     }
 }

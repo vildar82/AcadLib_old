@@ -131,7 +131,7 @@
             if (Group != null)
             {
                 User.Group = Group.Name;
-                User.AdditionalGroup += ExtraGroup.Name;
+                User.AdditionalGroup = ExtraGroup?.Name;
             }
 
             User.Disabled = Disabled;
