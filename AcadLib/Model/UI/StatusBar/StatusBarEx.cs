@@ -81,7 +81,10 @@
 
         public static void AddPaneUserGroup()
         {
-            AddPane(PikSettings.UserGroup,
+            var name = PikSettings.UserGroup;
+            if (!PikSettings.AdditionalUserGroup.IsNullOrEmpty())
+                name += $", {PikSettings.AdditionalUserGroup}";
+            AddPane(name,
                 $"{GetGroupVersionInfo(PikSettings.Versions)}",
                 (p, e) =>
                 {

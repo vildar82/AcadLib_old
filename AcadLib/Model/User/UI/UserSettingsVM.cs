@@ -19,11 +19,11 @@
             Groups = LoadGroups();
             if (user != null && !user.Group.IsNullOrEmpty())
             {
-                FillGroup(user.Group);
+                FillGroup(user.Group, user.AdditionalGroup);
             }
             else if (!PikSettings.UserGroup.IsNullOrEmpty())
             {
-                FillGroup(PikSettings.UserGroup);
+                FillGroup(PikSettings.UserGroup, PikSettings.AdditionalUserGroup);
             }
             else
             {
@@ -97,17 +97,15 @@
             }).OrderBy(o => o.Name).ToList();
         }
 
-        private void FillGroup(string userGroup)
+        private void FillGroup(string userGroup, string additioinalGroup)
         {
-            var groups = userGroup.Split(',');
-            var group = groups[0].Trim();
+            var group = userGroup;
             Group = FindGroup(Groups, group);
-            if (Group == null || groups.Length <= 1)
+            if (Group == null)
                 return;
-            var extraGroup = groups[1].Trim();
-            if (extraGroup != group)
+            if (!additioinalGroup.IsNullOrEmpty())
             {
-                ExtraGroup = FindGroup(Groups, extraGroup);
+                ExtraGroup = FindGroup(Groups, additioinalGroup);
             }
         }
 
@@ -133,10 +131,7 @@
             if (Group != null)
             {
                 User.Group = Group.Name;
-                if (ExtraGroup != null)
-                {
-                    User.Group += $", {ExtraGroup.Name}";
-                }
+                User.AdditionalGroup += ExtraGroup.Name;
             }
 
             User.Disabled = Disabled;

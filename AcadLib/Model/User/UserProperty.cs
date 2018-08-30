@@ -22,10 +22,7 @@
         /// <summary>
         /// Значение свойства
         /// </summary>
-        public object Value { 
-            get; 
-            set;
-        }
+        public object Value { get; set; }
 
         /// <summary>
         /// Описание мвойства

@@ -25,6 +25,7 @@
             Version = dbUser.Version;
             PreviewUpdate = dbUser.PreviewUpdate ?? false;
             DateRun = dbUser.DateRun;
+            AdditionalGroup = dbUser.AdditionalGroup;
         }
 
         public AutocadUsers DbUser { get; set; }
@@ -40,6 +41,8 @@
         public BitmapImage Image { get; set; }
 
         public string Group { get; set; }
+
+        public string AdditionalGroup { get; set; }
 
         public string Version { get; set; }
 
@@ -64,6 +67,12 @@
             DbUser.Disabled = Disabled;
             DbUser.PreviewUpdate = PreviewUpdate;
             DbUser.DateRun = DateRun;
+            if (AdditionalGroup == Group)
+            {
+                AdditionalGroup = null;
+            }
+
+            DbUser.AdditionalGroup = AdditionalGroup;
         }
 
         public override string ToString()

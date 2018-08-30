@@ -24,7 +24,6 @@
         {
         }
 
-        // ReSharper disable once UnusedParameter.Local
         [Obsolete]
         public LoggAddinExt(string plugin)
         {

@@ -18,6 +18,7 @@
           <Property Name="Version" Type="nvarchar" MaxLength="50" />
           <Property Name="PreviewUpdate" Type="bit" />
           <Property Name="DateRun" Type="datetime" />
+          <Property Name="AdditionalGroup" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityContainer Name="CAD_AutoCADModelStoreContainer">
           <EntitySet Name="AutocadUsers" EntityType="Self.AutocadUsers" Schema="dbo" store:Type="Tables" />
@@ -39,6 +40,7 @@
           <Property Name="Version" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="PreviewUpdate" Type="Boolean" />
           <Property Name="DateRun" Type="DateTime" Precision="3" />
+          <Property Name="AdditionalGroup" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityContainer Name="CAD_AutoCADEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AutocadUsers" EntityType="Self.AutocadUsers" />
@@ -52,6 +54,7 @@
           <EntitySetMapping Name="AutocadUsers">
             <EntityTypeMapping TypeName="CAD_AutoCADModel.AutocadUsers">
               <MappingFragment StoreEntitySet="AutocadUsers">
+                <ScalarProperty Name="AdditionalGroup" ColumnName="AdditionalGroup" />
                 <ScalarProperty Name="DateRun" ColumnName="DateRun" />
                 <ScalarProperty Name="PreviewUpdate" ColumnName="PreviewUpdate" />
                 <ScalarProperty Name="Version" ColumnName="Version" />

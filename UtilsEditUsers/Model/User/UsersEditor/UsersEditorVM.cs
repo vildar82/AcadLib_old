@@ -56,6 +56,7 @@
             Save = CreateCommand(dbUsers.Save, canEdit);
             FindMe = CreateCommand(() => Filter = Environment.UserName);
             DeleteUser = CreateCommand<EditAutocadUsers>(DeleteUserExec, canEdit);
+            DeleteAdditionalGroup = CreateCommand<EditAutocadUsers>(d => d.AdditionalGroup = null);
             LoadUsers();
         }
 
@@ -92,6 +93,8 @@
         public UserGroup GroupServerVersion { get; set; }
 
         public int UsersCount { get; set; }
+
+        public ReactiveCommand DeleteAdditionalGroup { get; set; }
 
         private static List<string> LoadUserGroups()
         {
@@ -134,11 +137,21 @@
 
         private (Brush color, string tooltip) GetUserVerionInfo(AutocadUsers userDb)
         {
+            if (userDb.Group.Contains(','))
+            {
+                userDb.Group = userDb.Group.Substring(0, userDb.Group.IndexOf(','));
+            }
+
+            var userGroups = GetGroups(userDb.Group).ToList();
+            if (userGroups.Count > 1)
+            {
+                userDb.AdditionalGroup = userGroups[1];
+            }
+
             if (userDb.Group.IsNullOrEmpty() || userDb.Version.IsNullOrEmpty())
                 return (null, null);
             Brush color = null;
             var tooltip = string.Empty;
-            var userGroups = GetGroups(userDb.Group).ToList();
             userGroups.Add("Общие");
             var isOk = false;
             foreach (var @group in userGroups)
@@ -297,6 +310,7 @@
                 Disabled = GetValue(u => u.Disabled),
                 Description = GetValue(u => u.Description),
                 PreviewUpdate = GetValue(u => u.PreviewUpdate),
+                AdditionalGroup = GetValue(u => u.AdditionalGroup),
             };
             var canApply = canEdit.CombineLatest(SelectedUser.Changed.Select(s => true), (b1, b2) => b1 && b2);
             Apply = CreateCommand(() => ApplyExecute(SelectedUser, SelectedUsers), canApply);
@@ -307,6 +321,7 @@
             foreach (var autocadUserse in selectedUsers)
             {
                 autocadUserse.Group = selectedUser.Group;
+                autocadUserse.AdditionalGroup = selectedUser.AdditionalGroup;
                 autocadUserse.Description = selectedUser.Description;
                 autocadUserse.Disabled = selectedUser.Disabled;
                 autocadUserse.PreviewUpdate = selectedUser.PreviewUpdate;

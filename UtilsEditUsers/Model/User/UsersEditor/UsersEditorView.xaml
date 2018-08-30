@@ -7,6 +7,7 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:usersEditor="clr-namespace:UtilsEditUsers.Model.User.UsersEditor"
         xmlns:converters="clr-namespace:NetLib.WPF.Converters;assembly=NetLib"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         d:DataContext="{d:DesignInstance usersEditor:UsersEditorVM}"
         mc:Ignorable="d"
         WindowState="Maximized"
@@ -66,6 +67,7 @@
                 <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}" />
                 <DataGridTextColumn Header="Логин" Binding="{Binding Login}" />
                 <DataGridTextColumn Header="Группа" Binding="{Binding Group}" />
+                <DataGridTextColumn Header="Доп группа" Binding="{Binding AdditionalGroup}" />
                 <DataGridTemplateColumn Header="Версия" SortMemberPath="Version" >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="usersEditor:EditAutocadUsers">
@@ -111,6 +113,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <!--ФИО-->
             <TextBlock Grid.Column="0" Grid.Row="0" Text="ФИО"/>
@@ -122,8 +125,22 @@
                      IsEnabled="{Binding IsOneUserSelected}"/>
             <!--Группа-->
             <TextBlock Grid.Column="0" Grid.Row="2" Text="Группа"/>
-            <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Groups}"
+            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
+            <ComboBox ItemsSource="{Binding Groups}" VerticalAlignment="Center" MinWidth="100"
                       Text="{Binding SelectedUser.Group}" Margin="2" IsEditable="True"/>
+                <!--Доп Группа-->
+                <TextBlock Text="Доп. группа" Margin="1"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" ItemsSource="{Binding Groups}" VerticalAlignment="Center" MinWidth="100"
+                              Text="{Binding SelectedUser.AdditionalGroup}" Margin="2" IsEditable="True"/>
+                    <Button Grid.Column="1" Command="{Binding DeleteAdditionalGroup}" Content="{iconPacks:Material Delete}"
+                            CommandParameter="{Binding SelectedUser}" Margin="1"/>
+                </Grid>
+            </StackPanel>
             <!--Preview Update-->
             <TextBlock Grid.Column="0" Grid.Row="3" Text="Preview Update"/>
             <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding SelectedUser.PreviewUpdate}" Margin="2"/>

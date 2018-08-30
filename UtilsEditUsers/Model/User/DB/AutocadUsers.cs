@@ -23,5 +23,6 @@ namespace UtilsEditUsers.Model.User.DB
         public string Version { get; set; }
         public Nullable<bool> PreviewUpdate { get; set; }
         public Nullable<System.DateTime> DateRun { get; set; }
+        public string AdditionalGroup { get; set; }
     }
 }

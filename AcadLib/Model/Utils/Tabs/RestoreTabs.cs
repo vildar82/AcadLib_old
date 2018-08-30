@@ -3,18 +3,19 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using AcadLib.UI.StatusBar;
     using Autodesk.AutoCAD.ApplicationServices;
     using Data;
     using Errors;
-    using IO;
     using JetBrains.Annotations;
     using NetLib;
     using Properties;
     using UI;
     using User;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using Path = IO.Path;
 
     /// <summary>
     /// Восстановление ранее отурытых вкладок
@@ -23,7 +24,8 @@
     {
         internal const string PluginName = "RestoreTabs";
         private const string ParamRestoreIsOn = "RestoreTabsOn";
-        [NotNull] private static readonly List<Document> _tabs = new List<Document>();
+        [NotNull]
+        private static readonly List<Document> _tabs = new List<Document>();
         private static string cmd;
         private static List<string> restoreTabs;
 
@@ -31,14 +33,57 @@
         {
             try
             {
+                UserSettingsService.RegPlugin(PluginName, CreateUserSettings, CheckUserSettings);
+
                 // Добавление кнопки в статус бар
                 StatusBarEx.AddPane(string.Empty, "Откытие чертежей", (p, e) => Restore(), icon: Resources.restoreFiles16);
                 Subscribe();
+                var tabsData = new LocalFileData<Tabs>(GetFile(), false);
+                tabsData.TryLoad(() => new Tabs());
+                if (tabsData.Data?.Drawings?.Count > 0)
+                {
+                    Restore();
+                }
             }
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, "RestoreTabs.Init");
             }
+        }
+
+        private static PluginSettings CreateUserSettings()
+        {
+            return new PluginSettings
+            {
+                Name = PluginName,
+                Title = "Восстановление вкладок",
+                Properties = new List<UserProperty>
+                {
+                    new UserProperty
+                    {
+                        Name = "Запускать при старте",
+                        Value = true,
+                        Description = "Открывать окно открытия чертежей последнего сеанса при старте автокада."
+                    }
+                }
+            };
+        }
+
+        private static void CheckUserSettings(PluginSettings pluginSettings)
+        {
+            if (pluginSettings.Title != "Восстановление вкладок")
+            {
+                pluginSettings.Title = "Восстановление вкладок";
+            }
+
+            var propIsOn = pluginSettings.Properties.FirstOrDefault(p => p.Name == "Запускать при старте") ?? new UserProperty
+            {
+                Name = "Запускать при старте",
+                Value = true,
+                Description = "Открывать окно открытия чертежей последнего сеанса при старте автокада."
+            };
+
+            pluginSettings.Properties = new List<UserProperty> { propIsOn };
         }
 
         public static void RestoreTabsIsOn(bool isOn)
@@ -216,8 +261,10 @@
         private static void DocumentManager_DocumentDestroyed(object sender, DocumentDestroyedEventArgs e)
         {
             Debug.WriteLine($"DocumentManager_DocumentDestroyed cmd={cmd}");
-            if (cmd == "CLOSE")
+            if (cmd == "CLOSE" && System.IO.Path.IsPathRooted(e.FileName))
+            {
                 RemoveTabs();
+            }
         }
 
         private static void DocumentManager_DocumentCreated(object sender, DocumentCollectionEventArgs e)
