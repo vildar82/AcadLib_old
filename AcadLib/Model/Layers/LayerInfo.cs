@@ -31,22 +31,25 @@
 
         public LayerInfo(ObjectId idLayer)
         {
-#pragma warning disable 618
-            using (var layer = (LayerTableRecord)idLayer.Open(OpenMode.ForRead))
-#pragma warning restore 618
+            try
             {
-                Name = layer.Name;
-                Color = layer.Color;
-#pragma warning disable 618
-                using (var lt = (LinetypeTableRecord)layer.LinetypeObjectId.Open(OpenMode.ForRead))
-#pragma warning restore 618
+                using (var layer = (LayerTableRecord)idLayer.Open(OpenMode.ForRead))
                 {
-                    LineType = lt.Name;
-                }
+                    Name = layer.Name;
+                    Color = layer.Color;
+                    using (var lt = (LinetypeTableRecord)layer.LinetypeObjectId.Open(OpenMode.ForRead))
+                    {
+                        LineType = lt.Name;
+                    }
 
-                LineWeight = layer.LineWeight;
-                IsPlotable = layer.IsPlottable;
-                Description = layer.Description;
+                    LineWeight = layer.LineWeight;
+                    IsPlotable = layer.IsPlottable;
+                    Description = layer.Description;
+                }
+            }
+            catch
+            {
+                // Не открылись объекты - может удалены
             }
         }
 
