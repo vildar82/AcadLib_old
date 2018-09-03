@@ -61,7 +61,7 @@
         /// <param name="eventName">Имя события</param>
         public void Finish(EventType eventType, string docPath, string serialNumber)
         {
-            if (string.IsNullOrEmpty(docPath) || !File.Exists(docPath))
+            if (string.IsNullOrEmpty(docPath) || !Path.IsPathRooted(docPath) || !File.Exists(docPath))
             {
                 return;
             }
