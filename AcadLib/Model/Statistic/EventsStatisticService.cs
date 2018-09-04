@@ -19,7 +19,8 @@
         private static Eventer eventer;
         private static string overrideName;
         private static Document _currentDoc;
-        private static bool lastModeIsClose;
+        private static string lastModeChange;
+        private static string lastSaveAsFile;
 
         public static void Start()
         {
@@ -82,7 +83,7 @@
 
         private static void DocumentManager_DocumentLockModeChanged(object sender, DocumentLockModeChangedEventArgs e)
         {
-            Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName}");
+            Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName} {e.Document.Name}");
             short dbmod = (short)Application.GetSystemVariable("DBMOD");
 
             try
@@ -91,16 +92,27 @@
                 {
                     case "QSAVE":
                         StopSave(e, Case.Default);
+                        lastModeChange = "QSAVE";
                         break;
                     case "SAVEAS":
-                        StopSave(e, Case.Default);
+                        if (lastModeChange != "SAVEAS")
+                        {
+                            lastModeChange = "SAVEAS";
+                            StopSave(e, Case.SaveAs);
+                        }
+
                         break;
                     case "#SAVEAS":
-                        StopSave(e, Case.SaveAs);
+                        if (lastModeChange != "SAVEAS" || lastSaveAsFile != e.Document.Name)
+                        {
+                            StopSave(e, Case.SaveAs);
+                        }
+
+                        lastModeChange = "#SAVEAS";
                         break;
                     case "CLOSE":
                     case "#CLOSE":
-                        if (dbmod != 0 && !lastModeIsClose)
+                        if (dbmod != 0 && lastModeChange != "CLOSE")
                         {
                             switch (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
                                 MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
@@ -117,7 +129,7 @@
                                         CloseDiscard(e.Document);
                                     }
 
-                                    lastModeIsClose = true;
+                                    lastModeChange = "CLOSE";
                                     break;
                                 case MessageBoxResult.No:
                                     e.Veto();
@@ -129,9 +141,10 @@
                             }
                         }
 
+                        lastModeChange = "CLOSE";
                         break;
                     default:
-                        lastModeIsClose = false;
+                        lastModeChange = null;
                         break;
                 }
             }
@@ -168,6 +181,7 @@
 
         private static bool StopSave(DocumentLockModeChangedEventArgs e, Case @case)
         {
+            lastSaveAsFile = e.Document.Name;
             BeginSave(e.Document.Name, @case);
             if (veto)
             {
@@ -175,11 +189,9 @@
                 Debug.WriteLine($"StopSave Veto {e.GlobalCommandName}");
                 return true;
             }
-            else
-            {
-                Debug.WriteLine($"StopSave {e.GlobalCommandName}");
-                return false;
-            }
+
+            Debug.WriteLine($"StopSave no veto {e.GlobalCommandName}");
+            return false;
         }
 
         private static void DocumentManager_DocumentDestroyed(object sender, [NotNull] DocumentDestroyedEventArgs e)
@@ -248,6 +260,7 @@
 
         private static bool IsCheckError(PathCheckerResult checkRes)
         {
+            Debug.WriteLine($"checkRes FilePathOverride={checkRes?.FilePathOverride}");
             if (checkRes != null)
             {
                 switch (checkRes.NexAction)
@@ -267,15 +280,25 @@
             return false;
         }
 
+        private static void SaveIdle(object sender, EventArgs e)
+        {
+            Application.Idle -= SaveIdle;
+            var doc = AcadHelper.Doc;
+            using (doc.LockDocument())
+            {
+                doc.Database.SaveAs(doc.Name, true, DwgVersion.Current, doc.Database.SecurityParameters);
+            }
+        }
+
         private static void SaveOverride(string overrideName)
         {
             EventsStatisticService.overrideName = overrideName;
-            Application.Idle += Application_Idle;
+            Application.Idle += SaveOverride_Idle;
         }
 
-        private static void Application_Idle(object sender, EventArgs e)
+        private static void SaveOverride_Idle(object sender, EventArgs e)
         {
-            Application.Idle -= Application_Idle;
+            Application.Idle -= SaveOverride_Idle;
             if (string.IsNullOrEmpty(overrideName))
                 return;
             var doc = AcadHelper.Doc;
