@@ -195,9 +195,11 @@
                     if (string.IsNullOrEmpty(groupName))
                         continue;
                     var verFile = Path.Combine(dirGroup, $"{groupName}.ver");
-                    var ver = verFile.Try(f => File.ReadLines(f).FirstOrDefault());
-                    if (ver.IsNullOrEmpty())
+                    var verLine = verFile.Try(f => File.ReadLines(f).FirstOrDefault());
+                    if (verLine.IsNullOrEmpty())
                         continue;
+                    var verMatch = Regex.Match(verLine.Trim(), @"^(\d+)");
+                    var ver = verMatch.Success ? verMatch.Groups[1].Value : verLine.Trim();
                     groups.Add(new UserGroup
                     {
                         Name = groupName,
