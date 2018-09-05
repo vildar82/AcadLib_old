@@ -2,6 +2,7 @@
 {
     using Autodesk.AutoCAD.DatabaseServices;
     using JetBrains.Annotations;
+    using NetLib;
 
     /// <summary>
     /// Настройки для объекта на чертеже
@@ -92,13 +93,20 @@
             }
             else if (!string.IsNullOrEmpty(LineType))
             {
-                if (CheckCreateValues)
+                if (!IsStandartLinetypeName(LineType) && CheckCreateValues)
                 {
                     ent.Database.LoadLineTypePIK(LineType);
                 }
 
                 ent.Linetype = LineType;
             }
+        }
+
+        public static bool IsStandartLinetypeName(string lineType)
+        {
+            return SymbolUtilityServices.IsLinetypeByBlockName(lineType) ||
+                SymbolUtilityServices.IsLinetypeByLayerName(lineType) ||
+                SymbolUtilityServices.IsLinetypeContinuousName(lineType);
         }
 
         public void SetLineWeight(Entity ent)

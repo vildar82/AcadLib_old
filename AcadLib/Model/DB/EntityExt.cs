@@ -12,6 +12,20 @@ namespace AcadLib.Extensions
     public static class EntityExt
     {
         /// <summary>
+        /// Вставка примитива в блок (должна быть запущена транзакция)
+        /// </summary>
+        /// <param name="ent">Примитив</param>
+        /// <param name="btr">Блок</param>
+        public static ObjectId Append([NotNull] this Entity ent, [NotNull] BlockTableRecord btr)
+        {
+            if (!btr.IsWriteEnabled)
+                btr.UpgradeOpen();
+            var id = btr.AppendEntity(ent);
+            btr.Database.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(ent, true);
+            return id;
+        }
+
+        /// <summary>
         /// Пересечение на плоскости
         /// </summary>
         /// <param name="ent"></param>
