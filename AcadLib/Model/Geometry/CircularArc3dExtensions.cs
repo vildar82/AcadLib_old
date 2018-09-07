@@ -1,6 +1,7 @@
 ﻿namespace AcadLib.Geometry
 {
     using System;
+    using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.Geometry;
     using JetBrains.Annotations;
 
@@ -10,10 +11,37 @@
     [PublicAPI]
     public static class CircularArc3dExtensions
     {
+        [NotNull]
+        public static Polyline ConvertToPolyline([NotNull] this CircularArc3d arc)
+        {
+            var poly = new Polyline();
+            poly.AddVertexAt(0, new Point2d(arc.StartPoint.X, arc.StartPoint.Y), GetBulge(arc), 0, 0);
+            poly.AddVertexAt(1, new Point2d(arc.EndPoint.X, arc.EndPoint.Y), 0, 0, 0);
+            return poly;
+        }
+
+        [NotNull]
+        public static Polyline ConvertToPolyline([NotNull] this CircularArc2d arc)
+        {
+            var poly = new Polyline();
+            poly.AddVertexAt(0, new Point2d(arc.StartPoint.X, arc.StartPoint.Y), GetBulge(arc, arc.IsClockWise), 0, 0);
+            poly.AddVertexAt(1, new Point2d(arc.EndPoint.X, arc.EndPoint.Y), 0, 0, 0);
+            return poly;
+        }
+
         /// <summary>
         /// Функция возвращает кривизну дуги (bulge) или 0.0
         /// </summary>
         public static double GetBulge([NotNull] this CircularArc2d arc, bool clockWise = false)
+        {
+            var bulge = Math.Tan(Math.Abs(arc.StartAngle - arc.EndAngle) * 0.25);
+            return clockWise ? -bulge : bulge;
+        }
+
+        /// <summary>
+        /// Функция возвращает кривизну дуги (bulge) или 0.0
+        /// </summary>
+        public static double GetBulge([NotNull] this CircularArc3d arc, bool clockWise = false)
         {
             var bulge = Math.Tan(Math.Abs(arc.StartAngle - arc.EndAngle) * 0.25);
             return clockWise ? -bulge : bulge;

@@ -76,7 +76,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Последние открытые чертежы:" Margin="3,3,50,3"  HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Text="Последние открытые чертежи:" Margin="3,3,50,3"  HorizontalAlignment="Center"/>
             <DataGrid Grid.Row="1" Margin="5" ItemsSource="{Binding Tabs}" AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False"
