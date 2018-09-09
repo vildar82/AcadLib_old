@@ -419,6 +419,7 @@
     <Compile Include="Model\User\UserSettingsService.cs" />
     <Compile Include="Model\Utils\ClearObjectsExtData.cs" />
     <Compile Include="Model\Utils\ListModules.cs" />
+    <Compile Include="Model\Utils\Tabs\Data\Session.cs" />
     <Compile Include="Model\Utils\Tabs\History\Db\DbEvents.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -440,10 +441,10 @@
     </Compile>
     <Compile Include="Model\Utils\Tabs\RestoreTabs.cs" />
     <Compile Include="Model\Utils\Tabs\Data\Tabs.cs" />
-    <Compile Include="Model\Utils\Tabs\Tab.cs" />
     <Compile Include="Model\Utils\Tabs\UI\ErrConverter.cs" />
     <Compile Include="Model\Utils\Tabs\UI\History\HistoryTab.cs" />
     <Compile Include="Model\Utils\Tabs\UI\History\HistoryModel.cs" />
+    <Compile Include="Model\Utils\Tabs\UI\SessionVM.cs" />
     <Compile Include="Model\Utils\Tabs\UI\TabsView.xaml.cs">
       <DependentUpon>TabsView.xaml</DependentUpon>
     </Compile>

@@ -25,9 +25,9 @@
         internal const string PluginName = "RestoreTabs";
         private const string ParamRestoreIsOn = "RestoreTabsIsOn";
         [NotNull]
-        private static readonly List<Document> _tabs = new List<Document>();
+        private static readonly List<Document> _docs = new List<Document>();
         private static string cmd;
-        private static List<string> restoreTabs;
+        private static Tabs _tabs;
 
         public static void Init()
         {
@@ -43,9 +43,8 @@
                 if (isOn)
                 {
                     Subscribe();
-                    var tabsData = new LocalFileData<Tabs>(GetFile(), false);
-                    tabsData.TryLoad(() => new Tabs());
-                    if (tabsData.Data?.Drawings?.Count > 0)
+                    var tabsData = LoadData();
+                    if (tabsData.Data?.Sessions?.Any(s => s?.Drawings?.Count > 0) == true)
                     {
                         Restore();
                     }
@@ -94,9 +93,9 @@
         /// </summary>
         private static void Restore()
         {
-            var tabsData = new LocalFileData<Tabs>(GetFile(), false);
-            tabsData.TryLoad(() => new Tabs());
-            restoreTabs = tabsData.Data?.Drawings;
+            var tabsData = LoadData();
+            _tabs = tabsData.Data;
+            _tabs.Sessions = tabsData.Data.Sessions.OrderByDescending(o => o.Date).Take(tabsData.Data.SessionCount).ToList();
             Application.Idle += Application_Idle;
         }
 
@@ -105,38 +104,16 @@
             try
             {
                 Application.Idle -= Application_Idle;
-                var openedDraws = new List<string>();
-                if (restoreTabs?.Any() == true)
-                {
-                    // Сохранить список чертежей, на случай если это окно пропустят и закроют автокад.
-                    var tabsData = new LocalFileData<Tabs>(GetFile(), false) { Data = new Tabs { Drawings = restoreTabs } };
-                    tabsData.TrySave();
-                    var docs = Application.DocumentManager.Cast<Document>().ToList();
-                    foreach (var doc in docs)
-                    {
-                        if (doc.IsNamedDrawing)
-                        {
-                            openedDraws.Add(doc.Name);
-                        }
-                    }
-                }
-
-                if (!AcadHelper.IsOneAcadRun())
-                {
-                    Debug.WriteLine("RestoreTabs. Запущено несколько автокадов.");
-                    restoreTabs = new List<string>();
-                }
-
-                restoreTabs = restoreTabs?.Except(openedDraws, StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
-                var tabVM = new TabsVM(restoreTabs);
+                var tabVM = new TabsVM(_tabs);
                 var tabsView = new TabsView(tabVM);
                 if (tabsView.ShowDialog() == true)
                 {
                     try
                     {
+                        Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
                         Statistic.PluginStatisticsHelper.PluginStart("OpenRestoreTabs");
                         var closeDocs = Application.DocumentManager.Cast<Document>().Where(w => !w.IsNamedDrawing).ToList();
-                        var tabs = tabVM.Tabs.Where(w => w.Restore).Select(s => s.File).ToList();
+                        var tabs = tabVM.Sessions.SelectMany(s => s.Tabs.Where(w => w.Restore)).Select(s => s.File).ToList();
                         if (tabVM.HasHistory)
                         {
                             tabs = tabs.Union(tabVM.History.Where(w => w.Restore).Select(s => s.File)).Distinct().ToList();
@@ -169,8 +146,17 @@
                     }
                     finally
                     {
+                        Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
                         Inspector.Show();
                     }
+                }
+
+                if (tabVM.SessionCount != _tabs.SessionCount)
+                {
+                    _tabs.SessionCount = tabVM.SessionCount;
+                    var tabsData = LoadData();
+                    tabsData.Data.SessionCount = tabVM.SessionCount;
+                    tabsData.TrySave();
                 }
             }
             catch (Exception ex)
@@ -218,13 +204,13 @@
                 Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
                 Application.DocumentManager.DocumentDestroyed -= DocumentManager_DocumentDestroyed;
 
-                foreach (var tab in _tabs)
+                foreach (var tab in _docs)
                 {
                     if (tab?.Database != null)
                         tab.Database.SaveComplete -= Database_SaveComplete;
                 }
 
-                _tabs.Clear();
+                _docs.Clear();
             }
             catch
             {
@@ -254,9 +240,9 @@
 
         private static void AddTab(Document doc)
         {
-            if (doc?.Database == null || _tabs.Contains(doc))
+            if (doc?.Database == null || _docs.Contains(doc))
                 return;
-            _tabs.Add(doc);
+            _docs.Add(doc);
             doc.Database.SaveComplete -= Database_SaveComplete;
             doc.Database.SaveComplete += Database_SaveComplete;
             if (doc.IsNamedDrawing)
@@ -271,15 +257,28 @@
 
         private static void RemoveTabs()
         {
-            _tabs.RemoveAll(t => t?.Database == null);
+            _docs.RemoveAll(t => t?.Database == null);
             SaveTabs();
         }
 
         private static void SaveTabs()
         {
             Debug.WriteLine("SaveTabs");
-            var drawings = _tabs.Where(w => w?.Database != null && w.IsNamedDrawing).Select(s => s.Name).ToList();
-            var tabsData = new LocalFileData<Tabs>(GetFile(), false) { Data = new Tabs { Drawings = drawings } };
+            var drawings = _docs.Where(w => w?.Database != null && w.IsNamedDrawing).Select(s => s.Name).ToList();
+            var tabsData = LoadData();
+            tabsData.Data.Sessions = tabsData.Data.Sessions.OrderByDescending(o => o.Date).Take(tabsData.Data.SessionCount).ToList();
+            var session = tabsData.Data.Sessions.FirstOrDefault(s => s.Id == AcadHelper.GetCurrentAcadProcessId());
+            if (session == null)
+            {
+                session = new Session { Drawings = drawings, Id = AcadHelper.GetCurrentAcadProcessId(), Date = DateTime.Now };
+                tabsData.Data.Sessions.Add(session);
+            }
+            else
+            {
+                session.Drawings = drawings;
+                session.Date = DateTime.Now;
+            }
+
             tabsData.TrySave();
         }
 
@@ -305,6 +304,13 @@
         public static bool GetIsOn()
         {
             return UserSettingsService.GetPluginValue<bool>(PluginName, ParamRestoreIsOn);
+        }
+
+        private static LocalFileData<Tabs> LoadData()
+        {
+            var tabsData = new LocalFileData<Tabs>(GetFile(), false);
+            tabsData.TryLoad(() => new Tabs());
+            return tabsData;
         }
     }
 }

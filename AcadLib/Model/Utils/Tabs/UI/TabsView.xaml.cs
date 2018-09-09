@@ -3,6 +3,8 @@
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Media;
     using NetLib.WPF.Data;
 
     /// <summary>
@@ -58,6 +60,29 @@
                     Logger.Error(ex);
                 }
             }
+        }
+
+        private void SelectAll_Checked(object sender, RoutedEventArgs e)
+        {
+            SelectAllTabs(sender as CheckBox, true);
+        }
+
+        private void SelectAll_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SelectAllTabs(sender as CheckBox, false);
+        }
+
+        private void SelectAllTabs(CheckBox cb, bool isChecked)
+        {
+            var parent = (DependencyObject)cb;
+            do
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+            } while (!(parent is DataGrid));
+
+            var dg = (DataGrid)parent;
+            var session = (SessionVM)dg.DataContext;
+            session.Tabs.ForEach(s => s.Restore = isChecked);
         }
     }
 }

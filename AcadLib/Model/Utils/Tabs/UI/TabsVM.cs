@@ -9,6 +9,7 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Windows;
+    using Data;
     using History;
     using JetBrains.Annotations;
     using Model.Utils.Tabs.History.Db;
@@ -17,17 +18,17 @@
     using NetLib.WPF;
     using ReactiveUI;
     using Tabs.History.Db;
-    using User;
 
     public class TabsVM : BaseViewModel
     {
         private ReactiveList<TabVM> history = new ReactiveList<TabVM>();
 
-        public TabsVM([NotNull] IEnumerable<string> drawings)
+        public TabsVM([NotNull] Tabs tabs)
         {
             try
             {
-                Tabs = drawings.Select(s => GetTab(s, true, DateTime.MinValue)).ToList();
+                SessionCount = tabs.SessionCount;
+                Sessions = tabs.Sessions.Select(s => new SessionVM(s)).ToList();
                 Ok = CreateCommand(OkExec);
                 IsOn = RestoreTabs.GetIsOn();
                 this.WhenAnyValue(v => v.IsOn).Skip(1)
@@ -35,8 +36,7 @@
                     .Throttle(TimeSpan.FromMilliseconds(100))
                     .ObserveOn(dispatcher)
                     .Subscribe(RestoreTabs.SetIsOn);
-                this.WhenAnyValue(v => v.CheckAllTabs).Skip(1).Subscribe(s => Tabs.ForEach(t => t.Restore = s));
-                HasRestoreTabs = Tabs.Count > 0;
+                HasRestoreTabs = Sessions?.Count > 0;
                 if (!HasRestoreTabs)
                 {
                     HasHistory = true;
@@ -52,11 +52,9 @@
             }
         }
 
-        public List<TabVM> Tabs { get; set; }
+        public List<SessionVM> Sessions { get; set; }
 
         public ReactiveCommand Ok { get; set; }
-
-        public bool CheckAllTabs { get; set; } = true;
 
         public bool HasHistory { get; set; }
 
@@ -71,6 +69,8 @@
         public IReactiveDerivedList<TabVM> History { get; set; }
 
         public bool IsOn { get; set; }
+
+        public int SessionCount { get; set; }
 
         private TabVM GetTab(string tab, bool restore, DateTime start)
         {

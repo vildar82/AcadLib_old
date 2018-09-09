@@ -7,9 +7,8 @@
     /// </summary>
     public class Tabs
     {
-        /// <summary>
-        /// Cписок чертежей
-        /// </summary>
-        public List<string> Drawings { get; set; } = new List<string>();
+        public int SessionCount { get; set; } = 1;
+
+        public List<Session> Sessions { get; set; } = new List<Session>();
     }
 }

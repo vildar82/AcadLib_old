@@ -18,6 +18,8 @@
     [PublicAPI]
     public static class AcadHelper
     {
+        private static readonly int AcadId = Process.GetCurrentProcess().Id;
+
         /// <summary>
         /// Текущий документ.
         /// </summary>
@@ -85,7 +87,7 @@
         /// </summary>
         public static int GetCurrentAcadProcessId()
         {
-            return Process.GetCurrentProcess().Id;
+            return AcadId;
         }
 
         /// <summary>
