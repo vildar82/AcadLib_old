@@ -17,7 +17,7 @@
                 Title="Открытие чертежей">
     <Window.Resources>
         <DataTemplate x:Key="Restore" DataType="{x:Type local:TabVM}">
-            <CheckBox IsChecked="{Binding Restore, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" />
+            <CheckBox IsChecked="{Binding Restore}" HorizontalAlignment="Center" />
         </DataTemplate>
         <DataTemplate x:Key="Name" DataType="{x:Type local:TabVM}">
             <TextBlock Text="{Binding Name}" FontWeight="Bold" />

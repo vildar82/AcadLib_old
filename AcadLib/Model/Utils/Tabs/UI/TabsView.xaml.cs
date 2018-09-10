@@ -20,22 +20,22 @@
 
         private void Row_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (sender is DataGridRow r)
-            {
-                var tab = (TabVM)r.DataContext;
-                tab.Restore = !tab.Restore;
-                e.Handled = true;
-            }
+            //if (sender is DataGridRow r)
+            //{
+            //    e.Handled = true;
+            //    var tab = (TabVM)r.DataContext;
+            //    tab.Restore = !tab.Restore;
+            //}
         }
 
         private void Row_Select(object sender, RoutedEventArgs e)
         {
-            if (sender is DataGridRow r)
-            {
-                var tab = (TabVM)r.DataContext;
-                tab.Restore = !tab.Restore;
-                e.Handled = true;
-            }
+            //if (sender is DataGridRow r)
+            //{
+            //    e.Handled = true;
+            //    var tab = (TabVM)r.DataContext;
+            //    tab.Restore = !tab.Restore;
+            //}
         }
 
         private void Row_DoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
