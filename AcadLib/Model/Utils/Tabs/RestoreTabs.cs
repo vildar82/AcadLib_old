@@ -95,7 +95,8 @@
         {
             var tabsData = LoadData();
             _tabs = tabsData.Data;
-            _tabs.Sessions = tabsData.Data.Sessions.OrderByDescending(o => o.Date).Take(tabsData.Data.SessionCount).ToList();
+            _tabs.Sessions = tabsData.Data.Sessions.Where(w => w.Drawings?.Any() == true)
+                .OrderByDescending(o => o.Date).Take(tabsData.Data.SessionCount).ToList();
             Application.Idle += Application_Idle;
         }
 
@@ -265,8 +266,12 @@
         {
             Debug.WriteLine("SaveTabs");
             var drawings = _docs.Where(w => w?.Database != null && w.IsNamedDrawing).Select(s => s.Name).ToList();
+            if (drawings.Count == 0)
+                return;
             var tabsData = LoadData();
-            tabsData.Data.Sessions = tabsData.Data.Sessions.OrderByDescending(o => o.Date).Take(tabsData.Data.SessionCount).ToList();
+            tabsData.Data.Sessions = tabsData.Data.Sessions
+                .Where(s => s.Drawings?.Any() == true)
+                .OrderByDescending(o => o.Date).Take(tabsData.Data.SessionCount).ToList();
             var session = tabsData.Data.Sessions.FirstOrDefault(s => s.Id == AcadHelper.GetCurrentAcadProcessId());
             if (session == null)
             {

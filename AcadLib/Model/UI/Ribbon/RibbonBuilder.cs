@@ -38,6 +38,10 @@
             {
                 ribbonOptions.Data = new RibbonOptions();
             }
+            else
+            {
+                ribbonOptions.Data.Tabs = ribbonOptions.Data.Tabs.OrderBy(o => o.Index).ToList();
+            }
         }
 
         public static void InitRibbon()
@@ -273,7 +277,6 @@
                 UID = tabName
             };
             var tabOptions = GetItemOptions(tab, ribbonOptions.Data.Tabs);
-            ribbonOptions.Data.Tabs = ribbonOptions.Data.Tabs.Where(w => w.Item != null).ToList();
             tab.IsVisible = tabOptions.IsVisible;
             tabOptions.Items = elements.GroupBy(g => g.Panel).Select(p => CreatePanel(p.Key, p.ToList(), tabOptions))
                 .OrderBy(o => o.Index).ToList();
@@ -372,6 +375,7 @@
 
         private static void SaveOptions()
         {
+            ribbonOptions.Data.Tabs = ribbonOptions.Data.Tabs.Where(w => w.Item != null).OrderBy(o => o.Index).ToList();
             foreach (var tabOpt in ribbonOptions.Data.Tabs)
             {
                 var tab = (RibbonTab)tabOpt.Item;

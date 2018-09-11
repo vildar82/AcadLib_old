@@ -15,11 +15,17 @@ namespace Autodesk.AutoCAD.DatabaseServices
     {
         public const string PIK = General.Company;
 
-        private static string UserGroup { get; } = PikSettings.UserGroupsCombined.First();
+        private static string UserGroup { get; } = PikSettings.UserGroup;
 
         public static ObjectId GetMS(this Database db)
         {
             return SymbolUtilityServices.GetBlockModelSpaceId(db);
+        }
+
+        [NotNull]
+        public static BlockTable BT(this Database db, OpenMode mode = OpenMode.ForRead)
+        {
+            return db.BlockTableId.GetObjectT<BlockTable>(mode);
         }
 
         [NotNull]

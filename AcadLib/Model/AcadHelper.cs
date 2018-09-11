@@ -27,6 +27,9 @@
         [NotNull]
         public static Document Doc => DocumentManager.MdiActiveDocument ?? throw new InvalidOperationException();
 
+        [NotNull]
+        public static Database Db => HostApplicationServices.WorkingDatabase;
+
         /// <summary>
         /// Основной номер версии Автокада
         /// </summary>

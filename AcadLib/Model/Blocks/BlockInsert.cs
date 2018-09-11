@@ -137,17 +137,26 @@
             return idBlRefInsert;
         }
 
+        /// <summary>
+        /// Вставка блока в чертеж - интерактивная (BlockInsertJig)
+        /// </summary>
         public static ObjectId Insert(string blName, LayerInfo layer, bool explode = false)
         {
             return Insert(blName, layer, null, explode);
         }
 
+        /// <summary>
+        /// Вставка блока в чертеж - интерактивная (BlockInsertJig)
+        /// </summary>
         public static ObjectId Insert(string blName, string layer)
         {
             var layerInfo = new LayerInfo(layer);
             return Insert(blName, layerInfo);
         }
 
+        /// <summary>
+        /// Вставка блока в чертеж - интерактивная (BlockInsertJig)
+        /// </summary>
         public static ObjectId Insert(string blName)
         {
             return Insert(blName, (LayerInfo)null);
@@ -173,6 +182,20 @@
             var db = owner.Database;
             var bt = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
             var btr = (BlockTableRecord)bt[blName].GetObject(OpenMode.ForRead);
+            return InsertBlockRef(btr, pt, owner, t, scale);
+        }
+
+        /// <summary>
+        /// Вставка вхождения блока
+        /// </summary>
+        public static BlockReference InsertBlockRef(
+            BlockTableRecord btr,
+            Point3d pt,
+            [NotNull] BlockTableRecord owner,
+            [NotNull] Transaction t,
+            double scale = 1)
+        {
+            var db = owner.Database;
             var blRef = new BlockReference(pt, btr.Id)
             {
                 Position = pt
@@ -187,7 +210,6 @@
                 blRef.TransformBy(Matrix3d.Scaling(scale, pt));
             }
 
-            blRef.SetDatabaseDefaults();
             owner.AppendEntity(blRef);
             t.AddNewlyCreatedDBObject(blRef, true);
             AddAttributes(blRef, btr, t);
