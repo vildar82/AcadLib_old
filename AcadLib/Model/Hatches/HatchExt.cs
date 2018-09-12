@@ -28,8 +28,24 @@
             [CanBeNull] string layer = null,
             LineWeight lw = LineWeight.LineWeight015)
         {
+            return CreateAssociativeHatch(loop, cs, t, 1, pattern, layer, lw);
+        }
+
+        /// <summary>
+        /// Создание ассоциативной штриховки по полилинии
+        /// Полилиния должна быть в базе чертежа
+        /// </summary>
+        [CanBeNull]
+        public static Hatch CreateAssociativeHatch(
+            [NotNull] Curve loop,
+            [NotNull] BlockTableRecord cs,
+            [NotNull] Transaction t,
+            double scale,
+            string pattern = "SOLID",
+            [CanBeNull] string layer = null,
+            LineWeight lw = LineWeight.LineWeight015)
+        {
             var h = new Hatch();
-            h.SetDatabaseDefaults();
             if (layer != null)
             {
                 Layers.LayerExt.CheckLayerState(layer);
@@ -38,6 +54,7 @@
 
             h.LineWeight = lw;
             h.Linetype = SymbolUtilityServices.LinetypeContinuousName;
+            h.PatternScale = scale;
             h.SetHatchPattern(HatchPatternType.PreDefined, pattern);
             cs.AppendEntity(h);
             t.AddNewlyCreatedDBObject(h, true);

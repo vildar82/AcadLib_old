@@ -269,9 +269,6 @@
             if (drawings.Count == 0)
                 return;
             var tabsData = LoadData();
-            tabsData.Data.Sessions = tabsData.Data.Sessions
-                .Where(s => s.Drawings?.Any() == true)
-                .OrderByDescending(o => o.Date).Take(tabsData.Data.SessionCount).ToList();
             var session = tabsData.Data.Sessions.FirstOrDefault(s => s.Id == AcadHelper.GetCurrentAcadProcessId());
             if (session == null)
             {
@@ -284,6 +281,10 @@
                 session.Date = DateTime.Now;
             }
 
+            tabsData.Data.Sessions = tabsData.Data.Sessions
+                .Where(s => s.Drawings?.Any() == true)
+                .Distinct(new SessionComparer())
+                .OrderByDescending(o => o.Date).Take(tabsData.Data.SessionCount).ToList();
             tabsData.TrySave();
         }
 
@@ -316,6 +317,21 @@
             var tabsData = new LocalFileData<Tabs>(GetFile(), false);
             tabsData.TryLoad(() => new Tabs());
             return tabsData;
+        }
+    }
+
+    internal class SessionComparer : IEqualityComparer<Session>
+    {
+        /// <inheritdoc />
+        public bool Equals(Session x, Session y)
+        {
+            return !x.Drawings.Except(y.Drawings).Any();
+        }
+
+        /// <inheritdoc />
+        public int GetHashCode(Session session)
+        {
+            return 0;
         }
     }
 }

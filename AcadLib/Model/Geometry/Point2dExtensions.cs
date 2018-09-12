@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace Autodesk.AutoCAD.Geometry
+﻿namespace Autodesk.AutoCAD.Geometry
 {
     using System;
     using System.Collections.Generic;
@@ -14,6 +13,11 @@ namespace Autodesk.AutoCAD.Geometry
     [PublicAPI]
     public static class Point2dExtensions
     {
+        public static Point2d Move(this Point2d pt, double x, double y)
+        {
+            return pt + new Vector2d(x, y);
+        }
+
         public static Point2d Center(this Point2d pt, Point2d other)
         {
             return new Point2d(

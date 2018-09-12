@@ -25,7 +25,7 @@
 
         [NotNull] private readonly List<string> _exceptedUsers = new List<string>
         {
-            "PrudnikovVS",
+            "bulkinaam",
             "vrublevskiyba",
             "arslanovti",
             "karadzhayanra"

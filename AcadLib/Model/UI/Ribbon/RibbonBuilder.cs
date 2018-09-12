@@ -56,7 +56,7 @@
         {
             try
             {
-                foreach (var palette in PaletteSetCommands._paletteSets)
+                foreach (var palette in PaletteSetCommands._paletteSets.OrderBy(o => GetTabIndex(o.Name)))
                 {
                     var elems = palette.Commands.Where(w => PaletteSetCommands.IsAccess(w.Access))
                         .Select(c => ConvertToRibbonElement(c, palette.Name));
@@ -312,6 +312,11 @@
             }
 
             return tabOption;
+        }
+
+        private static int GetTabIndex(string name)
+        {
+            return ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == name)?.Index ?? 0;
         }
 
         [NotNull]

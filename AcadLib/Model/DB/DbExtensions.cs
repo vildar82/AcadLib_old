@@ -17,6 +17,15 @@ namespace Autodesk.AutoCAD.DatabaseServices
 
         private static string UserGroup { get; } = PikSettings.UserGroup;
 
+        /// <summary>
+        /// Текущее пространвтво - Model (не лист, и не редактор блоков)
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsModel(this Database db)
+        {
+            return db.TileMode && "BLOCKEDITOR".GetSystemVariable<int>() != 1;
+        }
+
         public static ObjectId GetMS(this Database db)
         {
             return SymbolUtilityServices.GetBlockModelSpaceId(db);
@@ -83,10 +92,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         public static ObjectId GetLineTypeIdByName([NotNull] this Database db, string name)
         {
             var resVal = ObjectId.Null;
-
-#pragma warning disable 618
             using (var ltTable = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 if (ltTable.Has(name))
                 {
@@ -312,9 +318,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         private static ObjectId GetDictStyleId(Database db, string styleName, [NotNull] Func<Database, ObjectId> idDictTable)
         {
             var idStyle = ObjectId.Null;
-#pragma warning disable 618
             using (var dictTableStyle = (DBDictionary)idDictTable(db).Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 if (dictTableStyle.Contains(styleName))
                 {
@@ -338,10 +342,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         private static ObjectId GetStyleId(Database db, string styleName, [NotNull] Func<Database, ObjectId> idSymbolTable)
         {
             var idStyle = ObjectId.Null;
-
-#pragma warning disable 618
             using (var symbolTable = (SymbolTable)idSymbolTable(db).Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 if (symbolTable.Has(styleName))
                 {

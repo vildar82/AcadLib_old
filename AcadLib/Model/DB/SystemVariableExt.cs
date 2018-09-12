@@ -2,6 +2,7 @@
 {
     using System;
     using Autodesk.AutoCAD.ApplicationServices.Core;
+    using NetLib;
 
     public static class SystemVariableExt
     {
@@ -25,6 +26,11 @@
         public static object GetSystemVariable(this string name)
         {
             return Application.GetSystemVariable(name);
+        }
+
+        public static T GetSystemVariable<T>(this string name)
+        {
+            return Application.GetSystemVariable(name).GetValue<T>();
         }
     }
 }
