@@ -21,11 +21,13 @@
     public class Eventer
     {
         private readonly ApiClient _client;
-        [NotNull] private readonly PathChecker _pathChecker;
+        [NotNull]
+        private readonly PathChecker _pathChecker;
 
-        [NotNull] private readonly List<string> _exceptedUsers = new List<string>
+        [NotNull]
+        private readonly List<string> _exceptedUsers = new List<string>
         {
-            "bulkinaam",
+            "valievtr",
             "vrublevskiyba",
             "arslanovti",
             "karadzhayanra"
@@ -61,17 +63,14 @@
         /// <param name="eventName">Имя события</param>
         public void Finish(EventType eventType, string docPath, string serialNumber)
         {
-            if (string.IsNullOrEmpty(docPath) || !Path.IsPathRooted(docPath) || !File.Exists(docPath))
-            {
-                return;
-            }
-
             var eventEnd = DateTime.Now;
             Task.Run(
                 () =>
                 {
                     try
                     {
+                        if (string.IsNullOrEmpty(docPath) || !Path.IsPathRooted(docPath) || !File.Exists(docPath))
+                            return;
                         var fileName = Path.GetFileNameWithoutExtension(docPath);
                         var userName = Environment.UserName;
                         var compName = Environment.MachineName;
@@ -110,7 +109,7 @@
         /// </summary>
         /// <param name="case">Кейс</param>
         /// <param name="docPath">Документ</param>
-        public PathCheckerResult Start([CanBeNull] Case @case, [CanBeNull] string docPath)
+        public PathCheckerResult Start(Case @case, [CanBeNull] string docPath)
         {
             PathCheckerResult pathCheckerResult = null;
             if (NeedCheck(docPath))

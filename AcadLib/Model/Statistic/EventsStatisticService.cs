@@ -84,10 +84,9 @@
         private static void DocumentManager_DocumentLockModeChanged(object sender, DocumentLockModeChangedEventArgs e)
         {
             Debug.WriteLine($"DocumentManager_DocumentLockModeChanged {e.GlobalCommandName} {e.Document.Name}");
-            short dbmod = (short)Application.GetSystemVariable("DBMOD");
-
             try
             {
+                short dbmod = (short)Application.GetSystemVariable("DBMOD");
                 switch (e.GlobalCommandName)
                 {
                     case "QSAVE":
@@ -153,6 +152,10 @@
                 // Отмена
                 e.Veto();
             }
+            catch (Exception ex)
+            {
+                Logger.Log.Fatal($"EventsStatisticService DocumentManager_DocumentLockModeChanged, GlobalCommandName={e?.GlobalCommandName}", ex);
+            }
         }
 
         private static void CloseDiscard(Document doc)
@@ -163,8 +166,15 @@
 
         private static void CloseDiscardOnIdle(object sender, EventArgs e)
         {
-            Application.Idle -= CloseDiscardOnIdle;
-            _currentDoc.CloseAndDiscard();
+            try
+            {
+                Application.Idle -= CloseDiscardOnIdle;
+                _currentDoc.CloseAndDiscard();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error("EventsStatisticService CloseDiscardOnIdle", ex);
+            }
         }
 
         private static void CloseSave(Document doc)
@@ -175,8 +185,15 @@
 
         private static void CloseSaveOnIdle(object sender, EventArgs e)
         {
-            Application.Idle -= CloseSaveOnIdle;
-            _currentDoc.CloseAndSave(_currentDoc.Name);
+            try
+            {
+                Application.Idle -= CloseSaveOnIdle;
+                _currentDoc.CloseAndSave(_currentDoc.Name);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error("EventsStatisticService CloseSaveOnIdle", ex);
+            }
         }
 
         private static bool StopSave(DocumentLockModeChangedEventArgs e, Case @case)
@@ -347,7 +364,14 @@
 
         private static bool IsDwg(string fileName)
         {
-            return Path.GetExtension(fileName).EqualsIgnoreCase(".dwg");
+            try
+            {
+                return Path.GetExtension(fileName).EqualsIgnoreCase(".dwg");
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
