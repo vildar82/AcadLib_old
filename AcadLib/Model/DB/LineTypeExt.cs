@@ -19,9 +19,7 @@
 
         public static ObjectId GetLineTypeId([NotNull] this Database db, string lineTypeName)
         {
-#pragma warning disable 618
             using (var lt = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 return lt.Has(lineTypeName) ? lt[lineTypeName] : ObjectId.Null;
             }

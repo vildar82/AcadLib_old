@@ -773,10 +773,8 @@
             Wedding(pl, tolerance, false);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void Wedding([NotNull] this Polyline pl, Tolerance tolerance, bool close = true, bool onSomeLine = false)
         {
-            // var iPrew = pl.NextVertexIndex(0, -1);
             var prew = pl.GetPoint2dAt(0);
             for (var i = 1; i < pl.NumberOfVertices; i++)
             {
@@ -813,6 +811,18 @@
 
             if (close && !pl.Closed)
                 pl.Closed = true;
+
+            if (pl.Closed && onSomeLine && pl.NumberOfVertices >= 3)
+            {
+                // Проверить что первая точка лежит на одной прямой со 2 и последней точками
+                prew = pl.GetPoint2dAt(pl.NumberOfVertices - 1);
+                var cur = pl.GetPoint2dAt(0);
+                var next = pl.GetPoint2dAt(1);
+                if (IsPointsOnSomeLine(prew, cur, next, tolerance))
+                {
+                    pl.RemoveVertexAt(0);
+                }
+            }
         }
 
         private static double Angle2D(double x1, double y1, double x2, double y2)
