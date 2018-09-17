@@ -79,10 +79,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Margin="3,3,50,3" Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Grid.Row="0" Margin="3" Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Сессии:" />
-                <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
-                    <TextBox Text="{Binding SessionCount}"
+                <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                    <TextBox Text="{Binding SessionCount}" VerticalAlignment="Center"
                              ToolTip="Максимальное количество хранимых сессий автокада."
                              BorderThickness="0" />
                 </StackPanel>
@@ -100,14 +100,13 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <CheckBox Grid.Column="0" IsChecked="{Binding RestoreAll}" Margin="30,1,1,1"/>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center"
-                                            Margin="-80,1,1,1">
-                                    <TextBlock Text="Сессия от " Margin="1" />
-                                    <TextBlock Text="{Binding Date, StringFormat=dd.MM.yy HH:mm}" Margin="1" />
+                                <CheckBox Grid.Column="0" IsChecked="{Binding RestoreAll}" Margin="30,0,0,0"/>
+                                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center"
+                                            Margin="0">
+                                    <TextBlock Text="{Binding Date, StringFormat=dd.MM.yy HH:mm}" Margin="0" />
                                 </StackPanel>
                             </Grid>
-                            <DataGrid Grid.Row="1" Margin="5" ItemsSource="{Binding Tabs}" HeadersVisibility="None"
+                            <DataGrid Grid.Row="1" Margin="0,0,0,10" ItemsSource="{Binding Tabs}" HeadersVisibility="None"
                                       AutoGenerateColumns="False"
                                       CanUserAddRows="False"
                                       CanUserDeleteRows="False" CanUserReorderColumns="False"
@@ -119,31 +118,27 @@
                                     <DataGridTemplateColumn IsReadOnly="False"
                                                             CellTemplate="{StaticResource Restore}"
                                                             SortMemberPath="Restore"
-                                                            Width="{Binding RestoreTabsColRestoreWidth, Source={x:Static properties:Settings.Default}, 
-                    Converter={converters:DataGridLengthConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                                            Width="60">
                                         <DataGridTemplateColumn.Header>
                                             <CheckBox x:Name="cbSelectAll" Checked="SelectAll_Checked"
                                                       Unchecked="SelectAll_Unchecked"
-                                                      FlowDirection="RightToLeft">
-                                                <TextBlock Text="ОТКРЫТЬ" FlowDirection="LeftToRight" />
+                                                      FlowDirection="RightToLeft" HorizontalAlignment="Left">
+                                                <TextBlock Text="" FlowDirection="LeftToRight" />
                                             </CheckBox>
                                         </DataGridTemplateColumn.Header>
                                     </DataGridTemplateColumn>
                                     <DataGridTemplateColumn Header="Чертеж" IsReadOnly="True"
                                                             CellTemplate="{StaticResource Name}"
                                                             SortMemberPath="Name"
-                                                            Width="{Binding RestoreTabsColNameWidth, Source={x:Static properties:Settings.Default}, 
-                    Converter={converters:DataGridLengthConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                            Width="350"/>
                                     <DataGridTemplateColumn Header="Дата файла" IsReadOnly="True"
                                                             CellTemplate="{StaticResource Date}"
                                                             SortMemberPath="DateLastWrite"
-                                                            Width="{Binding RestoreTabsColDateWidth, Source={x:Static properties:Settings.Default}, 
-                    Converter={converters:DataGridLengthConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                            Width="80"/>
                                     <DataGridTemplateColumn Header="Размер" IsReadOnly="True"
                                                             CellTemplate="{StaticResource Size}"
                                                             SortMemberPath="Size"
-                                                            Width="{Binding RestoreTabsColSizeWidth, Source={x:Static properties:Settings.Default}, 
-                    Converter={converters:DataGridLengthConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                            Width="50"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

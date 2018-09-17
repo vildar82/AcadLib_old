@@ -2,10 +2,8 @@
 {
     using System;
     using System.IO;
-    using System.Threading.Tasks;
     using System.Windows.Media;
     using NetLib.WPF;
-    using NetLib.WPF.Data;
 
     public class TabVM : BaseModel
     {
@@ -13,6 +11,11 @@
         {
             File = drawing;
             Name = Path.GetFileNameWithoutExtension(drawing);
+            if (Name?.Length > 52)
+            {
+                Name = $"{Name.Substring(0, 25)}..{Name.Substring(Name.Length - 25, 25)}";
+            }
+
             Restore = restore;
             try
             {
