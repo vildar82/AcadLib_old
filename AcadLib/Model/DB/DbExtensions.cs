@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace Autodesk.AutoCAD.DatabaseServices
+﻿namespace Autodesk.AutoCAD.DatabaseServices
 {
     using System;
     using System.Collections.Generic;
@@ -18,7 +17,7 @@ namespace Autodesk.AutoCAD.DatabaseServices
         private static string UserGroup { get; } = PikSettings.UserGroup;
 
         /// <summary>
-        /// Текущее пространвтво - Model (не лист, и не редактор блоков)
+        /// Текущее пространство - Model (не лист, и не редактор блоков)
         /// </summary>
         /// <returns></returns>
         public static bool IsModel(this Database db)

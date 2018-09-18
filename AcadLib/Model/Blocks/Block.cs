@@ -90,9 +90,7 @@
         public static bool HasBlockThisDrawing(string name)
         {
             var doc = AcadHelper.Doc;
-#pragma warning disable 618
             using (var bt = (BlockTable)doc.Database.BlockTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 return bt.Has(name);
             }
@@ -114,9 +112,7 @@
         {
             if (mode == DuplicateRecordCloning.Ignore)
             {
-#pragma warning disable 618
                 using (var bt = (BlockTable)destDb.BlockTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
                 {
                     if (bt.Has(blName))
                     {
@@ -168,18 +164,12 @@
             {
                 extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, string.Empty);
                 extDb.CloseInput(true);
-
                 var valToCopy = new Dictionary<ObjectId, string>();
-
-#pragma warning disable 618
                 using (var bt = (BlockTable)extDb.BlockTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
                 {
                     foreach (var idBtr in bt)
                     {
-#pragma warning disable 618
                         using (var btr = (BlockTableRecord)idBtr.Open(OpenMode.ForRead))
-#pragma warning restore 618
                         {
                             if (!btr.IsLayout && !btr.IsDependent && !btr.IsAnonymous && filter(btr.Name))
                             {
@@ -232,9 +222,7 @@
             if (mode == DuplicateRecordCloning.Ignore)
             {
                 // Если уже есть эти блоки
-#pragma warning disable 618
                 using (var btDest = (BlockTable)destDb.BlockTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
                 {
                     var existBls = new List<string>();
                     foreach (var uniqBlName in uniqBlNames)
@@ -263,9 +251,7 @@
                 extDb.ReadDwgFile(fileDrawing, System.IO.FileShare.ReadWrite, true, string.Empty);
                 extDb.CloseInput(true);
                 var valToCopy = new Dictionary<ObjectId, string>();
-#pragma warning disable CS0618 // Type or member is obsolete
                 using (var bt = (BlockTable)extDb.BlockTableId.Open(OpenMode.ForRead))
-#pragma warning restore CS0618 // Type or member is obsolete
                 {
                     foreach (var blName in uniqBlNames)
                     {
@@ -416,9 +402,7 @@
                 var curLayout = (Layout)existLayoutId.GetObject(OpenMode.ForRead);
                 newLayout.CopyFrom(curLayout);
                 idBtrNewLayout = newLayout.BlockTableRecordId;
-#pragma warning disable 618
                 using (var btrCurLayout = (BlockTableRecord)curLayout.BlockTableRecordId.Open(OpenMode.ForRead))
-#pragma warning restore 618
                 {
                     foreach (var objId in btrCurLayout)
                     {
@@ -469,9 +453,7 @@
         {
             foreach (var idEnt in btr)
             {
-#pragma warning disable 618
                 using (var ent = (Entity)idEnt.Open(OpenMode.ForWrite, false, true))
-#pragma warning restore 618
                 {
                     ent.Erase();
                 }
