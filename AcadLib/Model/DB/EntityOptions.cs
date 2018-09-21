@@ -2,7 +2,6 @@
 {
     using Autodesk.AutoCAD.DatabaseServices;
     using JetBrains.Annotations;
-    using NetLib;
 
     /// <summary>
     /// Настройки для объекта на чертеже
@@ -29,6 +28,10 @@
             LineType = ent.Linetype;
             LinetypeScale = ent.LinetypeScale;
             LineWeight = ent.LineWeight;
+            if (ent is Polyline pl)
+            {
+                PoliylineWidth = pl.ConstantWidth;
+            }
         }
 
         public ObjectId LayerId { get; set; }
@@ -40,6 +43,8 @@
         public string LineType { get; set; }
 
         public double? LinetypeScale { get; set; }
+
+        public double? PoliylineWidth { get; set; }
 
         public LineWeight LineWeight
         {
@@ -74,7 +79,6 @@
         {
             if (!ent.IsWriteEnabled)
             {
-                // ReSharper disable once UpgradeOpen
                 ent.UpgradeOpen();
             }
 
@@ -83,6 +87,10 @@
             SetLineWeight(ent);
             SetLineType(ent);
             SetLinetypeScale(ent);
+            if (PoliylineWidth != null && ent is Polyline pl)
+            {
+                pl.ConstantWidth = PoliylineWidth.Value;
+            }
         }
 
         public void SetLineType(Entity ent)
@@ -167,8 +175,6 @@
         }
 
         [NotNull]
-
-        // ReSharper disable once UnusedMember.Global
         public static EntityOptions GetEntityOptions([NotNull] this Entity ent)
         {
             return new EntityOptions(ent);
