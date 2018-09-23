@@ -8,6 +8,7 @@
     using Autodesk.AutoCAD.EditorInput;
     using Autodesk.AutoCAD.Geometry;
     using JetBrains.Annotations;
+    using NetLib.Monad;
 
     public static class EditorExt
     {
@@ -105,8 +106,8 @@
         {
             using (ed.Document.LockDocument())
             {
-                ed.Document.Database.TileMode = true;
-                ed.Zoom(ext);
+                ed.Try(e => e.Document.Database.TileMode = true);
+                ed.Try(e => e.Zoom(ext));
                 var selRes = ed.SelectCrossingWindow(ext.MinPoint, ext.MaxPoint);
                 if (selRes.Status == PromptStatus.OK)
                 {

@@ -1,6 +1,6 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib
+﻿namespace AcadLib
 {
+    using System;
     using System.Linq;
     using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.Geometry;
@@ -13,6 +13,11 @@ namespace AcadLib
     public static class TableExt
     {
         public static LineWeight LwDataRow = LineWeight.LineWeight018;
+
+        public static void SetTextString([NotNull] this Cell cell, string text, double widthFactor = 1)
+        {
+            cell.TextString = Math.Abs(widthFactor - 1) < 0.0001 ? text : $@"{{\W{widthFactor}{text}}}";
+        }
 
         [NotNull]
         public static Cell SetValue([NotNull] this Cell cell, [CanBeNull] object value)
