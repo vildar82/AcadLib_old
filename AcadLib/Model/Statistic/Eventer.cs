@@ -27,9 +27,11 @@
         [NotNull]
         private readonly List<string> _exceptedUsers = new List<string>
         {
+            "PrudnikovVS",
             "valievtr",
             "vrublevskiyba",
             "arslanovti",
+            "ishmaevar",
             "karadzhayanra"
         };
         private UserData _userData;
