@@ -12,8 +12,6 @@
     using UI;
 
     [PublicAPI]
-
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class Error : IError
     {
         protected string _msg;
@@ -192,9 +190,7 @@
                     _alreadyCalcExtents = true;
                     if (HasEntity)
                     {
-#pragma warning disable 618
                         using (var ent = _idEnt.Open(OpenMode.ForRead, false, true) as Entity)
-#pragma warning restore 618
                         {
                             if (ent != null)
                             {
@@ -250,21 +246,24 @@
             try
             {
                 var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
-                var ed = doc.Editor;
-                if (Extents.Diagonal() > 1)
-                    ed.Zoom(Extents);
-                if (HasEntity)
+                using (doc.LockDocument())
                 {
-                    // Проверка соответствия документа
-                    if (IdEnt.Database == doc.Database)
+                    var ed = doc.Editor;
+                    if (Extents.Diagonal() > 1)
+                        ed.Zoom(Extents);
+                    if (HasEntity)
                     {
-                        IdEnt.FlickObjectHighlight(2, 60, 60);
-                        Visuals.FlickObjectHighlight();
-                        ed.SetImpliedSelection(new[] { IdEnt });
+                        // Проверка соответствия документа
+                        if (IdEnt.Database == doc.Database)
+                        {
+                            IdEnt.FlickObjectHighlight(2, 60, 60);
+                            Visuals.FlickObjectHighlight();
+                            ed.SetImpliedSelection(new[] { IdEnt });
 
-                        // ed.AddEntToImpliedSelection(IdEnt);
+                            // ed.AddEntToImpliedSelection(IdEnt);
+                        }
+                        else MessageBox.Show($"Должен быть активен чертеж {IdEnt.Database.Filename}");
                     }
-                    else MessageBox.Show($"Должен быть активен чертеж {IdEnt.Database.Filename}");
                 }
             }
             catch

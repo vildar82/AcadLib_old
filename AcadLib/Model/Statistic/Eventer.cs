@@ -28,7 +28,6 @@
         private readonly List<string> _exceptedUsers = new List<string>
         {
             "PrudnikovVS",
-            "valievtr",
             "vrublevskiyba",
             "arslanovti",
             "ishmaevar",

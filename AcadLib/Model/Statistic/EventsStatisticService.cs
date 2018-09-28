@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Threading.Tasks;
     using System.Windows;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
@@ -28,7 +29,7 @@
             {
                 CheckExcludeUser();
                 Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
-                eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion);
+                Task.Run(() => { eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion); });
                 Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
                 Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
                 Application.DocumentManager.DocumentToBeDestroyed += DocumentManager_DocumentToBeDestroyed;
@@ -78,7 +79,7 @@
 
         private static void DocumentManager_DocumentToBeDestroyed(object sender, DocumentCollectionEventArgs e)
         {
-            eventer.Start(Case.Default, null);
+            eventer?.Start(Case.Default, null);
         }
 
         private static void DocumentManager_DocumentLockModeChanged(object sender, DocumentLockModeChangedEventArgs e)
@@ -213,12 +214,12 @@
 
         private static void DocumentManager_DocumentDestroyed(object sender, [NotNull] DocumentDestroyedEventArgs e)
         {
-            eventer.Finish(EventType.Close, e.FileName, sn);
+            eventer?.Finish(EventType.Close, e.FileName, sn);
         }
 
         private static void DocumentManager_DocumentCreateStarted(object sender, DocumentCollectionEventArgs e)
         {
-            eventer.Start(Case.Default, null);
+            eventer?.Start(Case.Default, null);
         }
 
         private static void DocumentManager_DocumentCreated(object sender, [NotNull] DocumentCollectionEventArgs e)
@@ -249,8 +250,8 @@
             db.SaveComplete += Db_SaveComplete;
 
             // Если запустили автокад открытием файла dwg из проводника.
-            eventer.Start(Case.Default, null);
-            eventer.Finish(EventType.Open, doc.Name, sn);
+            eventer?.Start(Case.Default, null);
+            eventer?.Finish(EventType.Open, doc.Name, sn);
         }
 
         private static void BeginSave(string file, Case @case)
@@ -259,7 +260,7 @@
             Debug.WriteLine($"Db_BeginSave {file}");
             if (!IsDwg(file))
                 return;
-            if (IsCheckError(eventer.Start(@case, file)))
+            if (IsCheckError(eventer?.Start(@case, file)))
             {
                 // Отменить сохранение файла
                 veto = true;
@@ -272,7 +273,7 @@
             Debug.WriteLine($"Db_SaveComplete {e.FileName}");
             if (!IsDwg(e.FileName))
                 return;
-            eventer.Finish(EventType.Save, e.FileName, sn);
+            eventer?.Finish(EventType.Save, e.FileName, sn);
         }
 
         private static bool IsCheckError(PathCheckerResult checkRes)
