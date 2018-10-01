@@ -26,7 +26,7 @@
         public static bool IsCivil => _isCivil ?? false;
 
         [NotNull]
-        private static string App => _app ?? (_app = IsCivil ? "Civil" : "AutoCAD");
+        public static string App => _app ?? (_app = IsCivil ? "Civil" : "AutoCAD");
 
         public static void AddStatistic()
         {
@@ -108,7 +108,7 @@
             return !General.IsCadManager() && !General.IsBimUser;
         }
 
-        private static void InsertStatistic(string appName, string plugin, string command, string version, string doc)
+        public static void InsertStatistic(string appName, string plugin, string command, string version, string doc)
         {
             Task.Run(() =>
             {

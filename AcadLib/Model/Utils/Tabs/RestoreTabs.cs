@@ -5,16 +5,20 @@
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using AcadLib.UI.StatusBar;
+    using AutoCAD_PIK_Manager;
     using Autodesk.AutoCAD.ApplicationServices;
     using Data;
     using Errors;
     using JetBrains.Annotations;
     using NetLib;
     using Properties;
+    using Statistic;
     using UI;
     using User;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using Commands = AcadLib.Commands;
     using Path = IO.Path;
 
     /// <summary>
@@ -112,15 +116,15 @@
                     try
                     {
                         Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
-                        Statistic.PluginStatisticsHelper.PluginStart("OpenRestoreTabs");
+                        PluginStatisticsHelper.PluginStart("OpenRestoreTabs");
                         var closeDocs = Application.DocumentManager.Cast<Document>().Where(w => !w.IsNamedDrawing).ToList();
-                        var tabs = tabVM.Sessions.SelectMany(s => s.Tabs.Where(w => w.Restore)).Select(s => s.File).ToList();
+                        var tabsRestore = tabVM.Sessions.SelectMany(s => s.Tabs.Where(w => w.Restore)).Select(s => s.File).ToList();
                         if (tabVM.HasHistory)
                         {
-                            tabs = tabs.Union(tabVM.History.Where(w => w.Restore).Select(s => s.File)).Distinct().ToList();
+                            tabsRestore = tabsRestore.Union(tabVM.History.Where(w => w.Restore).Select(s => s.File)).Distinct().ToList();
                         }
 
-                        foreach (var item in tabs)
+                        foreach (var item in tabsRestore)
                         {
                             try
                             {
@@ -144,6 +148,8 @@
                                 Logger.Log.Error("RestoreTabs. Закрыть пустые чертежи.", ex);
                             }
                         }
+
+                        LogRestoreTabs(tabsRestore);
                     }
                     finally
                     {
@@ -164,6 +170,16 @@
             {
                 Logger.Log.Error(ex, "RestoreTabs.Application_Idle");
             }
+        }
+
+        private static void LogRestoreTabs(List<string> tabsRestore)
+        {
+            Task.Run(() =>
+            {
+                PluginStatisticsHelper.InsertStatistic(PluginStatisticsHelper.App, "AcadLib", "RestoreTabsOpen",
+                    Commands.AcadLibVersion.ToString(), "");
+                Logger.Log.Info($"RestoreTabsOpen: {tabsRestore.JoinToString()}");
+            });
         }
 
         private static void UserSettingsService_ChangeSettings(object sender, EventArgs e)
