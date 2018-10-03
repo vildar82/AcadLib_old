@@ -17,7 +17,9 @@
             try
             {
                 var asmName = assm.GetName();
-                $"PIK. {asmName.Name} загружен, версия {asmName.Version}".WriteToCommandLine();
+                var msg = $"PIK. {asmName.Name} загружен, версия {asmName.Version}";
+                msg.WriteToCommandLine();
+                Logger.Log.Info(msg);
             }
             catch
             {

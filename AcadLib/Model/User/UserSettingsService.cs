@@ -134,11 +134,11 @@
             var user = AutocadUserService.LoadUser();
             if (user == null)
             {
-                "Ошибка загрузки пользователя из базы. Загрузка из локального кеша.".WriteToCommandLine();
+                Logger.Log.Warn("Ошибка загрузки пользователя из базы. Загрузка из локального кеша.");
                 user = AutocadUserService.LoadBackup();
                 if (user == null)
                 {
-                    "Ошибка загрузки пользователя из локального кеша.".WriteToCommandLine();
+                    Logger.Log.Warn("Ошибка загрузки пользователя из локального кеша.");
                 }
             }
 

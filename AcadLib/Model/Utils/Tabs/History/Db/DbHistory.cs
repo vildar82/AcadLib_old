@@ -1,6 +1,7 @@
 ﻿namespace AcadLib.Utils.Tabs.History.Db
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Core.EntityClient;
     using System.Data.SqlClient;
@@ -36,26 +37,26 @@
         }
 
         [NotNull]
-        public IQueryable<StatEvents> LoadHistoryFiles()
+        public IEnumerable<StatEvents> LoadHistoryFiles()
         {
             var now = DateTime.Now;
             var login = Environment.UserName.ToLower();
-            return _db.StatEvents.AsNoTracking().Where(w => (w.App == "AutoCAD" || w.App == "Civil") &&
+            var items = _db.StatEvents.AsNoTracking().Where(w => (w.App == "AutoCAD" || w.App == "Civil") &&
                                                            w.EventName == "Открытие" &&
                                                            DbFunctions.DiffDays(w.Start, now) < 100 &&
-                                                           w.UserName.ToLower() == login)
-                .GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
+                                                           w.UserName.ToLower() == login).ToList();
+            return items.GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
         }
 
         [NotNull]
-        public IQueryable<StatEvents> LoadHistoryFiles(DateTime start)
+        public IEnumerable<StatEvents> LoadHistoryFiles(DateTime start)
         {
             var login = Environment.UserName.ToLower();
-            return _db.StatEvents.AsNoTracking().Where(w => w.Start > start &&
+            var items = _db.StatEvents.AsNoTracking().Where(w => w.Start > start &&
                                                                         (w.App == "AutoCAD" || w.App == "Civil") &&
                                                                         w.EventName == "Открытие" &&
-                                                                        w.UserName.ToLower() == login)
-                .GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
+                                                                        w.UserName.ToLower() == login).ToList();
+            return items.GroupBy(g => g.DocPath).Select(s => s.OrderByDescending(o => o.Start).FirstOrDefault());
         }
     }
 }

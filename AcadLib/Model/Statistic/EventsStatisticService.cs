@@ -7,11 +7,13 @@
     using System.Windows;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Runtime;
     using FileLog.Entities;
     using JetBrains.Annotations;
     using NetLib;
     using PathChecker;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using Exception = System.Exception;
 
     public static class EventsStatisticService
     {
@@ -237,21 +239,47 @@
                 try
                 {
                     sn = Application.GetSystemVariable("_pkser") as string;
-                    Logger.Log.Info($"EventsStatisticService SerialNumber = {sn}");
+                    Logger.Log.Info($"EventsStatisticService (_pkser) SerialNumber = {sn}");
                 }
                 catch (Exception ex)
                 {
                     Logger.Log.Error(ex, "EventsStatisticService - GetSystemVariable(\"_pkser\")");
                 }
+
+                if (sn == null || sn.StartsWith("000"))
+                {
+                    sn = GetRegistrySerialNumber();
+                    Logger.Log.Info($"EventsStatisticService (Registry) SerialNumber = {sn}");
+                }
             }
 
-            var db = doc.Database;
-            db.SaveComplete -= Db_SaveComplete;
-            db.SaveComplete += Db_SaveComplete;
+            try
+            {
+                var db = doc.Database;
+                db.SaveComplete += Db_SaveComplete;
 
-            // Если запустили автокад открытием файла dwg из проводника.
-            eventer?.Start(Case.Default, null);
-            eventer?.Finish(EventType.Open, doc.Name, sn);
+                // Если запустили автокад открытием файла dwg из проводника.
+                eventer?.Start(Case.Default, null);
+                eventer?.Finish(EventType.Open, doc.Name, sn);
+                Logger.Log.Info("SubscribeDoc end");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error("EventsStatisticService SubscribeDoc", ex);
+            }
+        }
+
+        private static string GetRegistrySerialNumber()
+        {
+            try
+            {
+                var prod = Registry.LocalMachine.OpenSubKey(HostApplicationServices.Current.MachineRegistryProductRootKey);
+                return prod.GetValue("SerialNumber")?.ToString();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private static void BeginSave(string file, Case @case)
@@ -317,6 +345,7 @@
         private static void SaveOverride_Idle(object sender, EventArgs e)
         {
             Application.Idle -= SaveOverride_Idle;
+            Logger.Log.Info("EventsStatisticService SaveOverride_Idle");
             if (string.IsNullOrEmpty(overrideName))
                 return;
             var doc = AcadHelper.Doc;

@@ -37,6 +37,7 @@
         {
             try
             {
+                Logger.Log.Info("RestoreTabs Init");
                 UserSettingsService.RegPlugin(PluginName, CreateUserSettings, CheckUserSettings);
                 UserSettingsService.ChangeSettings += UserSettingsService_ChangeSettings;
 
@@ -46,12 +47,17 @@
                 var isOn = UserSettingsService.GetPluginValue<bool>(PluginName, ParamRestoreIsOn);
                 if (isOn)
                 {
+                    Logger.Log.Info("RestoreTabs включен.");
                     Subscribe();
                     var tabsData = LoadData();
                     if (tabsData.Data?.Sessions?.Any(s => s?.Drawings?.Count > 0) == true)
                     {
                         Restore();
                     }
+                }
+                else
+                {
+                    Logger.Log.Info("RestoreTabs отключен.");
                 }
             }
             catch (Exception ex)
@@ -109,6 +115,7 @@
             try
             {
                 Application.Idle -= Application_Idle;
+                Logger.Log.Info("RestoreTabs Application_Idle");
                 var tabVM = new TabsVM(_tabs);
                 var tabsView = new TabsView(tabVM);
                 if (tabsView.ShowDialog() == true)

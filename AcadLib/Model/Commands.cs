@@ -122,11 +122,13 @@
                 AcadLibAssembly.AcadLoadInfo();
                 if (AutocadUserService.User == null)
                 {
+                    Logger.Log.Warn("Настройки группы пользователя не заданы - открытие окна настроек пользователя.");
                     UserSettingsService.Show();
                 }
 
                 // Восстановление вкладок чертежей
                 Utils.Tabs.RestoreTabs.Init();
+                Logger.Log.Info("AcadLib Initialize end success.");
             }
             catch (Exception ex)
             {

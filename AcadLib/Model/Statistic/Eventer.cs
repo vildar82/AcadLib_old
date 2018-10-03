@@ -70,6 +70,7 @@
                 {
                     try
                     {
+                        Logger.Log.Info($"Eventer Finish {eventType}, {docPath}, {serialNumber}");
                         if (string.IsNullOrEmpty(docPath) || !Path.IsPathRooted(docPath) || !File.Exists(docPath))
                             return;
                         var fileName = Path.GetFileNameWithoutExtension(docPath);
@@ -117,7 +118,9 @@
             {
                 try
                 {
+                    Logger.Log.Info($"Eventer Start case={@case}, doc={docPath}");
                     pathCheckerResult = _pathChecker.Check(AppType, @case, docPath, _userData);
+                    Logger.Log.Info($"Eventer pathCheckerResult={pathCheckerResult?.CheckResultDto?.Status}");
                 }
                 catch (Exception ex)
                 {
