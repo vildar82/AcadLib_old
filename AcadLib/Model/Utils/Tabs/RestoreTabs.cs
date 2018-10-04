@@ -123,7 +123,6 @@
                     try
                     {
                         Application.DocumentManager.DocumentCreated -= DocumentManager_DocumentCreated;
-                        PluginStatisticsHelper.PluginStart("OpenRestoreTabs");
                         var closeDocs = Application.DocumentManager.Cast<Document>().Where(w => !w.IsNamedDrawing).ToList();
                         var tabsRestore = tabVM.Sessions.SelectMany(s => s.Tabs.Where(w => w.Restore)).Select(s => s.File).ToList();
                         if (tabVM.HasHistory)
@@ -183,8 +182,7 @@
         {
             Task.Run(() =>
             {
-                PluginStatisticsHelper.InsertStatistic(PluginStatisticsHelper.App, "AcadLib", "RestoreTabsOpen",
-                    Commands.AcadLibVersion.ToString(), "");
+                PluginStatisticsHelper.PluginStart("RestoreTabsOpen");
                 Logger.Log.Info($"RestoreTabsOpen: {tabsRestore.JoinToString()}");
             });
         }
