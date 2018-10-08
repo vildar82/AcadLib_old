@@ -50,6 +50,16 @@
                 Path.GetFullPath(d.Name).Equals(Path.GetFullPath(file), StringComparison.OrdinalIgnoreCase));
         }
 
+        public static TransactionUsing StartTransaction()
+        {
+            return new TransactionUsing();
+        }
+
+        public static TransactionUsing StartTransaction(Document doc)
+        {
+            return new TransactionUsing(doc);
+        }
+
         /// <summary>
         /// Если пользователь нажал Esc для прерывания процесса
         /// </summary>

@@ -9,6 +9,7 @@
     using Autodesk.AutoCAD.EditorInput;
     using Autodesk.AutoCAD.Geometry;
     using JetBrains.Annotations;
+    using NetLib.WPF.Data;
     using UI;
 
     [PublicAPI]
@@ -300,6 +301,16 @@
         {
             _msg += addMsg;
             _shortMsg = GetShortMsg(_msg);
+        }
+
+        public void AddButtonShowEntity(ObjectId entId, string title, string tooltip)
+        {
+            AddButtons.Add(new ErrorAddButton
+            {
+                Name = title,
+                Tooltip = tooltip,
+                Click = new RelayCommand(() => entId.ShowEnt())
+            });
         }
 
         [NotNull]

@@ -118,7 +118,7 @@
                 Logger.Log.Info("RestoreTabs Application_Idle");
                 var tabVM = new TabsVM(_tabs);
                 var tabsView = new TabsView(tabVM);
-                if (tabsView.ShowDialog() == true)
+                if (Application.ShowModalWindow(tabsView) == true)
                 {
                     try
                     {

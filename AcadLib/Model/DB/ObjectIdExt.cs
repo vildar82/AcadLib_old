@@ -243,7 +243,7 @@
                         doc.Editor.Zoom(ent.GeometricExtents.Offset());
                         id.FlickObjectHighlight(num, delay1, delay2);
                         doc.Editor.SetImpliedSelection(new[] { id });
-
+                        
                         // doc.Editor.AddEntToImpliedSelection(id);
                     }
                     catch
