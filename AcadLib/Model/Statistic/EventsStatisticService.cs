@@ -1,8 +1,10 @@
 ﻿namespace AcadLib.Statistic
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows;
     using Autodesk.AutoCAD.ApplicationServices;
@@ -24,6 +26,17 @@
         private static Document _currentDoc;
         private static string lastModeChange;
         private static string lastSaveAsFile;
+
+        [NotNull]
+        private static readonly List<string> _exceptedUsers = new List<string>
+        {
+            "valievtr",
+            "ParamazovaSK",
+            "vrublevskiyba",
+            "arslanovti",
+            "ishmaevar",
+            "karadzhayanra"
+        };
 
         public static void Start()
         {
@@ -48,8 +61,16 @@
             }
         }
 
+        private static bool IsExceptedUser()
+        {
+            return _exceptedUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
+        }
+
         private static void CheckExcludeUser()
         {
+            if (IsExceptedUser())
+                throw new Exception("Пользователь исключен из нейминга.");
+
             // Департамент продукта
             var isProductUser = UserInfo.IsProductUser;
             if (isProductUser)

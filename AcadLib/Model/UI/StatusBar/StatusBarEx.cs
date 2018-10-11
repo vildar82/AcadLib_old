@@ -88,7 +88,15 @@
                 $"{GetGroupVersionInfo(PikSettings.Versions)}",
                 (p, e) =>
                 {
-                    p.ToolTipText = GetGroupVersionInfo(Update.GetVersions());
+                    try
+                    {
+                        p.ToolTipText = GetGroupVersionInfo(Update.GetVersions());
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log.Error(ex, "AddPaneUserGroup ToolTipText=GetGroupVersionInfo");
+                    }
+
                     AcadHelper.Doc.SendStringToExecute($"{nameof(Commands.PIK_CheckUpdates)} ", true, false, true);
                     AcadHelper.Doc.SendStringToExecute($"{nameof(Commands.PIK_UserSettings)} ", true, false, true);
                 });

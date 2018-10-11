@@ -119,22 +119,34 @@
 
         private void LoadHistory()
         {
+            Logger.Info("RestoreTabs TabsVM LoadHistory start");
             var cache = HistoryModel.LoadHistoryCache();
             if (cache.Any())
             {
                 Task.Run(() =>
                 {
                     var tabs = cache.Select(s => GetTab(s.File, false, s.Start)).ToList();
-                    dispatcher.Invoke(() => tabs.ForEach(t => history.Add(t)));
+                    dispatcher.Invoke(() =>
+                    {
+                        try
+                        {
+                            tabs.ForEach(t => history.Add(t));
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex, "RestoreTabs TabsVM dispatcher.Invoke History adds from cache.");
+                        }
+                    });
                 });
             }
 
             Task.Run(() =>
             {
                 var dbItems = cache.Any()
-                    ? new DbHistory().LoadHistoryFiles(cache.Max(m => m.Start))
-                    : new DbHistory().LoadHistoryFiles();
-                var tabs = dbItems.ToList().Select(s => GetTab(s.DocPath, false, s.Start)).ToList();
+                    ? new DbHistory().LoadHistoryFiles(cache.Max(m => m.Start)).ToList()
+                    : new DbHistory().LoadHistoryFiles().ToList();
+                Logger.Info("RestoreTabs TabsVM Load dbItems.");
+                var tabs = dbItems.Select(s => GetTab(s.DocPath, false, s.Start)).ToList();
                 Task.Delay(TimeSpan.FromMilliseconds(300)).Wait();
                 dispatcher.Invoke(() =>
                 {
@@ -144,7 +156,7 @@
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error("RestoreTabs TabsVM dispatcher.Invoke History", ex);
+                        Logger.Error(ex, "RestoreTabs TabsVM dispatcher.Invoke History");
                     }
                 });
                 var removeTabs = history.GroupBy(g => g.File).SelectMany(s => s.OrderByDescending(o => o.Start).Skip(1));

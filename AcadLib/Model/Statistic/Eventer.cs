@@ -23,16 +23,6 @@
         private readonly ApiClient _client;
         [NotNull]
         private readonly PathChecker _pathChecker;
-
-        [NotNull]
-        private readonly List<string> _exceptedUsers = new List<string>
-        {
-            "PrudnikovVS",
-            "vrublevskiyba",
-            "arslanovti",
-            "ishmaevar",
-            "karadzhayanra"
-        };
         private UserData _userData;
 
         /// <summary>
@@ -188,12 +178,7 @@
         {
             // Если путь пустой - то не нужно проверять нейминг (новый чертеж)
             // Если пользователь из списка исключений (бимам типа не нужно проверять)
-            return docPath != null && !IsExceptedUser();
-        }
-
-        private bool IsExceptedUser()
-        {
-            return _exceptedUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
+            return docPath != null;
         }
     }
 }

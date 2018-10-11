@@ -2,12 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using AutoCAD_PIK_Manager.Settings;
     using Autodesk.AutoCAD.ApplicationServices;
-    using DynamicData;
     using JetBrains.Annotations;
-    using ReactiveUI;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
     /// <summary>

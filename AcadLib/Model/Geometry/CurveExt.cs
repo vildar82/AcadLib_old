@@ -57,7 +57,7 @@
         {
             var pts = new Point3dCollection();
             ray.IntersectWith(c, Intersect.OnBothOperands, new Plane(), pts, IntPtr.Zero, IntPtr.Zero);
-            if (pts.Count > 0 && pts.Cast<Point3d>().All(p => c.IsVertex(p)))
+            if (pts.Count > 0 && pts.Cast<Point3d>().All(p => c.IsVertex(p, tolerance.EqualPoint)))
             {
                 // Повернуть луч и повторить
                 ray.TransformBy(Matrix3d.Rotation(5.Radians().Radians, Vector3d.ZAxis, ray.BasePoint));
