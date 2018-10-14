@@ -88,33 +88,43 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
+      <HintPath>lib\AcCoreMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd">
       <Private>False</Private>
+      <HintPath>lib\AcDbMgd.dll</HintPath>
     </Reference>
     <Reference Include="acdbmgdbrep">
+      <HintPath>lib\acdbmgdbrep.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMgd">
+      <HintPath>lib\AcMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMPolygonMGD">
+      <HintPath>lib\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AdUiPalettes">
+      <HintPath>lib\AdUiPalettes.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AdWindows">
+      <HintPath>lib\AdWindows.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AeccDbMgd">
+      <HintPath>lib\AeccDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AutoCAD_PIK_Settings, Version=1.0.145.233, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>lib\AutoCAD_PIK_Settings.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MongoDblib">
+      <HintPath>lib\MongoDblib.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
