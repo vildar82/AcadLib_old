@@ -5,14 +5,6 @@ VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcadLib", "AcadLib\AcadLib.csproj", "{2008AE5D-550A-4478-A9B5-297832058377}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAcadlib", "TestAcadlib\TestAcadlib.csproj", "{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{B4870558-D18E-4EB4-977F-6EB8A5948B64}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcadLibTests", "AcadLibTests\AcadLibTests.csproj", "{683945A1-D9F0-47A4-8B60-F8011957EE5F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplication1", "WpfApplication1\WpfApplication1.csproj", "{67C97776-BDE5-4D08-8EC1-E14592AFA118}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcadUtilsEditUsers", "UtilsEditUsers\AcadUtilsEditUsers.csproj", "{947F1AD7-062A-4830-8A47-38F3A9DC0CD1}"
 EndProject
 Global
@@ -28,21 +20,6 @@ Global
 		{2008AE5D-550A-4478-A9B5-297832058377}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2008AE5D-550A-4478-A9B5-297832058377}.ReleaseLocal|Any CPU.ActiveCfg = ReleaseLocal|Any CPU
 		{2008AE5D-550A-4478-A9B5-297832058377}.ReleaseLocal|Any CPU.Build.0 = ReleaseLocal|Any CPU
-		{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3017AC6A-B0E7-489B-AE87-24D38A3B6CA9}.ReleaseLocal|Any CPU.ActiveCfg = Release|Any CPU
-		{B4870558-D18E-4EB4-977F-6EB8A5948B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4870558-D18E-4EB4-977F-6EB8A5948B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4870558-D18E-4EB4-977F-6EB8A5948B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4870558-D18E-4EB4-977F-6EB8A5948B64}.ReleaseLocal|Any CPU.ActiveCfg = Release|Any CPU
-		{683945A1-D9F0-47A4-8B60-F8011957EE5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{683945A1-D9F0-47A4-8B60-F8011957EE5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{683945A1-D9F0-47A4-8B60-F8011957EE5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{683945A1-D9F0-47A4-8B60-F8011957EE5F}.ReleaseLocal|Any CPU.ActiveCfg = Release|Any CPU
-		{67C97776-BDE5-4D08-8EC1-E14592AFA118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{67C97776-BDE5-4D08-8EC1-E14592AFA118}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{67C97776-BDE5-4D08-8EC1-E14592AFA118}.ReleaseLocal|Any CPU.ActiveCfg = ReleaseLocal|Any CPU
 		{947F1AD7-062A-4830-8A47-38F3A9DC0CD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{947F1AD7-062A-4830-8A47-38F3A9DC0CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{947F1AD7-062A-4830-8A47-38F3A9DC0CD1}.ReleaseLocal|Any CPU.ActiveCfg = ReleaseLocal|Any CPU
