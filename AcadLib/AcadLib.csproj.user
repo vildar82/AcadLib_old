@@ -8,7 +8,7 @@
     <EnableSQLServerDebugging>false</EnableSQLServerDebugging>
   </PropertyGroup>
   <PropertyGroup>
-    <ReferencePath>C:\dev\ObjectARX\ObjectARX2015\</ReferencePath>
+    <ReferencePath>C:\dev\AcadLib\AcadLib\lib\</ReferencePath>
     <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
 </Project>
