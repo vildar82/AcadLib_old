@@ -812,7 +812,7 @@
     <PackageReference Include="FontAwesome.WPF">
       <Version>4.7.0.9</Version>
     </PackageReference>
-    <PackageReference Include="NetLib" Version="1.1.11" />
+    <PackageReference Include="NetLib" Version="1.1.13" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -830,7 +830,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == ReleaseLocal (
-   nuget.exe pack "$(ProjectPath)" -IncludeReferencedProjects -properties Configuration=Release
+   nuget.exe pack "$(ProjectPath)" -IncludeReferencedProjects -properties Configuration=ReleaseLocal
    xcopy "$(TargetDir)*.nupkg" "\\picompany.ru\pikp\Dep\IT\IRA\03_NuGet\AcadLib" /C /Y
    xcopy "$(ProjectDir)bin\Release" "c:\Autodesk\AutoCAD\Pik\Settings\Dll\" /Y /C /Q
 )</PostBuildEvent>
