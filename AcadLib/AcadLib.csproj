@@ -55,7 +55,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;JETBRAINS_ANNOTATIONS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>0</WarningLevel>
     <DocumentationFile>bin\Release\AcadLib.xml</DocumentationFile>
     <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
     <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
@@ -812,7 +812,7 @@
     <PackageReference Include="FontAwesome.WPF">
       <Version>4.7.0.9</Version>
     </PackageReference>
-    <PackageReference Include="NetLib" Version="1.1.13" />
+    <PackageReference Include="NetLib" Version="1.1.14" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation">
       <Version>4.3.0</Version>
     </PackageReference>
