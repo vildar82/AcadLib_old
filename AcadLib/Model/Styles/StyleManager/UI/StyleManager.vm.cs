@@ -7,6 +7,7 @@
     using JetBrains.Annotations;
     using NetLib.WPF;
     using ReactiveUI;
+    using ReactiveUI.Legacy;
 
     public class StyleManagerVM : BaseViewModel
     {

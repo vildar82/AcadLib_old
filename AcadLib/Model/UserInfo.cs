@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Autodesk.AutoCAD.ApplicationServices;
     using IO;
     using JetBrains.Annotations;
     using MongoDblib.UsersData.Data;

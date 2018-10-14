@@ -17,6 +17,7 @@
     using NetLib.Notification;
     using NetLib.WPF;
     using ReactiveUI;
+    using ReactiveUI.Legacy;
     using Tabs.History.Db;
 
     public class TabsVM : BaseViewModel

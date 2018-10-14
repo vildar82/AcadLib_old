@@ -15,6 +15,7 @@ namespace AcadLib.Errors
     using NetLib.WPF;
     using OfficeOpenXml;
     using ReactiveUI;
+    using ReactiveUI.Legacy;
     using UI;
 
     public class ErrorsViewModel : BaseViewModel

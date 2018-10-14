@@ -10,6 +10,7 @@
     using NetLib.WPF;
     using NLog;
     using ReactiveUI;
+    using ReactiveUI.Legacy;
 
     public class StyleTable : BaseModel
     {
