@@ -355,7 +355,6 @@
     <Compile Include="Model\Entitys\EntityHelper.cs" />
     <Compile Include="Model\Template\TemplateData.cs" />
     <Compile Include="Model\Test\BatchRemoveLayouts.cs" />
-    <Compile Include="Model\TransactionUsing.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteInsertBlock.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteVisualInsertBlocks.cs" />
     <Compile Include="Model\UI\PaletteCommands\CommandInfo.cs" />

@@ -35,6 +35,16 @@
         /// </summary>
         public static int VersionMajor => Application.Version.Major;
 
+        public static void StartTransaction(this Document doc, Action<Transaction> action)
+        {
+            using (doc.LockDocument())
+            using (var t = doc.TransactionManager.StartTransaction())
+            {
+                action(t);
+                t.Commit();
+            }
+        }
+
         /// <summary>
         /// Это русская версия AutoCAD ru-RU
         /// </summary>
@@ -48,16 +58,6 @@
         {
             return DocumentManager.Cast<Document>().FirstOrDefault(d =>
                 Path.GetFullPath(d.Name).Equals(Path.GetFullPath(file), StringComparison.OrdinalIgnoreCase));
-        }
-
-        public static TransactionUsing StartTransaction()
-        {
-            return new TransactionUsing();
-        }
-
-        public static TransactionUsing StartTransaction(Document doc)
-        {
-            return new TransactionUsing(doc);
         }
 
         /// <summary>
