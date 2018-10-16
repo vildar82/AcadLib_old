@@ -2,6 +2,7 @@
 {
     using Autodesk.AutoCAD.DatabaseServices;
     using JetBrains.Annotations;
+    using NetLib.Monad;
 
     /// <summary>
     /// Настройки для объекта на чертеже
@@ -28,10 +29,8 @@
             LineType = ent.Linetype;
             LinetypeScale = ent.LinetypeScale;
             LineWeight = ent.LineWeight;
-            if (ent is Polyline pl)
-            {
-                PoliylineWidth = pl.ConstantWidth;
-            }
+            if (ent is Polyline pl && pl.HasWidth)
+                PoliylineWidth = pl.Try(p => (double?)p.ConstantWidth, e => null);
         }
 
         public ObjectId LayerId { get; set; }
