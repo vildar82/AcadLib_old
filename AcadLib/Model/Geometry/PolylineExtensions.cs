@@ -39,7 +39,7 @@
 
         public static Point3d GetClosestVertex([NotNull] this Polyline pl, Point3d pt)
         {
-            var closest = pl.GetClosestPointTo(pt, false);
+            var closest = pl.GetClosestPointTo(pt, Vector3d.ZAxis, false);
             var parameter = pl.GetParameterAtPoint(closest);
             var index = (int)NetLib.DoubleExt.Round(parameter, 0);
             return pl.GetPoint3dAt(index);
@@ -368,7 +368,7 @@
         /// </summary>
         public static double GetClosesLengthToPoint([NotNull] this Polyline pl, Point3d pt)
         {
-            var ptClosest = pl.GetClosestPointTo(pt, false);
+            var ptClosest = pl.GetClosestPointTo(pt, Vector3d.ZAxis, false);
             return (pt - ptClosest).Length;
         }
 
@@ -399,7 +399,7 @@
             }
             catch
             {
-                var ptCorrect = pl.GetClosestPointTo(pt, extend);
+                var ptCorrect = pl.GetClosestPointTo(pt, Vector3d.ZAxis, extend);
                 return pl.GetParameterAtPoint(ptCorrect);
             }
         }
@@ -604,7 +604,7 @@
 
         public static bool IsPointOnPolyline([NotNull] this Polyline pl, Point3d pt, Tolerance tolerance)
         {
-            var ptPl = pl.GetClosestPointTo(pt, false);
+            var ptPl = pl.GetClosestPointTo(pt, Vector3d.ZAxis, false);
             return pt.IsEqualTo(ptPl, tolerance);
         }
 

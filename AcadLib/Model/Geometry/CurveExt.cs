@@ -25,7 +25,7 @@
             }
             catch
             {
-                var ptCorrect = c.GetClosestPointTo(pt, extend);
+                var ptCorrect = c.GetClosestPointTo(pt, Vector3d.ZAxis, extend);
                 return c.GetParameterAtPoint(ptCorrect);
             }
         }
@@ -69,7 +69,7 @@
 
         public static bool IsPointOnPolyline([NotNull] this Curve c, Point3d pt, Tolerance tolerance)
         {
-            var ptPl = c.GetClosestPointTo(pt, false);
+            var ptPl = c.GetClosestPointTo(pt, Vector3d.ZAxis, false);
             return pt.IsEqualTo(ptPl, tolerance);
         }
 

@@ -45,6 +45,17 @@
             }
         }
 
+        public static T StartTransaction<T>(this Document doc, Func<Transaction,T> action)
+        {
+            using (doc.LockDocument())
+            using (var t = doc.TransactionManager.StartTransaction())
+            {
+                var res = action(t);
+                t.Commit();
+                return res;
+            }
+        }
+
         /// <summary>
         /// Это русская версия AutoCAD ru-RU
         /// </summary>

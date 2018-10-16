@@ -126,7 +126,7 @@ namespace AcadLib.Geometry
             [NotNull] Polyline plOther,
             Tolerance tolerance)
         {
-            var ptStick = plOther.GetClosestPointTo(ptVertex, false);
+            var ptStick = plOther.GetClosestPointTo(ptVertex, Vector3d.ZAxis, false);
             if ((ptVertex - ptStick).Length <= tolerance.EqualPoint)
             {
                 MoveVertex(plModify, indexVertex, ptStick.Convert2d());

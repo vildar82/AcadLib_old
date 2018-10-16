@@ -51,10 +51,10 @@
         [NotNull]
         public static Line GetUnionLine([NotNull] this Line l1, [NotNull] Line l2)
         {
-            var pt1 = l1.GetClosestPointTo(l2.StartPoint, true).Center(l2.StartPoint);
-            var pt2 = l1.GetClosestPointTo(l2.EndPoint, true).Center(l2.EndPoint);
-            var pt3 = l2.GetClosestPointTo(l1.StartPoint, true).Center(l1.StartPoint);
-            var pt4 = l2.GetClosestPointTo(l1.EndPoint, true).Center(l1.EndPoint);
+            var pt1 = l1.GetClosestPointTo(l2.StartPoint, Vector3d.ZAxis, true).Center(l2.StartPoint);
+            var pt2 = l1.GetClosestPointTo(l2.EndPoint, Vector3d.ZAxis, true).Center(l2.EndPoint);
+            var pt3 = l2.GetClosestPointTo(l1.StartPoint, Vector3d.ZAxis, true).Center(l1.StartPoint);
+            var pt4 = l2.GetClosestPointTo(l1.EndPoint, Vector3d.ZAxis, true).Center(l1.EndPoint);
             var len = new[]
             {
                 ((pt1 - pt2).Length, pt1, pt2),
