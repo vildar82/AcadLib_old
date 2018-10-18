@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
 
@@ -8,8 +7,6 @@ namespace AcadLib
     /// Используется в случае екстремального прерывания - выбрасывается исключение из палитровых методов.
     /// </summary>
     [Obsolete("Use OperationCanceledException")]
-
-    // ReSharper disable once ClassNeverInstantiated.Global
     public class UserBreakException : Exception
     {
     }

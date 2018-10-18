@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib.Extensions
+﻿namespace AcadLib.Extensions
 {
     using System;
     using System.Collections.Generic;
@@ -7,6 +6,7 @@ namespace AcadLib.Extensions
     using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.Geometry;
     using JetBrains.Annotations;
+    using Scale;
 
     [PublicAPI]
     public static class EntityExt
@@ -64,27 +64,9 @@ namespace AcadLib.Extensions
         {
             // Проверка, есть ли нужный масштаб в чертеже
             var nameScale = $"1:{scale}";
-            var ocm = ent.Database.ObjectContextManager;
-            var occ = ocm.GetContextCollection("ACDB_ANNOTATIONSCALES");
-            ObjectContext contextAnnoScale;
-            if (!occ.HasContext(nameScale))
-            {
-                var annoScale = new AnnotationScale
-                {
-                    Name = nameScale,
-                    PaperUnits = 1,
-                    DrawingUnits = scale
-                };
-                occ.AddContext(annoScale);
-                contextAnnoScale = annoScale;
-            }
-            else
-            {
-                contextAnnoScale = occ.GetContext(nameScale);
-            }
-
+            var annoScale = ent.Database.GetOrAddAnnotationScale(nameScale, scale);
             ent.Annotative = AnnotativeStates.True;
-            ent.AddContext(contextAnnoScale);
+            ent.AddContext(annoScale);
             ent.RemoveContext(ent.Database.Cannoscale);
         }
     }

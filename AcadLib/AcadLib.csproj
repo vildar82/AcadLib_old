@@ -193,6 +193,7 @@
     <Compile Include="Model\Errors\UI\ErrorModelOne.cs" />
     <Compile Include="Model\Errors\UI\ErrorAddButton.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelList.cs" />
+    <Compile Include="Model\Exceptions\AnnotationScaleNotFound.cs" />
     <Compile Include="Model\Filer\ReferenceFiler.cs" />
     <Compile Include="Model\Filer\ReferenceFilerExt.cs" />
     <Compile Include="Model\Filer\ReferenceFilerResult.cs" />
