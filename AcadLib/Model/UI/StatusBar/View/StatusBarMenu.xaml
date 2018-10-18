@@ -1,33 +1,32 @@
-﻿<Window x:Class="AcadLib.UI.StatusBar.View.StatusBarMenu" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:theme="clr-namespace:Autodesk.Windows.Themes;assembly=AdUiPalettes"
-		xmlns:view="clr-namespace:AcadLib.UI.StatusBar.View" mc:Ignorable="d"
-		d:DataContext="{d:DesignInstance view:StatusBarMenu}" SizeToContent="WidthAndHeight" WindowStyle="None"
-		ResizeMode="NoResize" WindowStartupLocation="Manual" >
-	<Window.Resources>
-		<Style TargetType="MenuItem">
-			<Setter Property="HeaderTemplate">
-				<Setter.Value>
-					<DataTemplate>
-						<TextBlock Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-					</DataTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-	</Window.Resources>
-	<Border BorderBrush="{Binding CurrentTheme.ControlBorderBrush, Source={x:Static theme:ThemeManager.PaletteSettings}}"
-			BorderThickness="2">
-		<Grid>
-			<Menu ItemsSource="{Binding MenuItems}" HorizontalAlignment="Right" MinWidth="50"
-					Background="{Binding CurrentTheme.TabBackgroundBrush, Source={x:Static theme:ThemeManager.PaletteSettings}}"
-					Foreground="{Binding CurrentTheme.ActiveTextBrush, Source={x:Static theme:ThemeManager.PaletteSettings}}">
-				<Menu.ItemsPanel>
-					<ItemsPanelTemplate>
-						<VirtualizingStackPanel Orientation="Vertical" />
-					</ItemsPanelTemplate>
-				</Menu.ItemsPanel>
-			</Menu>
-		</Grid>
-	</Border>
+﻿<Window
+    x:Class="AcadLib.UI.StatusBar.View.StatusBarMenu"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:theme="clr-namespace:Autodesk.Windows.Themes;assembly=AdUiPalettes"
+    xmlns:view="clr-namespace:AcadLib.UI.StatusBar.View"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance view:StatusBarMenu}"
+    SizeToContent="WidthAndHeight"
+    BorderThickness="0"
+    WindowStyle="None"
+    Background="{Binding CurrentTheme.TabBorderBrush, Source={x:Static theme:ThemeManager.PaletteSettings}}"
+    ResizeMode="NoResize"
+    WindowStartupLocation="Manual">
+    <StackPanel>
+        <ListBox ItemsSource="{Binding MenuItems}" Margin="2" BorderThickness="0" Padding="2"
+             Background="{Binding CurrentTheme.TabBackgroundBrush, Source={x:Static theme:ThemeManager.PaletteSettings}}"
+             Foreground="{Binding CurrentTheme.ActiveTextBrush, Source={x:Static theme:ThemeManager.PaletteSettings}}">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <StackPanel Margin="1" MouseDown="OnMouseDown" Orientation="Horizontal">
+                    <CheckBox Width="12" IsChecked="{Binding IsChecked}" Margin="3" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding Text}" VerticalAlignment="Center" HorizontalAlignment="Left"
+                               Margin="3" FontWeight="Bold" FontSize="12" MinWidth="60"/>
+                </StackPanel>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+    </StackPanel>
 </Window>

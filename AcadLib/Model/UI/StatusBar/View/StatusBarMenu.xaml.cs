@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Controls;
+    using System.Windows.Input;
     using JetBrains.Annotations;
 
     /// <summary>
@@ -11,22 +12,20 @@
     /// </summary>
     public partial class StatusBarMenu
     {
+        private readonly Action<string> _selectValue;
+
         public StatusBarMenu(string value, [NotNull] List<string> values, Action<string> selectValue)
         {
+            _selectValue = selectValue;
             Left = System.Windows.Forms.Cursor.Position.X;
             Top = System.Windows.Forms.Cursor.Position.Y;
             var menuItems = values
                 .Select(s =>
                 {
-                    var mi = new MenuItem
+                    var mi = new Item
                     {
-                        Header = s,
+                        Text = s,
                         IsChecked = Equals(s, value)
-                    };
-                    mi.Click += (oc, ec) =>
-                    {
-                        selectValue(s);
-                        Hide();
                     };
                     return mi;
                 }).ToList();
@@ -41,6 +40,21 @@
             Deactivated += (o, e) => Close();
         }
 
-        public List<MenuItem> MenuItems { get; set; }
+        public List<Item> MenuItems { get; set; }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var sp = sender as StackPanel;
+            var tb = sp.Children[1] as TextBlock;
+            _selectValue(tb.Text);
+            Hide();
+        }
+    }
+
+    public class Item
+    {
+        public string Text { get; set; }
+
+        public bool IsChecked { get; set; }
     }
 }

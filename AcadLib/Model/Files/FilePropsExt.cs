@@ -74,14 +74,14 @@
 
                 //------------------------------------------------------------
                 // Predefined properties, in this order:
-                // title, subject, author, comments, keywords,  
+                // title, subject, author, comments, keywords,
                 // lastSavedBy, revisionNumber
                 // DXF codes : 2, 3, 4, 6, 7, 8, 9
                 for (var i = 0; i < 7; i++)
                 {
                     var code = br.ReadInt16(); // DXF code
                     var len = br.ReadInt16(); // String length
-                    br.ReadByte(); // ? 
+                    br.ReadByte(); // ?
                     var bytes = br.ReadBytes(len);
                     var value = Encoding.ASCII.GetString(bytes);
                     System.Diagnostics.Debug.Print(value);
@@ -89,7 +89,7 @@
 
                 //------------------------------------------------------------
                 // 10 custom properties in the format:
-                // <name=value> 
+                // <name=value>
                 // DXF codes : 300, 301, 302, 303, 304, 305, 306, 307, 308, 309
                 for (var i = 0; i < 10; i++)
                 {
