@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
     using System.Collections.Generic;
@@ -43,7 +42,6 @@ namespace AcadLib
                 Clear();
                 foreach (var item in list)
                 {
-                    // ReSharper disable once CompareNonConstrainedGenericWithNull
                     if (item != null)
                     {
                         try
@@ -67,11 +65,7 @@ namespace AcadLib
         {
             if (items == null)
                 return null;
-
-            // ReSharper disable once PossibleMultipleEnumeration
             ExceptWith(items);
-
-            // ReSharper disable once PossibleMultipleEnumeration
             return items;
         }
     }

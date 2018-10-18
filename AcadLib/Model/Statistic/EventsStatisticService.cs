@@ -30,7 +30,6 @@
         [NotNull]
         private static readonly List<string> _exceptedUsers = new List<string>
         {
-            "valievtr",
             "ParamazovaSK",
             "vrublevskiyba",
             "arslanovti",
@@ -52,6 +51,7 @@
 
                 foreach (Document doc in Application.DocumentManager)
                 {
+                    eventer?.Start(Case.Default, null);
                     SubscribeDoc(doc);
                 }
             }
@@ -193,6 +193,7 @@
             try
             {
                 Application.Idle -= CloseDiscardOnIdle;
+                Logger.Log.Info($"EventsStatisticService CloseDiscardOnIdle {_currentDoc?.Name}.");
                 _currentDoc.CloseAndDiscard();
             }
             catch (Exception ex)
@@ -212,6 +213,7 @@
             try
             {
                 Application.Idle -= CloseSaveOnIdle;
+                Logger.Log.Info($"EventsStatisticService CloseSaveOnIdle {_currentDoc?.Name}.");
                 _currentDoc.CloseAndSave(_currentDoc.Name);
             }
             catch (Exception ex)
@@ -278,9 +280,6 @@
             {
                 var db = doc.Database;
                 db.SaveComplete += Db_SaveComplete;
-
-                // Если запустили автокад открытием файла dwg из проводника.
-                eventer?.Start(Case.Default, null);
                 eventer?.Finish(EventType.Open, doc.Name, sn);
                 Logger.Log.Info("SubscribeDoc end");
             }

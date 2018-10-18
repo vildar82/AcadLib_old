@@ -103,12 +103,13 @@
         /// <param name="docPath">Документ</param>
         public PathCheckerResult Start(Case @case, [CanBeNull] string docPath)
         {
+            StartEvent = DateTime.Now;
             PathCheckerResult pathCheckerResult = null;
             if (NeedCheck(docPath))
             {
                 try
                 {
-                    Logger.Log.Info($"Eventer Start case={@case}, doc={docPath}");
+                    Logger.Log.Info($"Eventer Start Check case={@case}, doc={docPath}");
                     pathCheckerResult = _pathChecker.Check(AppType, @case, docPath, _userData);
                     Logger.Log.Info($"Eventer pathCheckerResult={pathCheckerResult?.CheckResultDto?.Status}");
                 }
@@ -117,8 +118,6 @@
                     Logger.Log.Error(ex, $"Start case={@case}, doc={docPath}");
                 }
             }
-
-            StartEvent = DateTime.Now;
 
             return pathCheckerResult;
         }
