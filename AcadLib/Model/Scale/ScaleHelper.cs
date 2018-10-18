@@ -35,11 +35,15 @@
             return occ.HasContext(nameScale) ? occ.GetContext(nameScale) : null;
         }
 
-        public static ObjectContext GetOrAddAnnotationScale (this Database db, string nameScale, double scale)
+        public static ObjectContext GetOrAddAnnotationScale (this Database db, string nameScale, double scale, bool fix)
         {
             var annoScale = GetAnnotationScale(db, nameScale);
             if (annoScale != null)
+            {
+                if (fix)
+                    FixAnnotationScale(db, (AnnotationScale)annoScale, scale);
                 return annoScale;
+            }
             AddAnnotationScale(db, nameScale, scale);
             return GetAnnotationScale(db, nameScale);
         }
@@ -69,6 +73,20 @@
             return false;
         }
 
+        public static bool FixAnnotationScale(this Database db, AnnotationScale annoScale, double scale)
+        {
+            var annoFactor = annoScale.PaperUnits / annoScale.DrawingUnits;
+            var checkFactor = 1/scale;
+            if (Math.Abs(annoFactor - checkFactor) > 0.0001)
+            {
+                annoScale.PaperUnits = 1;
+                annoScale.DrawingUnits = scale;
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Исправление масштаба аннотации
         /// </summary>
@@ -81,16 +99,13 @@
             var annoScale = (AnnotationScale)GetAnnotationScale(db, nameScale);
             if (annoScale == null)
                 throw new AnnotationScaleNotFound($"Не найден масштаб аннотаций '{nameScale}' в текущем чертеже.");
-            var annoFactor = annoScale.PaperUnits / annoScale.DrawingUnits;
-            var checkFactor = 1/scale;
-            if (Math.Abs(annoFactor - checkFactor) > 0.0001)
-            {
-                annoScale.PaperUnits = 1;
-                annoScale.DrawingUnits = scale;
-                return true;
-            }
+            return FixAnnotationScale(db, annoScale, scale);
+        }
 
-            return false;
+        public static void SetAnnotationScale(this Database db, string nameScale, double scale)
+        {
+            var annoScale = GetOrAddAnnotationScale(db, nameScale, scale, true);
+            db.Cannoscale = (AnnotationScale)annoScale;
         }
     }
 }

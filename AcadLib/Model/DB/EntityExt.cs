@@ -64,7 +64,7 @@
         {
             // Проверка, есть ли нужный масштаб в чертеже
             var nameScale = $"1:{scale}";
-            var annoScale = ent.Database.GetOrAddAnnotationScale(nameScale, scale);
+            var annoScale = ent.Database.GetOrAddAnnotationScale(nameScale, scale, true);
             ent.Annotative = AnnotativeStates.True;
             ent.AddContext(annoScale);
             ent.RemoveContext(ent.Database.Cannoscale);
