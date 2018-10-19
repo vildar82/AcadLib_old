@@ -109,7 +109,7 @@
             using (ed.Document.LockDocument())
             {
                 ed.Try(e => e.Document.Database.TileMode = true);
-                ed.Try(e => e.Zoom(ext));
+                ed.Try(e => e.Zoom(ext.Offset(10)));
                 var selRes = ed.SelectCrossingWindow(ext.MinPoint, ext.MaxPoint);
                 if (selRes.Status == PromptStatus.OK)
                 {
@@ -118,6 +118,32 @@
 
                 throw new OperationCanceledException();
             }
+        }
+
+        /// <summary>
+        /// Выбор объектов в заданных границах
+        /// В модели
+        /// </summary>
+        [NotNull]
+        public static List<ObjectId> SelectInExtents2([NotNull] this Editor ed, Extents3d ext)
+        {
+            List<TypedValue> filterList = new List<TypedValue>
+            {
+                new TypedValue((int)DxfCode.Start, "*"),
+                new TypedValue((int)DxfCode.Operator, "<and"),
+                new TypedValue((int)DxfCode.Operator, ">,>,*"),
+                new TypedValue((int)DxfCode.XCoordinate, ext.MinPoint),
+                new TypedValue((int)DxfCode.Operator, "<,<,*"),
+                new TypedValue((int)DxfCode.XCoordinate, ext.MaxPoint),
+                new TypedValue((int)DxfCode.Operator, "and>")
+            };
+            var selRes = ed.SelectAll(new SelectionFilter(filterList.ToArray()));
+            if (selRes.Status == PromptStatus.OK)
+            {
+                return selRes.Value.GetObjectIds().ToList();
+            }
+            
+            throw new OperationCanceledException();
         }
 
         [NotNull]
