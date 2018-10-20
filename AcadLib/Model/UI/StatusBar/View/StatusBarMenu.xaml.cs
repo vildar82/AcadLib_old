@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using JetBrains.Annotations;
@@ -12,9 +13,9 @@
     /// </summary>
     public partial class StatusBarMenu
     {
-        private readonly Action<string> _selectValue;
+        [NotNull] private readonly Action<string> _selectValue;
 
-        public StatusBarMenu(string value, [NotNull] List<string> values, Action<string> selectValue)
+        public StatusBarMenu(string value, [NotNull] List<string> values, [NotNull] Action<string> selectValue)
         {
             _selectValue = selectValue;
             Left = System.Windows.Forms.Cursor.Position.X;
@@ -25,7 +26,7 @@
                     var mi = new Item
                     {
                         Text = s,
-                        IsChecked = Equals(s, value)
+                        Visible = Equals(s, value) ? Visibility.Visible : Visibility.Hidden
                     };
                     return mi;
                 }).ToList();
@@ -55,6 +56,6 @@
     {
         public string Text { get; set; }
 
-        public bool IsChecked { get; set; }
+        public Visibility Visible { get; set; }
     }
 }

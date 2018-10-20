@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theme="clr-namespace:Autodesk.Windows.Themes;assembly=AdUiPalettes"
     xmlns:view="clr-namespace:AcadLib.UI.StatusBar.View"
+    xmlns:fa="http://schemas.fontawesome.io/icons/"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance view:StatusBarMenu}"
     SizeToContent="WidthAndHeight"
@@ -21,7 +22,7 @@
         <ListBox.ItemTemplate>
             <DataTemplate>
                 <StackPanel Margin="1" MouseDown="OnMouseDown" Orientation="Horizontal">
-                    <CheckBox Width="12" IsChecked="{Binding IsChecked}" Margin="3" HorizontalAlignment="Center" />
+                    <fa:FontAwesome Icon="Check" Visibility="{Binding Visible}" Height="12"/>
                     <TextBlock Text="{Binding Text}" VerticalAlignment="Center" HorizontalAlignment="Left"
                                Margin="3" FontWeight="Bold" FontSize="12" MinWidth="60"/>
                 </StackPanel>

@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace Autodesk.AutoCAD.DatabaseServices
+﻿namespace Autodesk.AutoCAD.DatabaseServices
 {
     using System;
     using System.Collections;
@@ -11,7 +10,12 @@ namespace Autodesk.AutoCAD.DatabaseServices
     [PublicAPI]
     public static class DatabaseExtensions
     {
-        // Opens a DBObject in ForRead mode (kaefer @ TheSwamp)
+        /// <summary>
+        /// Opens a DBObject in ForRead mode (kaefer @ TheSwamp)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         [CanBeNull]
         public static T GetObject<T>(this ObjectId id) where T : DBObject
         {
@@ -31,7 +35,8 @@ namespace Autodesk.AutoCAD.DatabaseServices
         }
 
         [NotNull]
-        public static T GetObjectT<T>(this ObjectId id, [NotNull] Transaction t) where T : DBObject
+        public static T GetObjectT<T>(this ObjectId id, [NotNull] Transaction t)
+            where T : DBObject
         {
             return id.GetObjectT<T>(OpenMode.ForRead, t);
         }
