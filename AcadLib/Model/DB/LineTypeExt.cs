@@ -62,5 +62,10 @@
 
             return db.Celtype;
         }
+
+        public static ObjectId LoadLineTypeDotPIK([NotNull] this Database db)
+        {
+            return LoadLineTypePIK(db, "Штриховая");
+        }
     }
 }

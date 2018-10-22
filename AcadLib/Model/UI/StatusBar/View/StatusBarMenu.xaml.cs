@@ -13,7 +13,8 @@
     /// </summary>
     public partial class StatusBarMenu
     {
-        [NotNull] private readonly Action<string> _selectValue;
+        [NotNull]
+        private readonly Action<string> _selectValue;
 
         public StatusBarMenu(string value, [NotNull] List<string> values, [NotNull] Action<string> selectValue)
         {
