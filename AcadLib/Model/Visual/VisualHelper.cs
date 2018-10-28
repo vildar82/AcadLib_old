@@ -122,7 +122,7 @@
         private static void CheckTextStyle(ObjectId textStyleId)
         {
             var textStyle = (TextStyleTableRecord)textStyleId.GetObject(OpenMode.ForRead);
-
+            
             // Шрифт
             if (!textStyle.FileName.Equals(textStyleFontFile, StringComparison.OrdinalIgnoreCase))
             {

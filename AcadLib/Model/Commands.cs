@@ -1,4 +1,6 @@
-﻿namespace AcadLib
+﻿using System.Windows.Threading;
+
+namespace AcadLib
 {
     using System;
     using System.Collections.Generic;
@@ -65,6 +67,8 @@
 
         private List<DllResolve> dllsResolve;
         private C_PlayStatisticTableAdapter player;
+        [NotNull]
+        internal static Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 
         /// <summary>
         ///     Общие команды для всех отделов определенные в этой сборке
@@ -388,9 +392,7 @@
                 using (var t = db.TransactionManager.StartTransaction())
                 {
                     var ms = (BlockTableRecord)SymbolUtilityServices.GetBlockModelSpaceId(db).GetObject(OpenMode.ForRead);
-#pragma warning disable 618
                     var entId = ms.Cast<ObjectId>().FirstOrDefault(f => f.OldId == id);
-#pragma warning restore 618
                     if (entId.IsNull)
                         "Элемент не найден в Моделе.".WriteToCommandLine();
                     else
@@ -566,9 +568,14 @@
                 dllsResolve = FilterDllResolveVersions(dllsResolve);
             }
 
+            Debug.WriteLine($"AssemblyResolve {args.Name}");
             var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
             if (dllResolver == null)
+            {
+                Debug.WriteLine("dllResolver == null");
                 return null;
+            }
+
             try
             {
                 var asm = dllResolver.LoadAssembly();

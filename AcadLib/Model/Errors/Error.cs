@@ -1,4 +1,7 @@
-﻿namespace AcadLib.Errors
+﻿using System.Threading.Tasks;
+using System.Windows.Threading;
+
+namespace AcadLib.Errors
 {
     using System;
     using System.Collections.Generic;
@@ -21,7 +24,7 @@
         protected Extents3d _extents;
         protected bool _alreadyCalcExtents;
         protected bool _isNullExtents;
-        private readonly Dictionary<Icon, ErrorStatus> dictErrorIcons = new Dictionary<Icon, ErrorStatus>()
+        private static readonly Dictionary<Icon, ErrorStatus> dictErrorIcons = new Dictionary<Icon, ErrorStatus>()
         {
             { SystemIcons.Error, ErrorStatus.Error },
             { SystemIcons.Exclamation, ErrorStatus.Exclamation },
@@ -303,13 +306,29 @@
             _shortMsg = GetShortMsg(_msg);
         }
 
+        public void AddButton(string title, string tooltip, [NotNull] Action click)
+        {
+            AcadHelper.InvokeInMainThread(() =>
+            {
+                AddButtons.Add(new ErrorAddButton
+                {
+                    Name = title,
+                    Tooltip = tooltip,
+                    Click = new RelayCommand(click)
+                });                
+            });
+        }
+
         public void AddButtonShowEntity(ObjectId entId, string title, string tooltip)
         {
-            AddButtons.Add(new ErrorAddButton
+            AcadHelper.InvokeInMainThread(() =>
             {
-                Name = title,
-                Tooltip = tooltip,
-                Click = new RelayCommand(() => entId.ShowEnt())
+                AddButtons.Add(new ErrorAddButton
+                {
+                    Name = title,
+                    Tooltip = tooltip,
+                    Click = new RelayCommand(() => entId.ShowEnt())
+                });                
             });
         }
 

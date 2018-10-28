@@ -38,7 +38,8 @@
             this.filePdfOutputName = filePdfOutputName == string.Empty ? Path.GetFileName(dir) : filePdfOutputName;
         }
 
-        public PlotDirToPdf([NotNull] string dir, string filePdfOutputName = "") : this(dir, false, filePdfOutputName)
+        public PlotDirToPdf([NotNull] string dir, string filePdfOutputName = "")
+            : this(dir, false, filePdfOutputName)
         {
         }
 
@@ -72,17 +73,12 @@
                         repeat = false;
                         Logger.Log.Info("Текущего");
                         if (!File.Exists(doc.Name))
-                        {
                             throw new Exception("Нужно сохранить текущий чертеж.");
-                        }
 
                         var filePdfName =
                             Path.Combine(Path.GetDirectoryName(doc.Name) ?? throw new InvalidOperationException(),
                                 Path.GetFileNameWithoutExtension(doc.Name) + ".pdf");
-                        var plotter = new PlotDirToPdf(new[] { doc.Name }, filePdfName)
-                        {
-                            Options = plotOpt
-                        };
+                        var plotter = new PlotDirToPdf(new[] {doc.Name}, filePdfName) { Options = plotOpt };
                         plotter.Plot();
                     }
                     else if (resPrompt.StringResult == "Папки")
@@ -91,7 +87,7 @@
                         Logger.Log.Info("Папки");
                         var dialog = new UI.FileFolderDialog
                         {
-                            Dialog = { Multiselect = true },
+                            Dialog = {Multiselect = true},
                             IsFolderDialog = true
                         };
                         dialog.Dialog.Title = @"Выбор папки или файлов для печати чертежей в PDF.";
@@ -104,7 +100,8 @@
                             var firstFileNameWoExt = Path.GetFileNameWithoutExtension(dialog.Dialog.FileNames.First());
                             if (dialog.Dialog.FileNames.Length > 1)
                             {
-                                plotter = new PlotDirToPdf(dialog.Dialog.FileNames, Path.GetFileName(dialog.SelectedPath));
+                                plotter = new PlotDirToPdf(dialog.Dialog.FileNames,
+                                    Path.GetFileName(dialog.SelectedPath));
                             }
                             else if (firstFileNameWoExt != null &&
                                      firstFileNameWoExt.Equals("п", StringComparison.OrdinalIgnoreCase))
@@ -132,7 +129,8 @@
                     ed.WriteMessage("\nОтменено пользователем.");
                     return;
                 }
-            } while (repeat);
+            }
+            while (repeat);
         }
 
         [NotNull]
@@ -207,14 +205,9 @@
             {
                 var dsdFile = Path.Combine(dir, filePdfOutputName + ".dsd");
                 if (!filePdfOutputName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                {
                     filePdfOutputName += ".pdf";
-                }
-
                 var destFile = Path.Combine(dir, filePdfOutputName);
-
                 CheckFileAccess(destFile);
-
                 Application.SetSystemVariable("BACKGROUNDPLOT", 0);
                 using (var dsd = new DsdData())
                 {
@@ -225,8 +218,6 @@
                     }
 
                     dsd.SetDsdEntryCollection(collection);
-
-                    // dsd.ProjectPath = dirOutput;
                     dsd.LogFilePath = Path.Combine(dir, "logPlotPdf.log");
                     dsd.SheetType = SheetType.MultiPdf;
                     dsd.IsSheetSet = true;
@@ -235,13 +226,10 @@
                     dsd.DestinationName = destFile;
                     dsd.SheetSetName = "PublisherSet";
                     dsd.PromptForDwfName = false;
-
-                    // dsd.WriteDsd(dsdFile);
                     PostProcessDSD(dsd, dsdFile);
                 }
 
                 var nbSheets = collection.Count;
-
                 using (var progressDlg = new PlotProgressDialog(false, nbSheets, true))
                 {
                     progressDlg.set_PlotMsgString(PlotMessageIndex.DialogTitle, title);
@@ -249,23 +237,18 @@
                     progressDlg.set_PlotMsgString(PlotMessageIndex.CancelSheetButtonMessage, "Отмена листа");
                     progressDlg.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, title);
                     progressDlg.set_PlotMsgString(PlotMessageIndex.SheetProgressCaption, "Печать листа");
-
                     progressDlg.UpperPlotProgressRange = 100;
                     progressDlg.LowerPlotProgressRange = 0;
-
                     progressDlg.UpperSheetProgressRange = 100;
                     progressDlg.LowerSheetProgressRange = 0;
-
                     progressDlg.IsVisible = true;
-
                     var publisher = Application.Publisher;
                     PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
-
                     publisher.PublishDsd(dsdFile, progressDlg);
                     progressDlg.Destroy();
                 }
 
-                File.Delete(dsdFile);
+                NetLib.IO.Path.TryDeleteFile(dsdFile);
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
@@ -282,25 +265,19 @@
                 try
                 {
                     using (fi.OpenWrite())
-                    {
                         return;
-                    }
                 }
                 catch (Exception ex)
                 {
-                    // ReSharper disable once LocalizableElement
                     var dlgRes = MessageBox.Show($"{ex.Message}\n\rУстраните причину и нажмите продолжить.",
-
-                        // ReSharper disable once LocalizableElement
                         "Печать", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
                     if (dlgRes == DialogResult.Cancel)
-                    {
                         throw new OperationCanceledException();
-                    }
                 }
 
                 countWhile++;
-            } while (countWhile < 3);
+            }
+            while (countWhile < 3);
             throw new Exception("Превышено число попыток доступа к файлу. Выход.");
         }
 
@@ -369,9 +346,7 @@
 
                             // Фильтр листов
                             if (Options.FilterState)
-                            {
                                 layouts = FilterLayouts(layouts, Options);
-                            }
 
                             var layoutsDsd = new List<Tuple<Layout, DsdEntry>>();
                             foreach (var layout in layouts)
@@ -380,14 +355,10 @@
                                 {
                                     Layout = layout.LayoutName,
                                     DwgName = fileDwg,
-
-                                    // dsdEntry.Nps = "Setup1";
                                     NpsSourceDwg = fileDwg,
                                     Title = indexfile + "-" + layout.LayoutName
                                 };
                                 layoutsDsd.Add(new Tuple<Layout, DsdEntry>(layout, dsdEntry));
-
-                                // dsdCol.Add(dsdEntry);
                             }
 
                             if (Options.SortTabOrName)

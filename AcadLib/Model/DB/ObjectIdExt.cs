@@ -95,9 +95,7 @@
             if (ids?.Any() != true)
                 return;
             var doc = Application.DocumentManager.MdiActiveDocument;
-#pragma warning disable 618
             using (var ents = new DisposableSet<Entity>(ids.Select(s => (Entity)s.Open(OpenMode.ForRead))))
-#pragma warning restore 618
             {
                 for (var i = 0; i < num; i++)
                 {
@@ -243,8 +241,6 @@
                         doc.Editor.Zoom(ent.GeometricExtents.Offset());
                         id.FlickObjectHighlight(num, delay1, delay2);
                         doc.Editor.SetImpliedSelection(new[] { id });
-                        
-                        // doc.Editor.AddEntToImpliedSelection(id);
                     }
                     catch
                     {

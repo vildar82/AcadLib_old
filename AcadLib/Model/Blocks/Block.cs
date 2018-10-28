@@ -1,4 +1,6 @@
-﻿namespace AcadLib.Blocks
+﻿using System.ServiceModel.Configuration;
+
+namespace AcadLib.Blocks
 {
     using System;
     using System.Collections.Generic;
@@ -11,6 +13,56 @@
     public static class Block
     {
         public static Tolerance Tolerance01 = new Tolerance(0.01, 0.01);
+
+        /// <summary>
+        /// Создание блока из примитивов в памяти
+        /// в текущем чертеже, должна быть запущена транзакция
+        /// </summary>
+        /// <param name="ents">Примитивы в памяти</param>
+        /// <param name="name">Имя блока</param>
+        /// <param name="location">Точка вставки (сдвинутся все примитивы)</param>
+        /// <param name="overrideBlock">Заменить объекты в блоки если он уже есть</param>
+        /// <exception cref="Exception">Такое имя блока уже есть.</exception>
+        public static ObjectId CreateBlock([NotNull] this List<Entity> ents, string name, Point3d location, bool overrideBlock)
+        {
+            var db = HostApplicationServices.WorkingDatabase;
+            var bt = db.BlockTableId.GetObjectT<BlockTable>(OpenMode.ForWrite);
+            var t = db.TransactionManager.TopTransaction;
+            BlockTableRecord btr;
+            if (bt.Has(name))
+            {
+                if (!overrideBlock)
+                    return bt[name];
+                btr = bt[name].GetObjectT<BlockTableRecord>(OpenMode.ForWrite);
+                foreach (var entity in btr.GetObjects<Entity>(OpenMode.ForWrite))
+                    entity.Erase();
+            }
+            else
+            {
+                btr = new BlockTableRecord { Name = name };
+                bt.Add(btr);
+                t.AddNewlyCreatedDBObject(btr, true);
+            }
+            
+            var vec = Point3d.Origin - location;
+            var matrix = Matrix3d.Identity;
+            var hasMatrix = false;
+            if (vec.Length > 0.001)
+            {
+                matrix = Matrix3d.Displacement(vec);
+                hasMatrix = true;
+            }
+
+            foreach (var ent in ents)
+            {
+                if (hasMatrix)
+                    ent.TransformBy(matrix);
+                btr.AppendEntity(ent);
+                t.AddNewlyCreatedDBObject(ent, true);
+            }
+
+            return btr.Id;
+        }
 
         /// <summary>
         /// Создание блока из объектов чертежа.

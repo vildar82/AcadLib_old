@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib.Errors
+﻿namespace AcadLib.Errors
 {
     using System;
     using System.Collections.Generic;
@@ -51,10 +50,10 @@ namespace AcadLib.Errors
             ErrorsCountInfo = errors.Count;
 
             var canCollapse = Errors.CountChanged.Select(s => Errors.OfType<ErrorModelList>().Any(a => a.IsExpanded));
-            CollapseAll = CreateCommand(CollapseExecute, canCollapse);
+            CollapseAll = CreateCommand(CollapseAllExecute, canCollapse);
             var canExpand = Errors.CountChanged.Select(s =>
                 Errors.OfType<ErrorModelList>().Any(a => a.SameErrors != null && !a.IsExpanded));
-            ExpandeAll = CreateCommand(ExpandedExecute, canExpand);
+            ExpandeAll = CreateCommand(ExpandedAllExecute, canExpand);
             ExportToExcel = CreateCommand(ExportToExcelExecute);
             ExportToTxt = CreateCommand(ExportToTxtExecute);
             DeleteSelectedDublicateBlocks = CreateCommand(OnDeleteSelectedDublicateBlocksExecute);
@@ -96,7 +95,7 @@ namespace AcadLib.Errors
             RemoveErrors(selectedErrors);
         }
 
-        private void CollapseExecute()
+        private void CollapseAllExecute()
         {
             foreach (var item in Errors.OfType<ErrorModelList>())
             {
@@ -155,7 +154,7 @@ namespace AcadLib.Errors
             CountSelectedErrors += e ? 1 : -1;
         }
 
-        private void ExpandedExecute()
+        private void ExpandedAllExecute()
         {
             foreach (var item in Errors.OfType<ErrorModelList>())
             {

@@ -178,7 +178,23 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <param name="prompt">Запрос выбора объекта пользователю</param>
         /// <param name="exactMatch">Точное соответствие типа объекта</param>
         /// <returns></returns>
-        public static ObjectId SelectEntity<T>([NotNull] this Editor ed, string prompt, bool exactMatch = true) where T : Entity
+        public static ObjectId SelectEntity<T>([NotNull] this Editor ed, string prompt, bool exactMatch = true)
+            where T : Entity
+        {
+            return SelectEntity<T>(ed, prompt, out _, exactMatch);
+        }
+
+        /// <summary>
+        /// Выбор объекта заданного типа на чертеже. В том числе, на заблокированном слое.
+        /// </summary>
+        /// <typeparam name="T">Тип объекта</typeparam>
+        /// <param name="ed">Editor</param>
+        /// <param name="prompt">Запрос выбора объекта пользователю</param>
+        /// <param name="exactMatch">Точное соответствие типа объекта</param>
+        /// <returns></returns>
+        public static ObjectId SelectEntity<T>([NotNull] this Editor ed, string prompt, out Point3d pickedPt,
+            bool exactMatch = true)
+            where T : Entity
         {
             var selOpt = new PromptEntityOptions($"\n{prompt}");
             selOpt.SetRejectMessage($"\nМожно выбрать {typeof(T).Name}");
@@ -190,6 +206,7 @@ namespace Autodesk.AutoCAD.EditorInput
                 throw new OperationCanceledException();
             }
 
+            pickedPt = selRes.PickedPoint;
             return selRes.ObjectId;
         }
 
@@ -201,7 +218,8 @@ namespace Autodesk.AutoCAD.EditorInput
         /// <param name="prompt">Строка запроса</param>
         /// <param name="rejectMsg">Сообщение при выбора неправильного типа объекта</param>
         /// <returns>Выбранный объект</returns>
-        public static ObjectId SelectEntity<T>([NotNull] this Editor ed, string prompt, string rejectMsg) where T : Entity
+        public static ObjectId SelectEntity<T>([NotNull] this Editor ed, string prompt, string rejectMsg)
+            where T : Entity
         {
             var selOpt = new PromptEntityOptions($"\n{prompt}");
             selOpt.SetRejectMessage($"\n{rejectMsg}");

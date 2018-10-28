@@ -63,9 +63,20 @@
             return db.Celtype;
         }
 
+        /// <summary>
+        /// Загрузка штриховой линии из стандартного файла типов линий GOST 2.303-68.lin 
+        /// </summary>
         public static ObjectId LoadLineTypeDotPIK([NotNull] this Database db)
         {
             return LoadLineTypePIK(db, "Штриховая");
+        }
+        
+        /// <summary>
+        /// Загрузка 'Штрих-пунктирная тонкая' линии из стандартного файла типов линий GOST 2.303-68.lin
+        /// </summary>
+        public static ObjectId LoadLineTypeDashDotedThinPIK([NotNull] this Database db)
+        {
+            return LoadLineTypePIK(db, "Штрих-пунктирная тонкая");
         }
     }
 }

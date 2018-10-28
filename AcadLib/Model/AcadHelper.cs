@@ -1,4 +1,6 @@
-﻿namespace AcadLib
+﻿using System.Threading;
+
+namespace AcadLib
 {
     using System;
     using System.Diagnostics;
@@ -19,6 +21,19 @@
     public static class AcadHelper
     {
         private static readonly int AcadId = Process.GetCurrentProcess().Id;
+        
+        public static void InvokeInMainThread(Action action)
+        {
+            if (IsMainThread())
+                action();
+            else
+                Commands._dispatcher.Invoke(action);
+        }
+
+        public static bool IsMainThread()
+        {
+            return Thread.CurrentThread.ManagedThreadId == 1;
+        }
 
         /// <summary>
         /// Текущий документ.

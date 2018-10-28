@@ -195,8 +195,21 @@
             [NotNull] Transaction t,
             double scale = 1)
         {
+            return InsertBlockRef(btr.Id, pt, owner, t, scale);
+        }
+
+        /// <summary>
+        /// Вставка вхождения блока
+        /// </summary>
+        public static BlockReference InsertBlockRef(
+            ObjectId btrId,
+            Point3d pt,
+            [NotNull] BlockTableRecord owner,
+            [NotNull] Transaction t,
+            double scale = 1)
+        {
             var db = owner.Database;
-            var blRef = new BlockReference(pt, btr.Id)
+            var blRef = new BlockReference(pt, btrId)
             {
                 Position = pt
             };
@@ -212,7 +225,7 @@
 
             owner.AppendEntity(blRef);
             t.AddNewlyCreatedDBObject(blRef, true);
-            AddAttributes(blRef, btr, t);
+            AddAttributes(blRef, btrId.GetObjectT<BlockTableRecord>(), t);
             return blRef;
         }
 

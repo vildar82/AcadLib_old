@@ -1,7 +1,8 @@
-﻿// ReSharper disable once CheckNamespace
-namespace Extensions
+﻿namespace Extensions
 {
     using System;
+    using System.Threading;
+    using AcadLib;
     using JetBrains.Annotations;
 
     /// <summary>
