@@ -1,4 +1,6 @@
-﻿namespace AcadLib.Plot
+﻿using System.Diagnostics;
+
+namespace AcadLib.Plot
 {
     using System;
     using System.Collections.Generic;
@@ -7,6 +9,8 @@
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
+    using AcadLib.Files;
+    using AcadLib.Plot.UI;
     using AutoCAD_PIK_Manager.Settings;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
@@ -55,7 +59,9 @@
         public static void PromptAndPlot([NotNull] Document doc)
         {
             var ed = doc.Editor;
-            var plotOpt = new PlotOptions();
+            var plotOptData = FileDataExt.GetLocalFileData<PlotOptions>("PlotToPdf", "PlotOptions", false);
+            plotOptData.TryLoad(() => new PlotOptions());
+            var plotOpt = plotOptData.Data;
             var repeat = false;
             do
             {
@@ -63,7 +69,7 @@
                 optPrompt.Keywords.Add("Текущего");
                 optPrompt.Keywords.Add("Папки");
                 optPrompt.Keywords.Add("Настройки");
-                optPrompt.Keywords.Default = plotOpt.DefaultPlotSource;
+                optPrompt.Keywords.Default = plotOpt.DefaultPlotCurOrFolder ? "Текущего" : "Папки";
 
                 var resPrompt = ed.GetKeywords(optPrompt);
                 if (resPrompt.Status == PromptStatus.OK)
@@ -85,9 +91,9 @@
                     {
                         repeat = false;
                         Logger.Log.Info("Папки");
-                        var dialog = new UI.FileFolderDialog
+                        var dialog = new AcadLib.UI.FileFolderDialog
                         {
-                            Dialog = {Multiselect = true},
+                            Dialog = { Multiselect = true},
                             IsFolderDialog = true
                         };
                         dialog.Dialog.Title = @"Выбор папки или файлов для печати чертежей в PDF.";
@@ -120,7 +126,10 @@
                     else if (resPrompt.StringResult == "Настройки")
                     {
                         // Сортировка; Все файлы в один пдф или для каждого файла отдельная пдф
-                        plotOpt.Show();
+                        var plotOptVm = new PlotOptionsVM(plotOpt);
+                        var plotOptView = new PlotOptionsView(plotOptVm);
+                        if (Autodesk.AutoCAD.ApplicationServices.Application.ShowModalWindow(plotOptView) == true)
+                            plotOptData.TrySave();
                         repeat = true;
                     }
                 }
@@ -249,6 +258,37 @@
                 }
 
                 NetLib.IO.Path.TryDeleteFile(dsdFile);
+                
+                // Добавить бланк
+                if (Options.BlankOn)
+                {
+                    var tempPdf = NetLib.IO.Path.GetTempFile(".pdf");
+                    try
+                    {
+                        var blank = IO.Path.GetLocalSettingsFile(@"Support\blank.pdf");
+                        new PdfEditor().AddSheet(filePdfOutputName, blank, 1, Options.BlankPageNumber, tempPdf);
+                        while (true)
+                        {
+                            try
+                            {
+                                File.Copy(tempPdf, filePdfOutputName, true);
+                                Process.Start(filePdfOutputName);
+                                break;
+                            }
+                            catch
+                            {
+                                var res = MessageBox.Show($"Закройте pdf файл - {filePdfOutputName}",
+                                    "Ошибка добавление бланка", MessageBoxButtons.OKCancel);
+                                if (res != DialogResult.OK)
+                                    break;
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        NetLib.IO.Path.TryDeleteFile(tempPdf);
+                    }
+                }
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {

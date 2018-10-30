@@ -17,7 +17,8 @@
 
         [NotNull]
         public List<Point2d> Points { get; set; }
-
+        
+        [NotNull]
         public Polyline Create(bool closed = true)
         {
             return Points.CreatePolyline(closed);

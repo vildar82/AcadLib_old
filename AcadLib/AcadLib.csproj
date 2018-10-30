@@ -201,6 +201,7 @@
     <Compile Include="Model\Geometry\LineExt.cs" />
     <Compile Include="Model\Geometry\Polylines\MergePolylineEx.cs" />
     <Compile Include="Model\Geometry\Polylines\PolylineRalative.cs" />
+    <Compile Include="Model\Geometry\Polylines\RectangleExt.cs" />
     <Compile Include="Model\Link\DbObjectLink.cs" />
     <Compile Include="Model\PaletteProps\Values\BoolView.xaml.cs">
       <DependentUpon>BoolView.xaml</DependentUpon>
@@ -240,6 +241,11 @@
     </Compile>
     <Compile Include="Model\PaletteProps\UI\PalettePropsVM.cs" />
     <Compile Include="Model\Lisp\LispAutoloader.cs" />
+    <Compile Include="Model\Plot\PdfEditor.cs" />
+    <Compile Include="Model\Plot\UI\PlotOptionsView.xaml.cs">
+      <DependentUpon>PlotOptionsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Plot\UI\PlotOptionsVM.cs" />
     <Compile Include="Model\RTree\SpatialIndex\RtreeExt.cs" />
     <Compile Include="Model\SettingsGroupInfo.cs" />
     <Compile Include="Model\Statistic\CheckUpdates.cs" />
@@ -737,6 +743,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Model\Plot\UI\PlotOptionsView.xaml" />
     <Page Include="Model\Styles\StyleManager\UI\StyleManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -814,6 +821,9 @@
     <PackageReference Include="FontAwesome.WPF">
       <Version>4.7.0.9</Version>
     </PackageReference>
+    <PackageReference Include="iTextSharp">
+      <Version>5.5.13</Version>
+    </PackageReference>
     <PackageReference Include="NetLib" Version="1.1.29" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation">
       <Version>4.3.0</Version>
@@ -829,7 +839,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == ReleaseLocal (

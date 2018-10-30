@@ -77,11 +77,13 @@ namespace AcadLib
 
         public void Initialize()
         {
-#if DEBUG // Отключение отладочных сообщений биндинга (тормозит сильно)
+#if DEBUG 
+            // Отключение отладочных сообщений биндинга (тормозит сильно)
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Off;
 #endif
             try
             {
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 Logger.Log.Info("start Initialize AcadLib");
                 StatusBarEx.AddPaneUserGroup();
                 PluginStatisticsHelper.StartAutoCAD();
@@ -107,7 +109,6 @@ namespace AcadLib
 
                 // Автослоиtest
                 AutoLayersService.Init();
-                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
                 // Загрузка сборок из папки ../Script/Net - без вложенных папок
                 LoadService.LoadFromFolder(Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"), 1);
@@ -491,36 +492,17 @@ namespace AcadLib
             {
                 CommandsPalette = new List<IPaletteCommand>
                 {
-                    new PaletteInsertBlock(
-                        "PIK_Project-Logo",
-                        FileCommonBlocks,
-                        "Блок логотипа",
-                        Resources.logo,
-                        "Вставка блока логотипа ПИК.",
-                        GroupCommon),
-                    new PaletteCommand(
-                        "Просмотр расширенных данных примитива",
-                        Resources.PIK_XDataView,
-                        CommandXDataView,
-                        "Просмотр расширенных данных (XData) примитива.",
-                        GroupCommon),
-                    new PaletteCommand(
-                        "Проверка и очистка",
-                        Resources.purge,
-                        nameof(PIK_PurgeAuditRegen),
+                    new PaletteInsertBlock("PIK_Project-Logo", FileCommonBlocks, "Блок логотипа", Resources.logo,
+                        "Вставка блока логотипа ПИК.", GroupCommon),
+                    new PaletteCommand("Просмотр расширенных данных примитива", Resources.PIK_XDataView,
+                        CommandXDataView, "Просмотр расширенных данных (XData) примитива.", GroupCommon),
+                    new PaletteCommand("Проверка и очистка", Resources.purge, nameof(PIK_PurgeAuditRegen),
                         "Очистка (_purge), проверка (_audit), сброс списка масштабов аннотации (_scalelistedit) и регенерация чертежа.",
                         GroupCommon),
-                    new PaletteCommand(
-                        "Последние ошибки",
-                        Resources.error,
-                        nameof(PIK_Errors),
-                        "Показать окно последних ошибок",
-                        GroupCommon),
-                    new PaletteCommand("Настройки",
-                        Resources.userSettings,
-                        nameof(PIK_UserSettings),
-                        "Настройки пользователя",
-                        GroupCommon)
+                    new PaletteCommand("Последние ошибки", Resources.error, nameof(PIK_Errors),
+                        "Показать окно последних ошибок", GroupCommon),
+                    new PaletteCommand("Настройки", Resources.userSettings, nameof(PIK_UserSettings),
+                        "Настройки пользователя", GroupCommon)
                 };
             }
             catch (Exception ex)

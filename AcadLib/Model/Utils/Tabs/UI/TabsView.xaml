@@ -100,7 +100,7 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <CheckBox Grid.Column="0" IsChecked="{Binding RestoreAll}" Margin="30,0,0,0" />
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding RestoreAll}" Margin="18,0,0,0" />
                                         <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
                                                     HorizontalAlignment="Center"
                                                     Margin="0">
@@ -144,7 +144,6 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>
-
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

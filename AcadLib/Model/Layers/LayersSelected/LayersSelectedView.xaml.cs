@@ -5,7 +5,8 @@
     /// </summary>
     public partial class LayersSelectedView
     {
-        public LayersSelectedView(LayersSelectedVM vm) : base(vm)
+        public LayersSelectedView(LayersSelectedVM vm)
+            : base(vm)
         {
             InitializeComponent();
         }
