@@ -1,7 +1,4 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2018 02 12 14:01
-
-namespace AcadLib.Template
+﻿namespace AcadLib.Template
 {
     using System.Collections.Generic;
     using JetBrains.Annotations;

@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace System.Data
+﻿namespace System.Data
 {
     using AcadLib;
     using Autodesk.AutoCAD.DatabaseServices;

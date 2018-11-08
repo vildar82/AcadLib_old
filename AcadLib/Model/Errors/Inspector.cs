@@ -20,9 +20,7 @@
 
         static Inspector()
         {
-#pragma warning disable 618
             Clear();
-#pragma warning restore 618
         }
 
         public static List<IError> LastErrors { get; private set; }
@@ -56,15 +54,13 @@
         {
             AddErrorInternal(err);
         }
-
-        // ReSharper disable once MethodOverloadWithOptionalParameter
+        
         public static void AddError(string msg, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, icon);
             AddErrorInternal(err);
         }
-
-        // ReSharper disable once MethodOverloadWithOptionalParameter
+        
         public static void AddError(string group, string msg, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, icon) { Group = group };
@@ -90,14 +86,12 @@
             AddErrorInternal(err);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, icon);
             AddErrorInternal(err);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, icon) { Group = group };
@@ -128,14 +122,12 @@
             AddErrorInternal(err);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, [NotNull] Entity ent, Extents3d ext, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, ent, icon);
             AddErrorInternal(err);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, [NotNull] Entity ent, Extents3d ext, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, ent, icon) { Group = group };
@@ -154,14 +146,12 @@
             AddErrorInternal(err);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, Extents3d ext, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, idEnt, icon);
             AddErrorInternal(err);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, Extents3d ext, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ext, idEnt, icon) { Group = group };
@@ -192,14 +182,12 @@
             AddErrorInternal(err);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string msg, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, icon);
             AddErrorInternal(err);
         }
 
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static void AddError(string group, string msg, ObjectId idEnt, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, idEnt, icon) { Group = group };
@@ -232,24 +220,36 @@
 
         public static void Show()
         {
-            if (HasErrors)
+            try
             {
-                Logger.Log.Error($"Окно ошибок: {string.Join("\n", Errors.Select(e => e.Group + e.Message))}");
-                Errors = SortErrors(Errors);
+                if (HasErrors)
+                {
+                    Logger.Log.Error($"Окно ошибок: {string.Join("\n", Errors.Select(e => e.Group + e.Message))}");
+                    Errors = SortErrors(Errors);
 
-                // WPF
-                Show(Errors);
+                    // WPF
+                    Show(Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex);
             }
         }
 
         public static void Show([NotNull] List<IError> errors)
         {
-            var errVM = new ErrorsViewModel(errors) { IsDialog = false };
-            var errView = new ErrorsView(errVM);
-            errView.Show();
-#pragma warning disable 618
-            Clear();
-#pragma warning restore 618
+            try
+            {
+                var errVM = new ErrorsViewModel(errors) {IsDialog = false};
+                var errView = new ErrorsView(errVM);
+                errView.Show();
+                Clear();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex);
+            }
         }
 
         /// <summary>
@@ -282,11 +282,8 @@
             var res = errView.ShowDialog();
             if (res == true)
             {
-#pragma warning disable 618
                 Clear();
-#pragma warning restore 618
             }
-
             return res;
         }
 

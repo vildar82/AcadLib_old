@@ -33,37 +33,24 @@
         {
             var dictId = GetExtDict(objId);
             var existLinks = ReadLinks(objId, code);
-            var addLinkIds = linkIds.Except(existLinks).ToList();
+            var addLinkIds = linkIds?.Where(w => !w.IsNull).Except(existLinks).ToList() ?? new List<ObjectId>();
             var dxfCode = GetDxfCode(code);
             using (var dict = dictId.Open(OpenMode.ForWrite) as DBDictionary)
             {
                 var entryName = GetLinkRecordName(code);
-                if (dict.Contains(entryName))
+                if (dict.Contains(entryName) && replace)
                 {
-                    if (replace)
-                    {
-                        dict.Remove(entryName);
-                    }
-                    else
-                    {
-                        using (var xrec = dict.GetAt(entryName).Open(OpenMode.ForWrite) as Xrecord)
-                        {
-                            foreach (var addLinkId in addLinkIds)
-                            {
-                                xrec.Data.Add(new TypedValue((int)dxfCode, addLinkId));
-                            }
-
-                            return;
-                        }
-                    }
+                    dict.Remove(entryName);
                 }
 
+                if (!addLinkIds.Any())
+                    return;
                 using (var xrec = new Xrecord())
                 using (var resBuff = new ResultBuffer())
                 {
                     foreach (var addLinkId in addLinkIds)
                     {
-                        resBuff.Add(new TypedValue((int)dxfCode, addLinkId));
+                        resBuff.Add(new TypedValue((int) dxfCode, addLinkId));
                     }
 
                     xrec.Data = resBuff;

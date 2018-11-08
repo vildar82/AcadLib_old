@@ -1,3 +1,5 @@
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
+
 namespace AcadLib.Geometry.Polylines
 {
     using Autodesk.AutoCAD.DatabaseServices;
@@ -15,6 +17,8 @@ namespace AcadLib.Geometry.Polylines
         
         public static Polyline CreateRectangle(this Point2d pt, double length, double width, CellAlignment alignment, Vector2d dir)
         {
+            if (length < 0 || width < 0)
+                return null;
             var pl = PlRel.Start(pt).Add(0, width).Add(length, 0).Add(0, -width).Create();
             Vector3d vec = default;
             switch (alignment)

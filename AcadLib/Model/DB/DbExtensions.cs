@@ -227,6 +227,13 @@
             return GetTextStylePIK(db, styleName, UserGroup);
         }
 
+        /// <summary>
+        /// Получение или копирование из шаблона текстового стиля
+        /// </summary>
+        /// <param name="db">Чертеж</param>
+        /// <param name="styleName">Имя стиля</param>
+        /// <param name="templateFile">Имя шаблона, без разрешения</param>
+        /// <returns></returns>
         public static ObjectId GetTextStylePIK(this Database db, string styleName, string templateFile)
         {
             var idStyle = GetTextStylePik(db, styleName);
