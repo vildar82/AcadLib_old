@@ -1,3 +1,5 @@
+using System.Reactive;
+
 namespace AcadLib.Reactive
 {
     using System;
@@ -13,14 +15,14 @@ namespace AcadLib.Reactive
             _dbo = dbo;
         }
 
-        public IObservable<EventArgs> Modified => Observable.FromEventPattern(
-            x => _dbo.Modified += x, x => _dbo.Modified -= x).Select(x => x.EventArgs);
+        public IObservable<EventPattern<EventArgs>> Modified => Observable.FromEventPattern<EventHandler, EventArgs>(
+            x => _dbo.Modified += x, x => _dbo.Modified -= x);
 
-        public IObservable<ObjectEventArgs> Copied => Observable.FromEventPattern<ObjectEventHandler, ObjectEventArgs>(
-            x => _dbo.Copied += x, x => _dbo.Copied -= x).Select(x => x.EventArgs);
+        public IObservable<EventPattern<ObjectEventArgs>> Copied => Observable.FromEventPattern<ObjectEventHandler, ObjectEventArgs>(
+            x => _dbo.Copied += x, x => _dbo.Copied -= x);
 
-        public IObservable<ObjectClosedEventArgs> ObjectClosed => Observable
+        public IObservable<EventPattern<ObjectClosedEventArgs>> ObjectClosed => Observable
             .FromEventPattern<ObjectClosedEventHandler, ObjectClosedEventArgs>(
-                x => _dbo.ObjectClosed += x, x => _dbo.ObjectClosed -= x).Select(x => x.EventArgs);
+                x => _dbo.ObjectClosed += x, x => _dbo.ObjectClosed -= x);
     }
 }
