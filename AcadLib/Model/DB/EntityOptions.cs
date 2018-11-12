@@ -74,7 +74,7 @@
         /// </summary>
         public bool CheckCreateValues { get; set; }
 
-        public void SetOptions([NotNull] Entity ent)
+        public virtual void SetOptions([NotNull] Entity ent)
         {
             if (!ent.IsWriteEnabled)
             {

@@ -52,6 +52,11 @@
         {
             return pt.Trans(CoordSystem.UCS, CoordSystem.WCS);
         }
+        
+        public static Point3d FromWcsToUcs(this Point3d pt)
+        {
+            return pt.Trans(CoordSystem.WCS, CoordSystem.UCS);
+        }
 
         /// <summary>
         /// Получение квадрата от центральной точки

@@ -31,8 +31,13 @@
         /// <returns>ObjectContext</returns>
         public static ObjectContext GetAnnotationScale (this Database db, string nameScale)
         {
-            var occ = db.ObjectContextManager.GetContextCollection("ACDB_ANNOTATIONSCALES");
+            var occ = GetAnnotationScales(db);
             return occ.HasContext(nameScale) ? occ.GetContext(nameScale) : null;
+        }
+
+        public static ObjectContextCollection GetAnnotationScales(this Database db)
+        {
+            return db.ObjectContextManager.GetContextCollection("ACDB_ANNOTATIONSCALES");
         }
 
         public static ObjectContext GetOrAddAnnotationScale (this Database db, string nameScale, double scale, bool fix)

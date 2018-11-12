@@ -11,6 +11,32 @@
     [PublicAPI]
     public static class CurveExt
     {
+        /// <summary>
+        /// Точка в центре, но внутри полилинии
+        /// </summary>
+        /// <param name="pl"></param>
+        /// <returns></returns>
+        public static Point3d CentroidIn(this Curve curve)
+        {
+            var center = curve.Centroid();
+            if (curve.IsPointInsidePolylineByRay(center, Tolerance.Global)) return center;
+            var ptClosest = curve.GetClosestPointTo(center, Vector3d.ZAxis, false);
+            using (var ray = new Ray())
+            using (var plane = new Plane())
+            {
+                ray.BasePoint = center;
+                ray.SecondPoint = ptClosest;
+                var ptsIntersects = new Point3dCollection();
+                curve.IntersectWith(ray, Intersect.OnBothOperands, plane, ptsIntersects, IntPtr.Zero, IntPtr.Zero);
+                if (ptsIntersects.Count > 1)
+                {
+                    return ptsIntersects[0].Center(ptsIntersects[1]);
+                }
+            }
+
+            return center;
+        }
+        
         public static Point3d Centroid([NotNull] this Curve c)
         {
             var pts = c.GetGeCurve().GetSamplePoints(10).Select(s => s.Point).ToList();

@@ -314,23 +314,7 @@
         {
             if (h == null || opt == null)
                 return;
-            if (opt.PatternScale != null && opt.PatternScale.Value > 0)
-            {
-                h.PatternScale = opt.PatternScale.Value;
-            }
-
-            if (!opt.PatternName.IsNullOrEmpty())
-            {
-                h.SetHatchPattern(opt.PatternType, opt.PatternName);
-            }
-
-            if (opt.PatternAngle != null && opt.PatternAngle.Value > 0)
-            {
-                h.PatternAngle = opt.PatternAngle.Value;
-            }
-
-            h.EvaluateHatch(true);
-            h.BackgroundColor = opt.BackgroundColor ?? Color.FromColorIndex(ColorMethod.None, 257);
+            opt.SetOptions(h);
         }
 
         private static bool NeedAddVertexToPl(Polyline poly, int prewVertex, Point2d vertex, Tolerance tolerance)

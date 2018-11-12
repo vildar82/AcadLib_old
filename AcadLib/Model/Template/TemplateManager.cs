@@ -1,7 +1,4 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2018 02 13 15:03
-
-namespace AcadLib.Template
+﻿namespace AcadLib.Template
 {
     using System;
     using System.IO;

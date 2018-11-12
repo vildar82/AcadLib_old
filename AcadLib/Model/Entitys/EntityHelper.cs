@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -16,7 +15,6 @@ namespace AcadLib
             [CanBeNull] this IEnumerable<Entity> ents,
             [CanBeNull] EntityOptions entityOptions = null)
         {
-            // ReSharper disable once PossibleMultipleEnumeration
             if (ents?.Any() != true)
                 return;
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -25,8 +23,6 @@ namespace AcadLib
             using (var t = db.TransactionManager.StartTransaction())
             {
                 var cs = (BlockTableRecord)db.CurrentSpaceId.GetObject(OpenMode.ForWrite);
-
-                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var ent in ents)
                 {
                     if (ent.Id != ObjectId.Null || ent.IsDisposed)

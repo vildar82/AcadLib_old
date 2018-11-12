@@ -1,7 +1,4 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2018 02 13 19:53
-
-namespace AcadLib.Layers.Filter
+﻿namespace AcadLib.Layers.Filter
 {
     using System;
     using System.Linq;
@@ -67,7 +64,7 @@ namespace AcadLib.Layers.Filter
         }
 
         [NotNull]
-        private static IdMapping CopyLayers([NotNull] Database dbSrc, Database dbDest)
+        public static IdMapping CopyLayers([NotNull] Database dbSrc, Database dbDest)
         {
             var lt = dbSrc.LayerTableId.GetObjectT<LayerTable>();
             var layerIds = new ObjectIdCollection(lt.GetObjects<LayerTableRecord>().Select(s => s.Id).ToArray());
@@ -77,7 +74,7 @@ namespace AcadLib.Layers.Filter
             return idmap;
         }
 
-        private static void ImportLayerFilterTree(Database dbSrc, Database dbDest)
+        public static void ImportLayerFilterTree(Database dbSrc, Database dbDest)
         {
             // Копирование слоев
             var idmap = CopyLayers(dbSrc, dbDest);

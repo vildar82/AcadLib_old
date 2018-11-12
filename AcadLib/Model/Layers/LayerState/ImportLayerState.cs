@@ -1,7 +1,4 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2018 02 14 9:24
-
-namespace AcadLib.Layers.LayerState
+﻿namespace AcadLib.Layers.LayerState
 {
     using System;
     using System.Linq;

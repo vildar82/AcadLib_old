@@ -69,5 +69,33 @@
             ent.AddContext(annoScale);
             ent.RemoveContext(ent.Database.Cannoscale);
         }
+
+        public static void SetAnnoScaleAndRemoveAllOther([NotNull] this Entity ent, AnnotationScale scale)
+        {
+            if (ent.Annotative != AnnotativeStates.True)
+                return;
+            if (!ent.IsWriteEnabled)
+                ent = ent.UpgradeOpenTr();
+            var occ = ent.Database.GetAnnotationScales();
+            AddScaleAndRemoveOther(ent, scale, occ);
+            if (ent is MLeader ml && ml.ContentType == ContentType.MTextContent)
+            {
+                var mt = ml.MText;
+                if (mt.Annotative == AnnotativeStates.True)
+                {
+                    AddScaleAndRemoveOther(mt, scale, occ);
+                    ml.MText = mt;
+                }
+            }
+        }
+        
+        private static void AddScaleAndRemoveOther(Entity ent, ObjectContext addScale, ObjectContextCollection occ)
+        {
+            ent.AddContext(addScale);
+            foreach (var scale in occ) {
+                if (addScale.Name != scale.Name && ent.HasContext(scale))
+                    ent.RemoveContext(scale);
+            }
+        }
     }
 }
