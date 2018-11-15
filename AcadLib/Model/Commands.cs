@@ -483,6 +483,12 @@ namespace AcadLib
             CommandStart.Start(d => Test.BatchRemoveLayouts.Batch());
         }
 
+        [CommandMethod(Group, nameof(PIK_TestState), CommandFlags.Modal)]
+        public void PIK_TestState()
+        {
+            CommandStart.StartWoStat(d => TestState.Start());
+        }
+
         /// <summary>
         ///     Список общих команд
         /// </summary>
@@ -537,15 +543,13 @@ namespace AcadLib
             if (dllsResolve == null)
             {
                 // Сборки в основной папке dll
-                dllsResolve = DllResolve.GetDllResolve(CurDllDir, SearchOption.TopDirectoryOnly);
+                dllsResolve = DllResolve.GetDllResolve(CurDllDir, SearchOption.AllDirectories);
 
                 // Все сборки из папки Script\NET
                 dllsResolve.AddRange(DllResolve.GetDllResolve(
                     Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
                     SearchOption.AllDirectories));
-
-                // Все сборки из локальной папки packages
-                // dllsResolve.AddRange(DllResolve.GetDllResolve(LoadService.dllLocalPackages, SearchOption.AllDirectories));
+                
                 // Оставить только сборки под текущую версию автокада
                 dllsResolve = FilterDllResolveVersions(dllsResolve);
             }

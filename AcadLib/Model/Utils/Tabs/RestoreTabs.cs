@@ -155,7 +155,8 @@
                             }
                         }
 
-                        LogRestoreTabs(tabsRestore);
+                        if (tabsRestore?.Any() == true)
+                            LogRestoreTabs(tabsRestore);
                     }
                     finally
                     {
