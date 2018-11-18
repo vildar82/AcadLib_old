@@ -20,15 +20,6 @@
     [PublicAPI]
     public class LoggAddinExt : AutoCAD_PIK_Manager.LogAddin
     {
-        public LoggAddinExt()
-        {
-        }
-
-        [Obsolete]
-        public LoggAddinExt(string plugin)
-        {
-        }
-
         public override void Debug(string msg)
         {
             var newMsg = GetMessage(msg);
@@ -137,9 +128,7 @@
         [NotNull]
         private static string GetMessage(string msg)
         {
-            return $"Команда: {CommandStart.CurrentCommand}; Сообщение: {msg}; " +
-                   $"Doc={Application.DocumentManager.MdiActiveDocument?.Name}" +
-                   $"AcadLib ver={Commands.AcadLibVersion}";
+            return $"{msg};Doc={Application.DocumentManager?.MdiActiveDocument?.Name}";
         }
     }
 }

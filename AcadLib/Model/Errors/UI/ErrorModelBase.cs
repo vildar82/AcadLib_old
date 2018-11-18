@@ -1,4 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
+
+using System.Reactive;
+
 namespace AcadLib.Errors
 {
     using System;
@@ -64,7 +67,7 @@ namespace AcadLib.Errors
 
         public string Message { get; set; }
 
-        public ReactiveCommand Show { get; set; }
+        public ReactiveCommand<Unit, Unit> Show { get; set; }
 
         public bool ShowCount { get; set; }
 

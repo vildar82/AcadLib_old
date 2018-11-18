@@ -1,4 +1,5 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using System;
+
 namespace AcadLib.PaletteCommands.UI
 {
     using System.Windows;
@@ -19,9 +20,7 @@ namespace AcadLib.PaletteCommands.UI
             object sender,
             [NotNull] System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-#pragma warning disable 618
-            if (e.Exception is UserBreakException)
-#pragma warning restore 618
+            if (e.Exception is OperationCanceledException)
             {
                 throw e.Exception;
             }
@@ -33,9 +32,7 @@ namespace AcadLib.PaletteCommands.UI
 
             e.Handled = true;
         }
-
-        // ReSharper disable once UnusedMember.Local
-        // ReSharper disable once UnusedParameter.Local
+        
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (!(((FrameworkElement)sender).DataContext is PaletteCommand selComm))

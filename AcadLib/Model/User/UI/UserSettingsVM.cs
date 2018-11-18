@@ -1,4 +1,6 @@
-﻿namespace AcadLib.User.UI
+﻿using System.Reactive;
+
+namespace AcadLib.User.UI
 {
     using System;
     using System.Collections.Generic;
@@ -77,9 +79,9 @@
         /// </summary>
         public bool PreviewUpdate { get; set; }
 
-        public ReactiveCommand Ok { get; set; }
+        public ReactiveCommand<Unit, Unit> Ok { get; set; }
 
-        public ReactiveCommand DeleteExtraGroup { get; set; }
+        public ReactiveCommand<Unit, Unit> DeleteExtraGroup { get; set; }
 
         private static UserGroup FindGroup(List<UserGroup> groups, string name)
         {

@@ -1,7 +1,4 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2016 05 12 8:56
-
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
     using System.Collections.Generic;
@@ -16,12 +13,6 @@ namespace AcadLib
     [PublicAPI]
     public static class General
     {
-        /// <summary>
-        ///     Отменено пользователем.
-        ///     Сообщение для исключения при отмене команды пользователем.
-        /// </summary>
-        [Obsolete] public const string CanceledByUser = "Отменено пользователем";
-
         public const string Company = CompanyInfo.NameEngShort;
         public const string UserGroupAR = "АР";
         public const string UserGroupEO = "ЭО";
@@ -84,18 +75,6 @@ namespace AcadLib
         ///     BIM-manager - отдел поддержки пользователей
         /// </summary>
         public static bool IsBimUser { get; set; }
-
-        /// <summary>
-        ///     Файл из папки пользовательских данных (AppData\PIK\Autocad\...)
-        /// </summary>
-        /// <param name="pluginName">Имя программы(плагина)</param>
-        /// <param name="fileName">Имя файла</param>
-        [NotNull]
-        [Obsolete("Используй Path.GetUserPluginFolder()")]
-        public static string GetUserDataFile([NotNull] string pluginName, [NotNull] string fileName)
-        {
-            return IO.Path.GetUserPluginFile(pluginName, fileName);
-        }
 
         public static bool IsCadManager()
         {

@@ -1,4 +1,6 @@
-﻿namespace AcadLib.PaletteProps
+﻿using System.Reactive;
+
+namespace AcadLib.PaletteProps
 {
     using System;
     using System.Collections.Generic;
@@ -39,7 +41,7 @@
 
         public string ButtonExpandTooltip { get; set; }
 
-        public ReactiveCommand ButtonExpandCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> ButtonExpandCommand { get; set; }
 
         public List<PalettePropVM> Properties { get; set; }
 

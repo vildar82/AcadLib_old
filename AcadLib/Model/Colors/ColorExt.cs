@@ -10,7 +10,7 @@
     public static class ColorExt
     {
         [Obsolete]
-        public static Color AcadColorFeomString(this string color)
+        public static Color AcadColorFromString(this string color)
         {
             return Color.FromColor(color.StringToColor());
         }

@@ -15,15 +15,9 @@
         /// <returns></returns>
         public static VisualStyleType GetActiveVisualStyle([NotNull] this Database db)
         {
-#pragma warning disable 618
             using (var vt = (ViewportTable)db.ViewportTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
-#pragma warning disable 618
             using (var vtr = (ViewportTableRecord)vt["*Active"].Open(OpenMode.ForWrite))
-#pragma warning restore 618
-#pragma warning disable 618
             using (var vs = (DBVisualStyle)vtr.VisualStyleId.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 return vs.Type;
             }

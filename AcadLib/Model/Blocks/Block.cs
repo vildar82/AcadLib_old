@@ -1,4 +1,5 @@
 ﻿using System.ServiceModel.Configuration;
+using AcadLib.Strings;
 
 namespace AcadLib.Blocks
 {

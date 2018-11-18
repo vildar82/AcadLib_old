@@ -39,7 +39,15 @@
         [NotNull]
         public static BlockTableRecord MS(this Database db, OpenMode mode = OpenMode.ForRead)
         {
-            return SymbolUtilityServices.GetBlockModelSpaceId(db).GetObjectT<BlockTableRecord>(mode);
+            return MsId(db).GetObjectT<BlockTableRecord>(mode);
+        }
+        
+        public static ObjectId MsId(this Database db)
+        {
+            using (var bt = (BlockTable)db.BlockTableId.Open(OpenMode.ForRead))
+            {
+                return bt[BlockTableRecord.ModelSpace];
+            }
         }
 
         /// <summary>

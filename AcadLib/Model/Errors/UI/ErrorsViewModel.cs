@@ -1,4 +1,6 @@
-﻿namespace AcadLib.Errors
+﻿using System.Reactive;
+
+namespace AcadLib.Errors
 {
     using System;
     using System.Collections.Generic;
@@ -16,6 +18,7 @@
     using ReactiveUI;
     using ReactiveUI.Legacy;
     using UI;
+    using Unit = System.Reactive.Unit;
 
     public class ErrorsViewModel : BaseViewModel
     {
@@ -60,14 +63,14 @@
             DeleteError = CreateCommand<ErrorModelBase>(DeleteErrorExec);
         }
 
-        public ReactiveCommand CollapseAll { get; set; }
+        public ReactiveCommand<Unit, Unit> CollapseAll { get; set; }
 
         [Reactive]
         public int CountSelectedErrors { get; set; }
 
-        public ReactiveCommand DeleteError { get; set; }
+        public ReactiveCommand<ErrorModelBase, Unit> DeleteError { get; set; }
 
-        public ReactiveCommand DeleteSelectedDublicateBlocks { get; set; }
+        public ReactiveCommand<Unit, Unit> DeleteSelectedDublicateBlocks { get; set; }
 
         public new ReactiveList<ErrorModelBase> Errors { get; set; }
 
@@ -76,11 +79,11 @@
 
         public List<IError> ErrorsOrig { get; set; }
 
-        public ReactiveCommand ExpandeAll { get; set; }
+        public ReactiveCommand<Unit, Unit> ExpandeAll { get; set; }
 
-        public ReactiveCommand ExportToExcel { get; set; }
+        public ReactiveCommand<Unit, Unit> ExportToExcel { get; set; }
 
-        public ReactiveCommand ExportToTxt { get; set; }
+        public ReactiveCommand<Unit, Unit> ExportToTxt { get; set; }
 
         public bool IsDialog { get; set; }
 

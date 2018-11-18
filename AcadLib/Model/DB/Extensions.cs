@@ -112,7 +112,6 @@
         /// Без условия открытой транзакции.
         /// br.DynamicBlockTableRecord.Open(OpenMode.ForRead)
         /// </summary>
-        [Obsolete("Use DictBlockNames")]
         public static string GetEffectiveName([NotNull] this BlockReference br)
         {
             using (var btrDyn = (BlockTableRecord)br.DynamicBlockTableRecord.Open(OpenMode.ForRead))

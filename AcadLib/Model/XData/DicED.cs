@@ -1,4 +1,6 @@
-﻿namespace AcadLib.XData
+﻿using AcadLib.Strings;
+
+namespace AcadLib.XData
 {
     using System;
     using System.Collections.Generic;

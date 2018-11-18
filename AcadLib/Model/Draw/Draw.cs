@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib
+﻿namespace AcadLib
 {
     using Autodesk.AutoCAD.ApplicationServices.Core;
     using Autodesk.AutoCAD.Colors;

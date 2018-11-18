@@ -8,15 +8,6 @@
     [PublicAPI]
     public static class LineTypeExt
     {
-        [Obsolete("Опечатка - используй GetLineTypeId")]
-        public static ObjectId GetLayerId([NotNull] this Database db, string lineTypeName)
-        {
-            using (var lt = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))
-            {
-                return lt.Has(lineTypeName) ? lt[lineTypeName] : ObjectId.Null;
-            }
-        }
-
         public static ObjectId GetLineTypeId([NotNull] this Database db, string lineTypeName)
         {
             using (var lt = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))

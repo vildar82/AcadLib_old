@@ -1,4 +1,6 @@
-﻿namespace AcadLib.Blocks.Visual.UI
+﻿using System.Reactive;
+
+namespace AcadLib.Blocks.Visual.UI
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -24,7 +26,7 @@
 
         public List<VisualGroup> Groups { get; set; }
 
-        public ReactiveCommand Insert { get; set; }
+        public ReactiveCommand<IVisualBlock, Unit> Insert { get; set; }
 
         public bool IsHideWindow { get; set; } = true;
 

@@ -1,4 +1,5 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using NetLib;
+
 namespace AcadLib.Colors
 {
     using System.Collections.Generic;

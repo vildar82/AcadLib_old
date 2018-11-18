@@ -16,21 +16,6 @@
     [PublicAPI]
     public static class LoadService
     {
-        public static readonly string dllLocalPackages = IO.Path.GetUserPluginFolder("packages");
-
-        public static void CopyPackagesLocal()
-        {
-            try
-            {
-                var dllServer = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder, "packages");
-                NetLib.IO.Path.CopyDirectory(dllServer, dllLocalPackages);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "CopyPackagesLocal");
-            }
-        }
-
         public static void DeleteTry(string file)
         {
             if (File.Exists(file))
@@ -142,31 +127,10 @@
             }
         }
 
-        public static void LoadMDM()
-        {
-            LoadFromTry(Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.LocalSettingsFolder,
-                @"Script\NET\PIK_DB_Projects.dll"));
-        }
-
-        /// <summary>
-        /// Morelinq
-        /// </summary>
-        [Obsolete("Нафиг")]
-        public static void LoadMorelinq()
-        {
-            LoadPackages("MoreLinq.dll");
-        }
-
         public static void LoadPackages([NotNull] string name)
         {
             var dllLocal = Path.Combine(IO.Path.GetUserPluginFolder("packages"), name);
             LoadFromTry(dllLocal);
-        }
-
-        public static void LoadScreenshotToSlack()
-        {
-            LoadPackages("CloudinaryDotNet.dll");
-            LoadPackages("ScreenshotToSlack.dll");
         }
     }
 }

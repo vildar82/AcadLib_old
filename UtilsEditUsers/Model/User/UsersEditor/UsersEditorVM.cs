@@ -1,4 +1,6 @@
-﻿namespace UtilsEditUsers.Model.User.UsersEditor
+﻿using System.Reactive;
+
+namespace UtilsEditUsers.Model.User.UsersEditor
 {
     using System;
     using System.Collections.Concurrent;
@@ -64,7 +66,7 @@
 
         public ICollectionView Users { get; set; }
 
-        public ReactiveCommand Save { get; set; }
+        public ReactiveCommand<Unit, Unit> Save { get; set; }
 
         public EditAutocadUsers SelectedUser { get; set; }
 
@@ -74,15 +76,15 @@
 
         public bool IsOneUserSelected { get; set; }
 
-        public ReactiveCommand Apply { get; set; }
+        public ReactiveCommand<Unit, Unit> Apply { get; set; }
 
-        public ReactiveCommand DeleteUser { get; set; }
+        public ReactiveCommand<EditAutocadUsers, Unit> DeleteUser { get; set; }
 
         public bool EditMode { get; set; }
 
         public string Filter { get; set; }
 
-        public ReactiveCommand FindMe { get; set; }
+        public ReactiveCommand<Unit, Unit> FindMe { get; set; }
 
         public List<string> FilterGroups { get; set; }
 
@@ -94,7 +96,7 @@
 
         public int UsersCount { get; set; }
 
-        public ReactiveCommand DeleteAdditionalGroup { get; set; }
+        public ReactiveCommand<EditAutocadUsers, Unit> DeleteAdditionalGroup { get; set; }
 
         private static List<string> LoadUserGroups()
         {

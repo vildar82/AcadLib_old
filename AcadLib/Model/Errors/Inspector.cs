@@ -79,13 +79,6 @@
             AddErrorInternal(err);
         }
 
-        [Obsolete("Используй интерполяцию строк $\"\"")]
-        public static void AddError([NotNull] string msg, [NotNull] params object[] args)
-        {
-            var err = new Error(string.Format(msg, args));
-            AddErrorInternal(err);
-        }
-
         public static void AddError(string msg, [NotNull] Entity ent, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, ent, icon);

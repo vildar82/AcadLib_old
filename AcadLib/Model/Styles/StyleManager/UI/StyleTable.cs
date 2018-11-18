@@ -11,6 +11,7 @@
     using NLog;
     using ReactiveUI;
     using ReactiveUI.Legacy;
+    using Unit = System.Reactive.Unit;
 
     public class StyleTable : BaseModel
     {
@@ -21,7 +22,7 @@
 
         public string Name { get; set; }
 
-        public ReactiveCommand Delete { get; set; }
+        public ReactiveCommand<Style, Unit> Delete { get; set; }
 
         public ObjectId StyleTableId { get; set; }
 

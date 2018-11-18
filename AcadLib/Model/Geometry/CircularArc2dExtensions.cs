@@ -1,4 +1,6 @@
-﻿namespace AcadLib.Geometry
+﻿using NetLib;
+
+namespace AcadLib.Geometry
 {
     using System;
     using Autodesk.AutoCAD.DatabaseServices;

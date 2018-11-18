@@ -1,4 +1,6 @@
-﻿namespace AcadLib.Utils.Tabs.UI
+﻿using System.Reactive;
+
+namespace AcadLib.Utils.Tabs.UI
 {
     using System;
     using System.Collections.Generic;
@@ -55,7 +57,7 @@
 
         public List<SessionVM> Sessions { get; set; }
 
-        public ReactiveCommand Ok { get; set; }
+        public ReactiveCommand<Unit, Unit> Ok { get; set; }
 
         public bool HasHistory { get; set; }
 

@@ -9,34 +9,6 @@
     public static class Path
     {
         /// <summary>
-        /// Копирование папки - рекурсивно. Папка создается.
-        /// </summary>
-        /// <param name="source">Откуда</param>
-        /// <param name="target">Куда</param>
-        [Obsolete]
-        public static void CopyDirTo([NotNull] this DirectoryInfo source, [NotNull] DirectoryInfo target)
-        {
-            Directory.CreateDirectory(target.FullName);
-            foreach (var fi in source.GetFiles())
-            {
-                Console.WriteLine($@"Copying {target.FullName}\{fi.Name}");
-                fi.CopyTo(System.IO.Path.Combine(target.FullName, fi.Name), true);
-            }
-
-            foreach (var diSourceSubDir in source.GetDirectories())
-            {
-                var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyDirTo(diSourceSubDir, nextTargetSubDir);
-            }
-        }
-
-        [Obsolete]
-        public static void CopyDirTo([NotNull] string sourceDir, [NotNull] string targetDir)
-        {
-            CopyDirTo(new DirectoryInfo(sourceDir), new DirectoryInfo(targetDir));
-        }
-
-        /// <summary>
         /// Получение файла в общей папке настроек на сервере \\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\[UserGroup]\pluginName\fileName
         /// </summary>
         /// <param name="pluginName">Имя плагина (команды)</param>
@@ -102,18 +74,6 @@
             }
 
             return pluginFolder;
-        }
-
-        /// <summary>
-        /// Создает папку в темпе и возрвращает полный путь
-        /// </summary>
-        [NotNull]
-        [Obsolete]
-        public static string GetTemporaryDirectory()
-        {
-            var tempDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
         }
 
         /// <summary>

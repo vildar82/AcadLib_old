@@ -177,9 +177,7 @@
 
             try
             {
-#pragma warning disable 618
                 Inspector.Clear();
-#pragma warning restore 618
                 action(doc);
             }
             catch (OperationCanceledException ex)
@@ -187,24 +185,14 @@
                 if (!doc.IsDisposed)
                     doc.Editor.WriteMessage(ex.Message);
             }
-#pragma warning disable 618
-            catch (CancelByUserException cancelByUser)
-#pragma warning restore 618
-            {
-                if (!doc.IsDisposed)
-                    doc.Editor.WriteMessage(cancelByUser.Message);
-            }
             catch (Exceptions.ErrorException error)
             {
                 Inspector.AddError(error.Error);
             }
             catch (Exception ex)
             {
-                if (!ex.Message.Contains(General.CanceledByUser))
-                {
-                    Logger.Log.Error(ex, CurrentCommand);
-                    Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
-                }
+                Logger.Log.Error(ex, CurrentCommand);
+                Inspector.AddError($"Ошибка в программе. {ex.Message}", System.Drawing.SystemIcons.Error);
 
                 if (!doc.IsDisposed)
                     doc.Editor.WriteMessage(ex.Message);

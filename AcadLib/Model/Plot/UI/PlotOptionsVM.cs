@@ -1,3 +1,5 @@
+using System.Reactive;
+
 namespace AcadLib.Plot.UI
 {
     using NetLib.WPF;
@@ -15,8 +17,8 @@ namespace AcadLib.Plot.UI
             ResetExec();
         }
 
-        public ReactiveCommand Reset { get; set; }
-        public ReactiveCommand OK { get; set; }
+        public ReactiveCommand<Unit, Unit> Reset { get; set; }
+        public ReactiveCommand<Unit, Unit> OK { get; set; }
         
         public bool DefaultPlotCurOrFolder { get; set; }
         public string FilterByNames { get; set; }

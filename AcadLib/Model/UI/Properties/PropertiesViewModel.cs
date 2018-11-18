@@ -1,4 +1,6 @@
-﻿namespace AcadLib.UI.Properties
+﻿using System.Reactive;
+
+namespace AcadLib.UI.Properties
 {
     using System;
     using JetBrains.Annotations;
@@ -22,9 +24,9 @@
         [Reactive]
         public object Value { get; set; }
 
-        public ReactiveCommand OK { get; set; }
+        public ReactiveCommand<Unit, Unit> OK { get; set; }
 
-        public ReactiveCommand Reset { get; set; }
+        public ReactiveCommand<Unit, Unit> Reset { get; set; }
     }
 
     public class DesignPropertiesViewModel : PropertiesViewModel
