@@ -172,6 +172,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ADUtilities">
+      <Version>1.0.1</Version>
+    </PackageReference>
     <PackageReference Include="AutoMapper">
       <Version>8.0.0</Version>
     </PackageReference>
@@ -185,7 +188,7 @@
       <Version>1.6.5</Version>
     </PackageReference>
     <PackageReference Include="NetLib">
-      <Version>1.1.66</Version>
+      <Version>1.1.69</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
@@ -196,7 +199,7 @@
     <PackageReference Include="StyleCop.Analyzers">
       <Version>1.0.2</Version>
     </PackageReference>
-    <PackageReference Update="Fody" Version="3.3.0" />
+    <PackageReference Update="Fody" Version="3.3.2" />
     <PackageReference Update="Nerdbank.GitVersioning" Version="2.2.33" />
   </ItemGroup>
   <ItemGroup>

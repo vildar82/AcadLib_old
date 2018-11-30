@@ -1,4 +1,7 @@
-﻿namespace AcadLib.Statistic
+﻿using System.Reactive.Linq;
+using AcadLib.Reactive;
+
+namespace AcadLib.Statistic
 {
     using System;
     using System.Collections.Generic;
@@ -136,7 +139,6 @@
                         lastModeChange = "#SAVEAS";
                         break;
                     case "CLOSE":
-                    case "#CLOSE":
                         if (dbmod != 0 && lastModeChange != "CLOSE")
                         {
                             switch (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
@@ -281,7 +283,8 @@
             try
             {
                 var db = doc.Database;
-                db.SaveComplete += Db_SaveComplete;
+                db.Events().SaveComplete.Throttle(TimeSpan.FromSeconds(3))
+                    .Subscribe(s => Db_SaveComplete(s.Sender, s.EventArgs));
                 eventer?.Finish(EventType.Open, doc.Name, sn);
                 Logger.Log.Info("SubscribeDoc end");
             }

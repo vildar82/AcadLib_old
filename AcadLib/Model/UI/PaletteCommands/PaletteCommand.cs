@@ -1,6 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-
-namespace AcadLib.PaletteCommands
+﻿namespace AcadLib.PaletteCommands
 {
     using System;
     using System.Collections.Generic;
@@ -125,7 +123,7 @@ namespace AcadLib.PaletteCommands
         }
 
         [NotNull]
-        private static ImageSource GetSource(Bitmap image, bool isTest)
+        protected static ImageSource GetSource(Bitmap image, bool isTest)
         {
             if (image == null)
             {

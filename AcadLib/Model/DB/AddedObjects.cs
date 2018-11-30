@@ -21,6 +21,7 @@
 
         public event ObjectEventHandler ObjectAppended;
 
+        [NotNull]
         public List<ObjectId> Added { get; } = new List<ObjectId>();
 
         public void Dispose()

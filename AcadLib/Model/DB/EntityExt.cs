@@ -46,7 +46,7 @@
         /// <returns>Да - видим, Нет - не видим, слой выключен или заморожен</returns>
         public static bool IsVisibleLayerOnAndUnfrozen([NotNull] this Entity ent)
         {
-            if (!ent.Visible)
+            if (!ent.Visible || ent.LayerId.IsNull)
                 return false;
             using (var lt = (LayerTable)ent.Database.LayerTableId.GetObject(OpenMode.ForRead))
             using (var lay = (LayerTableRecord)lt[ent.Layer].GetObject(OpenMode.ForRead))

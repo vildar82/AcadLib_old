@@ -121,11 +121,16 @@
                 lay.Name = Name;
             if (Color != null)
                 lay.Color = Color;
-            lay.IsFrozen = IsFrozen;
-            lay.IsLocked = IsLocked;
-            lay.IsOff = IsOff;
-            lay.IsPlottable = IsPlotable;
-            lay.Description = Description;
+            if (lay.IsFrozen != IsFrozen)
+                lay.IsFrozen = IsFrozen;
+            if (lay.IsLocked != IsLocked)
+                lay.IsLocked = IsLocked;
+            if (lay.IsOff != IsOff)
+                lay.IsOff = IsOff;
+            if (lay.IsPlottable != IsPlotable)
+                lay.IsPlottable = IsPlotable;
+            if (lay.Description != Description)
+                lay.Description = Description;
             if (lineWeight.HasValue)
                 lay.LineWeight = LineWeight;
             if (!LinetypeObjectId.IsNull)

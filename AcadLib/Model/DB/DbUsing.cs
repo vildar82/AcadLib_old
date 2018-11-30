@@ -1,3 +1,5 @@
+using Autodesk.AutoCAD.ApplicationServices.Core;
+
 namespace AcadLib.DB
 {
     using System;

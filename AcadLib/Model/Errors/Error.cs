@@ -263,8 +263,6 @@ namespace AcadLib.Errors
                             IdEnt.FlickObjectHighlight(2, 60, 60);
                             Visuals.FlickObjectHighlight();
                             ed.SetImpliedSelection(new[] { IdEnt });
-
-                            // ed.AddEntToImpliedSelection(IdEnt);
                         }
                         else MessageBox.Show($"Должен быть активен чертеж {IdEnt.Database.Filename}");
                     }
@@ -295,8 +293,6 @@ namespace AcadLib.Errors
         [NotNull]
         public IError GetCopy()
         {
-            // var errCopy = new Error(this);
-            // return errCopy;
             return (IError)MemberwiseClone();
         }
 

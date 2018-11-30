@@ -1,4 +1,7 @@
-﻿namespace AcadLib.UI.Ribbon
+﻿using AcadLib.UI.PaletteCommands;
+using NetLib.WPF.Data;
+
+namespace AcadLib.UI.Ribbon
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +18,6 @@
     using Elements;
     using Files;
     using JetBrains.Annotations;
-    using MicroMvvm;
     using NetLib;
     using Options;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
@@ -128,6 +130,20 @@
                     Panel = c.Group
                 };
             }
+            if (c is ToggleButton toggleBtn)
+            {
+                return new ToggleElement
+                {
+                    Name = c.Name,
+                    Command = toggleBtn.Command,
+                    Image = c.Image,
+                    LargeImage = c.Image,
+                    Tab = paletteName,
+                    Panel = c.Group,
+                    Description = c.Description,
+                    IsChecked = toggleBtn.IsChecked,
+                };
+            }
 
             return ConvertPaletteCommand(c, paletteName);
         }
@@ -173,9 +189,34 @@
                 {
                     RibbonItem item;
                     if (element is SplitElement splitElem)
+                    {
                         item = CreateSplitButton(splitElem);
+                    }
+                    else if (element is ToggleElement toggle)
+                    {
+                        var toggleBtn = new RibbonToggleButton
+                        {
+                            CommandHandler = toggle.Command,
+                            Text = toggle.Name, // Текст рядом с кнопкой, если ShowText = true
+                            Name = toggle.Name, // Тест на всплявающем окошке (заголовов)
+                            Description = toggle.Description, // Описание на всплывающем окошке
+                            LargeImage = ResizeImage(toggle.LargeImage as BitmapSource, 32),
+                            Image = ResizeImage(toggle.Image as BitmapSource, 16),
+                            ToolTip = GetToolTip(toggle),
+                            IsToolTipEnabled = true,
+                            ShowImage = toggle.LargeImage != null || toggle.Image != null,
+                            ShowText = false,
+                            Size = RibbonItemSize.Large,
+                            IsThreeState = false,
+                            CheckState = toggle.IsChecked,
+                        };
+                        item = toggleBtn;
+                    }
                     else
+                    {
                         item = CreateButton(element);
+                    }
+
                     row.Items.Add(item);
                 }
 
@@ -261,6 +302,7 @@
             {
                 var button = CreateButton(elem);
                 splitB.Items.Add(button);
+                splitB.Items.Add(new RibbonToggleButton());
             }
 
             return splitB;

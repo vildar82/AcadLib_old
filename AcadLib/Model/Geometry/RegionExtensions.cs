@@ -1,4 +1,7 @@
-﻿namespace AcadLib.Geometry
+﻿using System.Linq;
+using Autodesk.AutoCAD.EditorInput;
+
+namespace AcadLib.Geometry
 {
     using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.Geometry;
@@ -20,6 +23,22 @@
             {
                 sol.Extrude(reg, 2.0, 0.0);
                 return sol.MassProperties.Centroid - reg.Normal;
+            }
+        }
+
+        /// <summary>
+        /// Создать штриховку из региона (области).
+        /// Используется коммандный метод - ed.Command!!! 
+        /// </summary>
+        /// <param name="reg">Регион</param>
+        /// <param name="ed">Редактор</param>
+        /// <returns></returns>
+        public static ObjectId ConvertToHatch(this Region reg, Editor ed)
+        {
+            using (var added = new AddedObjects(reg.Database))
+            {
+                ed.Command("_-HATCH", "_S", reg.Id, "", "");
+                return added.Added.FirstOrDefault(o => o.ObjectClass == General.ClassHatch);
             }
         }
     }

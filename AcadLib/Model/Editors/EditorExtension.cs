@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace Autodesk.AutoCAD.EditorInput
+﻿namespace Autodesk.AutoCAD.EditorInput
 {
     using AcadLib.Editors;
     using ApplicationServices.Core;

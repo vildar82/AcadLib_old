@@ -15,7 +15,10 @@
             var tree = new RTree<T>();
             foreach (var ent in ents)
             {
-                tree.Add(new Rectangle(ent.GeometricExtents), ent);
+                var ext = ent.GeometricExtents;
+                var rect = new Rectangle(ext.MinPoint.X, ext.MinPoint.Y,
+                    ext.MaxPoint.X, ext.MaxPoint.Y, ext.MinPoint.Z, ext.MaxPoint.Z); 
+                tree.Add(rect, ent);
             }
 
             return tree;
@@ -27,7 +30,10 @@
             var tree = new RTree<T>();
             foreach (var ent in ents)
             {
-                tree.Add(new Rectangle(getExt(ent)), ent);
+                var ext = getExt(ent);
+                var rect = new Rectangle(ext.MinPoint.X, ext.MinPoint.Y,
+                    ext.MaxPoint.X, ext.MaxPoint.Y, ext.MinPoint.Z, ext.MaxPoint.Z);
+                tree.Add(rect, ent);
             }
 
             return tree;

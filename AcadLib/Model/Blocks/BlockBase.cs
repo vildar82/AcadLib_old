@@ -417,11 +417,9 @@
 
         private Color GetColor([NotNull] BlockReference blRef)
         {
-            if (blRef.Color.IsByLayer)
+            if (blRef.Color.IsByLayer && !blRef.LayerId.IsNull)
             {
-#pragma warning disable 618
                 using (var lay = (LayerTableRecord)blRef.LayerId.Open(OpenMode.ForRead))
-#pragma warning restore 618
                 {
                     if (lay.IsFrozen || !blRef.Visible)
                     {

@@ -9,7 +9,7 @@
    xmlns:local="clr-namespace:AcadLib.Errors"
    xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
    xmlns:ui="clr-namespace:AcadLib.Errors.UI"
-   d:DataContext="{d:DesignInstance local:ErrorsViewModel, IsDesignTimeCreatable=True}"
+   d:DataContext="{d:DesignInstance local:ErrorsVM, IsDesignTimeCreatable=True}"
    mc:Ignorable="d"
    Title="Инфо"
    MinHeight="150" Topmost="True"

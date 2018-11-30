@@ -1,4 +1,4 @@
-﻿using System.Reactive;
+﻿using AcadLib.Visual;
 
 namespace AcadLib.Errors
 {
@@ -20,13 +20,15 @@ namespace AcadLib.Errors
     using UI;
     using Unit = System.Reactive.Unit;
 
-    public class ErrorsViewModel : BaseViewModel
+    public class ErrorsVM : BaseViewModel
     {
-        public ErrorsViewModel()
+        private readonly VisualTransientSimple errorsVisual;
+        
+        public ErrorsVM()
         {
         }
 
-        public ErrorsViewModel([NotNull] List<IError> errors)
+        public ErrorsVM([NotNull] List<IError> errors)
         {
             ErrorsOrig = errors;
 
@@ -61,6 +63,12 @@ namespace AcadLib.Errors
             ExportToTxt = CreateCommand(ExportToTxtExecute);
             DeleteSelectedDublicateBlocks = CreateCommand(OnDeleteSelectedDublicateBlocksExecute);
             DeleteError = CreateCommand<ErrorModelBase>(DeleteErrorExec);
+            
+            var visualsEnts = ErrorsOrig.SelectManyNulless(s => s.Visuals).ToList();
+            if (visualsEnts.Any())
+            {
+                errorsVisual = new VisualTransientSimple(visualsEnts) { VisualIsOn = true };
+            }
         }
 
         public ReactiveCommand<Unit, Unit> CollapseAll { get; set; }
@@ -88,6 +96,18 @@ namespace AcadLib.Errors
         public bool IsDialog { get; set; }
 
         public bool IsDublicateBlocksEnabled { get; set; }
+
+        public override void OnClosed()
+        {
+            errorsVisual?.Dispose();
+            if (ErrorsOrig?.Any() == true)
+            {
+                foreach (var entity in ErrorsOrig.SelectManyNulless(s=>s.Visuals))
+                {
+                    entity?.Dispose();
+                }
+            }
+        }
 
         /// <summary>
         /// Удаление выделенных ошибок

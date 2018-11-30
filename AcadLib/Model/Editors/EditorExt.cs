@@ -1,4 +1,9 @@
-﻿namespace AcadLib.Editors
+﻿using System.Diagnostics;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.Runtime;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+
+namespace AcadLib.Editors
 {
     using System;
     using System.Collections.Generic;
@@ -108,9 +113,13 @@
         {
             using (ed.Document.LockDocument())
             {
+                Debug.WriteLine($"SelectInExtents IsApplicationContext={Application.DocumentManager.IsApplicationContext}.");
                 ed.Try(e => e.Document.Database.TileMode = true);
                 ed.Try(e => e.Zoom(ext.Offset(10)));
-                var selRes = ed.SelectCrossingWindow(ext.MinPoint, ext.MaxPoint);
+                ext.TransformBy(ed.WCS2UCS());
+                var minPt = ext.MinPoint;
+                var maxPt = ext.MaxPoint;
+                var selRes = ed.SelectCrossingWindow(minPt, maxPt);
                 if (selRes.Status == PromptStatus.OK)
                 {
                     return selRes.Value.GetObjectIds().ToList();
@@ -127,6 +136,7 @@
         [NotNull]
         public static List<ObjectId> SelectInExtents2([NotNull] this Editor ed, Extents3d ext)
         {
+            Debug.WriteLine($"SelectInExtents2 IsApplicationContext={Application.DocumentManager.IsApplicationContext}.");
             List<TypedValue> filterList = new List<TypedValue>
             {
                 new TypedValue((int)DxfCode.Start, "*"),
@@ -150,8 +160,19 @@
         public static List<ObjectId> SelectByPolygon([NotNull] this Editor ed, [NotNull] IEnumerable<Point3d> pts)
         {
             using (ed.Document.LockDocument())
-            {
-                var selRes = ed.SelectCrossingPolygon(new Point3dCollection(pts.ToArray()));
+            {                                              
+                Debug.WriteLine($"SelectByPolygon IsApplicationContext={Application.DocumentManager.IsApplicationContext}.");
+                var ext = new Extents3d();
+                var ptsCol = new List<Point3d>();
+                var wcsToUcs = ed.WCS2UCS();
+                foreach (var pt in pts)
+                {
+                    ext.AddPoint(pt);
+                    var ptUCS = pt.TransformBy(wcsToUcs);
+                    ptsCol.Add(ptUCS);
+                }
+                ed.Zoom(ext);
+                var selRes = ed.SelectCrossingPolygon(new Point3dCollection(ptsCol.ToArray()));
                 if (selRes.Status == PromptStatus.OK)
                 {
                     return selRes.Value.GetObjectIds().ToList();

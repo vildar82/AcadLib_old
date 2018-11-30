@@ -246,6 +246,7 @@
       <DependentUpon>PlotOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Plot\UI\PlotOptionsVM.cs" />
+    <Compile Include="Model\Reactive\DbEvents.cs" />
     <Compile Include="Model\Reactive\DboEvents.cs" />
     <Compile Include="Model\Reactive\EventsMixin.cs" />
     <Compile Include="Model\RTree\SpatialIndex\RtreeExt.cs" />
@@ -286,7 +287,7 @@
     <Compile Include="Model\Errors\UI\ErrorsView.xaml.cs">
       <DependentUpon>ErrorsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\Errors\UI\ErrorsViewModel.cs" />
+    <Compile Include="Model\Errors\UI\ErrorsVM.cs" />
     <Compile Include="Model\Exceptions\ErrorException.cs" />
     <Compile Include="Model\Field\UpdateField.cs" />
     <Compile Include="Model\Geometry\DisposableCollection.cs" />
@@ -370,8 +371,10 @@
     <Compile Include="Model\Test\BatchRemoveLayouts.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteInsertBlock.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteVisualInsertBlocks.cs" />
+    <Compile Include="Model\UI\PaletteCommands\CheckButton.cs" />
     <Compile Include="Model\UI\PaletteCommands\CommandInfo.cs" />
     <Compile Include="Model\UI\PaletteCommands\SplitCommand.cs" />
+    <Compile Include="Model\UI\PaletteCommands\ToggleButton.cs" />
     <Compile Include="Model\UI\PaletteCommands\UI\CommandsControl.xaml.cs">
       <DependentUpon>CommandsControl.xaml</DependentUpon>
     </Compile>
@@ -410,6 +413,7 @@
     <Compile Include="Model\UI\Ribbon\Elements\IRibbonElement.cs" />
     <Compile Include="Model\UI\Ribbon\Elements\RibbonElement.cs" />
     <Compile Include="Model\UI\Ribbon\Elements\SplitElement.cs" />
+    <Compile Include="Model\UI\Ribbon\Elements\ToggleElement.cs" />
     <Compile Include="Model\UI\Ribbon\Options\ItemOptions.cs" />
     <Compile Include="Model\UI\Ribbon\RibbonBuilder.cs" />
     <Compile Include="Model\UI\Ribbon\Options\RibbonOptions.cs" />
@@ -786,7 +790,7 @@
       <Version>1.3.0.26418</Version>
     </PackageReference>
     <PackageReference Include="CsvHelper">
-      <Version>9.1.0</Version>
+      <Version>9.2.3</Version>
     </PackageReference>
     <PackageReference Include="EntityFramework">
       <Version>6.2.0</Version>
@@ -804,7 +808,7 @@
       <Version>5.5.13</Version>
     </PackageReference>
     <PackageReference Include="NetLib">
-      <Version>1.1.66</Version>
+      <Version>1.1.69</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation">
       <Version>4.3.0</Version>
@@ -812,9 +816,9 @@
     <PackageReference Include="UnitsNet">
       <Version>3.109.0</Version>
     </PackageReference>
-    <PackageReference Update="Fody" Version="3.3.0" />
+    <PackageReference Update="Fody" Version="3.3.2" />
     <PackageReference Update="Nerdbank.GitVersioning" Version="2.2.33" />
-    <PackageReference Update="PropertyChanged.Fody" Version="2.5.14" />
+    <PackageReference Update="PropertyChanged.Fody" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

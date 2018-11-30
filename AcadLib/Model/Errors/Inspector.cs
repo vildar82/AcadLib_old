@@ -234,7 +234,7 @@
         {
             try
             {
-                var errVM = new ErrorsViewModel(errors) {IsDialog = false};
+                var errVM = new ErrorsVM(errors) {IsDialog = false};
                 var errView = new ErrorsView(errVM);
                 errView.Show();
                 Clear();
@@ -270,7 +270,7 @@
 
         public static bool? ShowDialog([NotNull] List<IError> errors)
         {
-            var errVM = new ErrorsViewModel(errors) { IsDialog = true };
+            var errVM = new ErrorsVM(errors) { IsDialog = true };
             var errView = new ErrorsView(errVM);
             var res = errView.ShowDialog();
             if (res == true)
@@ -284,7 +284,7 @@
         {
             if (LastErrors?.Any() != true)
                 return;
-            var errVM = new ErrorsViewModel(LastErrors) { IsDialog = false };
+            var errVM = new ErrorsVM(LastErrors) { IsDialog = false };
             var errView = new ErrorsView(errVM);
             errView.Show();
         }

@@ -54,6 +54,12 @@
         /// <param name="eventName">Имя события</param>
         public void Finish(EventType eventType, string docPath, string serialNumber)
         {
+            if (StartEvent == DateTime.MinValue)
+            {
+                Logger.Log.Info($"Event Finish StartEvent = 0!");
+                StartEvent = DateTime.Now;
+            }
+
             var eventEnd = DateTime.Now;
             Task.Run(
                 () =>
@@ -68,9 +74,7 @@
                         var compName = Environment.MachineName;
                         var fi = new FileInfo(docPath);
                         var fileSize = fi.Length / 1024000;
-
                         var eventTimeSec = (int)(eventEnd - StartEvent).TotalSeconds;
-
                         _client.Log.AddEvent(
                             new StatEvent(
                                 App,

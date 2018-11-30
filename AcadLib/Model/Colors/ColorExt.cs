@@ -48,7 +48,7 @@
         [NotNull]
         public static string AcadColorToString2([CanBeNull] this Color color)
         {
-            if (color == null)
+            if (color == null || color.IsNone)
                 return string.Empty;
             if (color.IsByLayer)
                 return "256";
