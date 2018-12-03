@@ -11,28 +11,39 @@
     [PublicAPI]
     public class AddedObjects : IDisposable
     {
-        private readonly Database db;
+        public Database Db { get; }
 
         public AddedObjects([NotNull] Database db)
         {
-            this.db = db;
+            Db = db;
             db.ObjectAppended += Db_ObjectAppended;
+            db.ObjectModified += Db_ObjectModified;
         }
 
         public event ObjectEventHandler ObjectAppended;
+        public event ObjectEventHandler ObjectModified;
 
         [NotNull]
         public List<ObjectId> Added { get; } = new List<ObjectId>();
-
-        public void Dispose()
-        {
-            db.ObjectAppended -= Db_ObjectAppended;
-        }
-
+        [NotNull]
+        public List<ObjectId> Modified { get; } = new List<ObjectId>();
+        
         private void Db_ObjectAppended(object sender, [NotNull] ObjectEventArgs e)
         {
             Added.Add(e.DBObject.Id);
             ObjectAppended?.Invoke(sender, e);
+        }
+        
+        private void Db_ObjectModified(object sender, ObjectEventArgs e)
+        {
+            Modified.Add(e.DBObject.Id);
+            ObjectModified?.Invoke(sender, e);
+        }
+
+        public void Dispose()
+        {
+            Db.ObjectAppended -= Db_ObjectAppended;
+            Db.ObjectModified -= Db_ObjectAppended;
         }
     }
 }

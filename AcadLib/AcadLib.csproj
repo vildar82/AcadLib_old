@@ -246,6 +246,7 @@
       <DependentUpon>PlotOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Plot\UI\PlotOptionsVM.cs" />
+    <Compile Include="Model\Reactive\DocumentsEvents.cs" />
     <Compile Include="Model\Reactive\DbEvents.cs" />
     <Compile Include="Model\Reactive\DboEvents.cs" />
     <Compile Include="Model\Reactive\EventsMixin.cs" />

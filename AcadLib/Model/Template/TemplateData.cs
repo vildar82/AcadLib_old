@@ -16,10 +16,17 @@
         [CanBeNull]
         public LayerInfo GetLayer([NotNull] string layer)
         {
+            return GetLayer(layer, false);
+        }
+
+        [CanBeNull]
+        public LayerInfo GetLayer([NotNull] string layer, bool logErr)
+        {
             if (!Layers.TryGetValue(layer, out var li))
             {
                 // Нет слоя в шалоне - лог и создать слой
-                Logger.Log.Error($"Нет слоя '{layer}' в шаблоне '{Name}'");
+                if (logErr)
+                    Logger.Log.Error($"Нет слоя '{layer}' в шаблоне '{Name}'");
                 li = new LayerInfo(layer);
                 Layers.Add(layer, li);
             }

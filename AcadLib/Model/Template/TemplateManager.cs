@@ -29,9 +29,16 @@
         [NotNull]
         public static TemplateData LoadFromJson(string file)
         {
+            return LoadFromJson(file, false);
+        }
+
+        [NotNull]
+        public static TemplateData LoadFromJson(string file, bool logErr)
+        {
             if (!File.Exists(file))
             {
-                Logger.Log.Warn($"Не найден файл шаблона json - {file}");
+                if (logErr)
+                    Logger.Log.Warn($"Не найден файл шаблона json - {file}");
                 return new TemplateData();
             }
 

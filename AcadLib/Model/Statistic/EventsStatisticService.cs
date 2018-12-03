@@ -46,7 +46,8 @@ namespace AcadLib.Statistic
         {
             try
             {
-                CheckExcludeUser();
+                if (IsExcludeUser())
+                    return;
                 Application.DocumentManager.DocumentLockModeChanged += DocumentManager_DocumentLockModeChanged;
                 Task.Run(() => { eventer = new Eventer(GetApp(), HostApplicationServices.Current.releaseMarketVersion); });
                 Application.DocumentManager.DocumentCreateStarted += DocumentManager_DocumentCreateStarted;
@@ -71,22 +72,36 @@ namespace AcadLib.Statistic
             return _exceptedUsers.Any(u => u.EqualsIgnoreCase(Environment.UserName));
         }
 
-        private static void CheckExcludeUser()
+        private static bool IsExcludeUser()
         {
             if (IsExceptedUser())
-                throw new Exception("Пользователь исключен из нейминга.");
+            {
+                Logger.Log.Info("Пользователь исключен из нейминга.");
+                return true;
+            }
 
             // Департамент продукта
             var isProductUser = UserInfo.IsProductUser;
             if (isProductUser)
-                throw new Exception("Пользователь из Деп.Продукта - Статистика и нейминг пропущен.");
+            {
+                Logger.Log.Info("Пользователь из Деп.Продукта - Статистика и нейминг пропущен.");
+                return true;
+            }
 
             // Индустрия
             if (Environment.UserDomainName.EqualsIgnoreCase("DSK2"))
-                throw new Exception("Пользователь из Индустрии - Статистика и нейминг пропущен.");
+            {
+                Logger.Log.Info("Пользователь из Индустрии - Статистика и нейминг пропущен.");
+                return true;
+            }
 
             if (Environment.UserName.EqualsIgnoreCase("egorov_ps"))
-                throw new Exception("Пользователь из исключений - Фаталит автокад при сохранении.");
+            {
+                Logger.Log.Info("Пользователь из исключений - Фаталит автокад при сохранении.");
+                return true;
+            }
+
+            return false;
         }
 
         [NotNull]

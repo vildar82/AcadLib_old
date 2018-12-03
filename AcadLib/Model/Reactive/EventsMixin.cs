@@ -1,4 +1,6 @@
+using Autodesk.AutoCAD.ApplicationServices;
 using JetBrains.Annotations;
+using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
 namespace AcadLib.Reactive
 {
@@ -16,6 +18,12 @@ namespace AcadLib.Reactive
         public static DbEvents Events([NotNull] this Database db)
         {
             return new DbEvents(db);
+        }
+        
+        [NotNull]
+        public static DocumentsEvents Events([NotNull] this DocumentCollection docMan)
+        {
+            return new DocumentsEvents(docMan);
         }
     }
 }
