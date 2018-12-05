@@ -6,9 +6,9 @@
     public partial class StringView
     {
         public StringView(StringVM vm)
-            : base(vm)
         {
             InitializeComponent();
+            DataContext = vm;
         }
     }
 }

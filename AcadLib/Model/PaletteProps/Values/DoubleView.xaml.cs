@@ -10,9 +10,9 @@
     public partial class DoubleView
     {
         public DoubleView(DoubleVM vm)
-            : base(vm, false)
         {
             InitializeComponent();
+            DataContext = vm;
         }
     }
 }

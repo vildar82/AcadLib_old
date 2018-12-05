@@ -1,4 +1,6 @@
-﻿namespace AcadLib.PaletteProps
+﻿using AcadLib.Properties;
+
+namespace AcadLib.PaletteProps
 {
     using System;
     using System.Collections.Generic;
@@ -46,9 +48,9 @@
                     DocumentSelectionChangeSubscribe(doc as Document);
                 }
 
-                palette = new PaletteSet("ПИК Свойства", 
+                palette = new PaletteSet("ПИК Свойства",
                     nameof(Commands.PIK_PaletteProperties),
-                    new Guid("F1FFECA8-A9AE-47D6-8682-752D6AF1A15B"));
+                    new Guid("F1FFECA8-A9AE-47D6-8682-752D6AF1A15B")) { Icon = Resources.pik };
                 palette.StateChanged += Palette_StateChanged;
                 var propsView = new PalettePropsView(propsVM);
                 var host = new ElementHost { Child = propsView };
@@ -138,19 +140,8 @@
             }
             else
             {
-                if (groups.Count > 1)
-                {
-                    // Добавить тип "Все"
-                    var allType = new PalettePropsType
-                    {
-                        Name = "Все",
-                        Groups = groups.Where(w => w.Groups?.Any() == true).SelectMany(s => s.Groups).ToList()
-                    };
-                    groups.Insert(0, allType);
-                }
-
-                propsVM.Types = groups;
-                propsVM.SelectedType = groups[0];
+                propsVM.Types = groups.OrderByDescending(o => o.EntIds?.Count ?? 0).ToList();
+                propsVM.SelectedType = propsVM.Types[0];
             }
 
             Inspector.Show();

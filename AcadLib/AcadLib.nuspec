@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>AcadLib</id>
-    <version>1.1.57</version>
+    <version>1.1.63</version>
     <authors>Vildar</authors>
     <projectUrl>https://github.com/vildar82/AcadLib</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -13,34 +13,34 @@
     <dependencies>
       <dependency id="NetLib" version="1.1.*" />
       <dependency id="AutoMapper" version="8.0.0" />
-      <dependency id="CsvHelper" version="9.2.3" />      
-    <dependency id="UnitsNet" version="3.109.0" />      
+      <dependency id="CsvHelper" version="9.2.3" />
+    <dependency id="UnitsNet" version="3.109.0" />
     </dependencies>
   </metadata>
   <files>
   <file src="lib\AutoCAD_PIK_Settings.dll" target="lib\net462" />
   <file src="lib\AutoCAD_PIK_Settings.xml" target="lib\net462" />
-  
+
   <file src="lib\AcCoreMgd.dll" target="lib\net462" />
   <file src="lib\AcCoreMgd.xml" target="lib\net462" />
-  
+
   <file src="lib\AcDbMgd.dll" target="lib\net462" />
   <file src="lib\AcDbMgd.xml" target="lib\net462" />
-  
+
   <file src="lib\AcDbMgdBrep.dll" target="lib\net462" />
   <file src="lib\AcDbMgdBrep.xml" target="lib\net462" />
-  
+
   <file src="lib\AcMgd.dll" target="lib\net462" />
   <file src="lib\AcMgd.xml" target="lib\net462" />
-  
-  <file src="lib\AcWindows.dll" target="lib\net462" />  
-  <file src="lib\AcWindows.xml" target="lib\net462" />  
-  
+
+  <file src="lib\AcWindows.dll" target="lib\net462" />
+  <file src="lib\AcWindows.xml" target="lib\net462" />
+
     <file src="lib\AcMPolygonMGD.dll" target="lib\net462" />
   <file src="lib\AecBaseMgd.dll" target="lib\net462" />
   <file src="lib\AeccDbMgd.dll" target="lib\net462" />
-  <file src="lib\AdUiPalettes.dll" target="lib\net462" />  
+  <file src="lib\AdUiPalettes.dll" target="lib\net462" />
   <file src="lib\MongoDblib.dll" target="lib\net462" />
-  <file src="lib\UIAutomationClient.dll" target="lib\net462" />	  
+  <file src="lib\UIAutomationClient.dll" target="lib\net462" />
   </files>
 </package>

@@ -10,9 +10,9 @@
     public partial class IntView
     {
         public IntView(IntVM vm)
-            : base(vm, false)
         {
             InitializeComponent();
+            DataContext = vm;
         }
     }
 }

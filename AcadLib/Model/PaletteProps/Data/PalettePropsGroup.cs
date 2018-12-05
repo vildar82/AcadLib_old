@@ -1,10 +1,10 @@
-﻿using System.Reactive;
-
-namespace AcadLib.PaletteProps
+﻿namespace AcadLib.PaletteProps
 {
     using System;
     using System.Collections.Generic;
+    using System.Reactive;
     using System.Windows.Media;
+    using Autodesk.AutoCAD.DatabaseServices;
     using NetLib.WPF;
     using ReactiveUI;
 
@@ -41,10 +41,8 @@ namespace AcadLib.PaletteProps
 
         public string ButtonExpandTooltip { get; set; }
 
-        public ReactiveCommand<Unit, Unit> ButtonExpandCommand { get; set; }
+        public ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> ButtonExpandCommand { get; set; }
 
         public List<PalettePropVM> Properties { get; set; }
-
-        public Brush Background { get; set; }
     }
 }

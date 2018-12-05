@@ -10,7 +10,7 @@
     public class ColorVM : BaseValueVM<Color>
     {
         public static ColorView Create(IEnumerable<Color> values,
-            Action<Color> update,
+            Action<Color> update = null,
             Action<ColorVM> config = null,
             bool isReadOnly = false)
         {
@@ -19,7 +19,7 @@
 
         public static ColorView Create(
             Color value,
-            Action<Color> update,
+            Action<Color> update = null,
             Action<ColorVM> config = null,
             bool isReadOnly = false)
         {

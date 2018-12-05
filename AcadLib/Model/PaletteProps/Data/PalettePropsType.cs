@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
 
     public class PalettePropsType
     {
@@ -10,7 +11,10 @@
         /// </summary>
         public string Name { get; set; }
 
-        public int Count => Groups?.Sum(s => s.Count) ?? 0;
+        /// <summary>
+        /// Примитивы чертежа
+        /// </summary>
+        public List<ObjectId> EntIds { get; set; }
 
         public List<PalettePropsGroup> Groups { get; set; }
     }

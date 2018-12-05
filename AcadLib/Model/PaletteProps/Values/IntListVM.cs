@@ -10,7 +10,7 @@
         public IEnumerable<int> Values { get; set; }
 
         public static IntListView Create(IEnumerable<int?> values,
-            Action<int?> update,
+            Action<int?> update = null,
             Action<IntListVM> config = null,
             bool isReadOnly = false)
         {
@@ -19,7 +19,7 @@
 
         public static IntListView Create(
             int? value,
-            Action<int?> update,
+            Action<int?> update = null,
             Action<IntListVM> config = null,
             bool isReadOnly = false)
         {

@@ -6,9 +6,9 @@
     public partial class IntListView
     {
         public IntListView(IntListVM vm)
-            : base(vm, false)
         {
             InitializeComponent();
+            DataContext = vm;
         }
     }
 }

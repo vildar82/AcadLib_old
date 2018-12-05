@@ -6,7 +6,7 @@
     public class BoolVM : BaseValueVM<bool?>
     {
         public static BoolView Create(IEnumerable<bool?> values,
-            Action<bool?> update,
+            Action<bool?> update = null,
             Action<BoolVM> config = null,
             bool isReadOnly = false)
         {
@@ -15,7 +15,7 @@
 
         public static BoolView Create(
             bool? value,
-            Action<bool?> update,
+            Action<bool?> update = null,
             Action<BoolVM> config = null,
             bool isReadOnly = false)
         {

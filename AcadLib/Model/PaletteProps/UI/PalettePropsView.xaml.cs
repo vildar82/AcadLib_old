@@ -9,9 +9,10 @@
     /// </summary>
     public partial class PalettePropsView
     {
-        public PalettePropsView(PalettePropsVM propsVm) : base(propsVm)
+        public PalettePropsView(PalettePropsVM propsVm)
         {
             InitializeComponent();
+            DataContext = propsVm;
         }
 
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)

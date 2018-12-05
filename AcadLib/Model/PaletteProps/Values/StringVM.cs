@@ -6,7 +6,7 @@
     public class StringVM : BaseValueVM<string>
     {
         public static StringView Create(IEnumerable<string> values,
-            Action<string> update,
+            Action<string> update = null,
             Action<StringVM> config = null,
             bool isReadOnly = false)
         {
@@ -15,7 +15,7 @@
 
         public static StringView Create(
             string value,
-            Action<string> update,
+            Action<string> update = null,
             Action<StringVM> config = null,
             bool isReadOnly = false)
         {

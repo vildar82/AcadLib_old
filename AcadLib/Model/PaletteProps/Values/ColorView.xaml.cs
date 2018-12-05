@@ -6,9 +6,9 @@
     public partial class ColorView
     {
         public ColorView(ColorVM vm)
-            : base(vm)
         {
             InitializeComponent();
+            DataContext = vm;
         }
     }
 }

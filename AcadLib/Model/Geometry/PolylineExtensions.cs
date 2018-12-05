@@ -37,8 +37,6 @@
             SelfIntersection = 4,
         }
 
-        
-
         public static Point3d GetClosestVertex([NotNull] this Polyline pl, Point3d pt)
         {
             var closest = pl.GetClosestPointTo(pt, Vector3d.ZAxis, false);

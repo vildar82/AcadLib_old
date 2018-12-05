@@ -5,10 +5,10 @@
     /// </summary>
     public partial class BoolView
     {
-        public BoolView(BoolVM vm) 
-            :base(vm)
+        public BoolView(BoolVM vm)
         {
             InitializeComponent();
+            DataContext = vm;
         }
     }
 }

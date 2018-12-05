@@ -9,7 +9,7 @@
         public double? Max { get; set; }
 
         public static DoubleView Create(IEnumerable<double?> values,
-            Action<double?> update,
+            Action<double?> update = null,
             Action<DoubleVM> config = null,
             bool isReadOnly = false)
         {
@@ -18,7 +18,7 @@
 
         public static DoubleView Create(
             double? value,
-            Action<double?> update,
+            Action<double?> update = null,
             Action<DoubleVM> config = null,
             bool isReadOnly = false)
         {

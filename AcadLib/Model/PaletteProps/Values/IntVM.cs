@@ -9,7 +9,7 @@
         public int? Max { get; set; }
 
         public static IntView Create(IEnumerable<int?> values,
-            Action<int?> update,
+            Action<int?> update = null,
             Action<IntVM> config = null,
             bool isReadOnly = false)
         {
@@ -18,7 +18,7 @@
 
         public static IntView Create(
             int? value,
-            Action<int?> update,
+            Action<int?> update = null,
             Action<IntVM> config = null,
             bool isReadOnly = false)
         {
