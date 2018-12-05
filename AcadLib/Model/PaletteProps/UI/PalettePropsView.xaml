@@ -102,7 +102,7 @@
                                                     <StackPanel>
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock Text="{Binding Name}"/>
-                                                            <TextBlock Text=" - "/>
+                                                            <TextBlock Text=" = "/>
                                                             <TextBlock Text="{Binding ValueControl.DataContext.Value}"/>
                                                         </StackPanel>
                                                         <TextBlock Text="{Binding Tooltip}" Visibility="{Binding Tooltip, Converter={conv:NullCollapseVisibilityConverter}}"/>

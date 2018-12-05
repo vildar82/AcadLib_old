@@ -6,10 +6,9 @@
 		<ResourceDictionary Source="ComboBoxPaletteTemplate.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 	<SolidColorBrush x:Key="TextBrush" Color="{Binding CurrentTheme.ControlTextColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
-	<SolidColorBrush x:Key="TextReadBrush" Color="{Binding CurrentTheme.text, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
 	<SolidColorBrush x:Key="BackBrush" Color="{Binding CurrentTheme.PaletteTabActiveBottomColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
-	<SolidColorBrush x:Key="BackMoreBrush" Color="{Binding CurrentTheme.PaletteTabBorderColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
-	<SolidColorBrush x:Key="AccentBrush" Color="{Binding CurrentTheme.GroupGripColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
+	<SolidColorBrush x:Key="BackMoreBrush" Color="{Binding CurrentTheme.PropertyInspectorCategoryBackgroundColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
+	<SolidColorBrush x:Key="AccentBrush" Color="{Binding CurrentTheme.PropertyInspectorCategoryBackgroundColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
 	<Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
@@ -61,5 +60,6 @@
 	</Style>
 	<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
 		<Setter Property="Background" Value="Transparent"/>
+		<Setter Property="BorderBrush" Value="Transparent"/>
 	</Style>
 </ResourceDictionary>

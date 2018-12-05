@@ -15,18 +15,18 @@
         </ControlTemplate>
     </UserControl.Resources>
     <ComboBox x:Name="CbValue" ItemsSource="{Binding Values}" Text="{Binding Value, Delay=500}"
-              IsEditable="{Binding AllowCustomValue}" IsReadOnly="{Binding IsReadOnly}"
-              Background="Transparent">
+              IsEditable="{Binding AllowCustomValue}" IsReadOnly="{Binding IsReadOnly}">
         <ComboBox.ItemTemplate>
             <DataTemplate DataType="paletteProps:IntListVM">
-                <xctk:IntegerUpDown Value="{Binding ., Delay=500}" Minimum="{Binding DataContext.Min, ElementName=CbValue}" 
-                               Maximum="{Binding DataContext.Max, ElementName=CbValue}" 
+                <xctk:IntegerUpDown Value="{Binding ., Delay=500}" Minimum="{Binding DataContext.Min, ElementName=CbValue}"
+                               Maximum="{Binding DataContext.Max, ElementName=CbValue}"
+                               TextAlignment="Left"
                                IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=CbValue}"
                                paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="xctk:IntegerUpDown.Value"/>
             </DataTemplate>
         </ComboBox.ItemTemplate>
         <ComboBox.ItemContainerStyle>
-            <Style TargetType="{x:Type ComboBoxItem}">
+            <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
                 <Setter Property="Template" Value="{StaticResource DetailedTemplate}"/>
             </Style>
         </ComboBox.ItemContainerStyle>

@@ -17,7 +17,7 @@
         <GradientStop Color="{Binding CurrentTheme.ComboBoxBackgroundBottomColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"
                       Offset="1.0"/>
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="ComboBox.Static.Border" Color="{Binding CurrentTheme.TabBorderBrush,
+    <SolidColorBrush x:Key="ComboBox.Static.Border" Color="{Binding CurrentTheme.PropertyInspectorCategoryBackgroundColor,
     Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
     <SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="#FFFFFFFF"/>
     <SolidColorBrush x:Key="ComboBox.Static.Editable.Border" Color="#FFABADB3"/>
@@ -56,7 +56,7 @@
     <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Border" Color="#FFBFBFBF"/>
     <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Background" Color="Transparent"/>
     <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Border" Color="Transparent"/>
-    <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="{Binding CurrentTheme.PaletteTabBorderColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
+    <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="{Binding CurrentTheme.ControlTextColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}"/>
     <Style x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="IsTabStop" Value="false"/>

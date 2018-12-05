@@ -1,11 +1,10 @@
-﻿using AcadLib.Properties;
-
-namespace AcadLib.PaletteProps
+﻿namespace AcadLib.PaletteProps
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Forms.Integration;
+    using AcadLib.Properties;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.EditorInput;
@@ -20,6 +19,7 @@ namespace AcadLib.PaletteProps
     /// </summary>
     public static class PalletePropsService
     {
+        public const string Various = "*Различные*";
         public static readonly PalettePropsVM propsVM = new PalettePropsVM();
         private static readonly List<PalettePropsProvider> providers = new List<PalettePropsProvider>();
         private static PaletteSet palette;
