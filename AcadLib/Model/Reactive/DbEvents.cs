@@ -17,5 +17,9 @@ namespace AcadLib.Reactive
         public IObservable<EventPattern<DatabaseIOEventArgs>> SaveComplete =>
             Observable.FromEventPattern<DatabaseIOEventHandler, DatabaseIOEventArgs>
                 (x => db.SaveComplete += x, x => db.SaveComplete -= x);
+
+        public IObservable<EventPattern<ObjectEventArgs>> ObjectModified =>
+            Observable.FromEventPattern<ObjectEventHandler, ObjectEventArgs>
+                (x => db.ObjectModified += x, x => db.ObjectModified -= x);
     }
 }

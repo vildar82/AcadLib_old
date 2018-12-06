@@ -408,7 +408,7 @@
                         Inspector.AddError(
                             $"Не удалосось установить динамический параметр {prop.Name} " +
                                            $"со значением {prop.Value} в блок {BlName}",
-                            IdBlRef, 
+                            IdBlRef,
                             System.Drawing.SystemIcons.Error);
                     }
                 }

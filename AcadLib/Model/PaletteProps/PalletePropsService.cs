@@ -3,14 +3,16 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reactive.Linq;
     using System.Windows.Forms.Integration;
-    using AcadLib.Properties;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.EditorInput;
     using Autodesk.AutoCAD.Windows;
     using Errors;
     using JetBrains.Annotations;
+    using Properties;
+    using Reactive;
     using UI;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
@@ -20,10 +22,13 @@
     public static class PalletePropsService
     {
         public static string Various { get; } = "*Различные*";
+        [NotNull]
         public static readonly PalettePropsVM propsVM = new PalettePropsVM();
+        [NotNull]
         private static readonly List<PalettePropsProvider> providers = new List<PalettePropsProvider>();
         private static PaletteSet palette;
         private static bool stop;
+        private static IDisposable entModifiedObs;
 
         /// <summary>
         /// Добавление провайдера
@@ -44,9 +49,7 @@
             {
                 Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
                 foreach (var doc in Application.DocumentManager)
-                {
                     DocumentSelectionChangeSubscribe(doc as Document);
-                }
 
                 palette = new PaletteSet("ПИК Свойства",
                     nameof(Commands.PIK_PaletteProperties),
@@ -87,8 +90,6 @@
 
         private static void Document_ImpliedSelectionChanged(object sender, EventArgs e)
         {
-            if (stop || !providers.Any())
-                return;
             try
             {
                 ShowSelection();
@@ -101,12 +102,18 @@
 
         private static void ShowSelection()
         {
+            if (stop || !providers.Any())
+            {
+                Clear();
+                return;
+            }
+
             var doc = AcadHelper.Doc;
             var sel = doc.Editor.SelectImplied();
-            if ((providers.Any() && sel.Status != PromptStatus.OK) || sel.Value.Count == 0)
+            if (sel.Status != PromptStatus.OK || sel.Value.Count == 0)
             {
                 // Очистить палитру свойств
-                propsVM.Clear();
+                Clear();
                 return;
             }
 
@@ -144,7 +151,29 @@
                 propsVM.SelectedType = propsVM.Types[0];
             }
 
+            SubscibeEntityModified(ids);
+
             Inspector.Show();
+        }
+
+        private static void Clear()
+        {
+            entModifiedObs?.Dispose();
+            propsVM.Clear();
+        }
+
+        private static void SubscibeEntityModified(ObjectId[] ids)
+        {
+            entModifiedObs = HostApplicationServices.WorkingDatabase.Events().ObjectModified
+                .ObserveOnDispatcher()
+                .Throttle(TimeSpan.FromSeconds(2))
+                .Subscribe(s => { Application.Idle += ModifiedIdle; });
+        }
+
+        private static void ModifiedIdle(object sender, EventArgs e)
+        {
+            Application.Idle -= ModifiedIdle;
+            ShowSelection();
         }
     }
 }
