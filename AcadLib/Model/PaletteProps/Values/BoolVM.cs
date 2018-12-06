@@ -17,9 +17,10 @@
             bool? value,
             Action<bool?> update = null,
             Action<BoolVM> config = null,
-            bool isReadOnly = false)
+            bool isReadOnly = false,
+            bool isVarious = false)
         {
-            return Create<BoolView, BoolVM, bool?>(value, update, config, isReadOnly);
+            return Create<BoolView, BoolVM, bool?>(value, update, config, isReadOnly, isVarious);
         }
     }
 }

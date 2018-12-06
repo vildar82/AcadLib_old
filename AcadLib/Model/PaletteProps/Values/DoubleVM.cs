@@ -20,9 +20,10 @@
             double? value,
             Action<double?> update = null,
             Action<DoubleVM> config = null,
-            bool isReadOnly = false)
+            bool isReadOnly = false,
+            bool isVarious = false)
         {
-            return Create<DoubleView, DoubleVM, double?>(value, update, config, isReadOnly);
+            return Create<DoubleView, DoubleVM, double?>(value, update, config, isReadOnly, isVarious);
         }
     }
 }

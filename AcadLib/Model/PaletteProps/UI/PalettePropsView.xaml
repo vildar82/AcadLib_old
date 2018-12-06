@@ -54,7 +54,7 @@
 								<RowDefinition Height="Auto" />
 								<RowDefinition />
 							</Grid.RowDefinitions>
-                            <Grid Name="groupGrid" Grid.Row="0" Background="{DynamicResource AccentBrush}">
+                            <Grid Name="groupGrid" Grid.Row="0" Background="{DynamicResource BackMoreBrush}">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition />

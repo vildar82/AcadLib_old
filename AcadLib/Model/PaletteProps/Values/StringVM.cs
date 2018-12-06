@@ -17,9 +17,10 @@
             string value,
             Action<string> update = null,
             Action<StringVM> config = null,
-            bool isReadOnly = false)
+            bool isReadOnly = false,
+            bool isVarious = false)
         {
-            return Create<StringView, StringVM, string>(value, update, config, isReadOnly);
+            return Create<StringView, StringVM, string>(value, update, config, isReadOnly, isVarious);
         }
     }
 }

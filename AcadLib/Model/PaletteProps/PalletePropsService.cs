@@ -19,7 +19,7 @@
     /// </summary>
     public static class PalletePropsService
     {
-        public const string Various = "*Различные*";
+        public static string Various { get; } = "*Различные*";
         public static readonly PalettePropsVM propsVM = new PalettePropsVM();
         private static readonly List<PalettePropsProvider> providers = new List<PalettePropsProvider>();
         private static PaletteSet palette;

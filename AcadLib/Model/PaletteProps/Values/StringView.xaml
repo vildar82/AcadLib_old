@@ -6,10 +6,15 @@
              xmlns:local="clr-namespace:AcadLib.PaletteProps"
              xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
              xmlns:paletteProps="clr-namespace:AcadLib.PaletteProps"
+             xmlns:converters="clr-namespace:NetLib.WPF.Converters;assembly=NetLib"
              d:DataContext="{d:DesignInstance paletteProps:StringVM}"
-             mc:Ignorable="d" >
-    <TextBox Text="{Binding Value}" IsReadOnly="{Binding IsReadOnly}" Background="Transparent"
-             BorderThickness="0"
-             local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"/>
+             mc:Ignorable="d">
+    <Grid>
+        <TextBox Text="{Binding Value}" IsReadOnly="{Binding IsReadOnly}"
+                 BorderThickness="0"
+                 local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text" />
+        <TextBlock Text="{x:Static local:PalletePropsService.Various}" IsHitTestVisible="False"
+                   Visibility="{Binding IsVarious, Converter={converters:BooleanToCollapseVisibilityConverter}}"
+                   Foreground="{DynamicResource TextReadBrush}"/>
+    </Grid>
 </UserControl>
-

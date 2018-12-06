@@ -20,9 +20,10 @@
             int? value,
             Action<int?> update = null,
             Action<IntVM> config = null,
-            bool isReadOnly = false)
+            bool isReadOnly = false,
+            bool isVarious = false)
         {
-            return Create<IntView, IntVM, int?>(value, update, config, isReadOnly);
+            return Create<IntView, IntVM, int?>(value, update, config, isReadOnly, isVarious);
         }
     }
 }

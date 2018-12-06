@@ -21,9 +21,10 @@
             Color value,
             Action<Color> update = null,
             Action<ColorVM> config = null,
-            bool isReadOnly = false)
+            bool isReadOnly = false,
+            bool isVarious = false)
         {
-            return Create<ColorView, ColorVM, Color>(value, update, config, isReadOnly);
+            return Create<ColorView, ColorVM, Color>(value, update, config, isReadOnly, isVarious);
         }
     }
 }

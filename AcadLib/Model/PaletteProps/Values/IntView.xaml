@@ -4,14 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AcadLib.PaletteProps"
-		xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-		xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
-		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-		d:DataContext="{d:DesignInstance local:IntVM}"
-             mc:Ignorable="d" >
-	<xctk:IntegerUpDown Value="{Binding Value, UpdateSourceTrigger=LostFocus}" Minimum="{Binding Min}" Maximum="{Binding Max}"
-                       IsReadOnly="{Binding IsReadOnly}"
-                       TextAlignment="Left"
-                       local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="xctk:IntegerUpDown.Value"/>
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:wpf="clr-namespace:NetLib.WPF;assembly=NetLib"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:converters="clr-namespace:NetLib.WPF.Converters;assembly=NetLib"
+             d:DataContext="{d:DesignInstance local:IntVM}"
+             mc:Ignorable="d">
+    <Grid>
+        <xctk:IntegerUpDown Value="{Binding Value, UpdateSourceTrigger=LostFocus}" Minimum="{Binding Min}"
+                            Maximum="{Binding Max}"
+                            IsReadOnly="{Binding IsReadOnly}"
+                            TextAlignment="Left"
+                            local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="xctk:IntegerUpDown.Value" />
+        <TextBlock Text="{x:Static local:PalletePropsService.Various}" IsHitTestVisible="False"
+                   Visibility="{Binding IsVarious, Converter={converters:BooleanToCollapseVisibilityConverter}}"
+                   Foreground="{DynamicResource TextReadBrush}" />
+    </Grid>
 </UserControl>
-
