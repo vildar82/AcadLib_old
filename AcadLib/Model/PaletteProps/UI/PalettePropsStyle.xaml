@@ -29,6 +29,9 @@
             <Trigger Property="IsReadOnly" Value="True">
                 <Setter Property="Foreground" Value="{DynamicResource TextReadBrush}" />
             </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="Background" Value="{DynamicResource BackMoreBrush}" />
+            </Trigger>
         </Style.Triggers>
     </Style>
     <Style x:Key="TbGroupNameStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">

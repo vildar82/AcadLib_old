@@ -19,7 +19,7 @@
     /// <summary>
     /// Палитра свойств
     /// </summary>
-    public static class PalletePropsService
+    public static class PalettePropsService
     {
         public static string Various { get; } = "*Различные*";
         [NotNull]

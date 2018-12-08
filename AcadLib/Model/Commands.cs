@@ -436,7 +436,7 @@ namespace AcadLib
         [CommandMethod(Group, nameof(PIK_PaletteProperties), CommandFlags.Modal)]
         public void PIK_PaletteProperties()
         {
-            CommandStart.Start(d => PalletePropsService.Start());
+            CommandStart.Start(d => PalettePropsService.Start());
         }
 
         [CommandMethod(Group, nameof(PIK_CheckUpdates), CommandFlags.Transparent)]

@@ -235,7 +235,7 @@
     </Compile>
     <Compile Include="Model\PaletteProps\Values\IntListVM.cs" />
     <Compile Include="Model\PaletteProps\Values\IntVM.cs" />
-    <Compile Include="Model\PaletteProps\PalletePropsService.cs" />
+    <Compile Include="Model\PaletteProps\PalettePropsService.cs" />
     <Compile Include="Model\PaletteProps\Data\PalettePropsGroup.cs" />
     <Compile Include="Model\PaletteProps\UI\PalettePropsView.xaml.cs">
       <DependentUpon>PalettePropsView.xaml</DependentUpon>

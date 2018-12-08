@@ -2,28 +2,34 @@
 {
     using System;
     using System.Collections.Generic;
+    using NetLib;
 
-    public class IntVM : BaseValueVM<int?>
+    public class IntVM : BaseValueVM
     {
-        public int? Min { get; set; }
-        public int? Max { get; set; }
-
-        public static IntView Create(IEnumerable<int?> values,
-            Action<int?> update = null,
+        public static IntView Create(IEnumerable<object> values,
+            Action<object> update = null,
             Action<IntVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<IntView, IntVM, int?>(values, update, config, isReadOnly);
+            var updateA = GetUpdateAction(update);
+            return Create<IntView, IntVM>(values, updateA, config, isReadOnly);
         }
 
         public static IntView Create(
-            int? value,
-            Action<int?> update = null,
+            object value,
+            Action<object> update = null,
             Action<IntVM> config = null,
-            bool isReadOnly = false,
-            bool isVarious = false)
+            bool isReadOnly = false)
         {
-            return Create<IntView, IntVM, int?>(value, update, config, isReadOnly, isVarious);
+            var updateA = GetUpdateAction(update);
+            return Create<IntView, IntVM>(value, updateA, config, isReadOnly);
+        }
+
+        private static Action<object> GetUpdateAction(Action<object> update)
+        {
+            if (update == null)
+                return null;
+            return v => { update(v.GetValue<int>()); };
         }
     }
 }

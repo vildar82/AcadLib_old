@@ -14,14 +14,12 @@
             <TextBlock Text="{Binding}" Margin="1"/>
         </ControlTemplate>
     </UserControl.Resources>
-    <ComboBox x:Name="CbValue" ItemsSource="{Binding Values}" Text="{Binding Value, Delay=500}"
+    <ComboBox ItemsSource="{Binding Values}" Text="{Binding Value}"
               IsEditable="{Binding AllowCustomValue}" IsReadOnly="{Binding IsReadOnly}">
         <ComboBox.ItemTemplate>
             <DataTemplate DataType="paletteProps:IntListVM">
-                <xctk:IntegerUpDown Value="{Binding ., Delay=500, UpdateSourceTrigger=Explicit}" Minimum="{Binding DataContext.Min, ElementName=CbValue}"
-                               Maximum="{Binding DataContext.Max, ElementName=CbValue}"
-                               IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=CbValue}"
-                               paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="xctk:IntegerUpDown.Value"/>
+                <TextBox Text="{Binding Value, UpdateSourceTrigger=Explicit}" IsReadOnly="{Binding IsReadOnly}"
+                         paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text" />
             </DataTemplate>
         </ComboBox.ItemTemplate>
         <ComboBox.ItemContainerStyle>

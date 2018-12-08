@@ -5,81 +5,60 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Reactive.Linq;
-    using System.Windows.Controls;
     using NetLib.WPF;
     using ReactiveUI;
 
-    public abstract class BaseValueVM<T> : BaseModel, IValue
+    public abstract class BaseValueVM : BaseModel, IValue
     {
         public bool IsReadOnly { get; set; }
 
-        public bool IsVarious { get; set; }
+        public object Value { get; set; }
 
-        public T Value { get; set; }
-
-        public static TView Create<TView, TVm, TValue>(
-            IEnumerable<TValue> values,
-            Action<TValue> update = null,
+        public static TView Create<TView, TVm>(
+            IEnumerable<object> values,
+            Action<object> update = null,
             Action<TVm> configure = null,
             bool isReadOnly = false)
-            where TVm : BaseValueVM<TValue>, new()
+            where TVm : BaseValueVM, new()
         {
             var uniqValues = values.GroupBy(g => g).Select(s => s.Key);
-            TValue value;
+            object value;
             var isVarious = false;
-            if (uniqValues.Skip(1).Any())
-            {
-                isVarious = true;
-                value = default;
-            }
-            else
-            {
-                value = uniqValues.FirstOrDefault();
-            }
+            value = uniqValues.Skip(1).Any() ? PalettePropsService.Various : uniqValues.FirstOrDefault();
 
-            Action<TValue> updateVal = null;
+            Action<object> updateVal = null;
             if (update != null)
                 updateVal = v => Update(v, update);
-            return Create<TView, TVm, TValue>(value, updateVal, configure, isReadOnly, isVarious);
+            return Create<TView, TVm>(value, updateVal, configure, isReadOnly);
         }
 
-        public static TView Create<TView, TVm, TValue>(
-            TValue value,
-            Action<TValue> update = null,
+        public static TView Create<TView, TVm>(
+            object value,
+            Action<object> update = null,
             Action<TVm> configure = null,
-            bool isReadOnly = false,
-            bool isVarious = false)
-            where TVm : BaseValueVM<TValue>, new()
+            bool isReadOnly = false)
+            where TVm : BaseValueVM, new()
         {
             if (update == null)
                 isReadOnly = true;
-            var vm = new TVm { Value = value, IsReadOnly = isReadOnly, IsVarious = isVarious };
+            var vm = new TVm { Value = value, IsReadOnly = isReadOnly};
             configure?.Invoke(vm);
             var valueObs = vm.WhenAnyValue(v => v.Value).Skip(1);
             valueObs.ObserveOnDispatcher()
                 .Throttle(TimeSpan.FromMilliseconds(400))
                 .Subscribe(c => Update(c, update));
-            if (isVarious)
-                valueObs.Take(1).Subscribe(s => vm.IsVarious = false);
             return (TView)Activator.CreateInstance(typeof(TView), vm);
         }
 
         /// <inheritdoc />
         public void UpdateValue(object obj)
         {
-            if (obj is T valT)
-            {
-                Value = valT;
-            }
-            else
-            {
-                AcadLib.Logger.Log.Warn($"IValue BaseValueVM UpdateValue - не тот тип объекта T={typeof(T).Name}, value={obj?.GetType().Name}/");
-            }
+            Value = obj;
         }
 
-        protected static void Update<TValue>(TValue value, Action<TValue> update)
+        protected static void Update(object value, Action<object> update)
         {
-            if (update == null)
+            if (update == null || value == null || Equals(PalettePropsService.Various, value))
                 return;
             var doc = AcadHelper.Doc;
             using (doc.LockDocument())

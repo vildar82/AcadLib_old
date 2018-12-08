@@ -7,24 +7,23 @@
     using Autodesk.AutoCAD.Colors;
     using ReactiveUI;
 
-    public class ColorVM : BaseValueVM<Color>
+    public class ColorVM : BaseValueVM
     {
-        public static ColorView Create(IEnumerable<Color> values,
-            Action<Color> update = null,
+        public static ColorView Create(IEnumerable<object> values,
+            Action<object> update = null,
             Action<ColorVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<ColorView, ColorVM, Color>(values, update, config, isReadOnly);
+            return Create<ColorView, ColorVM>(values, update, config, isReadOnly);
         }
 
         public static ColorView Create(
-            Color value,
-            Action<Color> update = null,
+            object value,
+            Action<object> update = null,
             Action<ColorVM> config = null,
-            bool isReadOnly = false,
-            bool isVarious = false)
+            bool isReadOnly = false)
         {
-            return Create<ColorView, ColorVM, Color>(value, update, config, isReadOnly, isVarious);
+            return Create<ColorView, ColorVM>(value, update, config, isReadOnly);
         }
     }
 }

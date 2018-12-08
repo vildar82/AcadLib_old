@@ -3,24 +3,23 @@
     using System;
     using System.Collections.Generic;
 
-    public class BoolVM : BaseValueVM<bool?>
+    public class BoolVM : BaseValueVM
     {
-        public static BoolView Create(IEnumerable<bool?> values,
-            Action<bool?> update = null,
+        public static BoolView Create(IEnumerable<object> values,
+            Action<object> update = null,
             Action<BoolVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<BoolView, BoolVM, bool?>(values, update, config, isReadOnly);
+            return Create<BoolView, BoolVM>(values, update, config, isReadOnly);
         }
 
         public static BoolView Create(
-            bool? value,
-            Action<bool?> update = null,
+            object value,
+            Action<object> update = null,
             Action<BoolVM> config = null,
-            bool isReadOnly = false,
-            bool isVarious = false)
+            bool isReadOnly = false)
         {
-            return Create<BoolView, BoolVM, bool?>(value, update, config, isReadOnly, isVarious);
+            return Create<BoolView, BoolVM>(value, update, config, isReadOnly);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using JetBrains.Annotations;
+﻿using AcadLib.PaletteProps.UI;
 
 namespace AcadLib.PaletteProps
 {
@@ -6,6 +6,7 @@ namespace AcadLib.PaletteProps
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Controls;
+    using JetBrains.Annotations;
 
     /// <summary>
     /// Методы расширения для свойтв на палитре
@@ -19,17 +20,9 @@ namespace AcadLib.PaletteProps
         /// <param name="value">Значение</param>
         /// <param name="update">Обновление значения</param>
         /// <returns>Контрол для палитры</returns>
-        public static Control CreateControl(this object value, Action<object> update, bool isReadOnly = false, bool isVarious = false)
+        public static Control CreateControl(this object value, Action<object> update = null, bool isReadOnly = false)
         {
-            switch (value)
-            {
-                case bool b: return BoolVM.Create(b, v => update(v), isReadOnly: isReadOnly, isVarious: isVarious);
-                case int i: return IntVM.Create(i, v => update(v), isReadOnly: isReadOnly, isVarious: isVarious);
-                case double d: return DoubleVM.Create(d, v => update(v), isReadOnly: isReadOnly, isVarious: isVarious);
-                case string s: return StringVM.Create(s, v => update(v), isReadOnly: isReadOnly, isVarious: isVarious);
-            }
-
-            return null;
+            return GetControl(value, value, update, isReadOnly);
         }
 
         /// <summary>
@@ -38,24 +31,34 @@ namespace AcadLib.PaletteProps
         /// <param name="value">Значение</param>
         /// <param name="update">Обновление значения</param>
         /// <returns>Контрол для палитры</returns>
-        public static Control CreateControl(this IEnumerable<object> values, Action<object> update, bool isReadOnly = false)
+        public static Control CreateControl([NotNull] this IEnumerable<object> values, Action<object> update = null, bool isReadOnly = false)
         {
-            var value = GetValue(values, out var isVarious);
-            return CreateControl(value, update, isReadOnly, isVarious);
+            var value = GetValue(values);
+            return GetControl(values.FirstOrDefault(), value, update, isReadOnly);
         }
 
-        private static object GetValue(IEnumerable<object> values, out bool isVarious)
+        private static object GetValue(IEnumerable<object> values)
         {
             var uniqValues = values.GroupBy(g => g).Select(s => s.Key);
             object value;
             if (uniqValues.Skip(1).Any())
             {
-                isVarious = true;
-                return string.Empty;
+                return PalettePropsService.Various;
             }
 
-            isVarious = false;
             return uniqValues.FirstOrDefault();
+        }
+
+        private static Control GetControl(object targetType, object value, Action<object> update, bool isReadOnly = false)
+        {
+            switch (targetType)
+            {
+                case bool _: return BoolVM.Create(value, update, isReadOnly: isReadOnly);
+                case int _: return IntVM.Create(value, update, isReadOnly: isReadOnly);
+                case double _: return DoubleVM.Create(value, update, isReadOnly: isReadOnly);
+            }
+
+            return StringVM.Create(value, update, isReadOnly: isReadOnly);
         }
     }
 }

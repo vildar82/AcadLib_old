@@ -7,24 +7,23 @@
     {
         public bool AllowCustomValue { get; set; }
 
-        public IEnumerable<int> Values { get; set; }
+        public List<object> Values { get; set; }
 
-        public static IntListView Create(IEnumerable<int?> values,
-            Action<int?> update = null,
+        public static IntListView Create(IEnumerable<object> values,
+            Action<object> update = null,
             Action<IntListVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<IntListView, IntListVM, int?>(values, update, config, isReadOnly);
+            return Create<IntListView, IntListVM>(values, update, config, isReadOnly);
         }
 
         public static IntListView Create(
-            int? value,
-            Action<int?> update = null,
+            object value,
+            Action<object> update = null,
             Action<IntListVM> config = null,
-            bool isReadOnly = false,
-            bool isVarious = false)
+            bool isReadOnly = false)
         {
-            return Create<IntListView, IntListVM, int?>(value, update, config, isReadOnly, isVarious);
+            return Create<IntListView, IntListVM>(value, update, config, isReadOnly);
         }
     }
 }

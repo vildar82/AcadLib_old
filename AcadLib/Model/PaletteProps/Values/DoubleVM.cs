@@ -3,27 +3,30 @@
     using System;
     using System.Collections.Generic;
 
-    public class DoubleVM : BaseValueVM<double?>
+    public class DoubleVM : BaseValueVM
     {
-        public double? Min { get; set; }
-        public double? Max { get; set; }
-
-        public static DoubleView Create(IEnumerable<double?> values,
-            Action<double?> update = null,
+        public static DoubleView Create(IEnumerable<object> values,
+            Action<object> update = null,
             Action<DoubleVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<DoubleView, DoubleVM, double?>(values, update, config, isReadOnly);
+            var updateA = GetUpdateAction(update);
+            return Create<DoubleView, DoubleVM>(values, updateA, config, isReadOnly);
         }
 
         public static DoubleView Create(
-            double? value,
-            Action<double?> update = null,
+            object value,
+            Action<object> update = null,
             Action<DoubleVM> config = null,
-            bool isReadOnly = false,
-            bool isVarious = false)
+            bool isReadOnly = false)
         {
-            return Create<DoubleView, DoubleVM, double?>(value, update, config, isReadOnly, isVarious);
+            var updateA = GetUpdateAction(update);
+            return Create<DoubleView, DoubleVM>(value, updateA, config, isReadOnly);
+        }
+
+        private static Action<object> GetUpdateAction(Action<object> update)
+        {
+            throw new NotImplementedException();
         }
     }
 }
