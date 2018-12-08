@@ -54,6 +54,9 @@
     <Style TargetType="xctk:IntegerUpDown" BasedOn="{StaticResource {x:Type xctk:IntegerUpDown}}">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextAlignment" Value="Left" />
+        <Setter Property="ShowButtonSpinner" Value="False" />
         <Setter Property="BorderThickness" Value="0" />
         <Style.Triggers>
             <Trigger Property="IsReadOnly" Value="True">
@@ -64,6 +67,9 @@
     <Style TargetType="xctk:DoubleUpDown" BasedOn="{StaticResource {x:Type xctk:DoubleUpDown}}">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextAlignment" Value="Left" />
+        <Setter Property="ShowButtonSpinner" Value="False" />
         <Setter Property="BorderThickness" Value="0" />
         <Style.Triggers>
             <Trigger Property="IsReadOnly" Value="True">

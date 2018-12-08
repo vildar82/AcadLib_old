@@ -1,4 +1,6 @@
-﻿namespace AcadLib.PaletteProps
+﻿using JetBrains.Annotations;
+
+namespace AcadLib.PaletteProps
 {
     using System;
     using System.Collections.Generic;
@@ -8,6 +10,7 @@
     /// <summary>
     /// Методы расширения для свойтв на палитре
     /// </summary>
+    [PublicAPI]
     public static class ValuesExt
     {
         /// <summary>
@@ -38,7 +41,7 @@
         public static Control CreateControl(this IEnumerable<object> values, Action<object> update, bool isReadOnly = false)
         {
             var value = GetValue(values, out var isVarious);
-            return CreateControl(value, update, isReadOnly);
+            return CreateControl(value, update, isReadOnly, isVarious);
         }
 
         private static object GetValue(IEnumerable<object> values, out bool isVarious)

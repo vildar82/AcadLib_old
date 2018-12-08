@@ -41,6 +41,12 @@
 						</StackPanel>
 					</DataTemplate>
 				</ComboBox.ItemTemplate>
+				<ComboBox.ToolTip>
+					<StackPanel Orientation="Horizontal" Margin="1">
+						<TextBlock Text="{Binding SelectedType.Name}" Margin="1"/>
+						<TextBlock Text="{Binding SelectedType.EntIds.Count}" Margin="5,1,1,1"/>
+					</StackPanel>
+				</ComboBox.ToolTip>
 			</ComboBox>
 			<Button Grid.Column="1" Content="{iconPacks:Material Select}" Command="{Binding SelectGroup}" Margin="1"
 			        ToolTip="Выделить объекты на чертеже"/>

@@ -1,10 +1,12 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
+    using System.Text.RegularExpressions;
     using Autodesk.AutoCAD.DatabaseServices;
     using JetBrains.Annotations;
+    using NetLib;
     using XData;
 
     /// <summary>
@@ -13,11 +15,11 @@ namespace AcadLib
     [PublicAPI]
     public static class XDataExt
     {
-        private static readonly Dictionary<Type, int> dictXDataTypedValues = new Dictionary<Type, int>
+        private static readonly Dictionary<Type, short> dictXDataTypedValues = new Dictionary<Type, short>
         {
-            { typeof(int), (int)DxfCode.ExtendedDataInteger32 },
-            { typeof(double), (int)DxfCode.ExtendedDataReal },
-            { typeof(string), (int)DxfCode.ExtendedDataAsciiString }
+            { typeof(int), (short)DxfCode.ExtendedDataInteger32 },
+            { typeof(double), (short)DxfCode.ExtendedDataReal },
+            { typeof(string), (short)DxfCode.ExtendedDataAsciiString }
         };
 
         /// <summary>
@@ -50,10 +52,16 @@ namespace AcadLib
                 var rb = new ResultBuffer(new TypedValue(1001, regAppName));
                 var isWriteEnabled = dbo.IsWriteEnabled;
                 if (!isWriteEnabled)
-                    dbo.UpgradeOpen();
-                dbo.XData = rb;
-                if (!isWriteEnabled)
-                    dbo.DowngradeOpen();
+                {
+                    using (var dboWrite = dbo.Id.Open(OpenMode.ForWrite, false, true))
+                    {
+                        dboWrite.XData = rb;
+                    }
+                }
+                else
+                {
+                    dbo.XData = rb;
+                }
             }
         }
 
@@ -74,9 +82,23 @@ namespace AcadLib
         public static void SetXData([NotNull] this DBObject dbo, string regAppName, string value)
         {
             using (var rb = new ResultBuffer(
-                new TypedValue((int)DxfCode.ExtendedDataRegAppName, regAppName),
-                new TypedValue((int)DxfCode.ExtendedDataAsciiString, value)))
+                new TypedValue((short)DxfCode.ExtendedDataRegAppName, regAppName)))
             {
+                if (value.Length <= 255)
+                {
+                    var tv = new TypedValue((short)DxfCode.ExtendedDataAsciiString, value);
+                    rb.Add(tv);
+                }
+                else
+                {
+                    var index = 0;
+                    foreach (var s in value.Split(250))
+                    {
+                        var tv = new TypedValue((short)DxfCode.ExtendedDataAsciiString, $"{index++}#{s}");
+                        rb.Add(tv);
+                    }
+                }
+
                 dbo.XData = rb;
             }
         }
@@ -87,8 +109,8 @@ namespace AcadLib
         public static void SetXData([NotNull] this DBObject dbo, string regAppName, int value)
         {
             using (var rb = new ResultBuffer(
-                new TypedValue((int)DxfCode.ExtendedDataRegAppName, regAppName),
-                new TypedValue((int)DxfCode.ExtendedDataInteger32, value)))
+                new TypedValue((short)DxfCode.ExtendedDataRegAppName, regAppName),
+                new TypedValue((short)DxfCode.ExtendedDataInteger32, value)))
             {
                 dbo.XData = rb;
             }
@@ -105,7 +127,7 @@ namespace AcadLib
         {
             RegApp(dbo.Database, regAppName);
             var tvValu = GetTypedValue(value);
-            using (var rb = new ResultBuffer(new TypedValue((int)DxfCode.ExtendedDataRegAppName, regAppName), tvValu))
+            using (var rb = new ResultBuffer(new TypedValue((short)DxfCode.ExtendedDataRegAppName, regAppName), tvValu))
             {
                 dbo.XData = rb;
             }
@@ -156,22 +178,51 @@ namespace AcadLib
             return GetXData(dbo, ExtDicHelper.PikApp);
         }
 
-        // ReSharper disable once MemberCanBePrivate.Global
         public static string GetXDataString([NotNull] this DBObject dbo, string regAppName)
         {
             var rb = dbo.GetXDataForApplication(regAppName);
-            if (rb != null)
+            return rb != null ? GetStringValue(rb.GetEnumerator()) : string.Empty;
+        }
+
+        private static string GetStringValue(ResultBufferEnumerator tvEnnumerator)
+        {
+            var regex = new Regex(@"^\d{1,2}#");
+            string nextVal = null;
+            while (tvEnnumerator.MoveNext())
             {
-                foreach (var item in rb)
+                var tv = tvEnnumerator.Current;
+                if (tv.TypeCode == (short)DxfCode.ExtendedDataAsciiString)
                 {
-                    if (item.TypeCode == (short)DxfCode.ExtendedDataAsciiString)
-                    {
-                        return (string)item.Value;
-                    }
+                    nextVal = tv.Value?.ToString();
+                    break;
                 }
             }
 
-            return string.Empty;
+            if (nextVal == null)
+                return null;
+
+            var match = regex.Match(nextVal);
+            if (!match.Success)
+                return nextVal;
+
+            var sb = new StringBuilder(nextVal.Substring(match.Length));
+
+            while (tvEnnumerator.MoveNext())
+            {
+                if (tvEnnumerator.Current.TypeCode != (short)DxfCode.ExtendedDataAsciiString)
+                    break;
+
+                var val = tvEnnumerator.Current.Value?.ToString();
+                if (val == null)
+                    break;
+                match = regex.Match(val);
+                if (!match.Success)
+                    break;
+                var valNext = val.Substring(match.Length);
+                sb.Append(valNext);
+            }
+
+            return sb.ToString();
         }
 
         [Obsolete("Лучше использовать свой `regAppName` для каждого плагина (задачи)")]
@@ -193,11 +244,17 @@ namespace AcadLib
             if (rb != null)
             {
                 var dxfT = dictXDataTypedValues[typeof(T)];
-                foreach (var item in rb)
+                var rbEnumerator = rb.GetEnumerator();
+                while (rbEnumerator.MoveNext())
                 {
-                    if (item.TypeCode == dxfT)
+                    if (rbEnumerator.Current.TypeCode == dxfT)
                     {
-                        return (T)item.Value;
+                        if (rbEnumerator.Current.TypeCode == (short)DxfCode.ExtendedDataAsciiString)
+                        {
+                            return (T)(object)GetStringValue(rbEnumerator);
+                        }
+
+                        return (T)rbEnumerator.Current.Value;
                     }
                 }
             }

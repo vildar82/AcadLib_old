@@ -20,7 +20,6 @@
             <DataTemplate DataType="paletteProps:IntListVM">
                 <xctk:IntegerUpDown Value="{Binding ., Delay=500}" Minimum="{Binding DataContext.Min, ElementName=CbValue}"
                                Maximum="{Binding DataContext.Max, ElementName=CbValue}"
-                               TextAlignment="Left"
                                IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=CbValue}"
                                paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="xctk:IntegerUpDown.Value"/>
             </DataTemplate>

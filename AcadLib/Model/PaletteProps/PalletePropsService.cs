@@ -29,6 +29,7 @@
         private static PaletteSet palette;
         private static bool stop;
         private static IDisposable entModifiedObs;
+        private static HashSet<ObjectId> idsHash;
 
         /// <summary>
         /// Добавление провайдера
@@ -117,7 +118,9 @@
                 return;
             }
 
+            entModifiedObs?.Dispose();
             var ids = sel.Value.GetObjectIds();
+            idsHash = new HashSet<ObjectId>(ids);
 
             // группы по типу объектов
             var groups = new List<PalettePropsType>();
@@ -151,20 +154,25 @@
                 propsVM.SelectedType = propsVM.Types[0];
             }
 
-            SubscibeEntityModified(ids);
+            SubscibeEntityModified(doc.Database);
 
             Inspector.Show();
         }
 
         private static void Clear()
         {
+            idsHash = null;
             entModifiedObs?.Dispose();
             propsVM.Clear();
         }
 
-        private static void SubscibeEntityModified(ObjectId[] ids)
+        private static void SubscibeEntityModified(Database db)
         {
-            entModifiedObs = HostApplicationServices.WorkingDatabase.Events().ObjectModified
+            if (idsHash == null)
+                return;
+            entModifiedObs = db.Events().ObjectModified
+                .Where(w => w?.EventArgs?.DBObject?.Id.IsNull != true &&
+                    idsHash?.Contains(w.EventArgs.DBObject.Id) == true)
                 .ObserveOnDispatcher()
                 .Throttle(TimeSpan.FromSeconds(2))
                 .Subscribe(s => { Application.Idle += ModifiedIdle; });
