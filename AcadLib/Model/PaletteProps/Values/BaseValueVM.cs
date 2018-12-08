@@ -5,48 +5,54 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Reactive.Linq;
+    using System.Windows.Controls;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using JetBrains.Annotations;
     using NetLib.WPF;
     using ReactiveUI;
 
-    public abstract class BaseValueVM : BaseModel, IValue
+    public abstract class BaseValueVM: BaseModel, IValue
     {
+        private static object value;
+        private static Action<object, BaseValueVM> update;
+        private static BaseValueVM vm;
+
         public bool IsReadOnly { get; set; }
 
         public object Value { get; set; }
+        public object ValueOrig { get; set; }
 
-        public static TView Create<TView, TVm>(
-            IEnumerable<object> values,
-            Action<object> update = null,
+        public static TView CreateS<TView, TVm>(
+            [NotNull] IEnumerable<object> values,
+            Action<object, BaseValueVM> update = null,
             Action<TVm> configure = null,
             bool isReadOnly = false)
             where TVm : BaseValueVM, new()
+            where TView : Control
         {
-            var uniqValues = values.GroupBy(g => g).Select(s => s.Key);
             object value;
-            var isVarious = false;
+            var uniqValues = values.GroupBy(g => g).Select(s => s.Key);
             value = uniqValues.Skip(1).Any() ? PalettePropsService.Various : uniqValues.FirstOrDefault();
-
-            Action<object> updateVal = null;
-            if (update != null)
-                updateVal = v => Update(v, update);
-            return Create<TView, TVm>(value, updateVal, configure, isReadOnly);
+            return Create<TView, TVm>(value, update, configure, isReadOnly);
         }
 
         public static TView Create<TView, TVm>(
             object value,
-            Action<object> update = null,
+            Action<object, BaseValueVM> update = null,
             Action<TVm> configure = null,
             bool isReadOnly = false)
             where TVm : BaseValueVM, new()
+            where TView : Control
         {
             if (update == null)
                 isReadOnly = true;
-            var vm = new TVm { Value = value, IsReadOnly = isReadOnly};
+            var vm = new TVm { Value = value, ValueOrig = value, IsReadOnly = isReadOnly };
             configure?.Invoke(vm);
-            var valueObs = vm.WhenAnyValue(v => v.Value).Skip(1);
-            valueObs.ObserveOnDispatcher()
+            vm.WhenAnyValue(v => v.Value).Skip(1)
+                .Where(w => w != vm.ValueOrig)
+                .ObserveOnDispatcher()
                 .Throttle(TimeSpan.FromMilliseconds(400))
-                .Subscribe(c => Update(c, update));
+                .Subscribe(c => Update(c, update, vm));
             return (TView)Activator.CreateInstance(typeof(TView), vm);
         }
 
@@ -56,18 +62,29 @@
             Value = obj;
         }
 
-        protected static void Update(object value, Action<object> update)
+        protected static void Update(object value, Action<object, BaseValueVM> update, BaseValueVM vm)
         {
             if (update == null || value == null || Equals(PalettePropsService.Various, value))
                 return;
-            var doc = AcadHelper.Doc;
-            using (doc.LockDocument())
+            BaseValueVM.value = value;
+            BaseValueVM.update = update;
+            BaseValueVM.vm = vm;
+            AcadHelper.Doc.SendStringToExecute($"{nameof(Commands._InternalUse_UpdatePropValue)} ", true, false, true);
+        }
+
+        public static void InternalUpdate(Document doc)
+        {
             using (var t = doc.TransactionManager.StartTransaction())
             {
-                Debug.WriteLine($"Palette Props Update Value = {value}");
-                update(value);
+                Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fffffff} Palette Props Update Value = {value}");
+                update(value, vm);
                 t.Commit();
             }
+        }
+
+        protected static void UpdateTarget(BaseValueVM vm)
+        {
+            vm.Value = vm.ValueOrig;
         }
     }
 }

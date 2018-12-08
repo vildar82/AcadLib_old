@@ -79,6 +79,7 @@
 
             var binding = BindingOperations.GetBindingExpression(elt, property);
             binding?.UpdateSource();
+            Keyboard.ClearFocus();
         }
 
         static void DoUpdateTarget(object source)

@@ -77,7 +77,7 @@
 							<!--Список свойств группы-->
 							<ItemsControl Grid.Row="1" ItemsSource="{Binding Properties}" VerticalAlignment="Top"
 							              mah:VisibilityHelper.IsVisible="{Binding IsExpanded}"
-							         PreviewMouseWheel="OnPreviewMouseWheel">
+							         PreviewMouseWheel="OnPreviewMouseWheel" Margin="5,0,0,0">
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
                                         <Border BorderThickness="0">

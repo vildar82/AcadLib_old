@@ -2,15 +2,18 @@
 {
     using System;
     using System.Collections.Generic;
+    using JetBrains.Annotations;
 
     public class StringVM : BaseValueVM
     {
-        public static StringView Create(IEnumerable<object> values,
+        public static StringView Create([NotNull] IEnumerable<string> values,
             Action<object> update = null,
             Action<StringVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<StringView, StringVM>(values, update, config, isReadOnly);
+            if (update == null)
+                isReadOnly = true;
+            return CreateS<StringView, StringVM>(values, (v, vm) => update?.Invoke(v), config, isReadOnly);
         }
 
         public static StringView Create(
@@ -19,7 +22,9 @@
             Action<StringVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<StringView, StringVM>(value, update, config, isReadOnly);
+            if (update == null)
+                isReadOnly = true;
+            return Create<StringView, StringVM>(value, (v, vm) => update?.Invoke(v), config, isReadOnly);
         }
     }
 }

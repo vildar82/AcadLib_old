@@ -110,7 +110,6 @@
             {
                 if (!_alreadyCalcExtents)
                 {
-#pragma warning disable CS0618
                     using (var blRef = (BlockReference)IdBlRef.Open(OpenMode.ForRead, false, true))
                     {
                         try
@@ -125,7 +124,6 @@
                                 new Point3d(blRef.Position.X + 100, blRef.Position.Y + 100, 0));
                         }
                     }
-#pragma warning restore CS0618
                 }
 
                 return _extentsToShow;
@@ -313,7 +311,7 @@
             if (!idEnt.IsNull)
             {
                 var idCopy = idEnt.CopyEnt(idBtrNew);
-                using (var entCopy = (Entity)idCopy.GetObject(OpenMode.ForWrite, false, true))
+                using (var entCopy = idCopy.GetObject<Entity>(OpenMode.ForWrite))
                 {
                     entCopy.TransformBy(Transform);
                     return entCopy.Id;
@@ -371,9 +369,10 @@
         {
             if (prop == null)
                 return;
+            var blRef = IdBlRef.GetObjectT<BlockReference>(OpenMode.ForWrite);
             if (prop.Type == PropertyType.Attribute && !prop.IdAtrRef.IsNull)
             {
-                var atr = (AttributeReference)prop.IdAtrRef.GetObject(OpenMode.ForWrite, false, true);
+                var atr = prop.IdAtrRef.GetObject<AttributeReference>(OpenMode.ForWrite);
                 var text = value?.ToString() ?? string.Empty;
                 if (atr.IsMTextAttribute)
                 {
@@ -394,7 +393,6 @@
             {
                 if (value == null)
                     return;
-                var blRef = (BlockReference)IdBlRef.GetObject(OpenMode.ForWrite, false, true);
                 var dynProp = blRef.DynamicBlockReferencePropertyCollection.Cast<DynamicBlockReferenceProperty>()
                     .FirstOrDefault(p => p.PropertyName.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
                 if (dynProp != null)

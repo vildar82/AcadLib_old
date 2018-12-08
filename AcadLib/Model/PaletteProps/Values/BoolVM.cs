@@ -2,15 +2,19 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using JetBrains.Annotations;
 
     public class BoolVM : BaseValueVM
     {
-        public static BoolView Create(IEnumerable<object> values,
+        public static BoolView Create([NotNull] IEnumerable<bool> values,
             Action<object> update = null,
             Action<BoolVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<BoolView, BoolVM>(values, update, config, isReadOnly);
+            if (update == null)
+                isReadOnly = true;
+            return CreateS<BoolView, BoolVM>(values.Cast<object>(), (v, vm) => update?.Invoke(v), config, isReadOnly);
         }
 
         public static BoolView Create(
@@ -19,7 +23,9 @@
             Action<BoolVM> config = null,
             bool isReadOnly = false)
         {
-            return Create<BoolView, BoolVM>(value, update, config, isReadOnly);
+            if (update == null)
+                isReadOnly = true;
+            return Create<BoolView, BoolVM>(value, (v, vm) => update?.Invoke(v), config, isReadOnly);
         }
     }
 }

@@ -8,6 +8,6 @@
     xmlns:paletteProps="clr-namespace:AcadLib.PaletteProps"
     d:DataContext="{d:DesignInstance paletteProps:StringVM}"
     mc:Ignorable="d">
-    <TextBox Text="{Binding Value, UpdateSourceTrigger=Explicit}" IsReadOnly="{Binding IsReadOnly}"
+    <TextBox Name="TbValue" Text="{Binding Value, UpdateSourceTrigger=Explicit}" IsReadOnly="{Binding IsReadOnly}"
              local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text" />
 </UserControl>

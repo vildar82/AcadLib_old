@@ -77,7 +77,7 @@ namespace AcadLib
 
         public void Initialize()
         {
-#if DEBUG 
+#if DEBUG
             // Отключение отладочных сообщений биндинга (тормозит сильно)
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Off;
 #endif
@@ -483,6 +483,12 @@ namespace AcadLib
             CommandStart.Start(d => Test.BatchRemoveLayouts.Batch());
         }
 
+        [CommandMethod(Group, nameof(_InternalUse_UpdatePropValue), CommandFlags.Modal | CommandFlags.Redraw)]
+        public void _InternalUse_UpdatePropValue()
+        {
+            CommandStart.StartWoStat(BaseValueVM.InternalUpdate);
+        }
+
         [CommandMethod(Group, nameof(PIK_TestState), CommandFlags.Modal)]
         public void PIK_TestState()
         {
@@ -549,7 +555,7 @@ namespace AcadLib
                 dllsResolve.AddRange(DllResolve.GetDllResolve(
                     Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET"),
                     SearchOption.AllDirectories));
-                
+
                 // Оставить только сборки под текущую версию автокада
                 dllsResolve = FilterDllResolveVersions(dllsResolve);
             }

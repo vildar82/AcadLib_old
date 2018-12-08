@@ -204,6 +204,7 @@
     <Compile Include="Model\Geometry\Polylines\PolylineRalative.cs" />
     <Compile Include="Model\Geometry\Polylines\RectangleExt.cs" />
     <Compile Include="Model\Link\DbObjectLink.cs" />
+    <Compile Include="Model\PaletteProps\TextBoxHelper.cs" />
     <Compile Include="Model\PaletteProps\Values\BoolView.xaml.cs">
       <DependentUpon>BoolView.xaml</DependentUpon>
     </Compile>
