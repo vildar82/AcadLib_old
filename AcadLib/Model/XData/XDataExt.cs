@@ -184,19 +184,21 @@
             return rb != null ? GetStringValue(rb.GetEnumerator()) : string.Empty;
         }
 
-        private static string GetStringValue(ResultBufferEnumerator tvEnnumerator)
+        private static string GetStringValue(ResultBufferEnumerator tvEnumerator)
         {
             var regex = new Regex(@"^\d{1,2}#");
             string nextVal = null;
-            while (tvEnnumerator.MoveNext())
+
+            do
             {
-                var tv = tvEnnumerator.Current;
+                var tv = tvEnumerator.Current;
                 if (tv.TypeCode == (short)DxfCode.ExtendedDataAsciiString)
                 {
                     nextVal = tv.Value?.ToString();
                     break;
                 }
             }
+            while (tvEnumerator.MoveNext());
 
             if (nextVal == null)
                 return null;
@@ -207,12 +209,12 @@
 
             var sb = new StringBuilder(nextVal.Substring(match.Length));
 
-            while (tvEnnumerator.MoveNext())
+            while (tvEnumerator.MoveNext())
             {
-                if (tvEnnumerator.Current.TypeCode != (short)DxfCode.ExtendedDataAsciiString)
+                if (tvEnumerator.Current.TypeCode != (short)DxfCode.ExtendedDataAsciiString)
                     break;
 
-                var val = tvEnnumerator.Current.Value?.ToString();
+                var val = tvEnumerator.Current.Value?.ToString();
                 if (val == null)
                     break;
                 match = regex.Match(val);

@@ -11,11 +11,11 @@
              d:DataContext="{d:DesignInstance local:DoubleVM}"
              mc:Ignorable="d">
     <Grid>
-        <xctk:DoubleUpDown Value="{Binding Value, UpdateSourceTrigger=LostFocus}" Minimum="{Binding Min}"
+        <xctk:DoubleUpDown Value="{Binding Value, UpdateSourceTrigger=Explicit}" Minimum="{Binding Min}"
                            Maximum="{Binding Max}"
                            IsReadOnly="{Binding IsReadOnly}"
                            TextAlignment="Left"
-                           local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="mah:NumericUpDown.Value" />
+                           local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="xctk:DoubleUpDown.Value" />
         <TextBlock Text="{x:Static local:PalletePropsService.Various}" IsHitTestVisible="False"
                    Visibility="{Binding IsVarious, Converter={converters:BooleanToCollapseVisibilityConverter}}"
                    Foreground="{DynamicResource TextReadBrush}"/>

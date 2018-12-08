@@ -9,7 +9,7 @@
     <SolidColorBrush x:Key="TextBrush"
                      Color="{Binding CurrentTheme.ControlTextColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}" />
     <SolidColorBrush x:Key="TextReadBrush"
-                     Color="{Binding CurrentTheme.CategoryExpanderColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}" />
+                     Color="{Binding CurrentTheme.PaletteTabActiveTopColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}" />
     <SolidColorBrush x:Key="BackBrush"
                      Color="{Binding CurrentTheme.PaletteTabActiveBottomColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}" />
     <SolidColorBrush x:Key="BackMoreBrush"

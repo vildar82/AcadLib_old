@@ -18,7 +18,7 @@
               IsEditable="{Binding AllowCustomValue}" IsReadOnly="{Binding IsReadOnly}">
         <ComboBox.ItemTemplate>
             <DataTemplate DataType="paletteProps:IntListVM">
-                <xctk:IntegerUpDown Value="{Binding ., Delay=500}" Minimum="{Binding DataContext.Min, ElementName=CbValue}"
+                <xctk:IntegerUpDown Value="{Binding ., Delay=500, UpdateSourceTrigger=Explicit}" Minimum="{Binding DataContext.Min, ElementName=CbValue}"
                                Maximum="{Binding DataContext.Max, ElementName=CbValue}"
                                IsReadOnly="{Binding DataContext.IsReadOnly, ElementName=CbValue}"
                                paletteProps:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="xctk:IntegerUpDown.Value"/>

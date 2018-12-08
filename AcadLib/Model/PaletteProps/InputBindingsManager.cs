@@ -1,5 +1,6 @@
 ﻿namespace AcadLib.PaletteProps
 {
+    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Input;
@@ -42,20 +43,23 @@
 
             if (e.NewValue != null)
             {
+                element.LostKeyboardFocus -= Element_LostKeyboardFocus;
                 element.LostKeyboardFocus += Element_LostKeyboardFocus;
+                element.PreviewKeyDown -= HandlePreviewKeyDown;
                 element.PreviewKeyDown += HandlePreviewKeyDown;
             }
         }
 
         private static void Element_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            DoUpdateSource(e.Source);
+            DoUpdateTarget(e.Source);
         }
 
         static void HandlePreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
+                Debug.WriteLine("InputBindingsManager HandlePreviewKeyDown=Enter - DoUpdateSource().");
                 DoUpdateSource(e.Source);
             }
         }
@@ -75,6 +79,23 @@
 
             var binding = BindingOperations.GetBindingExpression(elt, property);
             binding?.UpdateSource();
+        }
+
+        static void DoUpdateTarget(object source)
+        {
+            var property = GetUpdatePropertySourceWhenEnterPressed(source as DependencyObject);
+            if (property == null)
+            {
+                return;
+            }
+
+            if (!(source is UIElement elt))
+            {
+                return;
+            }
+
+            var binding = BindingOperations.GetBindingExpression(elt, property);
+            binding?.UpdateTarget();
         }
     }
 }

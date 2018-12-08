@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance local:IntVM}"
              mc:Ignorable="d">
     <Grid>
-        <xctk:IntegerUpDown Value="{Binding Value, UpdateSourceTrigger=LostFocus}" Minimum="{Binding Min}"
+        <xctk:IntegerUpDown Value="{Binding Value, UpdateSourceTrigger=Explicit}" Minimum="{Binding Min}"
                             Maximum="{Binding Max}"
                             IsReadOnly="{Binding IsReadOnly}"
                             local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="xctk:IntegerUpDown.Value" />

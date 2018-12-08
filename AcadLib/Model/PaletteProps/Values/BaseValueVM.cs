@@ -37,7 +37,10 @@
                 value = uniqValues.FirstOrDefault();
             }
 
-            return Create<TView, TVm, TValue>(value, v => Update(v, update), configure, isReadOnly, isVarious);
+            Action<TValue> updateVal = null;
+            if (update != null)
+                updateVal = v => Update(v, update);
+            return Create<TView, TVm, TValue>(value, updateVal, configure, isReadOnly, isVarious);
         }
 
         public static TView Create<TView, TVm, TValue>(
@@ -48,10 +51,14 @@
             bool isVarious = false)
             where TVm : BaseValueVM<TValue>, new()
         {
+            if (update == null)
+                isReadOnly = true;
             var vm = new TVm { Value = value, IsReadOnly = isReadOnly, IsVarious = isVarious };
             configure?.Invoke(vm);
             var valueObs = vm.WhenAnyValue(v => v.Value).Skip(1);
-            valueObs.Subscribe(c => Update(c, update));
+            valueObs.ObserveOnDispatcher()
+                .Throttle(TimeSpan.FromMilliseconds(400))
+                .Subscribe(c => Update(c, update));
             if (isVarious)
                 valueObs.Take(1).Subscribe(s => vm.IsVarious = false);
             return (TView)Activator.CreateInstance(typeof(TView), vm);
