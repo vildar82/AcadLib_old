@@ -7,6 +7,7 @@
     using Autodesk.AutoCAD.DatabaseServices;
     using JetBrains.Annotations;
     using NetLib;
+    using NetLib.Monad;
     using XData;
 
     /// <summary>
@@ -191,7 +192,16 @@
 
             do
             {
-                var tv = tvEnumerator.Current;
+                TypedValue tv;
+                try
+                {
+                    tv = tvEnumerator.Current;
+                }
+                catch
+                {
+                    continue;
+                }
+
                 if (tv.TypeCode == (short)DxfCode.ExtendedDataAsciiString)
                 {
                     nextVal = tv.Value?.ToString();

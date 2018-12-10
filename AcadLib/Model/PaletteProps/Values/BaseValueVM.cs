@@ -1,4 +1,6 @@
-﻿namespace AcadLib.PaletteProps
+﻿using Autodesk.AutoCAD.DatabaseServices;
+
+namespace AcadLib.PaletteProps
 {
     using System;
     using System.Collections.Generic;
@@ -21,6 +23,8 @@
 
         public object Value { get; set; }
         public object ValueOrig { get; set; }
+
+        public List<ObjectId> Elements { get; set; }
 
         public static TView CreateS<TView, TVm>(
             [NotNull] IEnumerable<object> values,

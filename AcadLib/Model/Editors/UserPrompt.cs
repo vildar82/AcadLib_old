@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace Autodesk.AutoCAD.EditorInput
+﻿namespace Autodesk.AutoCAD.EditorInput
 {
     using System;
     using System.Collections.Generic;
@@ -108,10 +107,7 @@ namespace Autodesk.AutoCAD.EditorInput
             selOpt.MessageForAdding = msg + selOpt.Keywords.GetDisplayString(true);
             var selRes = ed.GetSelection(selOpt);
             if (selRes.Status == PromptStatus.OK)
-            {
                 return selRes.Value.GetObjectIds().ToList();
-            }
-
             throw new OperationCanceledException();
         }
 

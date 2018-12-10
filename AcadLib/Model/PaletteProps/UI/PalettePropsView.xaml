@@ -66,8 +66,12 @@
 									<ColumnDefinition />
 								</Grid.ColumnDefinitions>
 								<!--Имя группы свойств-->
-								<TextBlock Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Left"
-								           Style="{StaticResource TbGroupNameStyle}"/>
+								<TextBlock Grid.Column="0" HorizontalAlignment="Left"
+								           Style="{StaticResource TbGroupNameStyle}">
+									<Run Text="{Binding Name}"/>
+									<Run Text=" "/>
+									<Run Text="{Binding Count}"/>
+								</TextBlock>
                                 <Button Grid.Column="1" Content="{Binding ButtonExpandContent}"
                                         Foreground="{DynamicResource TextBrush}"
 										Command="{Binding ButtonExpandCommand}" HorizontalAlignment="Right"
