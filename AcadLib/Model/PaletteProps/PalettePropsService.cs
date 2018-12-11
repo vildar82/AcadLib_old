@@ -59,10 +59,10 @@
                 var propsView = new PalettePropsView(propsVM);
                 var host = new ElementHost { Child = propsView };
                 palette.Add("Свойства", host);
-                ShowSelection();
             }
 
             palette.Visible = true;
+            ShowSelection();
         }
 
         private static void DocumentManager_DocumentCreated(object sender, DocumentCollectionEventArgs e)
