@@ -433,7 +433,7 @@ namespace AcadLib
             CommandStart.Start(d => Styles.StyleManager.StyleManagerService.ManageStyles());
         }
 
-        [CommandMethod(Group, nameof(PIK_PaletteProperties), CommandFlags.Modal)]
+        [CommandMethod(Group, nameof(PIK_PaletteProperties), CommandFlags.Modal | CommandFlags.Redraw)]
         public void PIK_PaletteProperties()
         {
             CommandStart.Start(d => PalettePropsService.Start());
