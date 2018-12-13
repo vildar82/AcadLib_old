@@ -13,11 +13,14 @@
     {
         public static void RegApp([NotNull] this Database db, string regAppName)
         {
-            using (var rat = (RegAppTable)db.RegAppTableId.Open(OpenMode.ForWrite, false))
+            using (var rat = (RegAppTable) db.RegAppTableId.Open(OpenMode.ForRead, false))
             {
                 if (rat.Has(regAppName))
                     return;
-                
+            }
+
+            using (var rat = (RegAppTable) db.RegAppTableId.Open(OpenMode.ForWrite, false))
+            {
                 using (var ratr = new RegAppTableRecord())
                 {
                     ratr.Name = regAppName;
