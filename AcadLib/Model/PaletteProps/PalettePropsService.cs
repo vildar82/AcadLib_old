@@ -151,7 +151,7 @@
             }
             else
             {
-                propsVM.Types = groups.OrderByDescending(o => o.EntIds?.Count ?? 0).ToList();
+                propsVM.Types = groups.OrderByDescending(o => o.Count).ToList();
                 propsVM.SelectedType = propsVM.Types[0];
             }
 

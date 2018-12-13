@@ -19,6 +19,7 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MaxHeight" Value="30" />
     </Style>
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -26,6 +27,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MaxHeight" Value="30" />
         <Setter Property="paletteProps:TextBoxHelper.SelectAllOnFocus" Value="True"/>
         <Style.Triggers>
             <Trigger Property="IsReadOnly" Value="True">

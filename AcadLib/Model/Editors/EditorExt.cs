@@ -75,7 +75,7 @@ namespace AcadLib.Editors
                             ext.AddExtents(o.Bounds.Value);
                     });
                     ed.Zoom(ext);
-                    ed.SetImpliedSelection(ids.ToArray());
+                    Autodesk.AutoCAD.Internal.Utils.SelectObjects(ids.ToArray());
                     t.Commit();
                 }
             }
@@ -152,7 +152,7 @@ namespace AcadLib.Editors
             {
                 return selRes.Value.GetObjectIds().ToList();
             }
-            
+
             throw new OperationCanceledException();
         }
 
@@ -160,7 +160,7 @@ namespace AcadLib.Editors
         public static List<ObjectId> SelectByPolygon([NotNull] this Editor ed, [NotNull] IEnumerable<Point3d> pts)
         {
             using (ed.Document.LockDocument())
-            {                                              
+            {
                 Debug.WriteLine($"SelectByPolygon IsApplicationContext={Application.DocumentManager.IsApplicationContext}.");
                 var ext = new Extents3d();
                 var ptsCol = new List<Point3d>();

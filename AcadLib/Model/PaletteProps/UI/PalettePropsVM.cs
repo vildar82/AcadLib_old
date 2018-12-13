@@ -10,25 +10,13 @@
 
     public class PalettePropsVM : BaseModel
     {
-        public PalettePropsVM()
-        {
-            SelectGroup = new RelayCommand(SelectGroupExec);
-        }
-
         public List<PalettePropsType> Types { get; set; }
 
         public PalettePropsType SelectedType { get; set; }
 
-        public RelayCommand SelectGroup { get; set; }
-
         public void Clear()
         {
             Types = null;
-        }
-
-        private void SelectGroupExec()
-        {
-            SelectedType?.EntIds?.SetSelectionAndZoom();
         }
     }
 }

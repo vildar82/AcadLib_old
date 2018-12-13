@@ -2,8 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Reactive;
-    using System.Windows.Media;
+    using System.Windows.Input;
     using Autodesk.AutoCAD.DatabaseServices;
     using NetLib.WPF;
     using ReactiveUI;
@@ -44,5 +43,7 @@
         public ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> ButtonExpandCommand { get; set; }
 
         public List<PalettePropVM> Properties { get; set; }
+
+        public ICommand SelectGroup { get; set; }
     }
 }

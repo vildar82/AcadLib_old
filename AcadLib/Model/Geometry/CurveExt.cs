@@ -36,13 +36,14 @@
 
             return center;
         }
-        
+
         public static Point3d Centroid([NotNull] this Curve c)
         {
             var pts = c.GetGeCurve().GetSamplePoints(10).Select(s => s.Point).ToList();
             return new Point3d(pts.Average(a => a.X), pts.Average(a => a.Y), 0);
         }
 
+        [Obsolete("Использую GetParameterAtPointTry с допусом.")]
         public static double GetParameterAtPointTry([NotNull] this Curve c, Point3d pt, bool extend = false)
         {
             try
@@ -54,6 +55,22 @@
                 var ptCorrect = c.GetClosestPointTo(pt, Vector3d.ZAxis, extend);
                 return c.GetParameterAtPoint(ptCorrect);
             }
+        }
+
+        public static double? GetParameterAtPointTry([NotNull] this Curve c, Point3d pt, double delta, bool extend = false)
+        {
+            try
+            {
+                return c.GetParameterAtPoint(pt);
+            }
+            catch
+            {
+                var ptCorrect = c.GetClosestPointTo(pt, Vector3d.ZAxis, extend);
+                if ((ptCorrect - pt).Length <= delta)
+                    return c.GetParameterAtPoint(ptCorrect);
+            }
+
+            return null;
         }
 
         [NotNull]

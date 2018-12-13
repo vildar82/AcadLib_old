@@ -391,6 +391,7 @@
         /// <param name="pt">Точка</param>
         /// <param name="extend">Input whether or not to extend curve in search for nearest point.</param>
         /// <returns></returns>
+        [Obsolete("Используй GetParameterAtPointTry с допуском.")]
         public static double GetParameterAtPointTry([NotNull] this Polyline pl, Point3d pt, bool extend = false)
         {
             try
@@ -402,6 +403,30 @@
                 var ptCorrect = pl.GetClosestPointTo(pt, Vector3d.ZAxis, extend);
                 return pl.GetParameterAtPoint(ptCorrect);
             }
+        }
+
+        /// <summary>
+        /// GetParameterAtPoint - или попытка корректировки точки с помощью GetClosestPointTo и вызов для скорректированной точки GetParameterAtPoint
+        /// </summary>
+        /// <param name="pl">Полилиния</param>
+        /// <param name="pt">Точка</param>
+        /// <param name="delta">Предельное отклонения</param>
+        /// <param name="extend">Extend</param>
+        /// <returns></returns>
+        public static double? GetParameterAtPointTry([NotNull] this Polyline pl, Point3d pt, double delta, bool extend = false)
+        {
+            try
+            {
+                return pl.GetParameterAtPoint(pt);
+            }
+            catch
+            {
+                var ptCorrect = pl.GetClosestPointTo(pt, Vector3d.ZAxis, extend);
+                if ((ptCorrect - pt).Length <= delta)
+                    return pl.GetParameterAtPoint(ptCorrect);
+            }
+
+            return null;
         }
 
         [NotNull]

@@ -11,7 +11,6 @@
     /// Кнопка выбора цвета.
     /// <controls:AcadColorPick Color="{Binding Color}"/>
     /// </summary>
-    // ReSharper disable once UnusedMember.Global
     public partial class AcadColorPick : INotifyPropertyChanged
     {
         /// <summary>
