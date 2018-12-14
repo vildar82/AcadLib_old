@@ -54,13 +54,13 @@
         {
             AddErrorInternal(err);
         }
-        
+
         public static void AddError(string msg, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, icon);
             AddErrorInternal(err);
         }
-        
+
         public static void AddError(string group, string msg, [CanBeNull] Icon icon = null)
         {
             var err = new Error(msg, icon) { Group = group };
@@ -236,7 +236,7 @@
             {
                 var errVM = new ErrorsVM(errors) {IsDialog = false};
                 var errView = new ErrorsView(errVM);
-                errView.Show();
+                Application.ShowModelessWindow(errView);
                 Clear();
             }
             catch (Exception ex)
@@ -272,11 +272,9 @@
         {
             var errVM = new ErrorsVM(errors) { IsDialog = true };
             var errView = new ErrorsView(errVM);
-            var res = errView.ShowDialog();
+            var res = Application.ShowModalWindow(errView);
             if (res == true)
-            {
                 Clear();
-            }
             return res;
         }
 
@@ -286,7 +284,7 @@
                 return;
             var errVM = new ErrorsVM(LastErrors) { IsDialog = false };
             var errView = new ErrorsView(errVM);
-            errView.Show();
+            Application.ShowModelessWindow(errView);
         }
 
         private static void AddErrorInternal(IError err)

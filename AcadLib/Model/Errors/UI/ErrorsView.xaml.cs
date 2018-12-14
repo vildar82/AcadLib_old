@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib.Errors
+﻿namespace AcadLib.Errors
 {
     using System.Diagnostics;
     using System.Linq;
@@ -18,7 +17,8 @@ namespace AcadLib.Errors
     {
         private readonly Document doc;
 
-        public ErrorsView([NotNull] ErrorsVM errVM) : base(errVM)
+        public ErrorsView([NotNull] ErrorsVM errVM)
+            : base(errVM)
         {
             doc = AcadHelper.Doc;
             InitializeComponent();

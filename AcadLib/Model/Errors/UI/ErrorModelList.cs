@@ -9,7 +9,8 @@
 
     public class ErrorModelList : ErrorModelBase
     {
-        public ErrorModelList([NotNull] List<IError> sameErrors) : base(sameErrors.First())
+        public ErrorModelList([NotNull] List<IError> sameErrors)
+            : base(sameErrors.First())
         {
             VisibilityCount = Visibility.Visible;
             firstErr = sameErrors.First();
@@ -17,7 +18,7 @@
             Header = new ErrorModelOne(firstErr, null)
             {
                 AddButtons = null,
-                MarginHeader = new Thickness(2),
+                MarginHeader = new Thickness(1),
                 Parent = this,
                 ShowCount = true,
                 Message = firstErr.Group

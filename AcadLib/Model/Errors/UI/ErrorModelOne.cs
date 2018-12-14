@@ -29,7 +29,7 @@
                     Message = $"{err.Group} {err.Message}";
                 }
 
-                MarginHeader = new Thickness(32, 2, 2, 2);
+                MarginHeader = new Thickness(1, 1, 1, 1);
             }
             else
             {

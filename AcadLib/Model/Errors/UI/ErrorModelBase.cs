@@ -1,13 +1,10 @@
-﻿// ReSharper disable once CheckNamespace
-
-using System.Reactive;
-
-namespace AcadLib.Errors
+﻿namespace AcadLib.Errors
 {
     using System;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using System.Reactive;
     using System.Windows;
     using System.Windows.Media.Imaging;
     using JetBrains.Annotations;
@@ -23,7 +20,7 @@ namespace AcadLib.Errors
 
         public ErrorModelBase(IError err)
         {
-            MarginHeader = new Thickness(2);
+            MarginHeader = new Thickness(1);
             firstErr = err;
             Show = CreateCommand(OnShowExecute);
             if (firstErr.Icon != null)
