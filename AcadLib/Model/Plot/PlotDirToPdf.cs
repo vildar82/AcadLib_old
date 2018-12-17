@@ -258,7 +258,7 @@ namespace AcadLib.Plot
                 }
 
                 NetLib.IO.Path.TryDeleteFile(dsdFile);
-                
+
                 // Добавить бланк
                 if (Options.BlankOn)
                 {

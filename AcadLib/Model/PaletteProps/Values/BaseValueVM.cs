@@ -1,6 +1,4 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-
-namespace AcadLib.PaletteProps
+﻿namespace AcadLib.PaletteProps
 {
     using System;
     using System.Collections.Generic;
@@ -9,6 +7,7 @@ namespace AcadLib.PaletteProps
     using System.Reactive.Linq;
     using System.Windows.Controls;
     using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.DatabaseServices;
     using JetBrains.Annotations;
     using NetLib.WPF;
     using ReactiveUI;

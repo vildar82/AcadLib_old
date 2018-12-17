@@ -190,6 +190,7 @@
     <Compile Include="Model\Dll\DllVer.cs" />
     <Compile Include="Model\Doc\DocSysVarAuto.cs" />
     <Compile Include="Model\DrawOrder\DrawOrderExt.cs" />
+    <Compile Include="Model\Editors\CursorBadgeUsing.cs" />
     <Compile Include="Model\Editors\EditorExt.cs" />
     <Compile Include="Model\Editors\EditorExtension.cs" />
     <Compile Include="Model\Errors\UI\ErrorModelOne.cs" />
@@ -218,6 +219,10 @@
       <DependentUpon>DoubleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\PaletteProps\Values\IValue.cs" />
+    <Compile Include="Model\PaletteProps\Values\StringListView.xaml.cs">
+      <DependentUpon>StringListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PaletteProps\Values\StringListVM.cs" />
     <Compile Include="Model\PaletteProps\Values\StringView.xaml.cs">
       <DependentUpon>StringView.xaml</DependentUpon>
     </Compile>
@@ -716,6 +721,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Model\PaletteProps\Values\StringListView.xaml" />
     <Page Include="Model\PaletteProps\Values\StringView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

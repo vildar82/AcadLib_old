@@ -1,4 +1,7 @@
-﻿namespace AcadLib.Blocks
+﻿using Autodesk.AutoCAD.DatabaseServices.Filters;
+using Autodesk.AutoCAD.EditorInput;
+
+namespace AcadLib.Blocks
 {
     using System;
     using System.Collections.Generic;
@@ -61,6 +64,7 @@
         public PropertyType Type { get; set; }
 
         public object Value { get; set; }
+        public object[] AllowedValues { get; set; }
 
         /// <summary>
         /// Все видимые атрибуты и динамические свойства блока
@@ -95,7 +99,12 @@
                     {
                         if (dyn.PropertyName.Equals("Origin", StringComparison.OrdinalIgnoreCase))
                             continue;
-                        var prop = new Property(dyn) { DynPropTypeCode = dyn.PropertyTypeCode };
+                        var prop = new Property(dyn)
+                        {
+                            DynPropTypeCode = dyn.PropertyTypeCode,
+                            AllowedValues = dyn.GetAllowedValues(),
+                        };
+
                         props.Add(prop);
                     }
                 }
