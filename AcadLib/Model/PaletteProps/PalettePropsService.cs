@@ -4,14 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reactive.Linq;
-    using System.Windows.Forms.Integration;
+    using AcadLib.UI;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.EditorInput;
-    using Autodesk.AutoCAD.Windows;
     using Errors;
     using JetBrains.Annotations;
-    using Properties;
     using Reactive;
     using UI;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
@@ -19,6 +17,7 @@
     /// <summary>
     /// Палитра свойств
     /// </summary>
+    [PublicAPI]
     public static class PalettePropsService
     {
         public static string Various { get; } = "*Различные*";
@@ -26,8 +25,6 @@
         public static readonly PalettePropsVM propsVM = new PalettePropsVM();
         [NotNull]
         private static readonly List<PalettePropsProvider> providers = new List<PalettePropsProvider>();
-        private static PaletteSet palette;
-        private static bool stop;
         private static IDisposable entModifiedObs;
         private static HashSet<ObjectId> idsHash;
 
@@ -40,47 +37,25 @@
         {
             if (providers.Any(p => p.Name == name))
                 throw new Exception($"Такой провайдер свойств палитры уже есть - '{name}'");
+            if (providers.Count == 0)
+            {
+                Init();
+            }
+
             providers.Add(new PalettePropsProvider(name, getTypes));
         }
 
-        public static void Start()
+        private static void Init()
         {
-            stop = false;
-            if (palette == null)
-            {
-                Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
-                foreach (var doc in Application.DocumentManager)
-                    DocumentSelectionChangeSubscribe(doc as Document);
-
-                palette = new PaletteSet("ПИК Свойства",
-                    nameof(Commands.PIK_PaletteProperties),
-                    new Guid("F1FFECA8-A9AE-47D6-8682-752D6AF1A15B")) { Icon = Resources.pik };
-                palette.StateChanged += Palette_StateChanged;
-                var propsView = new PalettePropsView(propsVM);
-                var host = new ElementHost { Child = propsView };
-                palette.Add("Свойства", host);
-            }
-
-            palette.Visible = true;
-            ShowSelection();
+            Palette.AddPalette("Свойства", new PalettePropsView(propsVM));
+            Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;
+            foreach (var doc in Application.DocumentManager)
+                DocumentSelectionChangeSubscribe(doc as Document);
         }
 
         private static void DocumentManager_DocumentCreated(object sender, DocumentCollectionEventArgs e)
         {
             DocumentSelectionChangeSubscribe(e.Document);
-        }
-
-        private static void Palette_StateChanged(object sender, [NotNull] PaletteSetStateEventArgs e)
-        {
-            switch (e.NewState)
-            {
-                case StateEventIndex.Hide:
-                    stop = true;
-                    break;
-                case StateEventIndex.Show:
-                    stop = false;
-                    break;
-            }
         }
 
         private static void DocumentSelectionChangeSubscribe([CanBeNull] Document doc)
@@ -104,7 +79,7 @@
 
         private static void ShowSelection()
         {
-            if (stop || !providers.Any())
+            if (Palette.IsStop || !providers.Any())
             {
                 Clear();
                 return;

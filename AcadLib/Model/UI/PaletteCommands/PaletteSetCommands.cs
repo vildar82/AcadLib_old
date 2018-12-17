@@ -26,7 +26,8 @@
             Guid paletteGuid,
             string commandStartPalette,
             List<IPaletteCommand> commandsAddin,
-            string versionPalette) : base(paletteName, commandStartPalette, paletteGuid)
+            string versionPalette)
+            : base(paletteName, commandStartPalette, paletteGuid)
         {
             this.versionPalette = versionPalette;
             CommandsAddin = commandsAddin;
