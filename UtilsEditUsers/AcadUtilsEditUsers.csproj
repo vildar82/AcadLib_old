@@ -188,7 +188,7 @@
       <Version>1.6.5</Version>
     </PackageReference>
     <PackageReference Include="NetLib">
-      <Version>1.1.77</Version>
+      <Version>1.1.80</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
@@ -200,7 +200,7 @@
       <Version>1.0.2</Version>
     </PackageReference>
     <PackageReference Update="Fody" Version="3.3.3" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="2.2.33" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="2.3.38" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
