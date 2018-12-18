@@ -6,6 +6,7 @@
     xmlns:paletteProps="clr-namespace:AcadLib.PaletteProps">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ComboBoxPaletteTemplate.xaml" />
+        <ResourceDictionary Source="../../WPF/ScrollBarIOS.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     <SolidColorBrush x:Key="TextBrush"
                      Color="{Binding CurrentTheme.ControlTextColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}" />
@@ -15,13 +16,17 @@
                      Color="{Binding CurrentTheme.PaletteTabActiveBottomColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}" />
     <SolidColorBrush x:Key="BackMoreBrush"
                      Color="{Binding CurrentTheme.PropertyInspectorCategoryBackgroundColor, Source={x:Static acwt:ThemeManager.PaletteSettings}}" />
+    <Style TargetType="Control" BasedOn="{StaticResource {x:Type Control}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
     <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="MaxHeight" Value="30" />
     </Style>
-    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="BorderThickness" Value="0" />
@@ -93,6 +98,11 @@
     </Style>
     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
 </ResourceDictionary>
