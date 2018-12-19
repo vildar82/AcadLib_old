@@ -150,6 +150,8 @@ namespace AcadLib
             {
                 var curVer = Application.ProductVersion.GetMajorAcadVersion();
                 var acads = Process.GetProcessesByName("acad");
+                if (acads.Length == 1)
+                    return;
                 var hasOther = acads
                     .Select(process => process.MainModule.FileVersionInfo.ProductVersion.GetMajorAcadVersion())
                     .Any(otherVer => !curVer.EqualsIgnoreCase(otherVer));
