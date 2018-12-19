@@ -84,9 +84,9 @@ namespace AcadLib
 #endif
             try
             {
-                CheckOtherAcadVersionProcess();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 Logger.Log.Info("start Initialize AcadLib");
+                CheckOtherAcadVersionProcess();
                 StatusBarEx.AddPaneUserGroup();
                 PluginStatisticsHelper.StartAutoCAD();
                 if (PikSettings.IsDisabledSettings)
@@ -148,20 +148,26 @@ namespace AcadLib
         {
             try
             {
+                if (General.IsBimUser)
+                    return;
                 var curVer = Application.ProductVersion.GetMajorAcadVersion();
                 var acads = Process.GetProcessesByName("acad");
                 if (acads.Length == 1)
                     return;
-                var hasOther = acads
+                var otherVer = acads
                     .Select(process => process.MainModule.FileVersionInfo.ProductVersion.GetMajorAcadVersion())
-                    .Any(otherVer => !curVer.EqualsIgnoreCase(otherVer));
+                    .FirstOrDefault(o => !curVer.EqualsIgnoreCase(o));
 
-                if (hasOther)
-                    HostApplicationServices.Current.FatalError("Нельзя запускать две разные версии acad! Занимаются две лицензии.");
+                if (!otherVer.IsNullOrEmpty())
+                {
+                    var msg = $"Нельзя запускать две разные версии acad! Занимаются две лицензии. Текущая версия {curVer}, другая запущенная версия {otherVer}.";
+                    Logger.Log.Info(msg);
+                    HostApplicationServices.Current.FatalError(msg);
+                }
             }
             catch (Exception ex)
             {
-                Logger.Log.Error("CheckOtherAcadVersionProcess", ex);
+                Logger.Log.Error(ex, "CheckOtherAcadVersionProcess");
             }
         }
 
@@ -583,11 +589,11 @@ namespace AcadLib
                 dllsResolve = FilterDllResolveVersions(dllsResolve);
             }
 
-            Debug.WriteLine($"AssemblyResolve {args.Name}");
+            Debug.WriteLine($"AcadLib AssemblyResolve {args.Name}");
             var dllResolver = dllsResolve.FirstOrDefault(f => f.IsResolve(args.Name));
             if (dllResolver == null)
             {
-                Debug.WriteLine("dllResolver == null");
+                Debug.WriteLine("AcadLib dllResolver == null");
                 return null;
             }
 
