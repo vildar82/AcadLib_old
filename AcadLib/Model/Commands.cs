@@ -1,4 +1,5 @@
 ﻿using System.Windows.Threading;
+using NetLib;
 
 namespace AcadLib
 {
@@ -83,6 +84,7 @@ namespace AcadLib
 #endif
             try
             {
+                CheckOtherAcadVersionProcess();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 Logger.Log.Info("start Initialize AcadLib");
                 StatusBarEx.AddPaneUserGroup();
@@ -139,6 +141,25 @@ namespace AcadLib
             {
                 $"PIK. Ошибка загрузки AcadLib, версия:{AcadLibVersion} - {ex.Message}.".WriteToCommandLine();
                 Logger.Log.Error(ex, "AcadLib Initialize.");
+            }
+        }
+
+        private void CheckOtherAcadVersionProcess()
+        {
+            try
+            {
+                var curVer = Application.ProductVersion.GetMajorAcadVersion();
+                var acads = Process.GetProcessesByName("acad");
+                var hasOther = acads
+                    .Select(process => process.MainModule.FileVersionInfo.ProductVersion.GetMajorAcadVersion())
+                    .Any(otherVer => !curVer.EqualsIgnoreCase(otherVer));
+
+                if (hasOther)
+                    HostApplicationServices.Current.FatalError("Нельзя запускать две разные версии acad! Занимаются две лицензии.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error("CheckOtherAcadVersionProcess", ex);
             }
         }
 

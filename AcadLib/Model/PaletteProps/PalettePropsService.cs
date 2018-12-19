@@ -60,8 +60,7 @@
 
         private static void DocumentSelectionChangeSubscribe([CanBeNull] Document doc)
         {
-            if (doc == null)
-                return;
+            if (doc == null) return;
             doc.ImpliedSelectionChanged += Document_ImpliedSelectionChanged;
         }
 

@@ -6,9 +6,7 @@ namespace AcadLib.PaletteProps
 
     public class TextBoxHelper
     {
-        public static readonly DependencyProperty SelectAllOnFocusProperty =
-            DependencyProperty.RegisterAttached("SelectAllOnFocus", typeof(bool), typeof(TextBoxHelper),
-                new FrameworkPropertyMetadata(false, OnIsMonitoringChanged));
+        public static readonly DependencyProperty SelectAllOnFocusProperty = DependencyProperty.RegisterAttached("SelectAllOnFocus", typeof(bool), typeof(TextBoxHelper), new FrameworkPropertyMetadata(false, OnIsMonitoringChanged));
 
         public static void SetSelectAllOnFocus(DependencyObject obj, bool value)
         {

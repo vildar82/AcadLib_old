@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using NetLib;
 
 namespace AcadLib
 {
@@ -21,7 +22,7 @@ namespace AcadLib
     public static class AcadHelper
     {
         private static readonly int AcadId = Process.GetCurrentProcess().Id;
-        
+
         public static void InvokeInMainThread(Action action)
         {
             if (IsMainThread())
@@ -49,6 +50,12 @@ namespace AcadLib
         /// Основной номер версии Автокада
         /// </summary>
         public static int VersionMajor => Application.Version.Major;
+
+        public static string GetMajorAcadVersion(this string verStr)
+        {
+            var index = verStr.GetNthIndex('.', 2);
+            return verStr.Substring(0, index);
+        }
 
         public static void StartTransaction(this Document doc, Action<Transaction> action)
         {
