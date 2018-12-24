@@ -36,7 +36,6 @@
 					<Button Content="{iconPacks:Material Delete, Width=12, Height=12}" Margin="2" Command="{Binding DeleteExtraGroup}"
 					        VerticalAlignment="Center" />
 				</StackPanel>
-				<CheckBox IsChecked="{Binding PreviewUpdate}" Margin="5" Content="Предварительные обновления" />
 				<CheckBox IsChecked="{Binding Disabled}" Margin="5" Content="Отключить настройки" />
 				<TextBlock Text="Изменения применятся при перезапуске автокада!" TextWrapping="Wrap" Margin="5"
 				           Foreground="{DynamicResource ValidationBrush5}" />
@@ -46,7 +45,7 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate DataType="user:PluginSettings">
 					<StackPanel Margin="2">
-						<TextBlock Text="{Binding Title}" FontWeight="Bold" Margin="10,5,1,2" 
+						<TextBlock Text="{Binding Title}" FontWeight="Bold" Margin="10,5,1,2"
 						           Visibility="{Binding Title, Converter={converters:NullVisibilityConverter}}"/>
 						<ItemsControl ItemsSource="{Binding Properties}">
 							<ItemsControl.ItemTemplate>
@@ -54,8 +53,8 @@
 									<Grid ToolTip="{Binding Description}" Margin="1">
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition
-												Width="{Binding UserSettingsPropsWidth, 
-													Source={x:Static properties:Settings.Default}, 
+												Width="{Binding UserSettingsPropsWidth,
+													Source={x:Static properties:Settings.Default},
 													Converter={converters:GridLengthConverter}, Mode=TwoWay}" />
 											<ColumnDefinition Width="3" />
 											<ColumnDefinition />
