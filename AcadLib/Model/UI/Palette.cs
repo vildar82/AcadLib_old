@@ -11,7 +11,7 @@ namespace AcadLib.UI
     public static class Palette
     {
         private static PaletteSet palette;
-        private static bool stop;
+        private static bool stop = true;
 
         public static void Start()
         {

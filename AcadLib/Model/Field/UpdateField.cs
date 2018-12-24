@@ -38,9 +38,11 @@
 
         private static int AcdbEvaluateFields(ref ObjectId id, int context)
         {
-            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (Application.Version.Major)
             {
+                case 23:
+                    return AcdbEvaluateFields23x64(ref id, 16, IntPtr.Zero, IntPtr.Zero, 1, IntPtr.Zero, IntPtr.Zero);
+
                 case 21:
                     return IntPtr.Size == 8
                         ? AcdbEvaluateFields21x64(ref id, 16, IntPtr.Zero, IntPtr.Zero, 1, IntPtr.Zero, IntPtr.Zero)
@@ -137,5 +139,18 @@
             int eval,
             IntPtr i1,
             IntPtr i2);
+
+        // AutoCAD 2019 x64
+        [DllImport("acdb23.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, ExactSpelling = true,
+            EntryPoint =
+                "?acdbEvaluateFields@@YA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@HPEB_WPEAVAcDbDatabase@@W4EvalFields@AcFd@@PEAH4@Z")]
+        private static extern int AcdbEvaluateFields23x64(
+                ref ObjectId id,
+                int context,
+                IntPtr pszPropName,
+                IntPtr db,
+                int eval,
+                IntPtr i1,
+                IntPtr i2);
     }
 }

@@ -369,7 +369,7 @@ namespace AcadLib.UI.Ribbon
                 Title = element.Name,
                 Content = element.Description,
                 IsHelpEnabled = false,
-                Image = element.LargeImage
+                Image = element.LargeImage,
             };
         }
 

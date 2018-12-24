@@ -22,7 +22,10 @@
                 CheckFileExist();
                 var fi = new FileInfo(drawing);
                 DateLastWrite = System.IO.File.GetLastWriteTime(drawing);
-                Size = fi.Length;
+                if (!fi.Exists)
+                    Err = $"Файл '{fi.FullName}' не найден.";
+                else
+                    Size = fi.Length;
             }
             catch (Exception ex)
             {

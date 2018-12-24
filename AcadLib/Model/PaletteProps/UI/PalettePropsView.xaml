@@ -16,11 +16,7 @@
     Foreground="{DynamicResource TextBrush}"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="PalettePropsStyle.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        <ResourceDictionary Source="PalettePropsStyle.xaml" />
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch"
           mah:VisibilityHelper.IsHidden="{Binding Types, Converter={conv:IsNullConverter}}">

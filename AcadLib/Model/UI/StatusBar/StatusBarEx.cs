@@ -109,10 +109,10 @@
 
             string GetGroupInfo(GroupInfo groupInfo)
             {
-                var info = $"{groupInfo.GroupName}: вер. {groupInfo.VersionLocal}";
+                var info = $"{groupInfo.GroupName}: вер. {groupInfo.VersionLocal} ({groupInfo.VersionLocalDate:dd.MM.yy HH:mm})";
                 if (groupInfo.UpdateRequired)
                 {
-                    info += $", на сервере {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy hh:mm})";
+                    info += $", на сервере {groupInfo.VersionServer} ({groupInfo.VersionServerDate:dd.MM.yy HH:mm})";
                 }
 
                 if (CheckUpdates.NeedNotify(groupInfo.UpdateDescription, out var descResult))

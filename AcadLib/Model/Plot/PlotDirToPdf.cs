@@ -252,7 +252,7 @@ namespace AcadLib.Plot
                     progressDlg.LowerSheetProgressRange = 0;
                     progressDlg.IsVisible = true;
                     var publisher = Application.Publisher;
-                    PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
+                    PlotConfigManager.SetCurrentConfig("clk-PDF.pc3");
                     publisher.PublishDsd(dsdFile, progressDlg);
                     progressDlg.Destroy();
                 }

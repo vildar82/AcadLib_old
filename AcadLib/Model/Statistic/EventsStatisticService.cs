@@ -1,13 +1,11 @@
-﻿using System.Reactive.Linq;
-using AcadLib.Reactive;
-
-namespace AcadLib.Statistic
+﻿namespace AcadLib.Statistic
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Reactive.Linq;
     using System.Threading.Tasks;
     using System.Windows;
     using Autodesk.AutoCAD.ApplicationServices;
@@ -17,6 +15,7 @@ namespace AcadLib.Statistic
     using JetBrains.Annotations;
     using NetLib;
     using PathChecker;
+    using Reactive;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
     using Exception = System.Exception;
 

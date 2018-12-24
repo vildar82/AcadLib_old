@@ -1,4 +1,6 @@
-﻿namespace AcadLib.Extensions
+﻿using Antlr.Runtime.Tree;
+
+namespace AcadLib.Extensions
 {
     using System;
     using System.Collections.Generic;
@@ -46,11 +48,11 @@
         /// <returns>Да - видим, Нет - не видим, слой выключен или заморожен</returns>
         public static bool IsVisibleLayerOnAndUnfrozen([NotNull] this Entity ent)
         {
-            if (!ent.Visible || ent.LayerId.IsNull)
-                return false;
-            using (var lt = (LayerTable)ent.Database.LayerTableId.GetObject(OpenMode.ForRead))
-            using (var lay = (LayerTableRecord)lt[ent.Layer].GetObject(OpenMode.ForRead))
+            if (!ent.Visible) return false;
+            using (var lay = ent.LayerId.GetObject<LayerTableRecord>())
             {
+                if (lay == null)
+                    return true;
                 return !lay.IsOff && !lay.IsFrozen; // Слой включен и разморожен  и объект видимый
             }
         }
@@ -88,7 +90,7 @@
                 }
             }
         }
-        
+
         private static void AddScaleAndRemoveOther(Entity ent, ObjectContext addScale, ObjectContextCollection occ)
         {
             ent.AddContext(addScale);

@@ -182,26 +182,19 @@
         public static string GetXDataString([NotNull] this DBObject dbo, string regAppName)
         {
             var rb = dbo.GetXDataForApplication(regAppName);
-            return rb != null ? GetStringValue(rb.GetEnumerator()) : string.Empty;
+            return rb != null ? GetStringValue(rb.GetEnumerator(), false) : string.Empty;
         }
 
-        private static string GetStringValue(ResultBufferEnumerator tvEnumerator)
+        private static string GetStringValue(ResultBufferEnumerator tvEnumerator, bool hasCurrent)
         {
             var regex = new Regex(@"^\d{1,2}#");
             string nextVal = null;
 
             do
             {
-                TypedValue tv;
-                try
-                {
-                    tv = tvEnumerator.Current;
-                }
-                catch
-                {
+                if (!hasCurrent)
                     continue;
-                }
-
+                var tv = tvEnumerator.Current;
                 if (tv.TypeCode == (short)DxfCode.ExtendedDataAsciiString)
                 {
                     nextVal = tv.Value?.ToString();
@@ -263,7 +256,7 @@
                     {
                         if (rbEnumerator.Current.TypeCode == (short)DxfCode.ExtendedDataAsciiString)
                         {
-                            return (T)(object)GetStringValue(rbEnumerator);
+                            return (T)(object)GetStringValue(rbEnumerator, true);
                         }
 
                         return (T)rbEnumerator.Current.Value;
