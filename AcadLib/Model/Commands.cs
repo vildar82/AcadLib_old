@@ -148,14 +148,14 @@ namespace AcadLib
         {
             try
             {
-                if (General.IsBimUser)
+                if (!General.IsBimUser)
                     return;
                 var curVer = Application.ProductVersion.GetMajorAcadVersion();
                 var acads = Process.GetProcessesByName("acad");
                 if (acads.Length == 1)
                     return;
                 var otherVer = acads
-                    .Select(process => process.MainModule.FileVersionInfo.ProductVersion.GetMajorAcadVersion())
+                    .Select(GetMajorAcadVersion)
                     .FirstOrDefault(o => !curVer.EqualsIgnoreCase(o));
 
                 if (!otherVer.IsNullOrEmpty())
@@ -169,6 +169,12 @@ namespace AcadLib
             {
                 Logger.Log.Error(ex, "CheckOtherAcadVersionProcess");
             }
+        }
+
+        private string GetMajorAcadVersion(Process p)
+        {
+            var ver = FileVersionInfo.GetVersionInfo(p.MainModule.FileName).ProductVersion;
+            return ver.GetMajorAcadVersion();
         }
 
         public void Terminate()

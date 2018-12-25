@@ -196,7 +196,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Log.Fatal($"EventsStatisticService DocumentManager_DocumentLockModeChanged, GlobalCommandName={e?.GlobalCommandName}", ex);
+                Logger.Log.Fatal(ex, $"EventsStatisticService DocumentManager_DocumentLockModeChanged, GlobalCommandName={e?.GlobalCommandName}");
             }
         }
 
@@ -208,6 +208,8 @@
 
         private static void CloseDiscardOnIdle(object sender, EventArgs e)
         {
+            if (_currentDoc == null)
+                return;
             try
             {
                 Application.Idle -= CloseDiscardOnIdle;
@@ -216,7 +218,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Log.Error("EventsStatisticService CloseDiscardOnIdle", ex);
+                Logger.Log.Error(ex, "EventsStatisticService CloseDiscardOnIdle");
             }
         }
 
@@ -236,7 +238,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Log.Error("EventsStatisticService CloseSaveOnIdle", ex);
+                Logger.Log.Error(ex, "EventsStatisticService CloseSaveOnIdle");
             }
         }
 
@@ -304,7 +306,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Log.Error("EventsStatisticService SubscribeDoc", ex);
+                Logger.Log.Error(ex, "EventsStatisticService SubscribeDoc");
             }
         }
 

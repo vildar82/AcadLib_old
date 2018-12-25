@@ -151,7 +151,7 @@
                             }
                             catch (Exception ex)
                             {
-                                Logger.Log.Error("RestoreTabs. Закрыть пустые чертежи.", ex);
+                                Logger.Log.Error(ex, "RestoreTabs. Закрыть пустые чертежи.");
                             }
                         }
 

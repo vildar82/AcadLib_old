@@ -110,6 +110,9 @@
       <HintPath>lib\AutoCAD_PIK_Settings.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="GlobalHooks, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>lib\GlobalHooks.dll</HintPath>
+    </Reference>
     <Reference Include="MongoDblib">
       <HintPath>lib\MongoDblib.dll</HintPath>
     </Reference>
@@ -363,6 +366,9 @@
     <Compile Include="Model\Entitys\EntityHelper.cs" />
     <Compile Include="Model\Template\TemplateData.cs" />
     <Compile Include="Model\Test\BatchRemoveLayouts.cs" />
+    <Compile Include="Model\UI\Hotkeys\HotKeyService.cs" />
+    <Compile Include="Model\UI\Hotkeys\Keys.cs" />
+    <Compile Include="Model\UI\Hotkeys\ModifyKey.cs" />
     <Compile Include="Model\UI\Palette.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteInsertBlock.cs" />
     <Compile Include="Model\UI\PaletteCommands\Blocks\PaletteVisualInsertBlocks.cs" />
@@ -816,6 +822,9 @@
     <PackageReference Update="Fody" Version="3.3.3" />
     <PackageReference Update="PropertyChanged.Fody" Version="2.6.0" />
     <PackageReference Update="Nerdbank.GitVersioning" Version="2.3.38" />
+    <PackageReference Include="Yandex.Metrica">
+      <Version>3.5.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

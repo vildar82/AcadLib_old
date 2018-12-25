@@ -15,9 +15,9 @@ namespace AcadLib.UI
 
         public static void Start()
         {
-            stop = false;
             palette = GetPalette();
-            palette.Visible = true;
+            palette.Visible = !palette.Visible;
+            stop = !palette.Visible;
         }
 
         public static void AddPalette(string name, UIElement view)

@@ -1,4 +1,7 @@
-﻿namespace AcadLib
+﻿using System.IO;
+using Yandex.Metrica;
+
+namespace AcadLib
 {
     using System;
     using Autodesk.AutoCAD.ApplicationServices.Core;
@@ -14,6 +17,15 @@
         static Logger()
         {
             Log = new LoggAddinExt();
+            try
+            {
+                YandexMetricaFolder.SetCurrent(Path.GetTempPath());
+                YandexMetrica.Activate("4a039a94-ea44-43b7-9025-59a856dd7120");
+            }
+            catch (Exception ex)
+            {
+                AutoCAD_PIK_Manager.Log.Error(ex,$"YandexMetrica Activate error");
+            }
         }
     }
 
@@ -43,12 +55,14 @@
         {
             var newMsg = GetMessage(msg);
             base.Error(ex, newMsg);
+            YandexReport(msg, ex);
         }
 
         public void Error([NotNull] Exception ex)
         {
             var newMsg = GetMessage(ex.Message);
             base.Error(ex, newMsg);
+            YandexReport(ex.Message, ex);
         }
 
         public override void Fatal(string msg)
@@ -62,6 +76,7 @@
         {
             var newMsg = GetMessage(msg);
             base.Fatal(ex, newMsg);
+            YandexReport(msg, ex);
         }
 
         public override void Info(string msg)
@@ -101,6 +116,18 @@
         public void Report(string msg)
         {
             Error("#Report: " + msg);
+        }
+
+        private static void YandexReport(string msg, Exception ex)
+        {
+            try
+            {
+                YandexMetrica.ReportError(msg, ex);
+            }
+            catch (Exception e)
+            {
+                AutoCAD_PIK_Manager.Log.Error(e, $"YandexReport");
+            }
         }
 
         public void StartCommand([CanBeNull] CommandStart command)
