@@ -148,7 +148,7 @@ namespace AcadLib
         {
             try
             {
-                if (!General.IsBimUser)
+                if (General.IsBimUser)
                     return;
                 var curVer = Application.ProductVersion.GetMajorAcadVersion();
                 var acads = Process.GetProcessesByName("acad");

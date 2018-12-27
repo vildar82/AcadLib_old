@@ -61,15 +61,11 @@
 
             if (!idBtr.IsNull)
             {
-#pragma warning disable 618
                 using (var btr = (BlockTableRecord)idBtr.Open(OpenMode.ForRead))
-#pragma warning restore 618
                 {
                     foreach (var idEnt in btr)
                     {
-#pragma warning disable 618
                         using (var attrDef = (AttributeDefinition)idEnt.Open(OpenMode.ForRead, false, true))
-#pragma warning restore 618
                         {
                             if (attrDef != null && attrDef.Visible)
                             {
@@ -94,9 +90,7 @@
                 {
                     if (!idAttrRef.IsValidEx())
                         continue;
-#pragma warning disable 618
                     using (var atrRef = (AttributeReference)idAttrRef.Open(OpenMode.ForRead, false, true))
-#pragma warning restore 618
                     {
                         if (atrRef.Visible)
                         {

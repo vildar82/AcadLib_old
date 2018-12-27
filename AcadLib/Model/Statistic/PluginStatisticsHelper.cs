@@ -11,6 +11,7 @@
     using JetBrains.Annotations;
     using Model.Statistic.DataSetStatisticTableAdapters;
     using NetLib;
+    using Yandex.Metrica;
     using General = AcadLib.General;
 
     [PublicAPI]
@@ -124,6 +125,9 @@
                 {
                     Logger.Log.Error(ex, "PluginStatisticsHelper Insert.");
                 }
+
+                if (!appName.EndsWith(" Run") && !appName.EndsWith(" Update"))
+                    YandexMetrica.ReportEvent($"{plugin} {command}");
             });
         }
 

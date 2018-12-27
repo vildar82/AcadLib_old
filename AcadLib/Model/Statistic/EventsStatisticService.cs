@@ -208,11 +208,11 @@
 
         private static void CloseDiscardOnIdle(object sender, EventArgs e)
         {
-            if (_currentDoc == null)
-                return;
             try
             {
                 Application.Idle -= CloseDiscardOnIdle;
+                if (_currentDoc == null)
+                    return;
                 Logger.Log.Info($"EventsStatisticService CloseDiscardOnIdle {_currentDoc?.Name}.");
                 _currentDoc.CloseAndDiscard();
             }
@@ -233,6 +233,8 @@
             try
             {
                 Application.Idle -= CloseSaveOnIdle;
+                if (_currentDoc == null)
+                    return;
                 Logger.Log.Info($"EventsStatisticService CloseSaveOnIdle {_currentDoc?.Name}.");
                 _currentDoc.CloseAndSave(_currentDoc.Name);
             }
