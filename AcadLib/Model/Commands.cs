@@ -49,11 +49,8 @@ namespace AcadLib
     {
         public const string CommandBlockList = "PIK_BlockList";
         public const string CommandCleanZombieBlocks = "PIK_CleanZombieBlocks";
-
         public const string CommandColorBookNCS = "PIK_ColorBookNCS";
-
         public const string CommandXDataView = "PIK_XDataView";
-
         public const string GroupCommon = "Общие";
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
 

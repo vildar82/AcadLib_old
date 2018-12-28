@@ -23,8 +23,8 @@
 
     public static class CheckUpdates
     {
-        private static readonly Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
-        private static readonly Subject<bool> Changes = new Subject<bool>();
+        [NotNull] private static readonly Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
+        [NotNull] private static readonly Subject<bool> Changes = new Subject<bool>();
 
         /// <summary>
         /// Отключенные уведомления групп пользователем
@@ -110,7 +110,15 @@
         private static void Application_Idle(object sender, EventArgs e)
         {
             Application.Idle -= Application_Idle;
-            CheckUpdatesNotify(true);
+            try
+            {
+                CheckUpdatesNotify(true);
+                Logger.Log.Info("CheckUpdates.CheckUpdatesNotify.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "CheckUpdates.CheckUpdatesNotify error.");
+            }
         }
 
         private static void Stop()

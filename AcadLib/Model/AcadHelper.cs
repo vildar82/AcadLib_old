@@ -120,7 +120,7 @@ namespace AcadLib
         {
             try
             {
-                Doc.Editor.WriteMessage($"\n{msg}");
+                Doc.Editor.WriteMessage($"\n{msg}\n");
             }
             catch
             {
