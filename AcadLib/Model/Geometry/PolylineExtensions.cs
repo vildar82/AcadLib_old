@@ -458,10 +458,8 @@
             if (pline.Normal.IsPerpendicularTo(direction, tol))
             {
                 var dirPlane = new Plane(Point3d.Origin, direction);
-
-                // ReSharper disable once UpgradeOpen
                 if (!pline.IsWriteEnabled)
-                    pline.UpgradeOpen();
+                    pline = pline.UpgradeOpenTr();
                 pline.TransformBy(Matrix3d.WorldToPlane(dirPlane));
                 var extents = pline.GeometricExtents;
                 pline.TransformBy(Matrix3d.PlaneToWorld(dirPlane));

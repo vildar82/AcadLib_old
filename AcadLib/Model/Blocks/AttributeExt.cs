@@ -114,7 +114,7 @@
             if (Math.Abs(atr.Rotation) > 0.0001)
             {
                 if (!atr.IsWriteEnabled)
-                    atr.UpgradeOpen();
+                    atr = atr.UpgradeOpenTr();
                 atr.Rotation = 0;
             }
         }

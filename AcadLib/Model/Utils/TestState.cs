@@ -1,10 +1,10 @@
-using System;
-using AutoCAD_PIK_Manager;
-using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-using Timer = System.Timers.Timer;
-
 namespace AcadLib.Utils
 {
+    using System;
+    using AutoCAD_PIK_Manager;
+    using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using Timer = System.Timers.Timer;
+
     public static class TestState
     {
         private static DateTime lastState;

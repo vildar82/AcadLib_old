@@ -1,11 +1,10 @@
-﻿using System.IO;
-using Yandex.Metrica;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
+    using System.IO;
     using Autodesk.AutoCAD.ApplicationServices.Core;
     using JetBrains.Annotations;
+    using Yandex.Metrica;
 
     public static class Logger
     {
@@ -25,7 +24,7 @@ namespace AcadLib
             }
             catch (Exception ex)
             {
-                AutoCAD_PIK_Manager.Log.Error(ex,"YandexMetrica Activate error");
+                AutoCAD_PIK_Manager.Log.Error(ex, "YandexMetrica Activate error");
             }
         }
     }

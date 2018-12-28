@@ -87,7 +87,7 @@
                     var cleanApp = cleanApps.FirstOrDefault(r => r.Value.Item1.IsMatch(regApp.Name));
                     if (cleanApp.Key != null)
                     {
-                        regApp.UpgradeOpen();
+                        regApp = regApp.UpgradeOpenTr();
                         regApp.Erase();
                         var item = cleanApps[cleanApp.Key];
                         item.Item2 += 1;

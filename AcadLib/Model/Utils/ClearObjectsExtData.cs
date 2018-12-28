@@ -15,7 +15,6 @@
                 {
                     if (!ent.ExtensionDictionary.IsNull)
                     {
-                        ent.UpgradeOpen();
                         var extD = ent.ExtensionDictionary.GetObject<DBObject>(OpenMode.ForWrite);
                         extD?.Erase();
                     }

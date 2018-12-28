@@ -40,26 +40,14 @@ namespace AcadLib.XData
                     if (!clear)
                         return res;
 
-                    // ReSharper disable once UpgradeOpen
                     dic.UpgradeOpen();
                     dic.Remove(key);
-
-                    // using (var xr = res.Open(OpenMode.ForWrite) as Xrecord)
-                    // {
-                    //    if (xr != null)
-                    //        xr.Data = null;
-                    // }
                 }
                 else if (create)
                 {
                     using (var xRec = new Xrecord())
                     {
-                        if (!dic.IsWriteEnabled)
-                        {
-                            // ReSharper disable once UpgradeOpen
-                            dic.UpgradeOpen();
-                        }
-
+                        if (!dic.IsWriteEnabled) dic.UpgradeOpen();
                         res = dic.SetAt(key, xRec);
                     }
                 }
@@ -78,7 +66,6 @@ namespace AcadLib.XData
             if (!dicId.IsValidEx())
                 return;
 
-            // ReSharper disable once IdOpenMode
             using (var dic = (DBDictionary)dicId.Open(OpenMode.ForWrite))
             {
                 if (dic != null)
@@ -97,7 +84,6 @@ namespace AcadLib.XData
                     return;
                 if (dboExtDic.Count == 0 || dboExtDic.Count == 1 && dboExtDic.Contains(PikApp))
                 {
-                    // ReSharper disable once UpgradeOpen
                     dboExtDic.UpgradeOpen();
                     dboExtDic.Erase();
                 }
@@ -128,14 +114,12 @@ namespace AcadLib.XData
                     if (!clear)
                         return res;
 
-                    // ReSharper disable once IdOpenMode
                     using (var resDic = (DBDictionary)res.Open(OpenMode.ForWrite))
                     {
                         if (resDic == null)
                             return res;
                         foreach (var item in resDic)
                         {
-                            // ReSharper disable once IdOpenMode
                             using (var entry = item.Value.Open(OpenMode.ForWrite))
                             {
                                 entry.Erase();
@@ -147,12 +131,7 @@ namespace AcadLib.XData
                 {
                     using (var dicInner = new DBDictionary())
                     {
-                        if (!dic.IsWriteEnabled)
-                        {
-                            // ReSharper disable once UpgradeOpen
-                            dic.UpgradeOpen();
-                        }
-
+                        if (!dic.IsWriteEnabled) dic.UpgradeOpen();
                         res = dic.SetAt(key, dicInner);
                     }
                 }
@@ -176,12 +155,7 @@ namespace AcadLib.XData
             {
                 if (create)
                 {
-                    if (!dbo.IsWriteEnabled)
-                    {
-                        // ReSharper disable once UpgradeOpen
-                        dbo.UpgradeOpen();
-                    }
-
+                    if (!dbo.IsWriteEnabled) dbo.UpgradeOpenTr();
                     dbo.CreateExtensionDictionary();
                     res = dbo.ExtensionDictionary;
                 }
@@ -289,7 +263,6 @@ namespace AcadLib.XData
             if (!idXrec.IsValidEx())
                 return;
 
-            // ReSharper disable once IdOpenMode
             using (var xrec = (Xrecord)idXrec.Open(OpenMode.ForWrite))
             using (var rb = new ResultBuffer(rec.Values.ToArray()))
             {

@@ -1,6 +1,4 @@
-﻿using Antlr.Runtime.Tree;
-
-namespace AcadLib.Extensions
+﻿namespace AcadLib.Extensions
 {
     using System;
     using System.Collections.Generic;
@@ -21,7 +19,7 @@ namespace AcadLib.Extensions
         public static ObjectId Append([NotNull] this Entity ent, [NotNull] BlockTableRecord btr)
         {
             if (!btr.IsWriteEnabled)
-                btr.UpgradeOpen();
+                btr = btr.Id.GetObject<BlockTableRecord>(OpenMode.ForWrite);
             var id = btr.AppendEntity(ent);
             btr.Database.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(ent, true);
             return id;

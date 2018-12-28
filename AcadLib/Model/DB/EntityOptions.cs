@@ -76,20 +76,13 @@
 
         public virtual void SetOptions([NotNull] Entity ent)
         {
-            if (!ent.IsWriteEnabled)
-            {
-                ent.UpgradeOpen();
-            }
-
+            if (!ent.IsWriteEnabled) ent = ent.UpgradeOpenTr();
             SetLayer(ent);
             SetColor(ent);
             SetLineWeight(ent);
             SetLineType(ent);
             SetLinetypeScale(ent);
-            if (PoliylineWidth != null && ent is Polyline pl)
-            {
-                pl.ConstantWidth = PoliylineWidth.Value;
-            }
+            if (PoliylineWidth != null && ent is Polyline pl) pl.ConstantWidth = PoliylineWidth.Value;
         }
 
         public void SetLineType(Entity ent)

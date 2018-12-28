@@ -60,9 +60,7 @@
         {
             var resVal = new Dictionary<string, ObjectId>();
             var db = HostApplicationServices.WorkingDatabase;
-#pragma warning disable 618
             using (var lt = (LayerTable)db.LayerTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 foreach (var layer in layers.Where(w => w != null))
                 {
@@ -82,10 +80,7 @@
                         CheckLayerState(layId, out _);
                         if (checkProps)
                         {
-                            // ReSharper disable once IdOpenMode
-#pragma warning disable 618
                             using (var lay = (LayerTableRecord)layId.Open(OpenMode.ForWrite))
-#pragma warning restore 618
                             {
                                 layer.SetProp(lay, db);
                             }
@@ -93,9 +88,7 @@
                     }
                     else
                     {
-#pragma warning disable 618
                         layId = CreateLayer(layer, lt);
-#pragma warning restore 618
                     }
 
                     layer.LayerId = layId;
@@ -169,8 +162,6 @@
             using (var newLayer = new LayerTableRecord())
             {
                 layerInfo.SetProp(newLayer, lt.Database);
-
-                // ReSharper disable once UpgradeOpen
                 lt.UpgradeOpen();
                 idLayer = lt.Add(newLayer);
                 lt.DowngradeOpen();
@@ -192,9 +183,7 @@
             var db = HostApplicationServices.WorkingDatabase;
 
             // Если уже был создан слой, то возвращаем его. Опасно, т.к. перед повторным запуском команды покраски, могут удалить/переименовать слой марок.
-#pragma warning disable 618
             using (var lt = (LayerTable)db.LayerTableId.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 idLayer = lt.Has(layerInfo.Name) ? lt[layerInfo.Name] : CreateLayer(layerInfo, lt);
             }
@@ -213,14 +202,11 @@
             layerName = null;
             if (!layerId.IsValidEx())
                 return;
-#pragma warning disable 618
             using (var lay = (LayerTableRecord)layerId.Open(OpenMode.ForRead))
-#pragma warning restore 618
             {
                 layerName = lay.Name;
                 if (lay.IsLocked || lay.IsOff || lay.IsFrozen)
                 {
-                    // ReSharper disable once UpgradeOpen
                     lay.UpgradeOpen();
                     if (lay.IsOff)
                     {

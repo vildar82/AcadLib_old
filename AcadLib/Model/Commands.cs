@@ -58,7 +58,7 @@ namespace AcadLib
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
 
         public static readonly Assembly AcadLibAssembly = Assembly.GetExecutingAssembly();
-        public static readonly Version AcadLibVersion = AcadLibAssembly.GetName().Version;
+        public static readonly Version AcadLibVersion = new Version(FileVersionInfo.GetVersionInfo(AcadLibAssembly.Location).FileVersion);
         public static readonly string CurDllDir = Path.GetDirectoryName(AcadLibAssembly.Location);
 
         internal static readonly string FileCommonBlocks =
@@ -124,7 +124,6 @@ namespace AcadLib
                 if (PaletteSetCommands._paletteSets.Any())
                     RibbonBuilder.InitRibbon();
                 Logger.Log.Info("end Initialize AcadLib");
-                YoutubeStatisticInit();
                 EventsStatisticService.Start();
                 AcadLibAssembly.AcadLoadInfo();
                 if (AutocadUserService.User == null)
@@ -559,25 +558,6 @@ namespace AcadLib
             }
         }
 
-        private void YoutubeStatisticInit()
-        {
-            try
-            {
-                var procsR = Process.GetProcessesByName("Acad");
-                if (procsR.Length == 1)
-                {
-                    player = new C_PlayStatisticTableAdapter();
-                    timer.Interval = 60000 * 3;
-                    timer.Tick += Timer_Tick;
-                    timer.Start();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "YoutubeStatisticInit");
-            }
-        }
-
         [CanBeNull]
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
@@ -622,39 +602,6 @@ namespace AcadLib
         {
             return LoadService.GetDllsForCurVerAcad(dllsResolve.Select(s => s.DllFile).ToList())
                 .Select(s => new DllResolve(s.Dll) { DllName = s.FileWoVer }).ToList();
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            Task.Run(() =>
-            {
-                var procsChrome = Process.GetProcessesByName("chrome");
-                if (procsChrome.Length <= 0)
-                {
-                }
-                else
-                {
-                    foreach (var proc in procsChrome)
-                    {
-                        if (proc.MainWindowHandle == IntPtr.Zero)
-                            continue;
-                        var root = AutomationElement.FromHandle(proc.MainWindowHandle);
-                        var activeTabName = root.Current.Name;
-                        if (activeTabName.ToLower().Contains("youtube"))
-                        {
-                            try
-                            {
-                                player.Insert(Environment.UserName, "AutoCAD", activeTabName, DateTime.Now);
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Log.Error(ex, "Video Statistic");
-                            }
-                        }
-                    }
-                }
-            });
         }
     }
 }

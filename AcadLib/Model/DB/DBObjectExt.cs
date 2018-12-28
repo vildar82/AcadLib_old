@@ -9,11 +9,13 @@ namespace AcadLib
     [PublicAPI]
     public static class DBObjectExt
     {
-        public static T UpgradeOpenTr<T>([NotNull] this T dbo) where T : DBObject
+        [NotNull]
+        public static T UpgradeOpenTr<T>([NotNull] this T dbo)
+            where T : DBObject
         {
-            return dbo.IsWriteEnabled ? dbo : dbo.Id.GetObject<T>(OpenMode.ForWrite);
+            return dbo.IsWriteEnabled ? dbo : dbo.Id.GetObjectT<T>(OpenMode.ForWrite);
         }
-    
+
         /// <summary>
         /// Удаление словаря из объекта.
         /// </summary>

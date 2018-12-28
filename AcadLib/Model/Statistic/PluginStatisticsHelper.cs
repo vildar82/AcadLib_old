@@ -50,7 +50,7 @@
 
         public static void PluginStart(CommandStart command)
         {
-            if (!IsUserCanAddStatistic())
+            if (!IsUserStatistic())
                 return;
             try
             {
@@ -104,7 +104,7 @@
             }
         }
 
-        private static bool IsUserCanAddStatistic()
+        private static bool IsUserStatistic()
         {
             return !General.IsCadManager() && !General.IsBimUser;
         }
