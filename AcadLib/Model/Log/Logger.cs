@@ -21,10 +21,11 @@ namespace AcadLib
             {
                 YandexMetricaFolder.SetCurrent(Path.GetTempPath());
                 YandexMetrica.Activate("4a039a94-ea44-43b7-9025-59a856dd7120");
+                YandexMetrica.Config.CustomAppVersion = Commands.AcadLibVersion;
             }
             catch (Exception ex)
             {
-                AutoCAD_PIK_Manager.Log.Error(ex,$"YandexMetrica Activate error");
+                AutoCAD_PIK_Manager.Log.Error(ex,"YandexMetrica Activate error");
             }
         }
     }
