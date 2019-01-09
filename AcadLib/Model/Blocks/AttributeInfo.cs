@@ -81,6 +81,7 @@
         }
 
         [NotNull]
+        [Obsolete("Use DisposableCol")]
         public static List<AttributeInfo> GetAttrRefs([CanBeNull] BlockReference blRef)
         {
             var resVal = new List<AttributeInfo>();
