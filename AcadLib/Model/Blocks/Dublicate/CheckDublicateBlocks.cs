@@ -13,7 +13,6 @@
 
     /// <summary>
     /// Проверка наложения блоков в пространстве модели
-    /// Inspector очищается до и после!
     /// </summary>
     public static class CheckDublicateBlocks
     {
@@ -75,9 +74,6 @@
                         bi.Dublicates = s.Skip(1).ToList();
                         return bi;
                     }).ToList();
-
-                // Добавление дубликатов в результирующий список
-                // AddTransformedToModelDublic(dublicBlRefInfos);
             }
             catch (Exception ex)
             {

@@ -222,6 +222,7 @@
 
                     // WPF
                     Show(Errors);
+                    Clear();
                 }
             }
             catch (Exception ex)
@@ -237,7 +238,6 @@
                 var errVM = new ErrorsVM(errors) {IsDialog = false};
                 var errView = new ErrorsView(errVM);
                 Application.ShowModelessWindow(errView);
-                Clear();
             }
             catch (Exception ex)
             {
@@ -259,6 +259,7 @@
                 // WPF
                 if (ShowDialog(Errors) == true)
                 {
+                    Clear();
                     return System.Windows.Forms.DialogResult.OK;
                 }
 
@@ -273,8 +274,6 @@
             var errVM = new ErrorsVM(errors) { IsDialog = true };
             var errView = new ErrorsView(errVM);
             var res = Application.ShowModalWindow(errView);
-            if (res == true)
-                Clear();
             return res;
         }
 

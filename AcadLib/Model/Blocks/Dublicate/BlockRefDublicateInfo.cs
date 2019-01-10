@@ -15,16 +15,13 @@
         public const double pi2 = 2 * Math.PI;
         public static double toleranceRotateNear360 = pi2 - CheckDublicateBlocks.Tolerance.EqualVector;
 
-        // public Extents3d? Bounds { get; set; }
         public BlockRefDublicateInfo([NotNull] BlockReference blRef, Matrix3d transToModel, double rotateToModel)
         {
             IdBlRef = blRef.Id;
             Transform = blRef.BlockTransform;
             TransformToModel = transToModel;
             Position = blRef.Position.TransformBy(TransformToModel);
-#pragma warning disable 618
             Name = blRef.GetEffectiveName();
-#pragma warning restore 618
             Rotation = getRotateToModel(blRef.Rotation, rotateToModel);
         }
 

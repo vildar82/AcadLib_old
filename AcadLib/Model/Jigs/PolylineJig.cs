@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.EditorInput;
     using Autodesk.AutoCAD.Geometry;
     using Autodesk.AutoCAD.GraphicsInterface;
@@ -15,22 +16,18 @@
         private readonly Point3dCollection ptsCol = new Point3dCollection();
         private Point2d basePt;
         private Point2d newPt;
-        private string keywords;
+        private Editor ed;
 
         public List<Point2d> Pts => ptsCol.Cast<Point3d>().Select(s => s.Convert2d()).ToList();
-        public string Keyword { get; private set; }
 
-        public PromptStatus DrawPolyline(Editor ed, string keywords = null)
+        public PromptStatus DrawPolyline(Editor ed)
         {
-            this.keywords = keywords;
-            var ptOpt = keywords == null ?
-                new PromptPointOptions("Первая точка") :
-                new PromptPointOptions($"Первая точка: {keywords}", keywords);
+            this.ed = ed;
+            var ptOpt = new PromptPointOptions("Первая точка: [Полилиния]");
             var ptRes = ed.GetPoint(ptOpt);
-            if (keywords != null && ptRes.Status == PromptStatus.Keyword)
+            if (ptRes.Status == PromptStatus.Keyword)
             {
-                Keyword = ptRes.StringResult;
-                return PromptStatus.Keyword;
+                return SelectPolyline();
             }
 
             if (ptRes.Status == PromptStatus.OK)
@@ -42,7 +39,7 @@
                 while (true)
                 {
                     res = ed.Drag(this);
-                    if (res.Status != PromptStatus.OK)
+                    if (res.Status != PromptStatus.OK && res.Status != PromptStatus.Other)
                         break;
                     ptsCol.Add(newPt.Convert3d());
                     basePt = newPt;
@@ -50,7 +47,6 @@
 
                 if (res.Status == PromptStatus.Keyword)
                 {
-                    Keyword = res.StringResult;
                     return PromptStatus.Keyword;
                 }
 
@@ -60,17 +56,26 @@
             throw new OperationCanceledException();
         }
 
+        private PromptStatus SelectPolyline()
+        {
+            var plId = ed.SelectEntity<Autodesk.AutoCAD.DatabaseServices.Polyline>("Выбор полилинии");
+            using (var pl = plId.Open(OpenMode.ForRead, false, true) as Autodesk.AutoCAD.DatabaseServices.Polyline)
+            {
+            }
+
+            return PromptStatus.Cancel;
+        }
+
         /// <inheritdoc />
         protected override SamplerStatus Sampler(JigPrompts prompts)
         {
-            var promptPt = keywords == null ?
-                new JigPromptPointOptions("След. точка") :
-                new JigPromptPointOptions($"След. точка: {keywords}", keywords);
+            var promptPt = new JigPromptPointOptions("След. точка");
             promptPt.BasePoint = basePt.Convert3d();
             promptPt.UseBasePoint = true;
             promptPt.UserInputControls =
                 UserInputControls.UseBasePointElevation | UserInputControls.AcceptOtherInputString
                                                         | UserInputControls.GovernedByOrthoMode;
+
             var res = prompts.AcquirePoint(promptPt);
             switch (res.Status)
             {

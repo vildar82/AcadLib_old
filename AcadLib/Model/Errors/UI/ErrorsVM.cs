@@ -23,7 +23,7 @@ namespace AcadLib.Errors
     public class ErrorsVM : BaseViewModel
     {
         private readonly VisualTransientSimple errorsVisual;
-        
+
         public ErrorsVM()
         {
         }
@@ -62,8 +62,8 @@ namespace AcadLib.Errors
             ExportToExcel = CreateCommand(ExportToExcelExecute);
             ExportToTxt = CreateCommand(ExportToTxtExecute);
             DeleteSelectedDublicateBlocks = CreateCommand(OnDeleteSelectedDublicateBlocksExecute);
+            DeleteAllDublicateBlocks = CreateCommand(OnDeleteAllDublicateBlocksExecute);
             DeleteError = CreateCommand<ErrorModelBase>(DeleteErrorExec);
-            
             var visualsEnts = ErrorsOrig.SelectManyNulless(s => s.Visuals).ToList();
             if (visualsEnts.Any())
             {
@@ -79,6 +79,7 @@ namespace AcadLib.Errors
         public ReactiveCommand<ErrorModelBase, Unit> DeleteError { get; set; }
 
         public ReactiveCommand<Unit, Unit> DeleteSelectedDublicateBlocks { get; set; }
+        public ReactiveCommand<Unit, Unit> DeleteAllDublicateBlocks { get; set; }
 
         public new ReactiveList<ErrorModelBase> Errors { get; set; }
 
@@ -286,6 +287,20 @@ namespace AcadLib.Errors
             {
                 Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
                 RemoveErrors(selectedErrors);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка удаления дубликатов блоков - {ex.Message}");
+            }
+        }
+
+        private void OnDeleteAllDublicateBlocksExecute()
+        {
+            try
+            {
+                var errs = Errors.Select(s => s.Error).ToList();
+                Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errs);
+                Errors.Clear();
             }
             catch (Exception ex)
             {

@@ -127,8 +127,11 @@
                         <Image Source="{StaticResource txt}" Width="22" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Удалить дубликаты" Command="{Binding DeleteSelectedDublicateBlocks}"
+                <MenuItem Header="Удалить выделенные дубликаты" Command="{Binding DeleteSelectedDublicateBlocks}"
                           ToolTip="Удаление дублирующихся блоков в выделенных ошибках."
+                          Visibility="{Binding IsDublicateBlocksEnabled, Converter={converters:BooleanToHidingVisibilityConverter}}" />
+                <MenuItem Header="Удалить все дубликаты" Command="{Binding DeleteAllDublicateBlocks}"
+                          ToolTip="Удаление дублирующихся блоков во всех ошибках."
                           Visibility="{Binding IsDublicateBlocksEnabled, Converter={converters:BooleanToHidingVisibilityConverter}}" />
             </ContextMenu>
         </Grid.Resources>
