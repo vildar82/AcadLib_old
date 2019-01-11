@@ -12,7 +12,7 @@
         {
             using (var lt = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))
             {
-                return lt.Has(lineTypeName) ? lt[lineTypeName] : ObjectId.Null;
+                return lt.Has(lineTypeName) ? lt[lineTypeName] : db.ContinuousLinetype;
             }
         }
 
@@ -55,13 +55,13 @@
         }
 
         /// <summary>
-        /// Загрузка штриховой линии из стандартного файла типов линий GOST 2.303-68.lin 
+        /// Загрузка штриховой линии из стандартного файла типов линий GOST 2.303-68.lin
         /// </summary>
         public static ObjectId LoadLineTypeDotPIK([NotNull] this Database db)
         {
             return LoadLineTypePIK(db, "Штриховая");
         }
-        
+
         /// <summary>
         /// Загрузка 'Штрих-пунктирная тонкая' линии из стандартного файла типов линий GOST 2.303-68.lin
         /// </summary>
