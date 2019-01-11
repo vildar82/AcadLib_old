@@ -51,7 +51,8 @@ namespace AcadLib.Errors
                     errModel.SelectionChanged += ErrModel_SelectionChanged;
                     return errModel;
                 }).ToList());
-            IsDublicateBlocksEnabled = errors.Any(e => e.Message?.StartsWith("Дублирование блоков") ?? false);
+            IsDublicateBlocksEnabled = errors.Any(e => e.Message?.StartsWith("Дублирование блоков") == true ||
+                                                       e.Message?.StartsWith("Наложение блоков") == true);
             ErrorsCountInfo = errors.Count;
 
             var canCollapse = Errors.CountChanged.Select(s => Errors.OfType<ErrorModelList>().Any(a => a.IsExpanded));
@@ -282,9 +283,16 @@ namespace AcadLib.Errors
 
         private void OnDeleteSelectedDublicateBlocksExecute()
         {
-            var selectedErrors = GetSelectedErrors(out var errors);
+            var selectedErrors = GetSelectedErrors(out _);
+            if (selectedErrors.Count == 0)
+            {
+                MessageBox.Show("Нет выделенных ошибок.");
+                return;
+            }
+
             try
             {
+                var errors = GetErrorsInners(selectedErrors);
                 Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errors);
                 RemoveErrors(selectedErrors);
             }
@@ -294,13 +302,32 @@ namespace AcadLib.Errors
             }
         }
 
+        private List<IError> GetErrorsInners(IEnumerable<ErrorModelBase> errorsVM)
+        {
+            var errors = new List<IError>();
+            foreach (var errVm in errorsVM)
+            {
+                switch (errVm)
+                {
+                    case ErrorModelList errList:
+                        errors.AddRange(errList.SameErrors.Select(s => s.Error));
+                        break;
+                    case ErrorModelOne _:
+                        errors.Add(errVm.Error);
+                        break;
+                }
+            }
+
+            return errors;
+        }
+
         private void OnDeleteAllDublicateBlocksExecute()
         {
             try
             {
-                var errs = Errors.Select(s => s.Error).ToList();
+                var errs = GetErrorsInners(Errors);
                 Blocks.Dublicate.CheckDublicateBlocks.DeleteDublicates(errs);
-                Errors.Clear();
+                MessageBox.Show("Дубликаты удалены");
             }
             catch (Exception ex)
             {

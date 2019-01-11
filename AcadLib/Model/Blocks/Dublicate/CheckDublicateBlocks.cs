@@ -122,20 +122,22 @@
             var blDublicatesToDel = errors.Where(e => e.Tag is BlockRefDublicateInfo)
                 .SelectMany(e => ((BlockRefDublicateInfo)e.Tag).Dublicates).ToList();
             var doc = Application.DocumentManager.MdiActiveDocument;
+            var countErased = 0;
             using (doc.LockDocument())
+            using (var t = doc.TransactionManager.StartTransaction())
             {
-                using (var t = blDublicatesToDel.FirstOrDefault()?.IdBlRef.Database.TransactionManager.StartTransaction())
+                if (t == null)
+                    return;
+                foreach (var dublBl in blDublicatesToDel)
                 {
-                    if (t == null)
-                        return;
-                    foreach (var dublBl in blDublicatesToDel)
-                    {
-                        var blTodel = (BlockReference)dublBl.IdBlRef.GetObject(OpenMode.ForWrite, false, true);
-                        blTodel.Erase();
-                    }
-
-                    t.Commit();
+                    var blTodel = dublBl.IdBlRef.GetObject<BlockReference>(OpenMode.ForWrite);
+                    if (blTodel == null) continue;
+                    blTodel.Erase();
+                    countErased++;
                 }
+
+                $"Удалено {countErased} наложенных элементов.".WriteToCommandLine();
+                t.Commit();
             }
         }
 
