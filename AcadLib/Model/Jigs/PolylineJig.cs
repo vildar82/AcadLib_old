@@ -1,11 +1,10 @@
-﻿using AcadLib.Hatches;
-using Autodesk.AutoCAD.Colors;
-
-namespace AcadLib.Jigs
+﻿namespace AcadLib.Jigs
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AcadLib.Hatches;
+    using Autodesk.AutoCAD.Colors;
     using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.EditorInput;
     using Autodesk.AutoCAD.Geometry;
@@ -48,14 +47,12 @@ namespace AcadLib.Jigs
                 while (true)
                 {
                     var res = ed.Drag(this);
-                    if (res.Status == PromptStatus.None)
-                        continue;
+                    if (res.Status == PromptStatus.Other)
+                        break;
                     if (res.Status == PromptStatus.Cancel || res.Status == PromptStatus.Error)
                         throw new OperationCanceledException();
-                    if (res.Status == PromptStatus.Keyword)
-                        return SelectPolyline();
                     if (res.Status != PromptStatus.OK)
-                        break;
+                        continue;
                     PtsCol.Add(newPt.Convert3d());
                     basePt = newPt;
                 }
@@ -98,8 +95,12 @@ namespace AcadLib.Jigs
         protected override SamplerStatus Sampler(JigPrompts prompts)
         {
             var promptPt = new JigPromptPointOptions("\nСлед. точка:");
-            promptPt.Keywords.Add("Полилиния");
-            promptPt.AppendKeywordsToMessage = true;
+            if (PtsCol.Count > 1)
+            {
+                promptPt.Keywords.Add("Пред");
+                promptPt.AppendKeywordsToMessage = true;
+            }
+
             promptPt.BasePoint = basePt.Convert3d();
             promptPt.UseBasePoint = true;
             promptPt.UserInputControls =
@@ -121,7 +122,8 @@ namespace AcadLib.Jigs
                 case PromptStatus.Error:
                     return SamplerStatus.Cancel;
                 case PromptStatus.Keyword:
-                    return SamplerStatus.Cancel;
+                    PtsCol.RemoveAt(PtsCol.Count - 1);
+                    return SamplerStatus.OK;
                 case PromptStatus.Modeless:
                     break;
                 case PromptStatus.Other:
@@ -136,19 +138,19 @@ namespace AcadLib.Jigs
         /// <inheritdoc />
         protected override bool WorldDraw(WorldDraw draw)
         {
-            bool res;
+            if (PtsCol.Count == 1)
+                return draw.Geometry.WorldLine(PtsCol[0], newPt.Convert3d());
+
             using (var pl = Pts.CreatePolyline())
             {
+                pl.Closed = true;
                 pl.ColorIndex = 7;
                 pl.LinetypeId = crossLineTypeId;
                 pl.LineWeight = LineWeight.LineWeight018;
                 pl.LinetypeScale = 1;
-                res = draw.Geometry.Polyline(PtsCol, Vector3d.ZAxis, IntPtr.Zero);
-                if (res) return true;
+                draw.Geometry.Draw(pl);
             }
 
-            res = draw.Geometry.WorldLine(basePt.Convert3d(), newPt.Convert3d());
-            if (res) return true;
             try
             {
                 var pts = Pts;
