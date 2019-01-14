@@ -1,4 +1,6 @@
-﻿namespace AcadLib.Hatches
+﻿using AcadLib.Geometry;
+
+namespace AcadLib.Hatches
 {
     using System;
     using Autodesk.AutoCAD.DatabaseServices;
@@ -21,6 +23,7 @@
             switch (Loop)
             {
                 case Polyline pl: return pl;
+                case Circle circle : return circle.ToPolyline();
             }
 
             return null;
