@@ -1,10 +1,11 @@
-﻿namespace AcadLib.Blocks.Visual
+﻿using NetLib.WPF.Data;
+
+namespace AcadLib.Blocks.Visual
 {
     using System.Windows.Input;
     using System.Windows.Media;
     using Autodesk.AutoCAD.DatabaseServices;
     using JetBrains.Annotations;
-    using MicroMvvm;
 
     public class VisualBlock : IVisualBlock
     {

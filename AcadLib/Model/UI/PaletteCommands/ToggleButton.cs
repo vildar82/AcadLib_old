@@ -1,11 +1,10 @@
-using System;
-using System.Drawing;
-using System.Windows.Input;
-using AcadLib.PaletteCommands;
-using NetLib.WPF.Data;
-
 namespace AcadLib.UI.PaletteCommands
 {
+    using System;
+    using System.Drawing;
+    using AcadLib.PaletteCommands;
+    using NetLib.WPF.Data;
+
     public class ToggleButton : PaletteCommand
     {
         public ToggleButton(string name, Bitmap icon, bool isChecked, Action change, string desc, string group)

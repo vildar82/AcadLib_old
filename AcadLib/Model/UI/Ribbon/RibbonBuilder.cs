@@ -1,5 +1,5 @@
-﻿using AcadLib.UI.PaletteCommands;
-using NetLib.WPF.Data;
+﻿using System.IO;
+using AcadLib.UI.Ribbon.Data;
 
 namespace AcadLib.UI.Ribbon
 {
@@ -19,7 +19,9 @@ namespace AcadLib.UI.Ribbon
     using Files;
     using JetBrains.Annotations;
     using NetLib;
+    using NetLib.WPF.Data;
     using Options;
+    using PaletteCommands;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
     /// <summary>
@@ -60,6 +62,7 @@ namespace AcadLib.UI.Ribbon
             {
                 foreach (var palette in PaletteSetCommands._paletteSets.OrderBy(o => GetTabIndex(o.Name)))
                 {
+                    // ConverterPaletteToRibbon().Convert(palette.Name, palette.Commands);
                     var elems = palette.Commands.Where(w => PaletteSetCommands.IsAccess(w.Access))
                         .Select(c => ConvertToRibbonElement(c, palette.Name));
                     CreateRibbon(elems, palette.Name);
@@ -130,6 +133,7 @@ namespace AcadLib.UI.Ribbon
                     Panel = c.Group
                 };
             }
+
             if (c is ToggleButton toggleBtn)
             {
                 return new ToggleElement
@@ -149,9 +153,9 @@ namespace AcadLib.UI.Ribbon
         }
 
         [NotNull]
-        private static RibbonButton CreateButton([NotNull] IRibbonElement element)
+        private static Autodesk.Windows.RibbonButton CreateButton([NotNull] IRibbonElement element)
         {
-            var button = new RibbonButton
+            var button = new Autodesk.Windows.RibbonButton
             {
                 CommandHandler = element.Command,
                 Text = element.Name, // Текст рядом с кнопкой, если ShowText = true

@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public class SplitElement : RibbonElement
+    public class SplitElement : RibbonButton
     {
         public List<RibbonElement> Items { get; set; }
     }

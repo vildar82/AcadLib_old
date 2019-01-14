@@ -1,4 +1,6 @@
-﻿namespace AcadLib.PaletteCommands
+﻿using NetLib.WPF.Data;
+
+namespace AcadLib.PaletteCommands
 {
     using System;
     using System.Collections.Generic;
@@ -8,17 +10,16 @@
     using Blocks;
     using JetBrains.Annotations;
     using Layers;
-    using MicroMvvm;
 
     /// <summary>
     /// Кнопка для вставки одного блока
     /// </summary>
     public class PaletteInsertBlock : PaletteCommand
     {
-        private readonly string blName;
-        private readonly bool explode;
-        private readonly string file;
-        private readonly List<Property> props;
+        internal readonly string blName;
+        internal readonly bool explode;
+        internal readonly string file;
+        internal readonly List<Property> props;
 
         public PaletteInsertBlock(
             string blName,

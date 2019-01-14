@@ -1,12 +1,11 @@
-﻿using Autodesk.AutoCAD.DatabaseServices.Filters;
-using Autodesk.AutoCAD.EditorInput;
-
-namespace AcadLib.Blocks
+﻿namespace AcadLib.Blocks
 {
     using System;
     using System.Collections.Generic;
+    using System.Xml.Serialization;
     using Autodesk.AutoCAD.DatabaseServices;
     using JetBrains.Annotations;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Свойства динамического блока
@@ -14,6 +13,10 @@ namespace AcadLib.Blocks
     [PublicAPI]
     public class Property : IEquatable<Property>, ICloneable
     {
+        public Property()
+        {
+        }
+
         public Property(string name, object value)
         {
             Name = name;
@@ -50,6 +53,8 @@ namespace AcadLib.Blocks
         /// <summary>
         /// Только, если тип параматера - атрибут!
         /// </summary>
+        [XmlIgnore]
+        [JsonIgnore]
         public ObjectId IdAtrRef { get; set; }
 
         public bool IsReadOnly { get; set; }

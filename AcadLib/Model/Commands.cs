@@ -1,4 +1,5 @@
 ﻿using System.Windows.Threading;
+using AcadLib.UI.Ribbon.Editor;
 using NetLib;
 
 namespace AcadLib
@@ -524,6 +525,12 @@ namespace AcadLib
         public void PIK_TestState()
         {
             CommandStart.StartWoStat(d => TestState.Start());
+        }
+
+        [CommandMethod(Group, nameof(PIK_RibbonEditor), CommandFlags.Session)]
+        public void PIK_RibbonEditor()
+        {
+            CommandStart.StartWoStat(d => new RibbonEditor().Edit());
         }
 
         /// <summary>

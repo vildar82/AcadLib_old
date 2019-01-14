@@ -10,9 +10,9 @@
     using System.Windows.Media.Imaging;
     using Autodesk.AutoCAD.ApplicationServices.Core;
     using JetBrains.Annotations;
-    using MicroMvvm;
     using NetLib;
     using NetLib.WPF;
+    using NetLib.WPF.Data;
 
     public class PaletteCommand : BaseModel, IPaletteCommand
     {
