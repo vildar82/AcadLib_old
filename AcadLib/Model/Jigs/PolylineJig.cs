@@ -86,9 +86,8 @@
             using (var pl = plId.Open(OpenMode.ForRead, false, true) as Autodesk.AutoCAD.DatabaseServices.Polyline)
             {
                 PtsCol = new Point3dCollection(pl.GetPoints().Select(s=>s.Convert3d()).ToArray());
+                return PromptStatus.OK;
             }
-
-            return PromptStatus.Cancel;
         }
 
         /// <inheritdoc />
