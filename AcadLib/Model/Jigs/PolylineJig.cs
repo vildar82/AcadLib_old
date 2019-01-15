@@ -23,10 +23,9 @@
         private Transparency hatchTransp;
 
         [NotNull]
-        public List<Point2d> Pts => PtsCol.Cast<Point3d>().Select(s => s.Convert2d()).ToList();
+        public List<Point2d> Pts { get; set; } = new List<Point2d>();
 
-        [NotNull]
-        public Point3dCollection PtsCol { get; set; } = new Point3dCollection();
+        [NotNull] public Point3dCollection PtsCol => new Point3dCollection(Pts.Select(s => s.Convert3d()).ToArray());
 
         public PromptStatus DrawPolyline(Editor ed)
         {
@@ -37,12 +36,11 @@
             var ptRes = ed.GetPoint(ptOpt);
             if (ptRes.Status == PromptStatus.Keyword)
                 return SelectPolyline();
-
             if (ptRes.Status == PromptStatus.OK)
             {
                 DefineCrossDecor();
                 basePt = ptRes.Value.TransformBy(ed.CurrentUserCoordinateSystem).Convert2d();
-                PtsCol.Add(basePt.Convert3d());
+                Pts.Add(basePt);
                 newPt = basePt;
                 while (true)
                 {
@@ -53,7 +51,7 @@
                         throw new OperationCanceledException();
                     if (res.Status != PromptStatus.OK)
                         continue;
-                    PtsCol.Add(newPt.Convert3d());
+                    Pts.Add(newPt);
                     basePt = newPt;
                 }
 
@@ -85,7 +83,7 @@
             var plId = ed.SelectEntity<Autodesk.AutoCAD.DatabaseServices.Polyline>("Выбор полилинии");
             using (var pl = plId.Open(OpenMode.ForRead, false, true) as Autodesk.AutoCAD.DatabaseServices.Polyline)
             {
-                PtsCol = new Point3dCollection(pl.GetPoints().Select(s=>s.Convert3d()).ToArray());
+                Pts = pl.GetPoints();
             }
 
             return PromptStatus.Cancel;
@@ -95,7 +93,7 @@
         protected override SamplerStatus Sampler(JigPrompts prompts)
         {
             var promptPt = new JigPromptPointOptions("\nСлед. точка:");
-            if (PtsCol.Count > 1)
+            if (Pts.Count > 1)
             {
                 promptPt.Keywords.Add("Пред");
                 promptPt.AppendKeywordsToMessage = true;
@@ -122,7 +120,7 @@
                 case PromptStatus.Error:
                     return SamplerStatus.Cancel;
                 case PromptStatus.Keyword:
-                    PtsCol.RemoveAt(PtsCol.Count - 1);
+                    Pts.RemoveAt(Pts.Count - 1);
                     return SamplerStatus.OK;
                 case PromptStatus.Modeless:
                     break;
@@ -138,8 +136,8 @@
         /// <inheritdoc />
         protected override bool WorldDraw(WorldDraw draw)
         {
-            if (PtsCol.Count == 1)
-                return draw.Geometry.WorldLine(PtsCol[0], newPt.Convert3d());
+            if (Pts.Count == 1)
+                return draw.Geometry.WorldLine(Pts[0].Convert3d(), newPt.Convert3d());
 
             using (var pl = Pts.CreatePolyline())
             {
@@ -153,7 +151,7 @@
 
             try
             {
-                var pts = Pts;
+                var pts = Pts.ToList();
                 pts.Add(newPt);
                 using (var hatch = pts.CreateHatch())
                 {
