@@ -9,7 +9,7 @@
     xmlns:converterA="clr-namespace:AcadLib.WPF.Converters"
     xmlns:layers="clr-namespace:AcadLib.Layers"
     d:DataContext="{d:DesignInstance layersSelected:LayersSelectedVM, d:IsDesignTimeCreatable=True}"
-    CloseWindowByEnterOrSpace="False"
+    UncloseDialogByEsc="True"
     mc:Ignorable="d"
     Title="Слои выделенных объектов">
     <Grid>
