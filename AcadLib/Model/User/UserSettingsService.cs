@@ -16,7 +16,7 @@
     [PublicAPI]
     public static class UserSettingsService
     {
-        internal const string CommonName = "Общие";
+        internal const string CommonName = Commands.GroupCommon;
         internal const string CommonParamNotify = "NotificationsOn";
         [NotNull]
         private static LocalFileData<UserSettings> _userData;

@@ -100,8 +100,7 @@
         public virtual void Execute()
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
-            if (doc == null)
-                return;
+            if (doc == null) return;
             using (doc.LockDocument())
             {
                 doc.SendStringToExecute(CommandName + " ", true, false, true);

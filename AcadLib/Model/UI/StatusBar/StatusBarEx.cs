@@ -120,7 +120,7 @@
                     info += $" '{descResult.Truncate(75)}'";
                 }
 
-                if (groupInfo.GroupName == "Общие")
+                if (groupInfo.GroupName == Commands.GroupCommon)
                 {
                     info += ". Alt+стрелка, предыдущее выделение.";
                 }

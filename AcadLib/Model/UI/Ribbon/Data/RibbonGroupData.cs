@@ -1,13 +1,12 @@
-using System.Drawing.Imaging;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
 namespace AcadLib.UI.Ribbon.Data
 {
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Drawing.Imaging;
     using System.IO;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using AutoCAD_PIK_Manager.Settings;
     using Elements;
     using JetBrains.Annotations;
@@ -31,7 +30,7 @@ namespace AcadLib.UI.Ribbon.Data
             return new[]
             {
                 typeof(RibbonCommand), typeof(RibbonInsertBlock),
-                typeof(RibbonVisualInsertBlock), typeof(RibbonVisualGroupInsertBlock), typeof(RibbonBreak),
+                typeof(RibbonVisualInsertBlock), typeof(RibbonVisualGroupInsertBlock), typeof(RibbonBreakPanel),
                 typeof(RibbonSplit), typeof(RibbonToggle)
             };
         }
@@ -49,10 +48,18 @@ namespace AcadLib.UI.Ribbon.Data
             return Path.Combine(ribbonDir, "Images");
         }
 
-        [NotNull]
-        public static RibbonGroupData Load([NotNull] string ribbonFile)
+        public static RibbonGroupData Load([NotNull] string ribbonFile, Action<Exception> onException = null)
         {
-            return ribbonFile.FromXml<RibbonGroupData>(GetTypes());
+            try
+            {
+                return ribbonFile.FromXml<RibbonGroupData>(GetTypes());
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex);
+                onException?.Invoke(ex);
+                return null;
+            }
         }
 
         public void Save([NotNull] string ribbonFile)
@@ -85,15 +92,30 @@ namespace AcadLib.UI.Ribbon.Data
 
         public static string GetImageName(string name)
         {
+            if (name.EndsWith(".png"))
+                return name;
             name = NetLib.IO.Path.GetValidFileName(name);
             return $"{name}.png";
         }
 
-        public static ImageSource LoadImage(string userGroup, string imageName)
+        public static ImageSource LoadImage(string userGroup, string itemName)
         {
-            var imagesDir = GetImagesFolder(userGroup);
-            var imageFile = Path.Combine(imagesDir, imageName);
-            return new BitmapImage(new Uri(imageFile));
+            try
+            {
+                var imagesDir = GetImagesFolder(userGroup);
+                var imageFile = Path.Combine(imagesDir, GetImageName(itemName));
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = new Uri(imageFile, UriKind.Absolute);
+                image.EndInit();
+                return image;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex);
+                return null;
+            }
         }
     }
 }

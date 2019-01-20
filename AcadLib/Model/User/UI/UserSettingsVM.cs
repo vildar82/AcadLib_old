@@ -90,7 +90,7 @@ namespace AcadLib.User.UI
 
         private List<UserGroup> LoadGroups()
         {
-            var fileGroups = Path.Combine(PikSettings.ServerSettingsFolder, @"Общие\Dll\groups.json");
+            var fileGroups = Path.Combine(PikSettings.ServerSettingsFolder, $@"{Commands.GroupCommon}\Dll\groups.json");
             var groups = fileGroups.Deserialize<Dictionary<string, string>>();
             return groups.Select(s => new UserGroup
             {

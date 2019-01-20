@@ -72,6 +72,7 @@
             string paletteName,
             Guid paletteGuid)
         {
+            return;
             try
             {
                 var palette = _paletteSets.FirstOrDefault(p => p.Guid.Equals(paletteGuid));
@@ -102,17 +103,12 @@
             }
         }
 
-        public static bool IsAccess([CanBeNull] List<string> accessLogins)
-        {
-            return accessLogins == null ||
-                   accessLogins.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase);
-        }
-
         /// <summary>
         /// Создание палитры и показ
         /// </summary>
         public static void Start(Guid paletteGuid)
         {
+            return;
             try
             {
                 var paletteUserGroup = _paletteSets.FirstOrDefault(p => p.Guid.Equals(paletteGuid));

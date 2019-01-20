@@ -5,33 +5,33 @@ namespace AcadLib.UI.Ribbon.Options
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Настройки элемента ленты
+    /// РќР°СЃС‚СЂРѕР№РєРё СЌР»РµРјРµРЅС‚Р° Р»РµРЅС‚С‹
     /// </summary>
     public class ItemOptions
     {
         /// <summary>
-        /// Индекс элемента в родительском элементе
+        /// РРЅРґРµРєСЃ СЌР»РµРјРµРЅС‚Р° РІ СЂРѕРґРёС‚РµР»СЊСЃРєРѕРј СЌР»РµРјРµРЅС‚Рµ
         /// </summary>
         public int Index { get; set; }
 
         /// <summary>
-        /// Видимость элемента
+        /// Р’РёРґРёРјРѕСЃС‚СЊ СЌР»РµРјРµРЅС‚Р°
         /// </summary>
         public bool IsVisible { get; set; } = true;
 
         /// <summary>
-        /// Ссылка на элемент
+        /// РЎСЃС‹Р»РєР° РЅР° СЌР»РµРјРµРЅС‚
         /// </summary>
         [JsonIgnore]
         public IRibbonContentUid Item { get; set; }
 
         /// <summary>
-        /// Вложенные элементы
+        /// Р’Р»РѕР¶РµРЅРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹
         /// </summary>
         public List<ItemOptions> Items { get; set; } = new List<ItemOptions>();
 
         /// <summary>
-        /// Имя элемента
+        /// РРјСЏ СЌР»РµРјРµРЅС‚Р°
         /// </summary>
         public string UID { get; set; }
     }

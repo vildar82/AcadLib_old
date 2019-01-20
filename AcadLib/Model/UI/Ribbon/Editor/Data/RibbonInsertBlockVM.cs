@@ -32,12 +32,18 @@ namespace AcadLib.UI.Ribbon.Editor.Data
         {
             var item = new RibbonInsertBlock();
             FillItem(item);
-            item.File = File.FileName;
-            item.Layer = Layer;
-            item.Explode = Explode;
-            item.BlockName = BlockName;
-            item.Properties = Properties.ToList();
             return item;
+        }
+
+        protected override void FillItem(RibbonItemData item)
+        {
+            base.FillItem(item);
+            var blItem = (RibbonInsertBlock) item;
+            blItem.File = File.FileName;
+            blItem.Layer = Layer;
+            blItem.Explode = Explode;
+            blItem.BlockName = BlockName;
+            blItem.Properties = Properties.ToList();
         }
     }
 }

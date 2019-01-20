@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-
 namespace AcadLib.UI.Ribbon.Editor.Data
 {
+    using System.Collections.Generic;
     using Elements;
 
     public class RibbonVisualInsertBlockVM : RibbonInsertBlockVM

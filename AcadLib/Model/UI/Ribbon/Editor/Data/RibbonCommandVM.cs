@@ -16,8 +16,14 @@ namespace AcadLib.UI.Ribbon.Editor.Data
         {
             var item = new RibbonCommand();
             FillItem(item);
-            item.Command = Command;
             return item;
+        }
+
+        protected override void FillItem(RibbonItemData item)
+        {
+            base.FillItem(item);
+            var cItem = (RibbonCommand) item;
+            cItem.Command = Command;
         }
     }
 }

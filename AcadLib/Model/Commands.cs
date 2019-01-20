@@ -119,8 +119,9 @@ namespace AcadLib
                 // Установки системных переменных для чертежа
                 Doc.DocSysVarAuto.Start();
 
-                if (PaletteSetCommands._paletteSets.Any())
-                    RibbonBuilder.InitRibbon();
+                // Лента
+                RibbonBuilder.InitRibbon();
+
                 Logger.Log.Info("end Initialize AcadLib");
                 EventsStatisticService.Start();
                 AcadLibAssembly.AcadLoadInfo();

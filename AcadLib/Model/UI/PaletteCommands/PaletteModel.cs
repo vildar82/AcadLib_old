@@ -1,14 +1,11 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2016 04 03 16:09
-
-// ReSharper disable once CheckNamespace
-namespace AcadLib.PaletteCommands
+﻿namespace AcadLib.PaletteCommands
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Windows.Controls;
     using System.Windows.Media;
     using AcadLib.UI.PaletteCommands.UI;
+    using AcadLib.UI.Ribbon;
     using JetBrains.Annotations;
     using NetLib;
     using NetLib.WPF;
@@ -23,7 +20,7 @@ namespace AcadLib.PaletteCommands
             PaletteCommands = new ObservableCollection<IPaletteCommand>();
             foreach (var item in commands)
             {
-                if (PaletteSetCommands.IsAccess(item.Access))
+                if (RibbonBuilder.IsAccess(item.Access))
                     PaletteCommands.Add(item);
             }
 

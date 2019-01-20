@@ -1,27 +1,25 @@
-﻿using System.IO;
-using AcadLib.UI.Ribbon.Data;
-
-namespace AcadLib.UI.Ribbon
+﻿namespace AcadLib.UI.Ribbon
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.ComponentModel;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq;
+    using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
-    using AcadLib.PaletteCommands;
+    using AutoCAD_PIK_Manager.Settings;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.Private.Windows;
     using Autodesk.Windows;
+    using Data;
     using Elements;
     using Files;
     using JetBrains.Annotations;
     using NetLib;
-    using NetLib.WPF.Data;
     using Options;
-    using PaletteCommands;
     using Application = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 
     /// <summary>
@@ -48,6 +46,24 @@ namespace AcadLib.UI.Ribbon
             }
         }
 
+        public static void ChangeToggleState(string commandName)
+        {
+            SetToggleState(commandName, !GetToggleState(commandName));
+        }
+
+        public static void SetToggleState(string commandName, bool state)
+        {
+            if (commandName.IsNullOrEmpty()) return;
+            ribbonOptions.Data.DictToggleState[commandName] = state;
+        }
+
+        public static bool GetToggleState(string commandName)
+        {
+            if (commandName.IsNullOrEmpty()) return false;
+            ribbonOptions.Data.DictToggleState.TryGetValue(commandName, out var state);
+            return state;
+        }
+
         public static void InitRibbon()
         {
             if (ribbon != null || isInitialized)
@@ -60,18 +76,219 @@ namespace AcadLib.UI.Ribbon
         {
             try
             {
-                foreach (var palette in PaletteSetCommands._paletteSets.OrderBy(o => GetTabIndex(o.Name)))
-                {
-                    // ConverterPaletteToRibbon().Convert(palette.Name, palette.Commands);
-                    var elems = palette.Commands.Where(w => PaletteSetCommands.IsAccess(w.Access))
-                        .Select(c => ConvertToRibbonElement(c, palette.Name));
-                    CreateRibbon(elems, palette.Name);
-                }
+                // Загрузка ленты по группам настроек
+                CreateRibbon(LoadRibbonTabsFromGroups());
             }
             catch (Exception ex)
             {
                 Logger.Log.Error(ex, "CreateRibbon");
             }
+        }
+
+        private static List<(RibbonTabData, string)> LoadRibbonTabsFromGroups()
+        {
+            var groupsName = new List<string>
+                { PikSettings.UserGroup, Commands.GroupCommon, PikSettings.AdditionalUserGroup };
+            return groupsName.Where(w => !w.IsNullOrEmpty())
+                .Select(s => RibbonGroupData.Load(RibbonGroupData.GetRibbonFile(s))?.Tabs.Select(t => (t, s)))
+                .Where(w => w != null).SelectMany(s => s).ToList();
+        }
+
+        private static void CreateRibbon(List<(RibbonTabData, string)> tabsData)
+        {
+            try
+            {
+                if (ribbon == null)
+                    ribbon = ComponentManager.Ribbon;
+                ribbon.Tabs.CollectionChanged -= Tabs_CollectionChanged;
+
+                foreach (var tabData in tabsData.OrderBy(o=> GetTabIndex(o.Item1.Name)))
+                {
+                    if (ribbon.FindTab(tabData.Item1.Name) != null)
+                    {
+                        Logger.Log.Info($"RibbonBuilder. Такая вкладка уже есть - {tabData.Item1.Name}");
+                        continue;
+                    }
+
+                    var tabOpt = CreateTab(tabData.Item1, tabData.Item2);
+                    var tab = (RibbonTab) tabOpt.Item;
+                    if (tab == null || tabOpt.Items?.Any() != true)
+                        continue;
+                    AddItem(tabOpt.Index, tab, ribbon.Tabs);
+                    tab.Panels.CollectionChanged += Panels_CollectionChanged;
+                    tab.PropertyChanged += Tab_PropertyChanged;
+                }
+
+                var activeTab = (RibbonTab)ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == ribbonOptions.Data.ActiveTab)?.Item;
+                if (activeTab != null)
+                {
+                    ribbon.ActiveTab = activeTab;
+                }
+
+                ribbon.Tabs.CollectionChanged += Tabs_CollectionChanged;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, "CreateRibbon");
+            }
+        }
+
+        [NotNull]
+        private static ItemOptions CreateTab([NotNull] RibbonTabData tabData, string userGroup)
+        {
+            var tab = new RibbonTab
+            {
+                Title = tabData.Name,
+                Name = tabData.Name,
+                Id = tabData.Name,
+                UID = tabData.Name
+            };
+            var tabOptions = GetItemOptions(tab, ribbonOptions.Data.Tabs);
+            tab.IsVisible = tabOptions.IsVisible;
+            tabOptions.Items = tabData.Panels?.Select(p => CreatePanel(p, tabOptions, userGroup)).Where(w => w != null)
+                                   .OrderBy(o => o.Index).ToList() ?? new List<ItemOptions>();
+            foreach (var panelOpt in tabOptions.Items.Where(w => w != null))
+            {
+                var panel = (RibbonPanel) panelOpt.Item;
+                if (panel?.Source?.Items == null || panel.Source.Items.Count == 0)
+                    continue;
+                tab.Panels.Add(panel);
+            }
+
+            return tabOptions;
+        }
+
+        private static ItemOptions CreatePanel(RibbonPanelData panelData, [NotNull] ItemOptions tabOptions, string userGroup)
+        {
+            var name = panelData.Name.IsNullOrEmpty() ? "Главная" : panelData.Name;
+            var panelSource = new RibbonPanelSource
+            {
+                Name = name,
+                Id = name,
+                Title = name,
+                UID = name
+            };
+            foreach (var part in panelData.Items.Where(w => IsAccess(w.Access)).SplitParts(2))
+            {
+                var row = new RibbonRowPanel();
+                foreach (var element in part)
+                {
+                    var item = GetItem(element, userGroup);
+                    if (item == null)
+                        continue;
+                    row.Items.Add(item);
+                }
+
+                panelSource.Items.Add(row);
+                panelSource.Items.Add(new RibbonRowBreak());
+            }
+
+            var panel = new RibbonPanel { Source = panelSource, UID = panelSource.UID };
+            var panelOpt = GetItemOptions(panel, tabOptions.Items);
+            panel.IsVisible = panelOpt.IsVisible;
+            panel.PropertyChanged += Panel_PropertyChanged;
+            return panelOpt;
+        }
+
+        private static RibbonItem GetItem(RibbonItemData element, string userGroup)
+        {
+            try
+            {
+                var image = GetImage(element, userGroup);
+                RibbonItem item = null;
+                var size = RibbonItemSize.Large;
+                switch (element)
+                {
+                    case RibbonBreakPanel _:
+                        item = new RibbonPanelBreak();
+                        break;
+                    case RibbonToggle ribbonToggle:
+                        var t = new RibbonToggleButton();
+                        item = t;
+                        t.IsThreeState = false;
+                        t.IsChecked = GetToggleState(ribbonToggle);
+                        t.CommandHandler = ribbonToggle.GetCommand();
+                        break;
+                    case RibbonVisualGroupInsertBlock ribbonVisualGroupInsertBlock:
+                        break;
+                    case RibbonVisualInsertBlock ribbonVisualInsertBlock:
+                        var vb = new RibbonButton();
+                        vb.CommandHandler = ribbonVisualInsertBlock.GetCommand();
+                        item = vb;
+                        break;
+                    case RibbonInsertBlock ribbonInsertBlock:
+                        var ib = new RibbonButton();
+                        ib.CommandHandler = ribbonInsertBlock.GetCommand();
+                        item = ib;
+                        break;
+                    case RibbonSplit splitElem:
+                        size = RibbonItemSize.Standard;
+                        item = CreateSplitButton(splitElem, userGroup);
+                        break;
+                    case RibbonCommand command:
+                        var b = new RibbonButton();
+                        b.CommandHandler = command.GetCommand();
+                        item = b;
+                        break;
+                }
+
+                if (item == null)
+                {
+                    Logger.Log.Error(
+                        $"Не создан элемент ленты из имя='{element.Name}', группа настроек='{userGroup}'.");
+                    return null;
+                }
+
+                SetItemData(item, element, image, size);
+                return item;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex, $"Ошибка создание элемента ленты '{element?.Name}' '{userGroup}'");
+                return null;
+            }
+        }
+
+        private static bool GetToggleState(RibbonToggle ribbonToggle)
+        {
+            if (ribbonToggle.Command.IsNullOrEmpty()) return false;
+            return ribbonOptions.Data.DictToggleState.TryGetValue(ribbonToggle.Command, out var state)
+                ? state
+                : ribbonToggle.IsChecked;
+        }
+
+        [NotNull]
+        private static RibbonSplitButton CreateSplitButton([NotNull] RibbonSplit splitElem, string userGroup)
+        {
+            var splitB = new RibbonSplitButton
+            {
+                ListImageSize = RibbonImageSize.Large,
+                ShowText = false
+            };
+
+            foreach (var elem in splitElem.Items.Where(w => IsAccess(w.Access)))
+            {
+                var item = GetItem(elem, userGroup);
+                if (item == null) continue;
+                splitB.Items.Add(item);
+            }
+
+            return splitB;
+        }
+
+        [NotNull]
+        private static void SetItemData([NotNull] RibbonItem item, RibbonItemData itemData, ImageSource image, RibbonItemSize size)
+        {
+            item.Text = item.Name; // Текст рядом с кнопкой, если ShowText = true
+            item.Name = item.Name; // Тест на всплявающем окошке (заголовов)
+            item.Description = item.Description; // Описание на всплывающем окошке
+            item.LargeImage = ResizeImage(image, 32);
+            item.Image = ResizeImage(image, 16);
+            item.ToolTip = GetToolTip(itemData, image);
+            item.IsToolTipEnabled = true;
+            item.ShowImage = image != null;
+            item.ShowText = false;
+            item.Size = size;
         }
 
         private static void AddItem<T>(int index, [NotNull] T item, [NotNull] IList<T> items)
@@ -106,171 +323,6 @@ namespace AcadLib.UI.Ribbon
             Application.SystemVariableChanged += Application_SystemVariableChanged;
         }
 
-        [NotNull]
-        private static RibbonElement ConvertPaletteCommand([NotNull] IPaletteCommand c, string paletteName)
-        {
-            return new RibbonElement
-            {
-                Command = new RelayCommand(c.Execute),
-                Image = c.Image,
-                LargeImage = c.Image,
-                Name = c.Name,
-                Tab = paletteName,
-                Panel = c.Group,
-                Description = c.Description
-            };
-        }
-
-        [NotNull]
-        private static IRibbonElement ConvertToRibbonElement([NotNull] IPaletteCommand c, string paletteName)
-        {
-            if (c is SplitCommand splitCommand)
-            {
-                return new SplitElement
-                {
-                    Items = splitCommand.Commands.Select(s => ConvertPaletteCommand(s, paletteName)).ToList(),
-                    Tab = paletteName,
-                    Panel = c.Group
-                };
-            }
-
-            if (c is ToggleButton toggleBtn)
-            {
-                return new ToggleElement
-                {
-                    Name = c.Name,
-                    Command = toggleBtn.Command,
-                    Image = c.Image,
-                    LargeImage = c.Image,
-                    Tab = paletteName,
-                    Panel = c.Group,
-                    Description = c.Description,
-                    IsChecked = toggleBtn.IsChecked,
-                };
-            }
-
-            return ConvertPaletteCommand(c, paletteName);
-        }
-
-        [NotNull]
-        private static Autodesk.Windows.RibbonButton CreateButton([NotNull] IRibbonElement element)
-        {
-            var button = new Autodesk.Windows.RibbonButton
-            {
-                CommandHandler = element.Command,
-                Text = element.Name, // Текст рядом с кнопкой, если ShowText = true
-                Name = element.Name, // Тест на всплявающем окошке (заголовов)
-                Description = element.Description, // Описание на всплывающем окошке
-                LargeImage = ResizeImage(element.LargeImage as BitmapSource, 32),
-                Image = ResizeImage(element.Image as BitmapSource, 16),
-                ToolTip = GetToolTip(element),
-                IsToolTipEnabled = true,
-                ShowImage = element.LargeImage != null || element.Image != null,
-                ShowText = false,
-                Size = RibbonItemSize.Large
-            };
-            return button;
-        }
-
-        [NotNull]
-        private static ItemOptions CreatePanel(
-            string panelName,
-            [NotNull] IEnumerable<IRibbonElement> elements,
-            [NotNull] ItemOptions tabOptions)
-        {
-            var name = panelName.IsNullOrEmpty() ? "Главная" : panelName;
-            var panelSource = new RibbonPanelSource
-            {
-                Name = name,
-                Id = panelName,
-                Title = name,
-                UID = name
-            };
-            foreach (var part in elements.SplitParts(2))
-            {
-                var row = new RibbonRowPanel();
-                foreach (var element in part)
-                {
-                    RibbonItem item;
-                    if (element is SplitElement splitElem)
-                    {
-                        item = CreateSplitButton(splitElem);
-                    }
-                    else if (element is ToggleElement toggle)
-                    {
-                        var toggleBtn = new RibbonToggleButton
-                        {
-                            CommandHandler = toggle.Command,
-                            Text = toggle.Name, // Текст рядом с кнопкой, если ShowText = true
-                            Name = toggle.Name, // Тест на всплявающем окошке (заголовов)
-                            Description = toggle.Description, // Описание на всплывающем окошке
-                            LargeImage = ResizeImage(toggle.LargeImage as BitmapSource, 32),
-                            Image = ResizeImage(toggle.Image as BitmapSource, 16),
-                            ToolTip = GetToolTip(toggle),
-                            IsToolTipEnabled = true,
-                            ShowImage = toggle.LargeImage != null || toggle.Image != null,
-                            ShowText = false,
-                            Size = RibbonItemSize.Large,
-                            IsThreeState = false,
-                            CheckState = toggle.IsChecked,
-                        };
-                        item = toggleBtn;
-                    }
-                    else
-                    {
-                        item = CreateButton(element);
-                    }
-
-                    row.Items.Add(item);
-                }
-
-                panelSource.Items.Add(row);
-                panelSource.Items.Add(new RibbonRowBreak());
-            }
-
-            var panel = new RibbonPanel { Source = panelSource, UID = panelSource.UID };
-            var panelOpt = GetItemOptions(panel, tabOptions.Items);
-            panel.IsVisible = panelOpt.IsVisible;
-            panel.PropertyChanged += Panel_PropertyChanged;
-            return panelOpt;
-        }
-
-        private static void CreateRibbon(IEnumerable<IRibbonElement> elements, string tabName)
-        {
-            try
-            {
-                if (ribbon == null)
-                    ribbon = ComponentManager.Ribbon;
-                ribbon.Tabs.CollectionChanged -= Tabs_CollectionChanged;
-                if (ribbon.FindTab(tabName) != null)
-                    return;
-
-                // группировка элементов по вкладкам
-                var tabsOpt = elements.GroupBy(g => g.Tab).Select(t => CreateTab(t.Key, t.ToList())).ToList();
-                foreach (var tabOpt in tabsOpt)
-                {
-                    var tab = (RibbonTab)tabOpt.Item;
-                    if (tab == null)
-                        continue;
-                    AddItem(tabOpt.Index, tab, ribbon.Tabs);
-                    tab.Panels.CollectionChanged += Panels_CollectionChanged;
-                    tab.PropertyChanged += Tab_PropertyChanged;
-                }
-
-                var activeTab = (RibbonTab)ribbonOptions.Data.Tabs.FirstOrDefault(t => t.UID == ribbonOptions.Data.ActiveTab)?.Item;
-                if (activeTab != null)
-                {
-                    ribbon.ActiveTab = activeTab;
-                }
-
-                ribbon.Tabs.CollectionChanged += Tabs_CollectionChanged;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, "CreateRibbon");
-            }
-        }
-
         private static void Tab_PropertyChanged(object sender, [NotNull] PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
@@ -296,45 +348,6 @@ namespace AcadLib.UI.Ribbon
                 ribbonOptions.Data.ActiveTab = ribbon.ActiveTab.UID;
                 ribbonOptions.TrySave();
             }
-        }
-
-        [NotNull]
-        private static RibbonSplitButton CreateSplitButton([NotNull] SplitElement splitElem)
-        {
-            var splitB = new RibbonSplitButton();
-            foreach (var elem in splitElem.Items)
-            {
-                var button = CreateButton(elem);
-                splitB.Items.Add(button);
-                splitB.Items.Add(new RibbonToggleButton());
-            }
-
-            return splitB;
-        }
-
-        [NotNull]
-        private static ItemOptions CreateTab(string tabName, [NotNull] IEnumerable<IRibbonElement> elements)
-        {
-            var tab = new RibbonTab
-            {
-                Title = tabName,
-                Name = tabName,
-                Id = tabName,
-                UID = tabName
-            };
-            var tabOptions = GetItemOptions(tab, ribbonOptions.Data.Tabs);
-            tab.IsVisible = tabOptions.IsVisible;
-            tabOptions.Items = elements.GroupBy(g => g.Panel).Select(p => CreatePanel(p.Key, p.ToList(), tabOptions))
-                .OrderBy(o => o.Index).ToList();
-            foreach (var panelOpt in tabOptions.Items)
-            {
-                var panel = (RibbonPanel)panelOpt.Item;
-                if (panel == null)
-                    continue;
-                tab.Panels.Add(panel);
-            }
-
-            return tabOptions;
         }
 
         [NotNull]
@@ -366,14 +379,14 @@ namespace AcadLib.UI.Ribbon
         }
 
         [NotNull]
-        private static RibbonToolTip GetToolTip([NotNull] IRibbonElement element)
+        private static RibbonToolTip GetToolTip([NotNull] RibbonItemData item, ImageSource image)
         {
             return new RibbonToolTip
             {
-                Title = element.Name,
-                Content = element.Description,
+                Title = item.Name,
+                Content = item.Description,
                 IsHelpEnabled = false,
-                Image = element.LargeImage,
+                Image = image,
             };
         }
 
@@ -417,11 +430,11 @@ namespace AcadLib.UI.Ribbon
         }
 
         [CanBeNull]
-        private static BitmapSource ResizeImage([CanBeNull] BitmapSource image, int size)
+        private static ImageSource ResizeImage([CanBeNull] ImageSource image, int size)
         {
-            return image == null
-                ? null
-                : new TransformedBitmap(image, new ScaleTransform(size / image.Width, size / image.Height));
+            if (image is BitmapSource bmp)
+                return new TransformedBitmap(bmp, new ScaleTransform(size / image.Width, size / image.Height));
+            return image;
         }
 
         private static void SaveOptions()
@@ -460,6 +473,47 @@ namespace AcadLib.UI.Ribbon
 
                 SaveOptions();
             }
+        }
+
+        public static ImageSource GetImage(RibbonItemData item, string userGroup)
+        {
+            var image = RibbonGroupData.LoadImage(userGroup, item.Name) ?? GetDefaultImage();
+            if (item.IsTest)
+            {
+                image = AddTestWaterMark(image);
+            }
+
+            return image;
+        }
+
+        public static BitmapImage GetDefaultImage()
+        {
+            return new BitmapImage(new Uri("pack://application:,,,/Resources/unknown.png"));
+        }
+
+        private static ImageSource AddTestWaterMark([NotNull] ImageSource image)
+        {
+            var size = 64;
+            var render = new RenderTargetBitmap(size,size, 96,96, PixelFormats.Pbgra32);
+            var visual = new DrawingVisual();
+            var context = visual.RenderOpen();
+            context.DrawImage(image, new Rect(0, 0, size, size));
+            var formatted_text = new FormattedText("Тест", CultureInfo.CurrentUICulture,
+                FlowDirection.LeftToRight, new Typeface("Arial"),
+                22, new SolidColorBrush(Colors.Red));
+            formatted_text.SetFontWeight(FontWeights.Bold);
+            context.DrawText(formatted_text, new Point(5, 40));
+            context.Close();
+            render.Render(visual);
+            return render;
+        }
+
+        public static bool IsAccess([CanBeNull] List<string> accessLogins)
+        {
+            return accessLogins?.Any() != true ||
+                   accessLogins.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase) ||
+                   (AcadLib.General.IsBimUser && (accessLogins.Contains("BIM", StringComparer.OrdinalIgnoreCase) ||
+                                                 accessLogins.Contains("БИМ", StringComparer.OrdinalIgnoreCase)));
         }
     }
 }

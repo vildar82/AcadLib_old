@@ -37,7 +37,7 @@ namespace AcadLib.UI.Ribbon.Editor.Data
 
         public abstract RibbonItemData GetItem();
 
-        protected void FillItem(RibbonItemData item)
+        protected virtual void FillItem(RibbonItemData item)
         {
             item.Name = Name;
             item.Access = Access?.Select(s => s.Access).ToList();

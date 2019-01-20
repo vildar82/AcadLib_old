@@ -3,14 +3,18 @@ namespace AcadLib.UI.Ribbon.Editor
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Windows.Forms;
+    using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using AcadLib.UI.Ribbon.Data;
     using AutoCAD_PIK_Manager.Settings;
     using Data;
     using Elements;
+    using JetBrains.Annotations;
+    using MahApps.Metro.IconPacks;
     using NetLib;
     using NetLib.WPF;
     using NetLib.WPF.Data;
@@ -43,9 +47,49 @@ namespace AcadLib.UI.Ribbon.Editor
                     RibbonGroup.FreeItems?.Select(GetItemVM) ?? new List<RibbonItemDataVM>());
             });
 
+            var iconConverter = new NetLib.WPF.Converters.PackIconImageSourceConverter();
+            iconConverter.Convert(PackIconMaterialKind.FormatListBulleted, null, null,
+                CultureInfo.CurrentCulture);
             Save = new RelayCommand(SaveExec);
             SelectImage = new RelayCommand(SelectImageExec);
             DeleteSelectedItem = new RelayCommand(DeleteSelectedItemExec);
+            DeletePanel = new RelayCommand<RibbonPanelDataVM>(DeletePanelExec, e => ShowMessage(e.Message));
+            NewPanel = new RelayCommand(() => SelectedTab.Panels.Add(new RibbonPanelDataVM {Name = "Панель"}));
+            AddCommandItem = new RelayCommand(() =>
+            {
+                FreeItems.Add(new RibbonCommandVM(new RibbonCommand())
+                {
+                    Image = iconConverter.Convert(PackIconFontAwesomeKind.TerminalSolid, null, null,null) as ImageSource
+                });
+            });
+            AddSplitItem = new RelayCommand(() =>
+            {
+                FreeItems.Add(new RibbonSplitVM(new RibbonSplit())
+                {
+                    Image = iconConverter.Convert(PackIconMaterialKind.FormatListBulleted, null, null,null) as ImageSource
+                });
+            });
+            AddInsertBlockItem = new RelayCommand(() =>
+            {
+                FreeItems.Add(new RibbonInsertBlockVM(new RibbonInsertBlock(), BlockFiles)
+                {
+                    Image = iconConverter.Convert(PackIconFontAwesomeKind.ObjectGroupRegular, null, null,null) as ImageSource
+                });
+            });
+            AddVisualInsertBlockItem = new RelayCommand(() =>
+            {
+                FreeItems.Add(new RibbonVisualInsertBlockVM(new RibbonVisualInsertBlock(), BlockFiles)
+                {
+                    Image = iconConverter.Convert(PackIconFontAwesomeKind.WindowsBrands, null, null,null) as ImageSource
+                });
+            });
+            AddToggleItem = new RelayCommand(() =>
+            {
+                FreeItems.Add(new RibbonToggleVM(new RibbonToggle())
+                {
+                    Image = iconConverter.Convert(PackIconMaterialKind.Check, null, null,null) as ImageSource
+                });
+            });
         }
 
         public List<string> UserGroups => PikSettings.UserGroups;
@@ -56,7 +100,8 @@ namespace AcadLib.UI.Ribbon.Editor
 
         public ObservableCollection<RibbonTabDataVM> Tabs { get; set; }
 
-        public ObservableCollection<RibbonItemDataVM> FreeItems { get; set; }
+        [NotNull]
+        public ObservableCollection<RibbonItemDataVM> FreeItems { get; set; } = new ObservableCollection<RibbonItemDataVM>();
 
         public RelayCommand Save { get; set; }
 
@@ -67,6 +112,18 @@ namespace AcadLib.UI.Ribbon.Editor
         public RelayCommand DeleteSelectedItem { get; set; }
 
         public List<BlockFile> BlockFiles { get; set; }
+
+        public RibbonTabDataVM SelectedTab { get; set; }
+
+        public RelayCommand<RibbonPanelDataVM> DeletePanel { get; set; }
+
+        public RelayCommand NewPanel { get; set; }
+
+        public RelayCommand AddCommandItem { get; set; }
+        public RelayCommand AddSplitItem { get; set; }
+        public RelayCommand AddInsertBlockItem { get; set; }
+        public RelayCommand AddVisualInsertBlockItem { get; set; }
+        public RelayCommand AddToggleItem { get; set; }
 
         private static void SaveRibbonGroup(RibbonGroupData ribbonGroup, string userGroup)
         {
@@ -81,7 +138,7 @@ namespace AcadLib.UI.Ribbon.Editor
             var ribbonFile = RibbonGroupData.GetRibbonFile(userGroup);
             if (File.Exists(ribbonFile))
             {
-                return RibbonGroupData.Load(ribbonFile);
+                return RibbonGroupData.Load(ribbonFile, e => throw e);
             }
 
             var ribbonGroup = new RibbonGroupData
@@ -138,7 +195,11 @@ namespace AcadLib.UI.Ribbon.Editor
                 var dlg = new OpenFileDialog { Title = "Выбор картинки", Multiselect = false };
                 if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     return;
-                var image = new BitmapImage(new Uri(dlg.FileName));
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = new Uri(dlg.FileName, UriKind.Absolute);
+                image.EndInit();
                 SelectedItem.Image = image;
             }
             catch (Exception ex)
@@ -152,7 +213,7 @@ namespace AcadLib.UI.Ribbon.Editor
             RibbonItemDataVM itemVm;
             switch (item)
             {
-                case RibbonBreak ribbonBreak:
+                case RibbonBreakPanel ribbonBreak:
                     itemVm = new RibbonBreakVM(ribbonBreak);
                     break;
                 case RibbonToggle ribbonToggle:
@@ -184,8 +245,7 @@ namespace AcadLib.UI.Ribbon.Editor
             }) ?? new List<AccessItem>());
             itemVm.Description = item.Description;
             itemVm.IsTest = item.IsTest;
-            var imageName = RibbonGroupData.GetImageName(item.Name);
-            itemVm.Image = RibbonGroupData.LoadImage(userGroup, imageName);
+            itemVm.Image = RibbonGroupData.LoadImage(userGroup, item.Name);
             return itemVm;
         }
 
@@ -209,6 +269,16 @@ namespace AcadLib.UI.Ribbon.Editor
                 FreeItems.Add(item);
             else
                 FreeItems.Remove(item);
+        }
+
+        private void DeletePanelExec(RibbonPanelDataVM panel)
+        {
+            foreach (var item in panel.Items)
+            {
+                FreeItems.Add(item);
+            }
+
+            SelectedTab.Panels.Remove(panel);
         }
     }
 }

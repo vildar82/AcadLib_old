@@ -42,7 +42,7 @@
             <Button Content="Сохранить" Command="{Binding Save}" Margin="10,1,1,1" />
         </StackPanel>
         <!-- Лента -->
-        <TabControl Grid.Row="1" ItemsSource="{Binding Tabs}">
+        <TabControl Grid.Row="1" ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
@@ -51,40 +51,52 @@
             <TabControl.ContentTemplate>
                 <DataTemplate DataType="elements:RibbonTabDataVM">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                        <ListBox ItemsSource="{Binding Panels}"
-                                 dd:DragDrop.IsDragSource="True" MinWidth="50"
-                                 dd:DragDrop.IsDropTarget="True">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="data:RibbonPanelData">
-                                    <Border BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <ListBox Grid.Row="0" ItemsSource="{Binding Items}"
-                                                     dd:DragDrop.IsDragSource="True"
-                                                     dd:DragDrop.IsDropTarget="True" MinWidth="50"
-                                                     SelectedItem="{Binding DataContext.SelectedItem, ElementName=Win}">
-                                                <ListBox.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel Orientation="Vertical" Height="70" />
-                                                    </ItemsPanelTemplate>
-                                                </ListBox.ItemsPanel>
-                                            </ListBox>
-                                            <TextBox Grid.Row="1" Text="{Binding Name}" BorderBrush="Transparent"
-                                                     BorderThickness="0"
-                                                     VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <!-- Панели -->
+                        <StackPanel Orientation="Horizontal">
+                            <ListBox ItemsSource="{Binding Panels}"
+                                     dd:DragDrop.IsDragSource="True" MinWidth="50"
+                                     dd:DragDrop.IsDropTarget="True">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="data:RibbonPanelData">
+                                        <Border BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <!-- Кнопки на одной панеле -->
+                                                <ListBox Grid.Row="0" ItemsSource="{Binding Items}"
+                                                         dd:DragDrop.IsDragSource="True"
+                                                         dd:DragDrop.IsDropTarget="True" MinWidth="50"
+                                                         SelectedItem="{Binding DataContext.SelectedItem, ElementName=Win}">
+                                                    <ListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Vertical" Height="70" />
+                                                        </ItemsPanelTemplate>
+                                                    </ListBox.ItemsPanel>
+                                                </ListBox>
+                                                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <!-- Имя панели -->
+                                                    <TextBox Text="{Binding Name}" BorderBrush="Transparent"
+                                                             BorderThickness="0"
+                                                             VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                    <Button Content="{iconPacks:Material Delete}" Style="{StaticResource ListBoxCollapseBtn}"
+                                                            Command="{Binding DataContext.DeletePanel, ElementName=Win}"
+                                                            CommandParameter="{Binding}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <Button Content="{iconPacks:Material Plus}" VerticalAlignment="Center" Margin="5"
+                                    Command="{Binding DataContext.NewPanel, ElementName=Win}" />
+                        </StackPanel>
                     </ScrollViewer>
                 </DataTemplate>
             </TabControl.ContentTemplate>
@@ -109,6 +121,19 @@
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>
+                <!-- Создание кнопок -->
+                <WrapPanel>
+                    <!-- Команда -->
+                    <Button Content="{iconPacks:FontAwesome TerminalSolid}" Command="{Binding AddCommandItem}"/>
+                    <!-- Список элементов -->
+                    <Button Content="{iconPacks:Material FormatListBulleted}" Command="{Binding AddSplitItem}"/>
+                    <!-- Вставка блока -->
+                    <Button Content="{iconPacks:FontAwesome ObjectGroupRegular}" Command="{Binding AddInsertBlockItem}"/>
+                    <!-- Визуадьная вставка блоков - по фильтру -->
+                    <Button Content="{iconPacks:FontAwesome WindowsBrands}" Command="{Binding AddVisualInsertBlockItem}"/>
+                    <!-- Переключатель -->
+                    <Button Content="{iconPacks:Material Check}" Command="{Binding AddToggleItem}"/>
+                </WrapPanel>
             </StackPanel>
             <!-- Выбранная кнопка -->
             <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="30,1,1,1"
@@ -181,7 +206,7 @@
                                               MinWidth="100" VerticalAlignment="Center">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding FileName}"/>
+                                                <TextBlock Text="{Binding FileName}" />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
@@ -192,10 +217,29 @@
                                               VerticalAlignment="Center"
                                               SelectedItem="{Binding BlockName}" />
                                 </StackPanel>
+                                <CheckBox IsChecked="{Binding Explode}" Content="Разбивать"/>
                             </StackPanel>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type elements:RibbonVisualInsertBlockVM}">
-                            <TextBlock Text="RibbonVisualInsertBlockVM" />
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Файл" MinWidth="100" VerticalAlignment="Center" />
+                                    <ComboBox ItemsSource="{Binding DataContext.BlockFiles, ElementName=Win}"
+                                              SelectedItem="{Binding File}"
+                                              MinWidth="100" VerticalAlignment="Center">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding FileName}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Фильтр" MinWidth="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Filter}" MinWidth="100"/>
+                                </StackPanel>
+                                <CheckBox IsChecked="{Binding Explode}" Content="Разбивать"/>
+                            </StackPanel>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type elements:RibbonVisualGroupInsertBlockVM}">
                             <TextBlock Text="RibbonVisualGroupInsertBlockVM" />
@@ -204,7 +248,13 @@
                             <TextBlock Text="RibbonBreakVM" />
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type elements:RibbonToggleVM}">
-                            <TextBlock Text="RibbonToggleVM" />
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Команда" MinWidth="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Command}" MinWidth="100"/>
+                                </StackPanel>
+                                <CheckBox IsChecked="{Binding IsChecked}" Content="Стартовое значение"/>
+                            </StackPanel>
                         </DataTemplate>
                     </ContentPresenter.Resources>
                 </ContentPresenter>
