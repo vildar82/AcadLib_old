@@ -52,6 +52,12 @@ namespace AcadLib.UI.Ribbon.Data
         {
             try
             {
+                if (!File.Exists(ribbonFile))
+                {
+                    Logger.Log.Error($"Загрузка ленты. ribbonFile не найден {ribbonFile}.");
+                    return null;
+                }
+
                 return ribbonFile.FromXml<RibbonGroupData>(GetTypes());
             }
             catch (Exception ex)
