@@ -84,9 +84,8 @@
             using (var pl = plId.Open(OpenMode.ForRead, false, true) as Autodesk.AutoCAD.DatabaseServices.Polyline)
             {
                 Pts = pl.GetPoints();
+                return PromptStatus.OK;
             }
-
-            return PromptStatus.Cancel;
         }
 
         /// <inheritdoc />

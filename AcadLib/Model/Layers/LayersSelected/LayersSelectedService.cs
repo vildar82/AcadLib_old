@@ -1,7 +1,4 @@
-﻿// Khisyametdinovvt Хисяметдинов Вильдар Тямильевич
-// 2018 02 12 14:42
-
-namespace AcadLib.Layers.LayersSelected
+﻿namespace AcadLib.Layers.LayersSelected
 {
     using System.Collections.Generic;
     using Autodesk.AutoCAD.ApplicationServices;
