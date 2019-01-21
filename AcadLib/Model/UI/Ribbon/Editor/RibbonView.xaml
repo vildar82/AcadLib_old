@@ -45,7 +45,7 @@
         <TabControl Grid.Row="1" ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text="{Binding Name}"/>
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
@@ -108,7 +108,12 @@
             </Grid.ColumnDefinitions>
             <!-- Свободные команды -->
             <StackPanel Grid.Column="0">
-                <TextBlock Text="Свободные элементы:" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                    <TextBlock Text="Вкладка:"/>
+                    <TextBox Text="{Binding SelectedTab.Name}" MinWidth="50" VerticalAlignment="Center"/>
+                    <Button Content="{iconPacks:Material Plus}" Margin="5,1,1,1" Command="{Binding AddTab}"/>
+                </StackPanel>
+                <TextBlock Text="Свободные элементы:" Margin="1,5,1,1"/>
                 <ListBox ItemsSource="{Binding FreeItems}" MouseDoubleClick="Control_OnMouseDoubleClick"
                          dd:DragDrop.IsDragSource="True" MaxWidth="350"
                          dd:DragDrop.IsDropTarget="True" MinHeight="100" MinWidth="100"

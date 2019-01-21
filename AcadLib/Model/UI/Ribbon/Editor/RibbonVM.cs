@@ -28,6 +28,9 @@ namespace AcadLib.UI.Ribbon.Editor
         public RibbonVM()
         {
             ribbonVm = this;
+            UserGroups = new List<string> { PikSettings.UserGroup, Commands.GroupCommon };
+            if (!PikSettings.AdditionalUserGroup.IsNullOrEmpty())
+                UserGroups.Add(PikSettings.AdditionalUserGroup);
             UserGroup = PikSettings.UserGroup;
             BlockFiles = BlockFile.GetFiles();
             this.WhenAnyValue(v => v.UserGroup).Subscribe(s =>
@@ -55,6 +58,7 @@ namespace AcadLib.UI.Ribbon.Editor
             DeleteSelectedItem = new RelayCommand(DeleteSelectedItemExec);
             DeletePanel = new RelayCommand<RibbonPanelDataVM>(DeletePanelExec, e => ShowMessage(e.Message));
             NewPanel = new RelayCommand(() => SelectedTab.Panels.Add(new RibbonPanelDataVM {Name = "Панель"}));
+            AddTab = new RelayCommand(() => Tabs.Add(new RibbonTabDataVM { Name = "Вкладка" + Tabs.Count }));
             AddCommandItem = new RelayCommand(() =>
             {
                 FreeItems.Add(new RibbonCommandVM(new RibbonCommand())
@@ -92,7 +96,7 @@ namespace AcadLib.UI.Ribbon.Editor
             });
         }
 
-        public List<string> UserGroups => PikSettings.UserGroups;
+        public List<string> UserGroups { get; set; }
 
         public string UserGroup { get; set; }
 
@@ -124,6 +128,7 @@ namespace AcadLib.UI.Ribbon.Editor
         public RelayCommand AddInsertBlockItem { get; set; }
         public RelayCommand AddVisualInsertBlockItem { get; set; }
         public RelayCommand AddToggleItem { get; set; }
+        public RelayCommand AddTab { get; set; }
 
         private static void SaveRibbonGroup(RibbonGroupData ribbonGroup, string userGroup)
         {
