@@ -7,6 +7,10 @@ namespace AcadLib.UI.PaletteCommands
 
     public class ToggleButton : PaletteCommand
     {
+        public ToggleButton()
+        {
+        }
+
         public ToggleButton(string name, Bitmap icon, bool isChecked, Action change, string desc, string group)
         {
             Name = name;

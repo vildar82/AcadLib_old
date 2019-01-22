@@ -1,5 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-namespace AcadLib.PaletteCommands
+﻿namespace AcadLib.PaletteCommands
 {
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -10,23 +9,23 @@ namespace AcadLib.PaletteCommands
     [PublicAPI]
     public interface IPaletteCommand : INotifyPropertyChanged
     {
-        List<string> Access { get; }
+        List<string> Access { get; set; }
 
         ICommand Command { get; set; }
 
         List<MenuItemCommand> ContexMenuItems { get; set; }
 
-        string Description { get; }
+        string Description { get; set; }
 
-        string Group { get; }
+        string Group { get; set; }
 
-        string HelpMedia { get; }
+        string HelpMedia { get; set; }
 
-        ImageSource Image { get; }
+        ImageSource Image { get; set; }
 
-        bool IsTest { get; }
+        bool IsTest { get; set; }
 
-        string Name { get; }
+        string Name { get; set; }
 
         void Execute();
     }

@@ -16,10 +16,14 @@ namespace AcadLib.PaletteCommands
     /// </summary>
     public class PaletteInsertBlock : PaletteCommand
     {
-        internal readonly string blName;
-        internal readonly bool explode;
-        internal readonly string file;
-        internal readonly List<Property> props;
+        internal string blName;
+        internal bool explode;
+        internal string file;
+        internal List<Property> props;
+
+        public PaletteInsertBlock()
+        {
+        }
 
         public PaletteInsertBlock(
             string blName,

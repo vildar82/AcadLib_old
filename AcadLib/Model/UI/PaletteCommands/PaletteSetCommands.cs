@@ -3,33 +3,32 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.IO;
     using System.Linq;
-    using System.Reflection;
+    using System.Text.RegularExpressions;
     using System.Windows.Media;
+    using AcadLib.UI.PaletteCommands;
     using AcadLib.UI.PaletteCommands.UI;
     using AcadLib.UI.Ribbon;
+    using AcadLib.UI.Ribbon.Elements;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.Windows;
     using JetBrains.Annotations;
+    using Layers;
     using Properties;
     using Brush = System.Windows.Media.Brush;
 
     [PublicAPI]
     public class PaletteSetCommands : PaletteSet
     {
-        internal static readonly List<UserGroupPalette> _paletteSets = new List<UserGroupPalette>();
-        private readonly string versionPalette;
+        internal static UserGroupPalette _paletteSets;
 
         public PaletteSetCommands(
             string paletteName,
             Guid paletteGuid,
             string commandStartPalette,
-            List<IPaletteCommand> commandsAddin,
-            string versionPalette)
+            List<IPaletteCommand> commandsAddin)
             : base(paletteName, commandStartPalette, paletteGuid)
         {
-            this.versionPalette = versionPalette;
             CommandsAddin = commandsAddin;
             Icon = Resources.pik;
             LoadPalettes();
@@ -45,6 +44,11 @@
         /// Данные для палитры
         /// </summary>
         private List<PaletteModel> Models { get; set; }
+
+        public static void Init()
+        {
+            SetTrayPalette();
+        }
 
         public static double GetButtonWidth()
         {
@@ -66,6 +70,7 @@
         /// Подготовка для определения палитры ПИК.
         /// Добавление значка ПИК в трей для запуска палитры.
         /// </summary>
+        [Obsolete("Построение палитры инструментов происходит из настроек Ribbon")]
         public static void InitPalette(
             List<IPaletteCommand> commands,
             string commandStartPalette,
@@ -75,26 +80,20 @@
             return;
             try
             {
-                var palette = _paletteSets.FirstOrDefault(p => p.Guid.Equals(paletteGuid));
-                if (palette == null)
+                if (_paletteSets == null)
                 {
                     commands.AddRange(Commands.CommandsPalette);
-                    var asm = Assembly.GetCallingAssembly();
-                    var ver = asm.GetName().Version;
-                    var date = File.GetLastWriteTime(asm.Location);
-                    _paletteSets.Add(new UserGroupPalette
+                    _paletteSets = new UserGroupPalette
                     {
                         Guid = paletteGuid,
                         Name = paletteName,
                         CommandStartPalette = commandStartPalette,
                         Commands = commands,
-                        VersionPalette = ver.ToString()
-                    });
-                    SetTrayPalette(paletteName, paletteGuid, ver, date.ToString());
+                    };
                 }
                 else
                 {
-                    palette.Commands.AddRange(commands);
+                    _paletteSets.Commands.AddRange(commands);
                 }
             }
             catch (Exception ex)
@@ -106,21 +105,22 @@
         /// <summary>
         /// Создание палитры и показ
         /// </summary>
-        public static void Start(Guid paletteGuid)
+        public static void Start()
         {
-            return;
             try
             {
-                var paletteUserGroup = _paletteSets.FirstOrDefault(p => p.Guid.Equals(paletteGuid));
-                if (paletteUserGroup == null)
-                    return;
-                if (paletteUserGroup.Palette == null)
+                if (_paletteSets == null)
                 {
-                    paletteUserGroup.Palette = new PaletteSetCommands(paletteUserGroup.Name, paletteUserGroup.Guid,
-                        paletteUserGroup.CommandStartPalette, paletteUserGroup.Commands, paletteUserGroup.VersionPalette);
+                    _paletteSets = LoadPaletteGroup();
                 }
 
-                paletteUserGroup.Palette.Visible = true;
+                if (_paletteSets.Palette == null)
+                {
+                    _paletteSets.Palette = new PaletteSetCommands(_paletteSets.Name, _paletteSets.Guid,
+                        _paletteSets.CommandStartPalette, _paletteSets.Commands);
+                }
+
+                _paletteSets.Palette.Visible = true;
             }
             catch (Exception ex)
             {
@@ -138,22 +138,126 @@
             }
         }
 
-        private static void PikTray_MouseDown(Guid paletteGuid)
+        private static UserGroupPalette LoadPaletteGroup()
         {
-            Start(paletteGuid);
+            return new UserGroupPalette
+            {
+                Guid = new Guid("DFE87B3D-78A0-47A3-84C6-3E66909C65C8"),
+                Name = "Палитра инструментов ПИК",
+                CommandStartPalette = nameof(Commands.PIK_StartPalette),
+                Commands = LoadCommands(),
+            };
         }
 
-        private static void SetTrayPalette(string paletteName, Guid paletteGuid, Version ver, string date)
+        private static List<IPaletteCommand> LoadCommands()
+        {
+            var commands = new List<IPaletteCommand>();
+            try
+            {
+                foreach (var group in RibbonBuilder.LoadRibbonTabsFromGroups())
+                {
+                    foreach (var panel in @group.Item1.Panels)
+                    {
+                        foreach (var item in panel.Items)
+                        {
+                            try
+                            {
+                                var com = GetCommand(item, panel.Name, group.Item2);
+                                if (com != null)
+                                    commands.Add(com);
+                            }
+                            catch
+                            {
+                                // Пофигу
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex);
+            }
+
+            return commands;
+        }
+
+        private static IPaletteCommand GetCommand(RibbonItemData item, string panel, string userGroup)
+        {
+            if (!RibbonBuilder.IsAccess(item.Access))
+                return null;
+            IPaletteCommand com = null;
+            switch (item)
+            {
+                case RibbonBreakPanel ribbonBreakPanel:
+                    break;
+                case RibbonToggle ribbonToggle:
+                    var toggle = new ToggleButton();
+                    toggle.IsChecked = ribbonToggle.IsChecked;
+                    toggle.CommandName = ribbonToggle.Command;
+                    com = toggle;
+                    break;
+                case RibbonCommand ribbonCommand:
+                    var c = new PaletteCommand();
+                    c.CommandName = ribbonCommand.Command;
+                    com = c;
+                    break;
+                case RibbonVisualGroupInsertBlock ribbonVisualGroupInsertBlock:
+                    break;
+                case RibbonVisualInsertBlock ribbonVisualInsertBlock:
+                    var vb = new PaletteVisualInsertBlocks();
+                    vb.file = ribbonVisualInsertBlock.File;
+                    vb.filter = s => Regex.IsMatch(s, ribbonVisualInsertBlock.Filter);
+                    vb.explode = ribbonVisualInsertBlock.Explode;
+                    vb.Layer = new LayerInfo(ribbonVisualInsertBlock.Layer);
+                    com = vb;
+                    break;
+                case RibbonInsertBlock ribbonInsertBlock:
+                    var ib = new PaletteInsertBlock();
+                    ib.file = ribbonInsertBlock.File;
+                    ib.blName = ribbonInsertBlock.BlockName;
+                    ib.explode = ribbonInsertBlock.Explode;
+                    ib.Layer = new LayerInfo(ribbonInsertBlock.Layer);
+                    ib.props = ribbonInsertBlock.Properties;
+                    com = ib;
+                    break;
+                case RibbonSplit ribbonSplit:
+                    var split = new SplitCommand();
+                    split.Commands = ribbonSplit.Items.Select(s => GetCommand(s, panel, userGroup))
+                        .Where(w => w != null).ToList();
+                    break;
+            }
+
+            if (com != null)
+            {
+                com.Name = item.Name;
+                com.Description = item.Description;
+                com.Image = RibbonBuilder.GetImage(item, userGroup);
+                com.Access = item.Access;
+                com.Command = item.GetCommand();
+                com.IsTest = item.IsTest;
+                com.Group = panel;
+            }
+
+            return com;
+        }
+
+        private static void PikTray_MouseDown()
+        {
+            Start();
+        }
+
+        private static void SetTrayPalette()
         {
             // Добавление иконки в трей
             try
             {
                 var p = new Pane
                 {
-                    ToolTipText = $"Палитра инструментов {paletteName}",
+                    ToolTipText = "Палитра инструментов ПИК",
                     Icon = Icon.FromHandle(Resources.logo.GetHicon())
                 };
-                p.MouseDown += (o, e) => PikTray_MouseDown(paletteGuid);
+                p.MouseDown += (o, e) => PikTray_MouseDown();
                 p.Visible = false;
                 Application.StatusBar.Panes.Insert(0, p);
                 p.Visible = true;
@@ -190,7 +294,7 @@
                 // }
                 // else
                 {
-                    var model = new PaletteModel(group.GroupBy(g => g.Name).Select(s => s.First()), versionPalette);
+                    var model = new PaletteModel(group.GroupBy(g => g.Name).Select(s => s.First()));
                     if (model.PaletteCommands.Any())
                     {
                         var commControl = new UI.CommandsControl { DataContext = model };

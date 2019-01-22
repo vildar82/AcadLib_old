@@ -85,7 +85,7 @@
             }
         }
 
-        private static List<(RibbonTabData, string)> LoadRibbonTabsFromGroups()
+        public static List<(RibbonTabData, string)> LoadRibbonTabsFromGroups()
         {
             var groupsName = new List<string>
                 { PikSettings.UserGroup, Commands.GroupCommon, PikSettings.AdditionalUserGroup };

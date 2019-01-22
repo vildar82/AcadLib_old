@@ -14,9 +14,13 @@ namespace AcadLib.PaletteCommands
     [PublicAPI]
     public class PaletteVisualInsertBlocks : PaletteCommand
     {
-        internal readonly bool explode;
-        internal readonly string file;
-        internal readonly Predicate<string> filter;
+        internal bool explode;
+        internal string file;
+        internal Predicate<string> filter;
+
+        public PaletteVisualInsertBlocks()
+        {
+        }
 
         public PaletteVisualInsertBlocks(
             Predicate<string> filter,

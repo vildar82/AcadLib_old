@@ -14,7 +14,5 @@ namespace AcadLib.PaletteCommands
         public string Name { get; set; }
 
         public PaletteSetCommands Palette { get; set; }
-
-        public string VersionPalette { get; set; }
     }
 }

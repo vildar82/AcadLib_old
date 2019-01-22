@@ -1,8 +1,4 @@
-﻿using System.Windows.Threading;
-using AcadLib.UI.Ribbon.Editor;
-using NetLib;
-
-namespace AcadLib
+﻿namespace AcadLib
 {
     using System;
     using System.Collections.Generic;
@@ -14,6 +10,8 @@ namespace AcadLib
     using System.Threading.Tasks;
     using System.Windows.Automation;
     using System.Windows.Forms;
+    using System.Windows.Threading;
+    using AcadLib.UI.Ribbon.Editor;
     using AutoCAD_PIK_Manager.Settings;
     using AutoCAD_PIK_Manager.User;
     using Autodesk.AutoCAD.DatabaseServices;
@@ -30,6 +28,7 @@ namespace AcadLib
     using Layers.AutoLayers;
     using Layers.LayersSelected;
     using Lisp;
+    using NetLib;
     using NetLib.IO;
     using NetLib.Notification;
     using PaletteCommands;
@@ -105,6 +104,7 @@ namespace AcadLib
                     Settings.Default.Save();
                 }
 
+                PaletteSetCommands.Init();
                 AllCommandsCommon();
 
                 // Автослоиtest
@@ -532,6 +532,12 @@ namespace AcadLib
         public void PIK_RibbonEditor()
         {
             CommandStart.StartWoStat(d => new RibbonEditor().Edit());
+        }
+
+        [CommandMethod(Group, nameof(PIK_StartPalette), CommandFlags.Session)]
+        public void PIK_StartPalette()
+        {
+            CommandStart.StartWoStat(d => PaletteSetCommands.Start());
         }
 
         /// <summary>

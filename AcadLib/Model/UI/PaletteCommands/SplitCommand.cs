@@ -10,28 +10,30 @@
 
     public class SplitCommand : PaletteCommand
     {
-        public SplitCommand([NotNull] List<PaletteCommand> commands)
+        public SplitCommand()
+        {
+        }
+
+        public SplitCommand([NotNull] List<IPaletteCommand> commands)
         {
             Commands = commands;
             var c = commands[0];
             SelectedCommand = c;
             Access = c.Access;
-            CommandName = c.CommandName;
             Description = c.Description;
             Group = c.Group;
             Image = c.Image;
             Name = c.Name;
-            Index = c.Index;
             this.WhenAnyValue(v => v.SelectedCommand).Skip(1).ObserveOn(SynchronizationContext.Current)
                 .Subscribe(s => SelectedCommand.Execute());
             ImageSize = Properties.Settings.Default.PaletteImageSize * 2;
             Properties.Settings.Default.PropertyChanged += Default_PropertyChanged;
         }
 
-        public List<PaletteCommand> Commands { get; set; }
+        public List<IPaletteCommand> Commands { get; set; }
 
         [Reactive]
-        public PaletteCommand SelectedCommand { get; set; }
+        public IPaletteCommand SelectedCommand { get; set; }
 
         public double ImageSize { get; set; }
 

@@ -14,9 +14,8 @@
 
     public class PaletteModel : BaseModel
     {
-        public PaletteModel([NotNull] IEnumerable<IPaletteCommand> commands, string version)
+        public PaletteModel([NotNull] IEnumerable<IPaletteCommand> commands)
         {
-            Version = version;
             PaletteCommands = new ObservableCollection<IPaletteCommand>();
             foreach (var item in commands)
             {
@@ -51,8 +50,6 @@
         ///     Команды на палитре
         /// </summary>
         public ObservableCollection<IPaletteCommand> PaletteCommands { get; set; }
-
-        public string Version { get; }
 
         public void ChangeContent(int listStyle)
         {
