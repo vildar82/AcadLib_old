@@ -154,15 +154,17 @@
             var commands = new List<IPaletteCommand>();
             try
             {
+                var panelNames = new HashSet<string>();
                 foreach (var group in RibbonBuilder.LoadRibbonTabsFromGroups())
                 {
                     foreach (var panel in @group.Item1.Panels)
                     {
+                        var panelName = group.Item2;
                         foreach (var item in panel.Items)
                         {
                             try
                             {
-                                var com = GetCommand(item, panel.Name, group.Item2);
+                                var com = GetCommand(item, panelName, group.Item2);
                                 if (com != null)
                                     commands.Add(com);
                             }
