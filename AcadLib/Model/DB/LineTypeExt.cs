@@ -12,7 +12,7 @@
         {
             using (var lt = (LinetypeTable)db.LinetypeTableId.Open(OpenMode.ForRead))
             {
-                return lt.Has(lineTypeName) ? lt[lineTypeName] : db.ContinuousLinetype;
+                return lt.Has(lineTypeName) ? lt[lineTypeName] : ObjectId.Null;
             }
         }
 

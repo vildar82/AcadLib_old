@@ -139,6 +139,9 @@ namespace UtilsEditUsers.Model.User.UsersEditor
 
         private (Brush color, string tooltip) GetUserVerionInfo(AutocadUsers userDb)
         {
+            if (userDb.Group.IsNullOrEmpty())
+                return (colorErr, "Нет группы");
+
             if (userDb.Group.Contains(','))
             {
                 userDb.Group = userDb.Group.Substring(0, userDb.Group.IndexOf(','));
@@ -214,7 +217,7 @@ namespace UtilsEditUsers.Model.User.UsersEditor
 
         private IEnumerable<string> GetGroups(string userGroup)
         {
-            if (userGroup.Contains(','))
+            if (userGroup?.Contains(',') == true)
             {
                 foreach (var s in userGroup.Split(',').Select(a => a.Trim()))
                     yield return s;
@@ -233,7 +236,10 @@ namespace UtilsEditUsers.Model.User.UsersEditor
                 {
                     if (!dictUsersEx.TryGetValue(u.Login, out var exUser))
                     {
-                        var uData = u.Login.Try(l => ADUtils.GetUserData(l, null));
+                        var uData = u.Login.Try(l => ADUtils.GetUserData(l, null), e=> new UserData
+                        {
+                            Fio = u.Login
+                        });
                         var dep = uData?.Department ?? "не определено";
                         var pos = uData?.Position ?? "не определено";
                         var image = u.Login.Try(l => UserSettingsService.LoadHomePikImage(l, "main")) ?? imageNo;
