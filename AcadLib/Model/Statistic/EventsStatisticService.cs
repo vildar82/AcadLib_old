@@ -32,6 +32,7 @@
         [NotNull]
         private static readonly List<string> _exceptedUsers = new List<string>
         {
+            "PokrovskiyID",
             "valievtr",
             "PrudnikovVS",
             "ParamazovaSK",
