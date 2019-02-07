@@ -1,4 +1,6 @@
-﻿namespace AcadLib.PaletteCommands
+﻿using NetLib;
+
+namespace AcadLib.PaletteCommands
 {
     using System;
     using System.Collections.Generic;
@@ -77,29 +79,6 @@
             string paletteName,
             Guid paletteGuid)
         {
-            return;
-            try
-            {
-                if (_paletteSets == null)
-                {
-                    commands.AddRange(Commands.CommandsPalette);
-                    _paletteSets = new UserGroupPalette
-                    {
-                        Guid = paletteGuid,
-                        Name = paletteName,
-                        CommandStartPalette = commandStartPalette,
-                        Commands = commands,
-                    };
-                }
-                else
-                {
-                    _paletteSets.Commands.AddRange(commands);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log.Error(ex, $"AcadLib.PaletteCommands.InitPalette() - {commandStartPalette}.");
-            }
         }
 
         /// <summary>
@@ -154,12 +133,13 @@
             var commands = new List<IPaletteCommand>();
             try
             {
-                var panelNames = new HashSet<string>();
                 foreach (var group in RibbonBuilder.LoadRibbonTabsFromGroups())
                 {
                     foreach (var panel in @group.Item1.Panels)
                     {
-                        var panelName = group.Item2;
+                        var panelName = panel.Name;
+                        if (panelName.IsNullOrEmpty())
+                            panelName = "Главная";
                         foreach (var item in panel.Items)
                         {
                             try
@@ -224,9 +204,10 @@
                     com = ib;
                     break;
                 case RibbonSplit ribbonSplit:
-                    var split = new SplitCommand();
-                    split.Commands = ribbonSplit.Items.Select(s => GetCommand(s, panel, userGroup))
+                    var coms = ribbonSplit.Items.Select(s => GetCommand(s, panel, userGroup))
                         .Where(w => w != null).ToList();
+                    var split = new SplitCommand(coms);
+                    com = split;
                     break;
             }
 
