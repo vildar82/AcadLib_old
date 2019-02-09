@@ -188,7 +188,7 @@
       <Version>1.6.5</Version>
     </PackageReference>
     <PackageReference Include="NetLib">
-      <Version>1.1.93</Version>
+      <Version>1.1.106</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
