@@ -22,7 +22,7 @@ namespace AcadLib.DB
     public class DbUsing : IDisposable
     {
         private readonly Database _db;
-        private List<(PropertyInfo prop, object val)> oldValues;
+        private readonly List<(PropertyInfo prop, object val)> oldValues;
 
         public DbUsing(Database db, params string[] props)
         {
