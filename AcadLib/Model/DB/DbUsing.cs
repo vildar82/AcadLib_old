@@ -15,7 +15,7 @@ namespace AcadLib.DB
             return new DbUsing(db, props);
         }
     }
-    
+
     /// <summary>
     /// Использование свойств чертежа и восстановление после использовния
     /// </summary>
@@ -35,7 +35,7 @@ namespace AcadLib.DB
                 return (prop, val);
             }).ToList();
         }
-        
+
         public void Dispose()
         {
             foreach (var (prop, val) in oldValues)
