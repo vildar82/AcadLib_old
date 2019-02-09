@@ -7,11 +7,8 @@
     using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using System.Windows.Automation;
     using System.Windows.Forms;
     using System.Windows.Threading;
-    using AcadLib.UI.Ribbon.Editor;
     using AutoCAD_PIK_Manager.Settings;
     using AutoCAD_PIK_Manager.User;
     using Autodesk.AutoCAD.DatabaseServices;
@@ -38,6 +35,7 @@
     using Statistic;
     using Template;
     using UI.Ribbon;
+    using UI.Ribbon.Editor;
     using UI.StatusBar;
     using User;
     using Utils;
