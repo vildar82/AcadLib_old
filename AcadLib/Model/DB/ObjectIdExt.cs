@@ -45,6 +45,20 @@
             return map[idEnt].Value;
         }
 
+        /// <summary>
+        /// Копирование объектов в одной базе
+        /// </summary>
+        /// <param name="idsEnt">Копируемый объект</param>
+        /// <param name="idBtrOwner">Куда копировать (контейнер - BlockTableRecord)</param>
+        public static List<ObjectId> CopyEnts(this List<ObjectId> idsEnt, ObjectId idBtrOwner)
+        {
+            var db = idBtrOwner.Database;
+            var map = new IdMapping();
+            var ids = new ObjectIdCollection(idsEnt.ToArray());
+            db.DeepCloneObjects(ids, idBtrOwner, map, false);
+            return idsEnt.Select(s => map[s].Value).ToList();
+        }
+
         public static void FlickObjectHighlight([NotNull] this Entity ent, int num = 2, int delay1 = 50, int delay2 = 50)
         {
             FlickObjectHighlight(new[] { ent }, num, delay1, delay2);
