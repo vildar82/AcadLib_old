@@ -16,8 +16,8 @@
         /// <summary>
         /// Выделение объекта на чертеже
         /// </summary>
-        /// <param name="entId"></param>
-        /// <param name="ed"></param>
+        /// <param name="entId">Примитив</param>
+        /// <param name="ed">Редактор</param>
         public static void Select(this ObjectId entId, [NotNull] Editor ed)
         {
             ed.SetImpliedSelection(new[] { entId });
