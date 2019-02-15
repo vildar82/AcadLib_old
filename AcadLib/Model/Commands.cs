@@ -81,7 +81,6 @@
             {
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 Logger.Log.Info("start Initialize AcadLib");
-                CheckOtherAcadVersionProcess();
                 StatusBarEx.AddPaneUserGroup();
                 PluginStatisticsHelper.StartAutoCAD();
                 if (PikSettings.IsDisabledSettings)

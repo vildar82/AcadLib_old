@@ -45,9 +45,9 @@
                 var ptInput = ppr.Value.FromUcsToWcs();
                 using (var t = ed.Document.TransactionManager.StartTransaction())
                 {
+                    var mat = Matrix3d.Displacement(pt.GetVectorTo(ptInput));
                     foreach (var item in ids)
                     {
-                        var mat = Matrix3d.Displacement(pt.GetVectorTo(ptInput));
                         var ent = (Entity)item.GetObject(OpenMode.ForWrite, false, true);
                         ent.TransformBy(mat);
                     }

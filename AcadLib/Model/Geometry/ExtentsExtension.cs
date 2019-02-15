@@ -148,5 +148,13 @@ namespace Autodesk.AutoCAD.DatabaseServices
                 new Point3d(ext.MaxPoint.X + dX, ext.MaxPoint.Y + dY, 0)
             );
         }
+
+        public static Extents3d OffsetAbs(this Extents3d ext, double offset = 10)
+        {
+            return new Extents3d(
+                new Point3d(ext.MinPoint.X - offset, ext.MinPoint.Y - offset, 0),
+                new Point3d(ext.MaxPoint.X + offset, ext.MaxPoint.Y + offset, 0)
+            );
+        }
     }
 }
