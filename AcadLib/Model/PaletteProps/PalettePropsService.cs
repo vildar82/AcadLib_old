@@ -130,8 +130,10 @@
             }
 
             SubscibeEntityModified(doc.Database);
-
-            Inspector.Show();
+            if (Inspector.HasErrors)
+            {
+                "ПИК Свойства. Выделение обработано с ошибками! См. PIK_Errors".WriteToCommandLine();
+            }
         }
 
         private static void Clear()

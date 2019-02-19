@@ -225,6 +225,14 @@
         }
 
         [NotNull]
+        public static Polyline CreatePolyline(this List<Point3d> pts, bool closed = true, bool distinct = false)
+        {
+            var pts2D = pts.Select(s => s.Convert2d()).ToList();
+            if (distinct) pts2D = pts2D.DistinctPoints();
+            return CreatePolyline(pts2D, closed);
+        }
+
+        [NotNull]
         public static Polyline CreatePolyline(this List<Point2d> pts, bool closed)
         {
             var pl = new Polyline();
@@ -774,7 +782,7 @@
         /// </summary>
         public static void TestDrawVertexNumbers([NotNull] this Polyline pl, Color color)
         {
-            var scale = ScaleHelper.GetCurrentAnnoScale(HostApplicationServices.WorkingDatabase);
+            var scale = HostApplicationServices.WorkingDatabase.GetCurrentAnnoScale();
             var texts = new List<Entity>();
             for (var i = 0; i < pl.NumberOfVertices; i++)
             {
@@ -867,7 +875,7 @@
         /// <param name="p2">Second point</param>
         /// <param name="p3">Third point</param>
         /// <returns>True if points are clockwise, False otherwise.</returns>
-        private static bool Clockwise(Point2d p1, Point2d p2, Point2d p3)
+        public static bool Clockwise(Point2d p1, Point2d p2, Point2d p3)
         {
             return (p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X) < 1e-8;
         }
