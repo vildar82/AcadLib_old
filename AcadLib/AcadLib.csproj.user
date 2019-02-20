@@ -6,9 +6,5 @@
     <StartArguments>/nologo /product ACAD</StartArguments>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
     <EnableSQLServerDebugging>false</EnableSQLServerDebugging>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ReferencePath>C:\dev\AcadLib\AcadLib\lib\</ReferencePath>
-    <ProjectView>ShowAllFiles</ProjectView>
-  </PropertyGroup>
+  </PropertyGroup>  
 </Project>
