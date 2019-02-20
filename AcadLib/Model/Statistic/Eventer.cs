@@ -119,7 +119,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log.Error(ex, $"Start case={@case}, doc={docPath}");
+                    Logger.Log.Error(ex, $"Eventer Start ERROR. case={@case}, doc={docPath}");
                 }
             }
 

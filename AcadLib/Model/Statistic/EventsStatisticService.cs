@@ -134,10 +134,12 @@
                 switch (e.GlobalCommandName)
                 {
                     case "QSAVE":
+                        Logger.Log.Info("Eventer DocumentLockModeChanged=QSAVE");
                         StopSave(e, Case.Default);
                         lastModeChange = "QSAVE";
                         break;
                     case "SAVEAS":
+                        Logger.Log.Info("Eventer DocumentLockModeChanged=SAVEAS");
                         if (lastModeChange != "SAVEAS")
                         {
                             lastModeChange = "SAVEAS";
@@ -146,6 +148,7 @@
 
                         break;
                     case "#SAVEAS":
+                        Logger.Log.Info("Eventer DocumentLockModeChanged=#SAVEAS");
                         if (lastModeChange != "SAVEAS" || lastSaveAsFile != e.Document.Name)
                         {
                             StopSave(e, Case.SaveAs);
@@ -154,6 +157,7 @@
                         lastModeChange = "#SAVEAS";
                         break;
                     case "CLOSE":
+                        Logger.Log.Info("Eventer DocumentLockModeChanged=CLOSE");
                         if (dbmod != 0 && lastModeChange != "CLOSE")
                         {
                             switch (MessageBox.Show("Файл изменен. Хотите сохранить изменения?", "Внимание!",
@@ -247,10 +251,12 @@
 
         private static bool StopSave(DocumentLockModeChangedEventArgs e, Case @case)
         {
+            Logger.Log.Info($"Eventer StopSave case={@case}, doc={e?.Document?.Name}.");
             lastSaveAsFile = e.Document.Name;
             BeginSave(e.Document.Name, @case);
             if (veto)
             {
+                Logger.Log.Info($"Eventer Veto case={@case}, doc={e?.Document?.Name}.");
                 e.Veto();
                 Debug.WriteLine($"StopSave Veto {e.GlobalCommandName}");
                 return true;
@@ -260,9 +266,9 @@
             return false;
         }
 
-        private static void DocumentManager_DocumentDestroyed(object sender, [NotNull] DocumentDestroyedEventArgs e)
+        private static void DocumentManager_DocumentDestroyed(object sender, DocumentDestroyedEventArgs e)
         {
-            eventer?.Finish(EventType.Close, e.FileName, sn);
+            eventer?.Finish(EventType.Close, e?.FileName, sn);
         }
 
         private static void DocumentManager_DocumentCreateStarted(object sender, DocumentCollectionEventArgs e)
@@ -303,7 +309,8 @@
             {
                 var db = doc.Database;
                 db.Events().SaveComplete.Throttle(TimeSpan.FromSeconds(3))
-                    .Subscribe(s => Db_SaveComplete(s.Sender, s.EventArgs));
+                    .Do(s => Logger.Log.Info($"Eventer SaveComplete Do - {s}."))
+                    .Subscribe(s => Db_SaveComplete(s?.Sender, s?.EventArgs));
                 eventer?.Finish(EventType.Open, doc.Name, sn);
                 Logger.Log.Info("SubscribeDoc end");
             }
@@ -340,10 +347,10 @@
             }
         }
 
-        private static void Db_SaveComplete(object sender, [NotNull] DatabaseIOEventArgs e)
+        private static void Db_SaveComplete(object sender, DatabaseIOEventArgs e)
         {
             Debug.WriteLine($"Db_SaveComplete {e.FileName}");
-            if (!IsDwg(e.FileName))
+            if (!IsDwg(e?.FileName))
                 return;
             eventer?.Finish(EventType.Save, e.FileName, sn);
         }
