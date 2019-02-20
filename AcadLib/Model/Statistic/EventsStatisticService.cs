@@ -32,6 +32,7 @@
         [NotNull]
         private static readonly List<string> _exceptedUsers = new List<string>
         {
+            "Chernovayun",
             "PokrovskiyID",
             "valievtr",
             "PrudnikovVS",
@@ -60,6 +61,8 @@
                     eventer?.Start(Case.Default, null);
                     SubscribeDoc(doc);
                 }
+
+                sn = GetRegistrySerialNumber();
             }
             catch (Exception ex)
             {
