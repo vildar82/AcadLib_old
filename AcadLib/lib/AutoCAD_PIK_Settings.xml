@@ -183,7 +183,7 @@
         </member>
         <member name="M:AutoCAD_PIK_Manager.Settings.PikSettings.GetUserGroupFromServer(System.Boolean@,System.String@)">
             <summary>
-            Определение группы пользователя 
+            Определение группы пользователя
             </summary>
             <param name="isDisabledSettings"></param>
             <returns></returns>

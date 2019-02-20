@@ -6,7 +6,7 @@
     using Autodesk.AutoCAD.DatabaseServices;
     using Autodesk.AutoCAD.Geometry;
     using JetBrains.Annotations;
-    using UnitsNet.Extensions.NumberToAngle;
+    using NetLib;
 
     [PublicAPI]
     public static class CurveExt
@@ -103,11 +103,11 @@
             if (pts.Count > 0 && pts.Cast<Point3d>().All(p => c.IsVertex(p, tolerance.EqualPoint)))
             {
                 // Повернуть луч и повторить
-                ray.TransformBy(Matrix3d.Rotation(5.Radians().Radians, Vector3d.ZAxis, ray.BasePoint));
+                ray.TransformBy(Matrix3d.Rotation(5d.ToRadians(), Vector3d.ZAxis, ray.BasePoint));
                 return IsPointInsidePolylineByRay(ray, pt, c, tolerance);
             }
 
-            return NetLib.MathExt.IsOdd(pts.Count) || IsPointOnPolyline(c, pt, tolerance);
+            return pts.Count.IsOdd() || IsPointOnPolyline(c, pt, tolerance);
         }
 
         public static bool IsPointOnPolyline([NotNull] this Curve c, Point3d pt, Tolerance tolerance)
@@ -118,7 +118,7 @@
 
         public static bool IsVertex([NotNull] this Curve c, Point3d pt, double tolerance = 0.0001)
         {
-            return NetLib.MathExt.IsWholeNumber(c.GetParameterAtPointTry(pt), tolerance);
+            return c.GetParameterAtPointTry(pt).IsWholeNumber(tolerance);
         }
     }
 }
