@@ -92,8 +92,8 @@
                 }
 
                 Notify.SetScreenSettings(new NotifyOptions(with: 400));
-                CheckUpdates.Start();
 
+                CheckUpdates.Start();
                 if (Settings.Default.UpgradeRequired)
                 {
                     Settings.Default.Upgrade();
@@ -114,12 +114,13 @@
                 LispAutoloader.Start();
 
                 // Установки системных переменных для чертежа
-                //Doc.DocSysVarAuto.Start(); // Отключил для теста - фаталит вроде тут у Черновой.
+                Doc.DocSysVarAuto.Start(); // Отключил для теста - фаталит вроде тут у Черновой.
 
                 // Лента
                 RibbonBuilder.InitRibbon();
 
                 Logger.Log.Info("end Initialize AcadLib");
+
                 EventsStatisticService.Start();
                 AcadLibAssembly.AcadLoadInfo();
                 if (AutocadUserService.User == null)
@@ -129,7 +130,7 @@
                 }
 
                 // Восстановление вкладок чертежей
-                Utils.Tabs.RestoreTabs.Init();
+                //Utils.Tabs.RestoreTabs.Init();
                 Logger.Log.Info("AcadLib Initialize end success.");
             }
             catch (Exception ex)
