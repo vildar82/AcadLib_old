@@ -114,7 +114,7 @@
                 LispAutoloader.Start();
 
                 // Установки системных переменных для чертежа
-                Doc.DocSysVarAuto.Start();
+                //Doc.DocSysVarAuto.Start(); // Отключил для теста - фаталит вроде тут у Черновой.
 
                 // Лента
                 RibbonBuilder.InitRibbon();
