@@ -39,6 +39,10 @@
                     lispFiles.Add(lspRemote);
                 }
             }
+            else
+            {
+                Logger.Log.Info("Пропущен лисп файл для оптимизации работы удаленщика. Это не удаленщик!");
+            }
 
             if (lispFiles.Count > 0)
             {
