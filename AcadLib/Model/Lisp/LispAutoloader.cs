@@ -25,6 +25,21 @@
                 lispFiles.AddRange(PikSettings.GroupFileSettings.AutoLoadLispPathBySettings);
             }
 
+            // Для удаленщиков грузить лисп оптимизацйи
+            if (General.IsRemoteUser())
+            {
+                var lspRemote = Path.GetLocalSettingsFile(@"Script\Lisp\OptimiseVarRemote.lsp");
+                if (!File.Exists(lspRemote))
+                {
+                    Logger.Log.Warn($"Не найден лисп файл для оптимизации работы удоленщика - {lspRemote}.");
+                }
+                else
+                {
+                    Logger.Log.Info($"Добавлен лисп файл для оптимизации работы удаленщика - {lspRemote}");
+                    lispFiles.Add(lspRemote);
+                }
+            }
+
             if (lispFiles.Count > 0)
             {
                 Application.DocumentManager.DocumentCreated += DocumentManager_DocumentCreated;

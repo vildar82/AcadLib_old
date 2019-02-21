@@ -71,6 +71,11 @@
             }
         }
 
+        public static bool IsRemoteUser()
+        {
+            return Environment.MachineName.StartsWith("V-70");
+        }
+
         /// <summary>
         ///     BIM-manager - отдел поддержки пользователей
         /// </summary>
