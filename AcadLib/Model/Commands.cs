@@ -130,7 +130,7 @@
                 }
 
                 // Восстановление вкладок чертежей
-                //Utils.Tabs.RestoreTabs.Init();
+                //Utils.Tabs.RestoreTabs.Init(); // Фаталит у Черновой
                 Logger.Log.Info("AcadLib Initialize end success.");
             }
             catch (Exception ex)
